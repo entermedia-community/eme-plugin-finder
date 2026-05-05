@@ -69,7 +69,7 @@
 	<target name="tar">
 		<mkdir dir="${deployDir}/builds" />
 
-		<tar destfile="${deployDir}/builds/${versionedApp}.tar.gz" compression="gzip">
+		<tar destfile="${deployDir}/builds/${versionedApp}.tar.gz" compression="gzip" longfile="gnu">
 		<tarfileset dir="${basedir}/skills" prefix="skills"/>
 		<tarfileset dir="${basedir}/agents" prefix="agents"/>
 		<tarfileset dir="${basedir}/tomcat" prefix="tomcat"/>
