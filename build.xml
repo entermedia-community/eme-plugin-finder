@@ -49,10 +49,6 @@
 					<include name="*.jar"/>
 					<include name="compile/*.jar"/>
 				</fileset>
-				<fileset dir="${basedir}/skills/openedit/lib/">
-					<include name="*.jar"/>
-					<include name="compile/*.jar"/>
-				</fileset>
 				<fileset dir="${basedir}/skills/finder/lib/">
 					<include name="*.jar"/>
 					<include name="compile/*.jar"/>
