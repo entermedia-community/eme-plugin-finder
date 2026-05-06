@@ -39,7 +39,7 @@ case "$CMD" in
         # Copy tomcat conf and webapp templates from eme-lib deploy
         # Create directory structure
         mkdir -p "$TARGET/tomcat/conf" "$TARGET/tomcat/logs" "$TARGET/tomcat/webapps" "$TARGET/tomcat/work"
-        cp -rn "$EMELIB/deploy/tomcat/conf/." "$TARGET/tomcat/conf/" 2>/dev/null || true
+        cp -rn "$EMELIB/tomcat/conf/." "$TARGET/tomcat/conf/" 2>/dev/null || true
     fi
     mkdir -p "$TARGET/webapp/WEB-INF/base"
 
