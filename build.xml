@@ -70,12 +70,11 @@
 		<mkdir dir="${deployDir}/builds" />
 
 		<tar destfile="${deployDir}/builds/${versionedApp}.tar.gz" compression="gzip" longfile="gnu">
-		<tarfileset dir="${basedir}/skills" prefix="skills"/>
-		<tarfileset dir="${basedir}/agents" prefix="agents"/>
-		<tarfileset dir="${basedir}/tomcat" prefix="tomcat"/>
-		<tarfileset dir="${basedir}/webapp" prefix="webapp"/>
-		<tarfileset dir="${basedir}/bin" prefix="bin"/>
-		<tarfileset dir="${basedir}/bin" prefix="bin"/>
+		<tarfileset dir="${basedir}/skills" prefix="eme-lib/skills"/>
+		<tarfileset dir="${basedir}/agents" prefix="eme-lib/agents"/>
+		<tarfileset dir="${basedir}/tomcat" prefix="eme-lib/tomcat"/>
+		<tarfileset dir="${basedir}/webapp" prefix="eme-lib/webapp"/>
+		<tarfileset dir="${basedir}/bin" prefix="eme-lib/bin"/>
 		<tarfileset file="${basedir}/version.txt" />
 		</tar>
 
