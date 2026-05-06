@@ -32,6 +32,8 @@
 	<target name="clean">
 		<delete dir="${build}"/>
 		<delete dir="${wardir}"/>
+		<delete file="${deployDir}/builds/${versionedApp}.tar.gz" failonerror="false"/>
+
 	</target>
 
 	<!-- Just make sure it all compiles ok -->
@@ -68,8 +70,6 @@
 	-->
 	<target name="tar">
 		<mkdir dir="${deployDir}/builds" />
-
-		<delete file="${deployDir}/builds/${versionedApp}.tar.gz" failonerror="false"/>
 
 		<tar destfile="${deployDir}/builds/${versionedApp}.tar.gz" compression="gzip" longfile="gnu" >
 		<tarfileset dir="${basedir}/skills" prefix="eme-lib/skills"/>

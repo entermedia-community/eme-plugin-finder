@@ -34,4 +34,6 @@ USER ${USERID}
 
 RUN mkdir -p /usr/share/eme-instance && cd /usr/share/eme-instance &&  /usr/bin/eme init
 
+WORKDIR /usr/share/eme-instance
+
 CMD ["/usr/bin/eme", "start"]
