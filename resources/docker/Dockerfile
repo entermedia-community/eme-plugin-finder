@@ -23,4 +23,4 @@ RUN mkdir /tmp/untar && cd /tmp/untar/ && wget --no-cache -q http://dev.entermed
     cp /usr/share/eme-lib/docker/nproc.conf /etc/security/limits.d/20-nproc.conf && \
     rm -rf /tmp/*
 
-CMD ["/usr/bin/eme.sh", "start"]
+CMD ["/usr/bin/eme", "start"]
