@@ -14,7 +14,7 @@ ENV LC_ALL=en_US.UTF-8
 ARG CACHE_BREAKER=1
 RUN mkdir /tmp/untar && cd /tmp/untar/ && wget --no-cache -q http://dev.entermediadb.org/jenkins/view/EM12/job/eme-lib/lastSuccessfulBuild/artifact/deploy/eme-lib.tar.gz && \
     cd /tmp/untar/ && tar -xzf *.gz && \
-    mv  * /usr/share/eme-lib && \
+    mv /tmp/untar/eme-lib /usr/share/ && \
     cp /usr/share/eme-lib/resources/docker/delegates.xml /usr/local/share/ImageMagick-7/delegates.xml && \
     cp /usr/share/eme-lib/resources/docker/sysctl.conf /etc/sysctl.conf && \
     cp /usr/share/eme-lib/resources/docker/limits.conf /etc/security/limits.conf && \
