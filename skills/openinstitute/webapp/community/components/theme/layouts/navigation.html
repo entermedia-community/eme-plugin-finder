@@ -1,0 +1,62 @@
+#set( $usersidebarhidden = $userprofile.get("usersidebarhidden"))
+#if (!$usersidebarhidden)
+  #set( $usersidebarhidden = 'false')
+#end
+
+#if($communitytagcategory)
+  #if($communitytagcategory.primaryimagepathwide)
+    #set($headerbg = "$applink${communitytagcategory.primaryimagepathwide}")
+  #end
+#end
+
+#set($homelink = "$applink/home/proposals/index.html")
+
+##$pages.include("$apphome/components/users/pickuser.html")
+##$pages.include("$apphome/components/libraries/pickcollection.html")
+
+#if( $comunitytagcategory.externaldomain)
+  #set( $link ="//${comunitytagcategory.externaldomain}/app/index.html")
+#elseif($comunitytag.entitytype == "entityrental")
+  #set( $link = "$apphome/home/rentals/${comunitytagcategory.getId()}/#dash($comunitytagcategory)/.html")
+#else
+  #set( $link = "$apphome/home/proposals/category/${communitytagcategory.getId()}/#dash($communitytagcategory).html")
+#end
+#set ($action = $content.collectivesection)
+
+  <nav class="navbar sticky-top navbar-expand-lg" id="superNav">
+    <div class="container flex-nowrap"> 
+      <a class="navbar-brand"  href="/" title="Open Institute">
+        <img src="$applink/theme/images/oi-logo-w.png" alt="Open Institute" class="me-2" />
+      </a>
+      	
+      <div class="d-flex"> 
+        <button class="d-block d-md-none navbar-toggler" type="button" data-bs-toggle="offcanvas"
+          data-bs-target="#drawerMenu" aria-controls="drawerMenu">
+          <i class="fas fa-bars text-white"></i>
+        </button>
+        <div class="d-none d-md-flex flex-grow-1 align-items-center">
+          <div class="navbar-nav flex-row gap-2">
+            <a class="lnk nav-link" href="https://openinstitute.org">[[Navigate our Newest OI Version]]</a>
+           
+            #if($user)
+              <a class="lnk nav-link" href="$applink/authentication/logout.html" title="[[Logout]]">
+                <i class="fas fa-sign-out-alt"></i>
+              </a>
+            #end
+          </div>
+        </div>
+        <div class="offcanvas offcanvas-end d-flex d-md-none" tabindex="-1" id="drawerMenu"
+          aria-labelledby="drawerMenuLabel">
+          <div class="offcanvas-header">
+            <a href="/" class="me-4">
+              <img src="$applink/theme/images/oi-logo-w.png" class="me-2" />
+            </a>
+            <button type="button" class="btn text-white" data-bs-dismiss="offcanvas" aria-label="Close">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+          <div class="offcanvas-body"></div>
+        </div>
+      </div>
+    </div>
+  </nav>

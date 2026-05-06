@@ -1,0 +1,77 @@
+
+<nav class="navbar sticky-top navbar-expand rental-nav bg-black">
+  <div class="container">
+    <a href="$!{communitylink}/">
+      <img src="$!{communitylink}${communitytagcategory.primaryimagepath}" class="me-3" style="height:50px;width: auto;" />
+    </a>
+    <a href="$!{communitylink}/">
+      <h2 class="text-white my-1 me-3">
+        #text($communitytagcategory)
+      </h2>
+    </a>
+    <div class="d-flex align-items-center justify-content-center ms-auto">
+      <ul class="nav">
+		  <li class="nav-item">
+				$pages.include("${communityhome}/components/quicksearch/navbar.html")
+			</li>
+        <li class="d-none d-md-inline-block nav-item">
+          <a class="nav-link" href="/rentals/listrentals.html">
+            <i class="fas fa-bed me-2"></i> [[Rentals]]
+          </a>
+        </li>
+        <li class="d-none d-md-inline-block nav-ite">
+          <a class="nav-link" href="$!{communitylink}/events">
+            <i class="fas fa-calendar-alt me-2"></i> [[Events]]
+          </a>
+        </li>
+  
+    	#ifnull($user)
+          <li class="nav-item">
+            <a class="nav-link #if($content.oisection == 'login') active #end" href="$communitylink/authentication/login.html">
+              Login / Register &nbsp; <i class="ml-1 fs-small fas fa-user"></i>
+            </a>
+          </li> 
+          #end
+          #ifnotnull($user)
+          <li class="nav-item">
+            <a class="nav-link" href="$!{communitylink}/authentication/logout.html" title="[[Logout]]">
+              <i class="ml-1 fs-small fas fa-sign-out-alt"></i>
+            </a>
+          </li>
+          #end
+      </ul>
+    </div>
+    <button class="btn d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#drawerNav"
+      aria-controls="drawerNav" aria-label="Toggle navigation">
+      <span class="fas fa-bars text-white"></span>
+    </button>
+  </div>
+</nav>
+<div class="offcanvas offcanvas-end text-bg-dark" tabindex="-1" id="drawerNav"
+  aria-labelledby="drawerNavLabel">
+  <div class="offcanvas-header">
+    <a href="$!{communitylink}/">
+      <img src="$!{communitylink}${communitytagcategory.primaryimagepath}" class="me-3" style="height:50px;width: auto;" />
+    </a>
+    <a href="$!{communitylink}/">
+      <h2 class="text-white my-1 me-3">
+        #text($communitytagcategory)
+      </h2>
+    </a>
+    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body">
+    <ul class="nav">
+      <li class="nav-item">
+        <a class="nav-link" href="/rentals/listrentals.html">
+          <i class="fas fa-bed me-2"></i> [[Rentals]]
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="$!{communitylink}/events">
+          <i class="fas fa-calendar-alt me-2"></i> [[Events]]
+        </a>
+      </li>
+    </ul>
+  </div>
+</div>

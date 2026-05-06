@@ -1,0 +1,8 @@
+#
+#Tue Aug 29 16:13:54 BDT 2023
+Add\ a\ Project=\u6DFB\u52A0\u9879\u76EE
+Logout=\u767B\u51FA
+Login=\u767B\u5F55
+Create\ a\ Proposal=\u521B\u5EFA\u63D0\u6848
+About=\u5173\u4E8E
+Contact=\u63A5\u89E6

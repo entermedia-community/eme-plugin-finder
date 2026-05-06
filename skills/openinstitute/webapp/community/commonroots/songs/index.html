@@ -1,0 +1,51 @@
+<div class="container mt-5">
+	<div class="search-container w-100">
+		<form class="input-group rounded-pill mb-3">
+			<input type="text" class="form-control form-control-lg py-3" type="search" 
+			placeholder="Search songs..." aria-label="Search"">
+			<button class="btn btn-light px-4" type="submit">
+				<i class="fas fa-search"></i>
+			</button>
+		</form>
+	</div>
+</div>
+
+<main class="container mt-2 pt-4">
+	<h2 class="mb-4">Featured Songs</h2>
+	
+	<div class="row g-4" id="song-list">
+		#foreach($songid in [1..6])
+
+		<div class="col-md-6 col-lg-4">
+			<div class="card song-card h-100" data-href="./song.html?song=${songid}">
+				<div class="song-player">
+					<div class="album-art">
+						<img src="${communityhome}/assets/LostSky.jpg" alt="album art">
+					</div>
+					<div class="song-controls" data-src="${communityhome}/assets/LostSky.mp3" id="song-${songid}">
+						<button class="play-pause-btn">
+							<i class="fas fa-play"></i>
+							<i class="fas fa-pause"></i>
+						</button>
+						<div class="waves">
+							<div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+						</div>
+					</div>
+				</div>
+				<div class="card-body">
+					<h5 class="card-title mb-1">Track #${songid}</h5>
+					<p class="card-subtitle mb-1 small text-muted font-bold">Artist Name</p>
+					<p class="card-text text-muted line-clamp-2 mb-2">
+						Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum.
+					</p>
+					<div class="d-flex justify-content-between text-muted mt-auto">
+						<small><i class="fas fa-play me-1"></i>1.2M</small>
+						<small><i class="fas fa-calendar me-1"></i>3 days ago</small>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		#end
+	</div>
+</main>

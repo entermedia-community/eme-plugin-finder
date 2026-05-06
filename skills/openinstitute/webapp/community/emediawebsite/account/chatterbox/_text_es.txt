@@ -1,0 +1,10 @@
+#
+#Mon Apr 21 12:43:56 CST 2025
+Type\ your\ message\ here...=Escriba su mensaje aqu\u00ED...
+Edit\ Message=Editar mensaje
+of=de
+Next=Pr\u00F3ximo
+Previous=Anterior
+Reply=Responder
+Page=P\u00E1gina
+Processing=Tratamiento

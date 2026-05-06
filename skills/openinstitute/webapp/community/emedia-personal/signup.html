@@ -1,0 +1,91 @@
+<main id="content " role="main">
+  <div class="container space-top-3 space-bottom-lg-2">
+    <div class="row no-gutters">
+      <div class="col-md-8 col-lg-7 col-xl-6 offset-md-2 offset-lg-2 offset-xl-3 space-2">
+        <form class="js-validate w-md-85 w-lg-100 mx-md-auto">
+          <div class="mb-5 mb-md-7">
+            <h1 class="h2">Welcome to eMedia Library</h1>
+            <p>Fill out the form to get started.</p>
+          </div>
+          <div class="row">
+            <div class="col-sm-6 mb-3">
+              <div class="js-form-message form-group">
+                <label for="firstName" class="input-label text-white">First name</label>
+                <input type="text" class="form-control" name="firstName" id="firstName" placeholder="Nataly"
+                  aria-label="Nataly" required data-msg="Please enter first your name">
+              </div>
+            </div>
+            <div class="col-sm-6 mb-3">
+              <div class="js-form-message form-group">
+                <label for="lastName" class="input-label text-white">Last name</label>
+                <input type="text" class="form-control" name="lastName" id="lastName" placeholder="Gaga"
+                  aria-label="Gaga" required data-msg="Please enter last your name">
+              </div>
+            </div>
+            <div class="col-sm-12 mb-3">
+              <div class="js-form-message form-group">
+                <label for="emailAddress" class="input-label text-white">Email address</label>
+                <input type="email" class="form-control" name="emailAddress" id="emailAddress"
+                  placeholder="nayagaga@pixeel.com" aria-label="alex@pixeel.com" required
+                  data-msg="Please enter a valid email address">
+              </div>
+            </div>
+            <div class="col-sm-6 mb-3">
+              <div class="js-form-message form-group">
+                <label for="password" class="input-label text-white">Password</label>
+                <input type="text" class="form-control" name="passowrd" id="password" placeholder="*********"
+                  aria-label="*********" required data-msg="Your password is invalid. Please try again">
+              </div>
+            </div>
+            <div class="col-sm-6 mb-3">
+              <div class="js-form-message form-group">
+                <label for="confirmPassword" class="input-label text-white">Confirm password</label>
+                <input type="text" class="form-control" name="confirmPassword" id="confirmPassword"
+                  placeholder="*********" aria-label="*********" required
+                  data-msg="Password does not match the confirm password">
+              </div>
+            </div>
+          </div>
+          <div class="js-form-message mb-5">
+            <div class="custom-control custom-checkbox d-flex align-items-center text-muted">
+              <input type="checkbox" class="custom-control-input" id="termsCheckbox" name="termsCheckbox" required
+                data-msg="Please accept our Terms and Conditions.">
+              <label class="custom-control-label" for="termsCheckbox">
+                <small>
+                  I agree to the
+                  <a class="link-underline" href="#">Terms and Conditions</a>
+                </small>
+              </label>
+            </div>
+          </div>
+          <div class="row align-items-center">
+            <div class="col-sm-5">
+              <button type="submit" class="btn btn-sm btn-primary transition-3d-hover">Sign Up</button>
+            </div>
+            <div class="col-sm-7 mb-3 mb-sm-0 text-sm-right">
+              <p class="font-size-1 text-muted mb-0">Already have an account? <a class="font-weight-bold"
+                  href="${communitylink}/login.html">Log In</a></p>
+            </div>
+          </div>
+        </form>
+        <div class="text-center mt-5 mb-3">
+          <span class="divider divider-xs divider-text">OR</span>
+        </div>
+        <div class="d-flex flex-column">
+          <a class="btn btn-sm btn-soft-secondary btn-block mb-2" href="#">
+            <span class="d-flex justify-content-center align-items-center">
+              <img class="me-2" src="${communitylink}/theme/images/google.png" alt="Image Description" width="14" height="14">
+              Sign Up with Google
+            </span>
+          </a>
+          <a class="btn btn-sm btn-soft-secondary btn-block mb-2" href="#">
+            <span class="d-flex justify-content-center align-items-center">
+              <img class="me-2" src="${communitylink}/theme/images/facebook.png" alt="Image Description" width="14" height="14">
+              Sign Up with Facebook
+            </span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>

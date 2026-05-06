@@ -1,0 +1,4 @@
+<page>
+  <inner-layout>${communityhome}/views/layouts/app.html</inner-layout>
+  
+  </page>

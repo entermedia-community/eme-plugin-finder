@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<page>
+
+  
+  <page-action name="PostModule.loadPost"/>
+  
+  <inner-layout>${communityhome}/knowledge/layout.html</inner-layout> 
+  
+</page>

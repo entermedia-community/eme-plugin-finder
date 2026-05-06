@@ -1,0 +1,6 @@
+<page>
+	<property name="collectivesection">store</property>
+	<property name="virtual">true</property>
+	<path-action name="OiModule.loadCommunityTagFolder" />
+ 	<style id="oi2" cancel="true" />
+</page>

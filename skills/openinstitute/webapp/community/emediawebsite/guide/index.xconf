@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page>
+	<property name="editable">false</property>
+
+	<inner-layout>${communityhome}/guide/layout.html</inner-layout>
+	
+	
+</page>

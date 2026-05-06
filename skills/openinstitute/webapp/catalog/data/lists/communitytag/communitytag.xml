@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<root> 
+  <data id="1000" communitytagcategory="0"> 
+    <name> 
+      <language id="en"><![CDATA[Events]]></language> 
+    </name> 
+  </data>  
+  <data id="1001" communitytagcategory="0"> 
+    <name> 
+      <language id="en"><![CDATA[Musician Sponsorships]]></language> 
+    </name> 
+  </data>  
+  <data id="2000" communitytagcategory="1">
+    <name> 
+      <language id="en"><![CDATA[Housing]]></language> 
+    </name> 
+  </data>  
+  <data id="3000" communitytagcategory="2">
+    <name> 
+      <language id="en"><![CDATA[Habitat Loss]]></language> 
+    </name> 
+  </data>  
+  <data id="4000" communitytagcategory="2">
+    <name> 
+      <language id="en"><![CDATA[Trash Clean Up]]></language> 
+    </name> 
+  </data>  
+  <data id="5000" communitytagcategory="3">
+    <name> 
+      <language id="en"><![CDATA[Animal Rescue]]></language> 
+    </name> 
+  </data>  
+  
+</root>

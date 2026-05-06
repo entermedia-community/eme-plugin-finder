@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<page>
+   
+  <property name="catalogid">${siteid}/catalog</property>
+  <property name="finderhome">/${siteid}/find</property>
+  
+  <page-loader loader="projectLoader" />
+ 
+  <property name="allowguestregistration">true</property>
+  <property name="autologingroup">users</property>
+
+  <property name="error404">/${siteid}/common/error404.html</property>
+
+</page>

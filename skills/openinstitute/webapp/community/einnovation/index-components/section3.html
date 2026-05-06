@@ -1,0 +1,29 @@
+<section id="features" class="py-5 bg-light">
+  <div class="container">
+    <h2 class="text-center mb-2">Everything you need to succeed</h2>
+    <p class="mb-5 text-center text-muted">Powerful features to help you manage, share, and grow your content business</p>
+    <div class="row justify-content-md-center">
+      #set($fts = [
+        ["content", "Content Management", "Organize and manage all your digital content in one place with powerful tools and intuitive interface."],
+        ["monetization", "Monetization Tools", "License your content for distribution and monetize it with our easy-to-use monetization tools."],
+        ["history", "Version Control", "Keep track of all your content versions and share them with your collaborators."],
+        ["clock", "Scheduled Publishing", "Plan and schedule your content releases in advance."],
+        ["server", "Digital Asset Management", "Manage your assets, images, and files all in one place"],
+        ["shield", "Content Protection", "Secure your content with our privately hosted cloud storage and encryption."],
+        ["chart", "Analytics Dashboard", "Track your growth with detailed analytics and audience insights."],
+        ["source", "Proudly Open Source", "eInnovation is powered by eMedia Library, an open source and free to use platform"]
+      ])
+      #foreach($ft in $fts)
+      <div class="col-md-6 col-lg-3 mb-4">
+        <div class="card feature-card h-100 border-0 p-4 shadow-sm">
+          <div class="text-primary">
+            <img src="${communityhome}/images/${ft[0]}.svg">
+          </div>
+          <h5 class="card-title mb-4">${ft[1]}</h5>
+          <p class="card-text text-muted">${ft[2]}</p>
+        </div>
+      </div>
+      #end
+    </div>
+  </div>
+</section>

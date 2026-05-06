@@ -1,0 +1,13 @@
+<page>
+
+	<path-action name="TaskModule.loadUserTickets" />	
+
+	
+	<permission name="view">
+		<or>
+			<userprofile property="api-load-data" equals="true" />			
+		</or>
+	</permission>
+	
+</page>
+

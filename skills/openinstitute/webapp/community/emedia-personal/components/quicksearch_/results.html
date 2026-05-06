@@ -1,0 +1,34 @@
+
+#foreach($module in $organizedModules)
+	#set($hits = $organizedHits.get($module.id))
+
+	$context.putPageValue("hits", $hits)
+	$context.putPageValue("module", $module)
+	$context.putPageValue("moduleid", $module.id)
+
+	#set($moduleicon = "entity")
+	#if ($module.moduleicon)
+		#set($moduleicon = $module.moduleicon)
+	#end
+	#set( $val = $hits.getInput("description"))
+	#if($module.id == "librarycollection")
+		<h6 class="text-center text-dark mb-3">All Libraries</h6>
+		<div class="d-flex flex-wrap">
+			#foreach( $project in $hits.getPageOfHits())
+			
+			
+			#if($project.urlname)
+				#set($projectlink = "$!{community.externaldomain}/${project.urlname}/chat/index.html")
+			#else
+				#set($projectlink = "/project/chat/index.html?collectionid=${project.id}")
+			#end
+			<div class="py-1 px-2 mb-2 qs-project">
+				<a href="${projectlink}" title="[[Open]] $project"><i class="fas fa-folder"></i> $project</a>
+			</div> 
+			
+			#end	
+		</div> 
+	#else
+		##$hits
+	#end
+#end

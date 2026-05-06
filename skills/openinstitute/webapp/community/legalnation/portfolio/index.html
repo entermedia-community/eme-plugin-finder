@@ -1,0 +1,38 @@
+<main id="content" role="main">
+  <div class="space-3">
+
+    <div class="container section-title pb-4">
+      <h2>Our Work</h2>
+    </div>
+
+    <div class="d-flex portfolio-carousel">
+      <ul class="portfolio-grid">
+        #foreach($i in [1..8])
+        <li class="grid-item">
+          <a href="portfolio-item.html?id=$i">
+            <span class="img-loader"></span>
+            <img src="${communityhome}/images/masonry/masonry${i}.webp" alt="Portfolio Image">
+            <div class="hover-details">
+              <h3>Project $i Title &mdash; ClientName</h3>
+            </div>
+          </a>
+        </li>
+        #end
+      </ul>
+      <ul class="portfolio-grid">
+        #foreach($i in [1..8])
+        <li class="grid-item" aria-hidden="true">
+          <a href="portfolio-item.html?id=$i">
+            <span class="img-loader"></span>
+            <img src="${communityhome}/images/masonry/masonry${i}.webp" loading="lazy" alt="Portfolio Image">
+            <div class="hover-details">
+              <h3>Project $i Title &mdash; ClientName</h3>
+            </div>
+          </a>
+        </li>
+        #end
+      </ul>
+    </div>
+
+  </div>
+</main>

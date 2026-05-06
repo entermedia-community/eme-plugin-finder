@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<properties> 
+  <property id="name" required="true"/>  
+  <!-- property id="collectionid" viewtype="list" listid="librarycollection" defaultvalue="${collectionid}" /> -->
+  <property id="details" viewtype="textarea"/>  
+  <property id="goaltrackercolumn"  />
+  <property id="ticketlevel" defaultvalue="1"/>
+  <property id="projectstatus"  defaultvalue="open"/>
+  <property id="deliverydate"/>
+</properties>

@@ -1,0 +1,87 @@
+<section class="hero-section d-flex align-items-center text-dark py-5">
+  <div class="container text-center">
+    <h1 class="display-4 mb-2">Transform Your Story into Success</h1>
+    <p class="lead mb-5">Professional publishing solutions for authors, by authors. Get your book to market
+      faster with our comprehensive platform.</p>
+    <div class="d-flex justify-content-center gap-3 mb-4">
+      <a class="btn btn-outline-primary btn-lg" href="${communitylink}/guide/">
+        <i class="fas fa-book"></i>
+        <span class="ms-2">Tutorial</span>
+      </a>
+      <a class="btn btn-primary btn-lg mr-3" href="${communitylink}/find/">Start Publishing</a>
+    </div>
+  </div>
+</section>
+<section id="features" class="py-5 bg-light">
+  <div class="container">
+    <h2 class="text-center mb-5">Why Choose eMedia?</h2>
+    <div class="row justify-content-md-center">
+      #set($fts = [
+        ["globe", "Global Distribution", "Reach readers worldwide through our distribution network"],
+        ["code", "DITA Support", "Publish your book in DITA format for accessibility and accessibility"],
+        ["feather", "Manuscript Editing", "Professional editing tools and services to perfect your work"],
+        ["users", "Author Community", "Connect with Fellow authors and industry experts"],
+        ["spark", "AI Assistance", "Get instant feedback and suggestions from our AI-powered assistant"],
+        ["key", "Collective Ownership", "Get a cut of the profits from any AI generated book that used any content of your books for training"],
+        ["book", "Format Conversion", "Convert your book to any digital format with one click"], 
+        ["cloud", "Digital Asset Management", "Manage your assets, images, and files all in one place"],
+        ["source", "Proudly Open Source", "eMedia is open source and free to use"]
+      ])
+      #foreach($ft in $fts)
+      <div class="col-md-6 col-lg-3 mb-4">
+        <div class="card feature-card h-100 border-0 text-center p-4 shadow-sm">
+          <div class="text-primary mb-3">
+            <img src="${communityhome}/images/${ft[0]}.svg" style="width: 50px; height: 50px; object-fit: contain;">
+          </div>
+          <h5 class="card-title mb-4">${ft[1]}</h5>
+          <p class="card-text text-muted">${ft[2]}</p>
+        </div>
+      </div>
+      #end
+    </div>
+  </div>
+</section>
+<section id="hosting" class="d-flex align-items-center text-dark py-5">
+  <div class="container-sm text-center">
+    <h2 class="h2 mb-3 text-primary">Become your own publisher!</h2>
+    <p class="lead mb-5 mx-auto" style="max-width: 900px;line-height: 24px;">
+      Break free from intermediaries and take control of your publishing journey. Host your own digital publishing platform and redefine how you sell your books.
+      <br> 
+      <blockquote>“<u>Your</u> story. <u>Your</u> platform. <u>Your</u> profits.„</blockquote>
+      <br>  
+      Contact us today and turn your independent publishing dreams into reality.
+    </p>
+    <div class="d-flex justify-content-center gap-3 mb-3">
+      <button class="btn btn-primary btn-lg">
+        <i class="fas fa-paper-plane"></i>
+        <span class="ms-2">Contact Us</span>
+      </button> 
+    </div>
+  </div>
+</section>
+<section id="explore" class="bg-light py-5">
+  <div class="container">
+    <h2 class="text-center mb-5">Explore Books Published in eMedia</h2>
+    <div class="row">
+      #foreach($i in [0..12])
+      <div class="col-md-3 mb-4">
+        <a class="explore-card shadow h-100" href="${communitylink}/read/">
+          <div class="bg-white" style="width: 300px; height: 400px;">
+            <img src="https://marketplace.canva.com/EAFaQMYuZbo/1/0/1003w/canva-brown-rusty-mystery-novel-book-cover-hG1QhA7BiBU.jpg" style="width: 100%; height: 100%; object-fit: contain;">
+          </div>
+
+          <div class="d-flex align-items-center mt-4 w-100">
+            <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&amp;fit=crop&amp;q=80&amp;w=150&amp;h=150"
+              alt="Sarah Johnson" class="rounded-circle me-3" style="width: 60px; height: 60px; object-fit: cover;">
+            <div>
+              <h5 class="mb-0">Sarah Johnson</h5>
+              <small class="text-muted">Bestselling Author</small>
+              ##<small class="text-muted">New Author</small>
+            </div>
+          </div>
+        </a>
+      </div>
+      #end
+    </div>
+  </div>
+</section>

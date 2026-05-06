@@ -1,0 +1,26 @@
+<header>
+  <div class="container">
+    <div class="d-flex align-items-center justify-content-between">
+      <a class="logo-container" href="/">
+        <img src="${communityhome}/images/logo.png" alt="logo-img">
+      </a>
+      <div class="d-flex align-items-center position-relative">
+        <button class="btn custom-navbar-toggler d-md-none text-primary" type="button" style="line-height: 1;" data-dark="true">
+          <i class="fa fa-bars" style="font-size:20px;transform: scaleX(1.2);"></i>
+        </button>
+        <div class="d-none d-md-flex flex-column flex-md-row justify-content-center align-items-center" id="tempNav">
+          <a href="/blogs/" class="py-1 mx-md-2 my-1 my-md-0 #if($content.get('currentPage') == 'blogs') active #end">
+            Blogs
+          </a>
+          <a href="/contact/" class="py-1 mx-md-2 my-1 my-md-0 #if($content.get('currentPage') == 'contact') active #end">
+            Contact
+          </a>
+		  <form action="/find/index.html" method="post">
+				<input type="hidden" name="entermedia.key" value="adminmd5421c0af185908a6c0c40d50fd5e3f16760d5580bc" />
+	          	<a href="#" class="ms-md-4 mt-2 mt-md-0 btn btn-primary submitform">Open App</a>
+			</form>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<page>
+	<property name="editable">false</property>
+
+	<property name="fallbackdirectory">../default</property>
+	<property name="communityhome">/${siteid}/community/cinecraft</property>
+
+	<property name="flair">true</property>
+	<property name="templatename">CineCraft</property>
+
+	<property name="communitytagcategory">cinecraft</property>
+
+	<script id="jquery-ui-i18n" cancel="true" src="${communityhome}/components/javascript/jquery-ui/i18n/jquery-ui-i18n.js"/>
+	<script id="jquery-form" src="${communityhome}/components/javascript/jquery.form.js"/>
+	<script id="jquery-validate" src="${communityhome}/components/javascript/validation/jquery.validate.js"/>
+	<script id="validateandedit" src="${communityhome}/components/javascript/validateandedit.js"/>
+	<script id="select2" src="${communityhome}/components/javascript/select2/js/select2.full.js"/>
+	<style id="select2-css" href="${communityhome}/components/javascript/select2/css/select2.css"/>
+
+	<script id="datetimepicker" src="${communityhome}/components/javascript/datepicker/js/bootstrap-datepicker.min.js"/>
+	<style id="datetimepicker-css" href="${communityhome}/components/javascript/datepicker/css/bootstrap-datepicker3.min.css" />
+
+	<script id="liveajax" src="${communityhome}/components/javascript/emedia/liveajax.js" />
+	<script id="utility-plugins" src="${communityhome}/components/javascript/emedia/utility-plugins.js" />
+
+	<script id="runajax" src="${communityhome}/components/javascript/emedia/ajax/runajax.js" />
+	<script id="emdialog" src="${communityhome}/components/javascript/emedia/ajax/emdialog.js" />
+	<script id="ajaxformsubmit" src="${communityhome}/components/javascript/emedia/ajax/ajaxformsubmit.js" />
+
+	<script id="openedit" src="/openedit/components/javascript/openedit.js"/>
+	<script id="uicomponents" src="${communityhome}/components/javascript/community-global.js"/>
+
+	<style id="customfindercolors" href="${finderhome}/theme/defaulttheme/custom.css"/>
+	<style id="mediaplayer" href="${finderhome}/theme/styles/pages/mediaplayer.css"/>
+	<style id="app-css" href="${communityhome}/theme/styles/theme.css"/>
+	<style id="eminstitute" href="${communityhome}/theme/css/eminstitute.css"/>
+	<style id="oi3" href="${communityhome}/theme/css/oi3.css"/>
+
+	<!-- <style href="${communityhome}/theme/js/bootstrap/css/bootstrap.min.css" />
+	<style href="${communityhome}/theme/js/bootstrap-icons/bootstrap-icons.css" /> -->
+	<style id="aos-css" href="${communityhome}/theme/js/aos/aos.css" />
+	<style id="swiper" href="${communityhome}/theme/js/swiper/swiper-bundle.min.css" />
+	<style id="glightbox" href="${communityhome}/theme/js/glightbox/css/glightbox.min.css" />
+	<style id="cinecraft" href="${communityhome}/theme/css/cinecraft.css" />
+</page>

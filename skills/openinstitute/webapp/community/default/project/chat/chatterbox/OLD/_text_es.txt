@@ -1,0 +1,9 @@
+#
+#Mon Jun 27 19:41:51 CDT 2022
+Ticket=Boleto
+Edit\ Message=Editar mensaje
+Flag\ as\ ticket=Marcar como billete
+Message...=Mensaje...
+Attachments=Archivos adjuntos
+Resolve=Resolver
+Send=Enviar

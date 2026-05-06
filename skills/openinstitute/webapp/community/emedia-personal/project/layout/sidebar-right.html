@@ -1,0 +1,22 @@
+<div class="d-flex flex-column">
+	
+	$pages.include("$communityhome/project/channel/subscribers/index.html", $context)
+
+
+	##$pages.include("$communityhome/project/channel/likeoptions.html", $context)
+
+
+#if ($librarycol.facebooklink || $librarycol.instagramlink || $librarycol.websitelink)
+	<div class="text-center" style="margin:20px;">
+	#if ($librarycol.facebooklink)
+			<a href="${librarycol.facebooklink}" class="btn btn-light btn-sm" target="_blank" title="[[Follow Us]]"><i class="fab fa-facebook-f"></i></a>
+	#end
+	#if ($librarycol.instagramlink)
+		<a href="${librarycol.instagramlink}" class="btn btn-light btn-sm" target="_blank" title="[[Follow Us]]"><i class="fab fa-instagram"></i></a>
+	#end
+	#if ($librarycol.websitelink)
+		<a href="${librarycol.websitelink}" class="btn btn-light btn-sm" target="_blank"  title="[[Visit Us]]"><i class="fas fa-link"></i></a>
+	#end
+	</div>
+#end
+</div>

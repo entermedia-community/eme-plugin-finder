@@ -1,0 +1,9 @@
+{
+	"currrentversion": "$currrentversion.versionnumber",
+	"releasetitle": "$!currrentversion.name",
+	"releasenotes": "$!currrentversion.longcaption",
+	"localversion": "$localversion",
+	"needupgrade": "$needsupgrade",
+	"provider_name": "eMediaLibrary",
+	"provider_url": "http://eMedialibrary.org/downloads.html"
+}

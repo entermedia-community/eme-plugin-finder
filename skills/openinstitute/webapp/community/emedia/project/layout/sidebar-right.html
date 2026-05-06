@@ -1,0 +1,48 @@
+<div class="d-flex flex-column mb-4">
+	
+	$pages.include("$communityhome/project/channel/subscribers/index.html", $context)
+			
+	$pages.include("$communityhome/project/channel/likeoptions.html", $context)
+
+
+#if($librarycol.proposaltestimonials)
+	<div class="proposal-sidebarbox">
+		<h3>[[Testimonials]]</h3>
+			$!librarycol.proposaltestimonials
+	</div>
+#end
+
+
+#if ($librarycol.facebooklink || $librarycol.instagramlink || $librarycol.websitelink)
+	<div class="text-center" style="margin:20px;">
+		#if ($librarycol.facebooklink)
+			<a href="${librarycol.facebooklink}" class="btn btn-light btn-sm" target="_blank" title="[[Facebook]]"><i class="fab fa-facebook-f"></i></a>
+		#end
+		#if ($librarycol.instagramlink)
+			<a href="${librarycol.instagramlink}" class="btn btn-light btn-sm" target="_blank" title="[[Instagram]]"><i class="fab fa-instagram"></i></a>
+		#end
+		#if ($librarycol.websitelink)
+			<a href="${librarycol.websitelink}" class="btn btn-light btn-sm" target="_blank"  title="[[Website]]"><i class="fas fa-link"></i></a>
+		#end
+	</div>
+#end
+</div>
+
+
+<div class="mt-2 mb-4">
+	<div class="referrallinkbox">
+		#set($sharinglink = "${communitytagcategory.externaldomain}/?fbclid=$!librarycol.getId()")
+		<h3>[[Link eMedia]]</h3>
+		<div class="d-inline">
+			<i class="fas fa-link fa-sm me-1"></i> [[Help our community and share our referral link]]: 
+			<div class="referrallink">$sharinglink</div> 
+			<a href="#" 
+				class="copytoclipboard btn btn-xxs btn-light ms-1" 
+				data-targetdiv="referrallinkboxcopied" data-copytext="copyreferral" title="[[Copy to Clipboard]]"><i class="far fa-copy"></i> [[Copy]]</a>
+				<input style="position:absolute; top:-1000px;" 
+				id="copyreferral" 
+				value="$sharinglink">
+		</div>
+	</div>
+	<div id="referrallinkboxcopied" class="refferralcopied">[[Link copied to clipboard, thank you!]]</div>
+</div>

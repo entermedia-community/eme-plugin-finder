@@ -1,0 +1,31 @@
+<div id="collectionpicker" class="nav-form nav-collectionpicker">
+
+	<div id="collectionpickerinner" class="librarycollectionpicker">
+		#set( $searcher = $mediaarchive.getSearcher("librarycollection") )
+		$context.putPageValue("searcher",$searcher)
+		
+		
+		<div class="collectionpicker">
+			<form  action="$home$communityhome/project/channel/index.html" 
+					class="form-inline autosubmitform">
+				#set( $detail = $searcher.getDetail("name"))
+				#set( $text = $detail.getText($context))
+				#if( $librarycol )
+					#set( $text = "$librarycol.getName()" )
+				#else
+					#set( $text = "[[All Teams]]" )
+				#end
+				#set( $namedetail = $searcher.getDetail("name"))
+				#set($collectionurl = "#dash($librarycol.getName($context))/${collection.getId()}.html")
+				<select name="collectionid" id="collectionid" 
+					class="safelistautocomplete selectautosubmit #if($canaddnewcollectionXX) selectaddnew #end" 
+					data-showdefault="$text" data-addnewlabel="[[[Add New]]]" 
+					data-searchfield="name" data-searchtype="librarycollection" data-foreignkeyid="library" 
+					data-placeholder="$text" data-sortby="$namedetail.getDefaultSort()">
+				</select>
+			
+			</form>
+		</div>
+
+	</div>
+</div>	

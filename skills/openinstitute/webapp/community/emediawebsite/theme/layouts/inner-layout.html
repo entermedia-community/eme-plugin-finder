@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+ 	 #set($sitetitle = $content.title)
+    <title>#if( $librarycol ) $librarycol - #end $!sitetitle</title>
+    
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <link rel="shortcut icon" href="${communityhome}/theme/favicon.ico" />
+
+	$pages.include("${communityhome}/theme/layouts/includes.html", $context)
+  	
+	##$pages.include("${communityhome}/collective/opengraphmetadata.html", $context)
+	
+	##if($content.usemap == "true")
+		##$pages.include("${communityhome}/components/map/includes.html")
+	##end
+
+  <link rel="stylesheet" href="${communityhome}/theme/css/font-awesome/all.min.css" />
+  <link rel="stylesheet" href="${communityhome}/theme/css/hs-mega-menu.min.css" />
+  <link rel="stylesheet" href="${communityhome}/theme/css/jquery.datetimepicker.min.css">
+
+</head>
+	
+
+<body id="page-top" #if($desktop) class="desktop" #end>
+#if($desktop)
+	
+	$pages.include("${apphome}/components/desktop/loading.html")
+#end
+#if(!$browser.inApp())
+
+	$context.putPageValue("accountpage", "true")
+	$pages.include("${communityhome}/views/layouts/header.html", $context)
+
+#end
+
+<div id="application" 
+	class="emedialibraryapplication"
+	data-user="$!user.getId()"
+	data-home="$siteroot"
+	data-siteroot="${siteroot}" 
+	data-apphome="${apphome}"
+	data-finderhome="${finderhome}"
+	data-inapp="$browser.inApp()" 
+	data-themeprefix="${communityhome}/theme" 
+	data-browserlanguage="$!{browserlanguage}"
+	data-editmode='$!user.get("oe_edit_mode")' 
+	data-mediadbappid="$!mediaarchive.getMediaDbId()"
+	data-componenthome="$!componenthome"	
+	data-findroot="$content.findroot"
+	#if( $showupload)
+	data-showuploadid="${showupload.id}"
+	#end
+	data-viewertemplate="$apphome/collective/channel/show/index.html"
+	 
+	>
+	
+	<div id="applicationcontent" class="bg-emdark applicationcontent applicationcollective #if($browser.inApp()) inapp #end">
+		
+		#if($canviewsettings && !$browser.inApp())
+			$pages.include("${communityhome}/components/sidebars/user/index.html")
+		#end
+		
+		<div class="emrightcontent emmaincontent" >
+            $pages.includeContent()
+        </div>
+    </div>
+</div>
+
+##$pages.include("${apphome}/googleanalytics.html", $context)
+
+</body>
+</html>
+
+

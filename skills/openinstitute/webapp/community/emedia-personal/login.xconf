@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page>
+    <property name="collectivesection">login</property>
+    <property name="loginroot">${communityhome}/authentication</property>
+    <inner-layout>${communityhome}/views/layouts/app.html</inner-layout>
+</page>

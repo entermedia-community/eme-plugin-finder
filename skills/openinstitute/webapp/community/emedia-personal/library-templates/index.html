@@ -1,0 +1,22 @@
+<div class="bg-white py-5">
+	<div class="container">
+		<div class="text-center w-100 my-2">
+			<h1 class="mb-0 h2 text-dark">eMedia Library Templates</h1>
+			<p class="mb-0 text-secondary">See examples of how to build library based web sites and pick one you can use for your own web site</p>
+		</div>
+		<!-- <div class="d-flex flex-column h-100">
+      <div class="d-flex justify-content-center gap-2">
+				#foreach($tmp in $templates)
+        <a class="btn btn-wide" href="#" style="height: 50px;" data-targetdivinner="tempates">
+          <span class="d-flex align-items-center"><i class="fas fa-${tmp[2]} mb-0 me-2" style="font-size: 1.2rem;"></i> ${tmp[0]}</span>
+        </a>
+        #end
+      </div> -->
+      <div class="d-flex flex-column flex-grow-1">
+        <div id="tempates" class="px-2 py-4">
+          $pages.include("./templates.html", $context)
+        </div>
+      </div>
+    <!-- </div> -->
+	</div>
+</div>

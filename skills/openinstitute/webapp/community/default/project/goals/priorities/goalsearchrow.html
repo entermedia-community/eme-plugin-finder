@@ -1,0 +1,45 @@
+<tr id="goalrow${goal.id}"
+	class="goalstatus$!{goal.projectstatus} goallevel$!{goal.ticketlevel}" >
+	
+		<td>
+		<div class="goal-title">
+		<a href="${communityhome}/project/goals/editgoalpanel.html?id=${goal.id}&collectionid=$goal.collectionid&goalfolder=agent&targetdiv=goalrow${goal.id}" 
+			title="[[Edit Goal]]" 
+			class="emdialog editgoalshow" 
+			style="text-decoration:underline;" 
+			data-hidefooter="true"
+			data-width="900">#if( $goal.ticketnumber ) #$goal.ticketnumber #end<b>$goal.name</b></a>
+			</div>
+		</td>
+	
+		<td class="goal-description" >
+			<div class="goal-details-pre">
+			$!url_util.escapeMessage($goal.details ) 	
+			</div>
+			#if( $goal.response)
+				<hr><i>
+				#esc($goal.response)
+				</i>
+			#end	
+			<div class="goal-body">
+			$pages.include("${communityhome}/project/goals/search/goaltasks.html?indialog=true",$context)
+			</div>
+			
+		</td>
+		<td class="text-center" >
+			$pages.include("${communityhome}/users/tasks/resolvebutton.html",$context) 
+			<div class="clearfix" style="padding:5px;"> </div>
+			<span class="headersubtext">
+			
+				$!context.getText($!mediaarchive.getCachedData("tickettype",$goal.tickettype))
+				$!goal.getAge() [[ago]] [[by]] $!mediaarchive.getUser($goal.owner).getAnonNickName()
+				
+			</span>
+			<br>
+			
+			#if ($goal.deliverydate)
+				<span style="color:red">[[Due on]]: $goal.deliverydate.substring(0, 10)</span>
+			#end
+		</td>
+	
+	</tr>

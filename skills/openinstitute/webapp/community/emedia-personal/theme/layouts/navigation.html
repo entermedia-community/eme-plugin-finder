@@ -1,0 +1,68 @@
+#set($collectionid = $context.getRequestParameter("collectionid"))
+#set($goaluser = $context.getRequestParameter("goaltrackerstaff"))
+#set($topic = $context.getRequestParamater("topic"))
+
+<div class="entermedia-headertop-container">
+<div class="container">
+<div class="account-top-menu">
+#if( $user )
+	<a class="topnav-link #if($content.section == "eminstituteapp") active #end" href="${communitylink}/users/$user.getId()/index.html"
+	title="[[EnterMedia Client Portal]]">[[My Account]]</a>
+	## $pages.include("/entermediadb/account/activity/link.html")
+
+	<a class="topnav-link #if($content.section == "authentication") active #end" href="${communitylink}/authentication/logout.html" rel="nofollow"
+	title="[[Log out from EnterMedia]]">[[Log Out]]</a>
+	
+	#if( $canviewsettings )
+        <a class="btn btn-xs btn-warning" style="color:#000!important;" data-cancelsubmit="true" data-hidefooter="true" href="${communitylink}/monitor/index.html">
+        <i class="fa fa-project-diagram" aria-hidden="true"></i> Monitor</a>
+    #end
+    
+    #if( $canviewsettings )
+        <a class="btn btn-xs btn-primary emdialog" data-cancelsubmit="true" data-hidefooter="true" href="${communitylink}/collective/goals/editgoalpanel.html?collectionid=$!collectionid&foreignkeyvalue=$!collectionid&topic=$!topic&categoryid=$!selectedcat.getId()&goaluser=$!goaluser&goalfolder=priorities&userlikes=$user.id">
+        <i class="fa fa-plus-circle" aria-hidden="true"></i> Ticket</a>
+    #end
+#else
+	<a class=" #if($content.section == "authentication") active #end" href="${communitylink}/authentication/login.html" rel="nofollow"
+	title="[[Log in to EnterMedia]]">[[Log In]]</a>
+#end
+</div>
+</div>
+</div>
+
+<div class="entermedia-header-container">
+<div class="container entermedia-header">
+<div class="row">
+	<div class="col-sm-3">
+	<a href="/">
+	<img src="${communityhome}/theme/img/entermedia_database.png" alt="EnterMedia Collaboratibe DAM" class="img-fluid" />
+	</a>
+	</div>
+	<div class="col-sm-9">
+	<nav class="navbar navbar-expand-sm "  id="mainNav">
+	<ul class="navbar-nav text-uppercase ">
+		<li class="nav-item">
+           <a class="nav-link js-scroll-triggerr #if($postdata.sourcepath=="product/digital-assets-management.html") active #end" href="https://emediafinder.com/product/platforms.html">[[Products]]</a>
+         </li>
+         <li class="nav-item">
+           <a class="nav-link js-scroll-triggerr #if($postdata.sourcepath=="product/support.html") active #end" href="${communitylink}/product/support.html">[[Services]]</a>
+         </li>
+
+         <li class="nav-item">
+           <a class="nav-link js-scroll-triggerr #if($postdata.sourcepath.toString().contains("knowledge/")) active #end" href="${communitylink}/knowledge/10/index.html">[[Resources]]</a>
+         </li>
+
+         <li class="nav-item">
+                 <a class="nav-link js-scroll-triggerr #if($postdata.sourcepath=="cloud-hosted-dam/") active #end" href="${communitylink}/cloud-hosted-dam/">[[Cloud Hosting]]</a>
+         </li>
+         
+         <li class="nav-item">
+                 <a class="nav-link js-scroll-triggerr #if($postdata.sourcepath=="contactus/") active #end" href="${communitylink}/index.html#contactus">[[Contact Us]]</a>
+         </li>
+   </ul>
+   </nav>
+	</div>
+</div>
+</div>
+
+</div>

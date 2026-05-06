@@ -66,9 +66,4 @@
 	<path-action name="Admin.autoLogin"/>  
 	<!-- Enables editing and checks for missing pages -->
 	<page-action name="Admin.allowEditing" allowduplicates="true"/>
-	<!--
-	<property name="systemfromemail">noreply@entermediasoftware.com</property>
-	<property name="systemfromemailname">EnterMedia</property>
-	-->
-
 </page>

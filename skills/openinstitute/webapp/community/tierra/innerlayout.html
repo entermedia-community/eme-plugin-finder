@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	
+	#if( $librarycol )
+		#set($metatitle = "#text($librarycol) - #text($communitytagcategory)")
+	#elseif( $communitytagcategory )
+		#set($metatitle = "#text($communitytagcategory)")
+	#end
+	
+	#ifnotnull($collectiveproduct)
+		#set($metatitle = "#text($collectiveproduct) - $metatitle")
+	#end
+	#if( $metatitle )
+		#if( $content.title )
+			#set($metatitle = "$content.title - $metatitle")
+		#else
+			#set($metatitle = "$metatitle")
+		#end	
+	#else
+		#set($metatitle = "$!content.title")
+	#end		
+
+	<title>$!metatitle</title>
+
+
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+
+	 
+  
+  <script type="text/javascript" defer src="${communityhome}/theme/js/multidate/jquery.daterangepicker.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="${communityhome}/theme/js/multidate/daterangepicker.min.css" />
+ 
+  $pages.include("${communityhome}/theme/layouts/includes.html")
+  
+
+</head>
+
+<body #if(!$user || $browser.inApp()) data-hidetoolbar="true" #end #if($desktop) class="desktop" #end>
+	#if($desktop)
+		
+		$pages.include("${apphome}/components/desktop/loading.html")
+	#end
+	<div id="application" class="eminstitutecollective tierracommunityapp" 
+		data-home="$!home" 
+		data-user="$!user.id" 
+		data-apphome="$!{apphome}"
+		data-communityhome="$!{communityhome}"
+		data-applink="$!{applink}" 
+		data-inapp="$!{browser.inApp()}" 
+		data-themeprefix="/$!{applicationid}/theme"
+		data-browserlanguage="$!{browserlanguage}" 
+		data-editmode='$!user.get("oe_edit_mode")'
+		data-mediadbappid="$!mediaarchive.getMediaDbId()" 
+		data-componenthome="$!componenthome"
+		data-findroot="$content.findroot"
+		#if( $showupload) data-showuploadid="${showupload.id}" #end>
+
+	$pages.include("${communityhome}/navigation.html", $context)
+	
+	#if($user && !$browser.inApp() && $canviewsettings)
+		$pages.include("${communityhome}/components/sidebars/user/index.html")
+	#end 
+
+  	$pages.includeContent()
+  	
+  	</div>
+
+	<script src="${communityhome}/theme/js/aos.js"></script>
+	<script src="${communityhome}/theme/js/tierra.js"></script>
+</body>
+</html>

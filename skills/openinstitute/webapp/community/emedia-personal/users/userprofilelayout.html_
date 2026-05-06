@@ -1,0 +1,12 @@
+<div class="community-layout bg-white">
+<div class="container oicontainer">
+		<div class="userprofilecontent pt-4 ">
+			<div class="maincontent pt-4">
+					$pages.includeContent()
+			</div>
+		</div>
+</div>
+
+
+
+</div>

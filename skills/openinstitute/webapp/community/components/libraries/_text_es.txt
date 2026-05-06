@@ -1,0 +1,14 @@
+#
+#Sat Jun 04 16:26:32 CST 2022
+add=a\u00F1adir
+Collection\ Search=B\u00FAsqueda de colecciones
+Create\ New=Crear nuevo
+All\ Projects=Todos los proyectos
+Pick\ From=Escoge de
+[Add\ New=[Agregar nuevo
+Details=detalles
+Assets=Bienes
+Libraries=bibliotecas
+Add\ Collection=A\u00F1adir colecci\u00F3n
+Collections=Colecciones
+Add\ Library=A\u00F1adir biblioteca

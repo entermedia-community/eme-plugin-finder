@@ -1,0 +1,185 @@
+#set($collectionid = $context.getRequestParameter("collectionid"))
+
+#if(!$goalfolder)
+	#set( $goalfolder = $context.getRequestParameter("goalfolder"))
+	
+	#if(!$goalfolder)
+		#set( $goalfolder = $context.getPageValue("goalfolder") )
+	#end
+	
+	#if(!$goalfolder)
+		#set( $goalfolder = "search" )
+	#end
+#end
+#set( $target = "$!{container}tasklist#eid($goal.id)")
+#set( $onlyopen = $context.getRequestParameter("onlyopen"))
+<div id="goalrow#eid(${goal.id})">
+	<div id="$target" class="goaltaskcontainer">
+			
+		#set($caneditgoal = false)
+		#if($user && ( $canviewsettings || $caneditcollection)  && $goal.collectionid)
+			#set($caneditgoal = true)
+		#end
+		
+		$context.putPageValue("caneditgoal", $caneditgoal)
+		
+		#set($points = 0)
+		#foreach($task in $tasks)
+		
+			#set( $tree = $mediaarchive.getCachedData("projectdepartment",$task.projectdepartment) )
+			#if($tree)
+				#set( $c = $tree.getInt("goalpoints") )
+				#if( $c == 0)
+					#set( $c = 10)
+				#end
+				#set($points = $points + $c)
+			#end
+			#set($collectionid = $goal.collectionid)
+			<div class="goaltaskrow">
+			<div id="taskrow#eid(${task.id})" class="goaltaskbox goalstatus${task.taskstatus}">
+			
+				<div>$!tree</div>
+				
+				#set( $comment = $mediaarchive.query("goaltaskcomments").exact("goaltaskid",$task.id) )
+				<div class="taskdetails">
+					<span class="trim-text" data-max="400">$url_util.escapeMessage($task.comment,900)</span>
+					<button class="see-more-btn see-more" data-seemore="(...[[see more]])" data-seeless="(...[[see less]])"></button>
+					
+				</div>
+				#set( $type = "goaltask" )
+				#set( $vals = $task.getValues("keywords") )
+				#ifnotnull($vals)
+				<div class="taskdetails-keywords">
+					##USE AJAX
+					#foreach( $val in $vals )
+						#set($link = "${communityhome}/project/goals/priorities/index.html?collectionid=$!collectionid&keyword=$val")
+						<a	class="badge badge-tags tageditor-${type} tageditor-#esc($val)" href="$link" title="#esc($val)">#esc($val)</a> 
+					#end
+				</div>
+				#end
+
+				$context.putPageValue("task", $task)
+				$pages.include("${communityhome}/project/goals/task/rolelist.html?collectionid=$!collectionid", $context)
+
+		
+		
+				<div class="taskstatus">
+					#if($task.taskstatus == "7")
+					<div>
+						<div class="badge text-bg-danger attn">
+						$!mediaarchive.getUser($task.completedby).getAnonNickName() <i class="fas fa-bullhorn me-1"></i>  ## 
+						</div>
+					</div>
+					#elseif($task.taskstatus == "6")
+					<p class="text-secondary m-0">
+						<i class="fas fa-sticky-note"></i> [[On Agenda]]
+					</p>
+					#elseif($task.taskstatus == "1")
+					<p class="text-warning m-0">
+						<i class="fas fa-hourglass-half"></i> [[Pending]]
+					</p>
+					#elseif($task.taskstatus == "2")
+					<p class="text-muted m-0">
+						<i class="fas fa-ban"></i> [[Blocked]]
+					</p>
+					#elseif($task.taskstatus == "3")
+					<p class="text-success m-0">
+						<i class="fas fa-check"></i>[[Completed]]
+					</p>
+					#elseif($task.taskstatus == "4")
+					<p class="text-secondary m-0">
+						<i class="fas fa-sync"></i> [[Redo]]
+					</p>
+					#elseif($task.taskstatus == "5")
+					<p class="text-info m-0">
+						<i class="fas fa-sticky-note"></i> [[Note]]
+					</p>
+					#end  
+					
+					
+					##set( $comment = $mediaarchive.query("goaltaskcomments").exact("goaltaskid",$task.id).match("commenttext","*").sort("dateDown").searchOne() )
+			</div>
+		</div>
+		
+		<div class="d-flex flex-row goaltask-credit">
+			<div class="pe-2">
+			#if($user && $caneditgoal)
+				#set( $edittask = "${communityhome}/project/goals/task/taskedit.html?id=${task.id}&collectionid=$!collectionid&onlyopen=$!onlyopen&targetdiv=$target")
+				
+				<a 	href="$edittask"
+					id="task${task.id}"
+					title="[[Edit Task]]"
+					data-focuson="$task.id"
+					data-width="900"
+					class="taskedit-$!{task.taskstatus} ajax btn btn-light btn-xs" 
+					data-targetdiv="taskrow#eid(${task.id})" 
+					data-oemaxlevel="1">
+					[[Added by]] <strong>$!mediaarchive.getUser($task.completedby).getAnonNickName()</strong> $task.getAge().replace(':', ' ') [[ago]]  (edit)
+			</a>
+			#else
+				[[Added by]] <strong>$!mediaarchive.getUser($task.completedby).getAnonNickName()</strong> $task.getAge().replace(':', ' ') [[ago]]  (edit)
+			#end
+			</div>
+				
+		#if($user && $caneditgoal)
+				##	<a href="${communityhome}/project/goals/task/taskdelete.html?id=$task.id" 
+				##		data-targetdiv="$target" 
+				##		data-confirm="Sure you want to delete?"
+				##		data-oemaxlevel="1"
+				##		data-taskid="$task.id"
+				##		data-taskstatus="3"
+				##		class="ajax"> (delete)
+				##	</a>
+				 
+			<div id="rolepicker${task.id}" class="pe-2">
+				<a class="btn btn-xs btn-light ml-1 addroletolist ajax" data-targetdivinner="rolepicker${task.id}" 
+				data-collectionid = "$!collectionid"
+				data-taskid="$task.id" href="${communityhome}/project/goals/task/pickrole.html">+ [[add role]]</a>
+			</div>					
+						
+			#if($task.taskstatus != "3")
+			<div>
+				<a href="${communityhome}/project/goals/task/tasksave.html?goalid=$goal.id" 
+					data-targetdiv="$target" 
+					data-oemaxlevel="1"
+					data-taskid="$task.id"
+					data-taskstatus="3"
+					class="btn btn-xs btn-primary ajax">
+					<i class="fas fa-check me-1"></i> [[Resolve]]
+				</a>
+				</div>
+			#end	
+			</div>
+		#end					
+		</div>
+	#end
+
+	<div class="d-flex goaltask-actions">
+	#if($user && $caneditgoal)
+		<a class="appendgoalbutton btn btn-primary btn-xs btn-outline-brand me-1"
+			title="[[Add Task]]"
+			data-targetdiv="$target"
+			data-cancelsubmit="true"
+			data-parameterdata="categoryvalues"
+			data-collectionid="$goal.collectionid"
+			data-categoryid="$!selectedcat.getId()"
+			data-hitssessionid="$!{goalhits.getSessionId()}"
+			data-goalfolder="$!goalfolder" ##tabs
+			data-pickone="true"
+			data-goalid="$goal.id"
+			data-dialogid="picktask"
+			href="${communityhome}/project/goals/task/taskedit.html"
+		>
+			<i class="fas fa-clipboard-check me-1"></i> [[Add Action]]
+		</a>
+	#end
+	#if (!$onlyopen && $points>0)
+		$points
+	#end
+	</div>
+		
+	</div>		
+
+</div>
+
+

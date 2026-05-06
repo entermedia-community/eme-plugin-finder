@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<page>
+	
+	
+	<property name="menu_contact">false</property>
+	<property name="menu_referrals">true</property>
+	
+	<permission name="view">
+    <user />
+  </permission>
+	
+</page>

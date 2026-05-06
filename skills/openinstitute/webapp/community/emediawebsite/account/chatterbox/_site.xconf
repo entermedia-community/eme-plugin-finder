@@ -1,0 +1,8 @@
+<page>
+	
+		<property name="fallbackdirectory">/WEB-INF/base/system/commonbase/components/chatterbox</property>
+	
+		<page-action name="ProjectModule.loadChatChannel"/>
+		
+		<property name="chatterboxhome">${communityhome}/account/chatterbox</property>
+</page>

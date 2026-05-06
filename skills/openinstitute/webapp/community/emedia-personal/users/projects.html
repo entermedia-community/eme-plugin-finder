@@ -1,0 +1,57 @@
+
+#if($communitytagcategory)
+
+	#set( $ids = $mediaarchive.query("librarycollectionusers").exact("followeruser", $selecteduser.getId()).search($context) )
+	#set($oids = [])
+	#foreach( $ohit in $ids )
+		#set($x = $oids.add($ohit.collectionid))
+	#end
+	
+	#set( $collections = $mediaarchive.query("librarycollection").exact("communitytagcategory", $communitytagcategory).ids($oids).sort("name").search($context) )
+
+	#set( $modcollections = $chatManager.loadCollectionsModified($collections, $selecteduser.getId() ) )
+	
+	#if($collections.size()>0)
+	<h3>[[Libraries]]</h3>
+
+	<div class="stations-grid p-4">
+		<div class="project-grid">
+			#foreach( $ohit in $collections )
+					#set($imagelink = false)
+					
+					#set( $project = $mediaarchive.getCachedData("librarycollection",$ohit.getId()))
+					#set( $projectcommunity = $mediaarchive.getCachedData("communitytagcategory",$project.communitytagcategory))
+					#if($project.urlname)
+						#set($hitprojectlink = "$!{projectcommunity.externaldomain}/${project.urlname}/chat/index.html")
+					#else
+						#set($hitprojectlink = "/project/chat/index.html?collectionid=${project.id}")
+					#end
+					
+					
+					
+					#if($project.assetportrait)
+						#set($asset = $mediaarchive.getAsset($project.assetportrait))
+						#set($imagelink = $mediaarchive.asLinkToPreview($asset,"image200x200.jpg"))
+					#else
+						#set($imagelink = "$communitylink/theme/images/OI_flower.png")
+					#end
+					
+					<div class="card-collections">
+					<a href="${hitprojectlink}" 
+						class=" #if($selectedproject==$project.id) active #end">
+	
+					<div class="card-collections-thumb" style='#if($imagelink) background-image: url("$imagelink") #end'></div>
+	 				<div class="card-name collectionbox">$project.name
+							#if( $modcollections.contains($project.getId())) #end</div>
+					</a>
+					</div>
+					
+			#end
+		</div>
+		<div class="clearfix"></div>	
+	</div>
+	#end
+		
+	
+#end		
+

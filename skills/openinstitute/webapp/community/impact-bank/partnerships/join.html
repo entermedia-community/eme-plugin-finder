@@ -1,0 +1,130 @@
+<main id="content" role="main">
+	<div class="container space-top-2">
+		<div class="w-md-80 text-center w-lg-65 mx-auto">
+			<h1 class="mb-2">Partner With Us</h1>
+			
+			
+			<p class="lead">Launch Your Online Services with Our Powerful Tools</p>
+			#if(!$user)
+			<a href="${communitylink}/authentication/login.html" class="ms-md-4 mt-1 mt-md-0 btn btn-sm btn-primary transition-3d-hover">
+				<i class="mr-1 fas fa-user-plus"></i> Sign In
+			</a>
+			#end
+		</div>
+		#if($user)
+		<form name="saveproject" id="saveproject" action="${communitylink}/projects/add/newsave.html" method="post" class="force-validate-inputs space-2">
+			<input type="hidden" name="field" value="communitytagcategory" />
+			<input type="hidden" name="communitytagcategory.value" value="$!content.communitytagcategory" />
+
+			<input type="hidden" name="save" value="true" />
+
+			<input type="hidden" name="field" value="owner" />
+			<input type="hidden" name="owner.value" value="$user.getId()" />
+
+			<input type="hidden" name="field" value="library" />
+			<input type="hidden" name="library.value" value="$!libraryid" />
+
+			<div class="w-md-50 mx-md-auto">
+				<div class="row mx-n2 mb-3">
+					<div class="col-sm-12 px-2">
+						<div class="js-form-message form-group">
+							<label class="sr-only" for="projectname">Project name</label>
+							<input type="hidden" name="field" value="name" />
+							<input type="text" class="form-control" name="name.value" id="projectname" placeholder="Project name"
+							aria-label="Project name" required data-msg="Please enter your project name">
+						</div>
+					</div>
+					<div class="col-sm-12 px-2">
+						<div class="form-group">
+							<label class="sr-only" for="communitytag">Project name</label>
+							<input type="hidden" name="field" value="communitytag" /> 
+							<select class="form-control custom-select" id="communitytag" name="communitytag.value" required>
+								<option value="ibstartup">Startup Partnership</option>
+								<option value="ibcapitalfund">Investment Fund</option>
+								<option value="ibsocial">Social Development</option>
+								<option value="ibproject">Operational Project</option>
+								<option value="other">Other</option>
+							</select>
+						</div>
+					</div>
+				</div>
+				<div class="w-100 text-center">
+					<button type="submit" class="btn btn-primary" style="width: 150px">
+						<i class="fas fa-plus mr-1"></i>
+						Create
+					</button>
+				</div>
+			</div>
+		</form>
+		#end
+		<div class="w-lg-85 mx-lg-auto mb-10">
+			<div class="card p-5">
+				<div class="row">
+					<div class="col-md-6 mb-5 mb-md-0 pr-4">
+						<h3 class="mb-4">How It Works</h3>
+						<div class="media font-size-1 text-body mb-2">
+							<i class="fas fa-check-circle text-success mt-1 mr-2"></i>
+							<div class="media-body">
+								<h5 class="h5">You Market the Service</h6>
+								<p class="mb-0">Use your brand, platform, or client base to promote the tools that fit your niche.</p>
+							</div>
+						</div>
+						<div class="media font-size-1 text-body mb-2">
+							<i class="fas fa-check-circle text-success mt-1 mr-2"></i>
+							<div class="media-body">
+								<h5 class="h5">We Power the Backend</h6>
+								<p class="mb-0">All services run on our secure, scalable tech stack—no infrastructure or maintenance worries for you.</p>
+							</div>
+						</div>
+						<div class="media font-size-1 text-body mb-2">
+							<i class="fas fa-check-circle text-success mt-1 mr-2"></i>
+							<div class="media-body">
+								<h5 class="h5">You Earn Commission</h6>
+								<p class="mb-0">Every time a customer subscribes or uses the service, you get a share of the revenue.</p>
+							</div>
+						</div>
+					</div>
+
+					<div class="col-md-6 mb-5 mb-md-0 pl-4 column-divider-md">
+						<h3 class="mb-4">Why Partner with Us?</h3>
+						<div class="media font-size-1 text-body mb-2">
+							<i class="fas fa-check-circle text-success mt-1 mr-2"></i>
+							<div class="media-body">
+								Scalable revenue model
+							</div>
+						</div>
+						<div class="media font-size-1 text-body mb-2">
+							<i class="fas fa-check-circle text-success mt-1 mr-2"></i>
+							<div class="media-body">
+								Fully managed infrastructure
+							</div>
+						</div>
+						<div class="media font-size-1 text-body mb-2">
+							<i class="fas fa-check-circle text-success mt-1 mr-2"></i>
+							<div class="media-body">
+								Usage tracking & analytics
+							</div>
+						</div>
+						<div class="media font-size-1 text-body mb-2">
+							<i class="fas fa-check-circle text-success mt-1 mr-2"></i>
+							<div class="media-body">
+								API access and documentation
+							</div>
+						</div>
+						<div class="media font-size-1 text-body mb-2">
+							<i class="fas fa-check-circle text-success mt-1 mr-2"></i>
+							<div class="media-body">
+								Dedicated partner support
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="w-lg-50 text-center mx-lg-auto mb-10">
+			<p>We empower creators, developers, and digital entrepreneurs to sell smart, scalable online services—backed by our cutting-edge infrastructure. You bring the audience and creativity, we provide the tech foundation. Every sale earns you revenue. Every success is shared.<br/><br/>Have any questions? &nbsp;&nbsp;<a class="font-weight-bold emdialog" href="#open-schedule-meeting" data-url="${communitylink}/meetingschedule/meeting-form.html#open-schedule-meeting" data-urlbar="/#open-schedule-meeting" data-updateurl="true" rel="nofollow">Let's talk <i class="fas fa-angle-right fa-sm ml-1"></i></a></p>
+		</div>
+
+	</div>
+</main>

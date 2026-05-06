@@ -1,0 +1,36 @@
+
+#set( $version = $content.project )
+
+#if(!$version)
+	#set( $version = "project11" )
+#end
+<div class="mt-5 mt-lg-0 p-2"> 
+	 <h2 class="h4 text-dark mt-3 mb-1">[[Versions]]</h2>  
+	 <div class="d-flex " style="flex-direction: column;">
+		<a class='dropdown-item  #if($version  == "project11") current#end' href="${communitylink}/knowledge/index.html">EnterMedia Library</a>
+		<a class="dropdown-item " href="${communitylink}/knowledge/10/index.html">EnterMedia Version 10</a>
+		<a class="dropdown-item " href="${communitylink}/knowledge/9/index.html">EnterMedia Version 9</a>
+	</div>
+</div>
+
+#set( $cats = $mediaarchive.query("postdata_category_learning").match("postdata_project",$version).sort("orderingDown").search() )
+#foreach($cat in $cats)
+	#set( $hits = $mediaarchive.query("postdata").match("knowledgebase_category", $cat.id).sort("post_title").search() )
+	
+	#if($hits.size() > 0 ) 
+		<div class="mt-5 mt-lg-0 p-2">	
+		<h2 class="h4 text-dark mt-3 mb-1">$context.getText($cat)</h2>
+		<div class="collapse show" id="collapsedSubMenu${jdx}">
+			#set( $active = $postdata.getId() )
+			#foreach($data in $hits)
+				<a class="dropdown-item d-flex justify-content-between align-items-center px-0 #if($active == $data.id) knowledge-current #end" 
+				href="${communitylink}/$data.sourcepath">
+				$data.post_title</a>
+			#end
+		</div>
+		</div>
+	#end
+
+#end 
+
+

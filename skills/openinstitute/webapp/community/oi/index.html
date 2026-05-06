@@ -1,0 +1,158 @@
+#if( $user.oe_edit_mode == "postedit" )
+  <div class="row">
+    <div class="oe-editable bodywebsite" id="edit-$postdata.id" data-dataid="$!postdata.id" data-field="maincontent"
+      data-searchtype="postdata" data-viewtype="html">
+      $!postdata.maincontent
+    </div>
+    <div class="editpostbtn">
+      <a href="${sitelink}/emshare2/views/modules/postdata/edit/edit.html?id=$!{postdata.id}&viewid=postdatageneral&viewpath=postdata/postdatageneral&searchtype=postdata&detailsreadonly=false&preview=true"
+        class="btn btn-xs btn-light">Edit Post</a>
+    </div>
+  </div>
+#end
+
+#set( $communitytagid = $context.getPageName())
+$context.putPageValue("curentcommunitytagid", $communitytagid)
+<header>
+  <img src="$!{communitylink}/theme/images/oi-home-banner.svg" />
+  <h1 id="type-out">[[Fundraising, Accountability and Transparency]]</h1>
+  <a href="$!{communitylink}/projects/add/addnew.html" class="emdialog proposal-btn">
+    <i class="fas fa-plus me-1"></i>
+    [[Create a Project]]
+  </a>
+  <button class="scroll-btn" id="sc-btn">
+    <div class="scroll-down" role="button">
+      <div class="chevron"></div>
+      <div class="chevron"></div>
+      <div class="chevron"></div>
+      <span>[[Explore]]</span>
+    </div>
+  </button>
+</header>
+
+<div class="communities">
+  <div class="container">
+    <h2 class="my-3 text-center">[[Communities]]</h2>
+    <div class="row justify-content-center proposals pt-4">
+      #set($tagscategories =
+      $mediaarchive.query("communitytagcategory").named("communitytagcategory").all().search($context))
+      #foreach( $tagcategory in $tagscategories)
+        <div class="col col-sm-12 col-lg-6">
+          <div class="proposal">
+            #if( $tagcategory.externaldomain)
+              #set( $link ="$!{tagcategory.externaldomain}")
+            #else
+              #set( $link = "$apphome/${tagcategory.get('urlname')}")
+            #end
+            
+            <a href="$link" class="thumbnail">
+              <img src="$!{communityhome}/$!{tagcategory.primaryimagepath}" />
+              <span class="#if ($tagcategory.getName().length() > 10) sm #else lg #end">$tagcategory.getName()</span>
+            </a>
+            <div class="info">
+              <p>$!tagcategory.summary</p>
+              <a href="$link/projects">[[View]]
+                #if($tagcategory.entitytype == "entityrental")
+                  [[Rentals]]
+                #else
+                  [[Projects]]
+                #end
+                <i class="fa fa-arrow-right"></i></a>
+            </div>
+          </div>
+        </div>
+      #end
+    </div>
+  </div>
+</div>
+
+<div class="d-flex flex-column justify-content-center bg-black video-container" style="position: relative">
+  <video autoplay="" muted="" loop="" id="ftVideo">
+    <source type="video/mp4"
+      src="https://openinstitute.org/site/mediadb/services/module/asset/downloads/originals/Collections/EnterMediaDB/The%20Open%20Institute%20Team%20-%20Development/2023_08/30/11_15_59/Open%20institute.mp4/Open%20institute.mp4"
+      label="1920" />
+    <source type="video/flash"
+      src="mp4:https://openinstitute.org/site/mediadb/services/module/asset/downloads/originals/Collections/EnterMediaDB/The%20Open%20Institute%20Team%20-%20Development/2023_08/30/11_15_59/Open%20institute.mp4/Open%20institute.mp4"
+      label="1920" />
+  </video>
+  <div class="progress">
+    <div class="progress-bar progress-bar-striped bg-dark" role="progressbar" style="width: 0%; transition: none"
+      id="vProgress"></div>
+  </div>
+  <button id="toggleMute" class="btn">
+    <i class="fas fa-volume-mute text-white"></i>
+  </button>
+  <button id="toggleFS" class="btn">
+    <i class="fas fa-expand text-white"></i>
+  </button>
+</div>
+
+<script>
+  $(document).ready(function () {
+    $("#drawerMenu .offcanvas-body").html($(".navbar-nav#superNav").html());
+    var video = document.getElementById("ftVideo");
+    function resizeVideo() {
+      video.style.width = Math.min($(window).width(), 1920) + "px";
+      video.style.height = video.style.width * 0.5625 + "px";
+    }
+    $("button#sc-btn").on("click", function () {
+      $("html, body").animate(
+        { scrollTop: $("header").height() + 32 },
+        250
+      );
+    });
+    window.addEventListener("resize", resizeVideo);
+    resizeVideo();
+    video.addEventListener("timeupdate", function () {
+      var progress = video.currentTime / video.duration;
+      $("#vProgress").css("width", progress * 100 + "%");
+    });
+    $("#vProgress")
+      .parent()
+      .on("click", function (e) {
+        var x = e.pageX - $(this).offset().left;
+        var w = $(this).width();
+        var progress = x / w;
+        video.currentTime = video.duration * progress;
+      });
+    video.addEventListener("click", function () {
+      if (this.muted) {
+        this.muted = !this.muted;
+        $("#toggleMute").html(
+          '<i class="fas fa-volume-up text-white"></i>'
+        );
+        this.play();
+        return;
+      }
+      if (this.paused) {
+        this.play();
+      } else {
+        this.pause();
+      }
+    });
+    $("#toggleMute").on("click", function () {
+      console.log(video.muted);
+      if (video.muted) {
+        video.muted = false;
+        $(this).html('<i class="fas fa-volume-up text-white"></i>');
+      } else {
+        video.muted = true;
+        $(this).html('<i class="fas fa-volume-mute text-white"></i>');
+      }
+    });
+    $("#toggleFS").on("click", function () {
+      video.requestFullscreen();
+    });
+    var txt = $("#type-out").text();
+    $("#type-out").text("F");
+    var int = setInterval(function () {
+      var t = $("#type-out").text();
+      if (t.length >= txt.length) {
+        clearInterval(int);
+        return;
+      }
+      t += txt[t.length];
+      $("#type-out").text(t);
+    }, 100);
+  });
+</script>

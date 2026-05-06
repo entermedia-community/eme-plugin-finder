@@ -1,0 +1,40 @@
+
+
+#set( $projects = $mediaarchive.query("librarycollection").exact("collectiontype", "6").exact("organizationstatus", "active").sort("name").search($context) )
+
+#if($projects.size()> 0)
+	<h6 class="text-center text-dark mb-3">Active Libraries</h6>
+	<div class="d-flex flex-wrap">
+	#foreach($project in $projects)
+		#if( $foreach.count <= 15)
+			#if($project.urlname)
+				#set($projectlink = "$!{community.externaldomain}/${project.urlname}/chat/index.html")
+			#else
+				#set($projectlink = "/project/chat/index.html?collectionid=${project.id}")
+			#end
+			<div class="py-1 px-2 mb-2 qs-project">
+				<a href="${projectlink}" title="[[Open]] $project"><i class="fas fa-folder"></i> $project</a>
+			</div>
+		#end
+	#end
+	</div>
+#end
+
+#set( $projects = $mediaarchive.query("librarycollection").exact("library", "userscollections").sort("name").search($context) )
+#if($projects.size()> 0)
+	<h6 class="text-center text-dark mb-3">Users</h6>
+	<div class="d-flex flex-wrap">
+	#foreach($project in $projects)
+		#if( $foreach.count <= 15)
+			#if($project.urlname)
+				#set($projectlink = "$!{community.externaldomain}/${project.urlname}/chat/index.html")
+			#else
+				#set($projectlink = "/project/chat/index.html?collectionid=${project.id}")
+			#end
+			<div class="py-1 px-2 mb-2 qs-project">
+				<a href="${projectlink}" title="[[Open]] $project"><i class="fas fa-folder"></i> $project</a>
+			</div>
+		#end
+	#end
+	</div>
+#end

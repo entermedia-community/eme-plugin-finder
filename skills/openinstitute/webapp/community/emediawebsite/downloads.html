@@ -1,0 +1,88 @@
+
+#set( $currrentversion = $mediaarchive.query("desktopversions").all().sort("orderingDown").searchOne() )
+#set( $version = $currrentversion.versionnumber )
+
+#set( $preset = $mediaarchive.getCachedData("convertpreset","0") )
+
+<div class="container space-2 space-lg-3"> 
+<div class="bg-navy rounded mx-3 mx-md-8">
+  <div class="container space-2">
+    <h1 class="h2 text-center text-white mb-1">Download eMedia Desktop</h1>
+    <p class="text-center text-white">Fast and convenient desktop app, perfectly synced with your web library.</p>
+    <div class="row justify-content-lg-center space-1 px-3" id="osOptions">
+      <div class="col-md-4 mb-3 pb-4 mb-md-0 os" id="windowsOS"> 
+        <div class="d-flex flex-column align-items-center text-center px-md-3">
+          <div class="position-relative">
+            <i class="fab fa-windows extra-large-icon"></i> 
+          </div>
+		  #set( $asset = $mediaarchive.getAsset($currrentversion.downloadwindows))
+		  #set( $download = $mediaarchive.asLinkToShare("",$asset,$preset))
+		  
+          <a class="btn btn-primary rounded-pill transition-3d-hover" href="$download">Download for Windows</a>
+        </div> 
+      </div>
+      <div class="col-md-4 mb-3 pb-4 mb-md-0 os" id="macOS">
+        <div class="d-flex flex-column align-items-center text-center px-md-3">
+          <div class="position-relative">
+            <i class="fab fa-apple extra-large-icon"></i> 
+          </div>
+		  #set( $asset = $mediaarchive.getAsset($currrentversion.downloadapple64))
+		  #set( $download = $mediaarchive.asLinkToShare("",$asset,$preset))
+		  #ifnotnull($download)
+          <a class="btn btn-primary rounded-pill transition-3d-hover" href="$download">Download for Apple chip</a>
+		  #end
+		  #set( $asset = $mediaarchive.getAsset($currrentversion.downloadappleintel))
+		  #set( $download = $mediaarchive.asLinkToShare("",$asset,$preset))
+		  #ifnotnull($download)
+          <a class="small text-primary mt-2" href="$download">Download for Intel chip</a>
+		  #end
+        </div> 
+      </div>
+      <div class="col-md-4 mb-3 pb-4 mb-md-0 os" id="linuxOS">
+        <div class="d-flex flex-column align-items-center text-center px-md-3">
+          <div class="position-relative">
+            <i class="fab fa-linux extra-large-icon"></i> 
+          </div>
+		  #set( $asset = $mediaarchive.getAsset($currrentversion.downloadlinux64))
+		  #set( $download = $mediaarchive.asLinkToShare("",$asset,$preset))
+		  #ifnotnull($download)
+          <a class="btn btn-primary rounded-pill transition-3d-hover" href="$download">Download for x64</a>
+		  #end
+        </div> 
+      </div>
+    </div>
+    #ifnotnull($currrentversion)
+    <p class="text-center m-0">
+      Version: <b>$currrentversion.versionnumber </b> <i>$currrentversion.name</i> $!currrentversion.longcaption
+    </p>
+    #end
+  </div>
+</div> 
+
+
+
+</div>
+<script type="text/javascript">
+  document.addEventListener('DOMContentLoaded', function() {
+    var userAgent = window.navigator.userAgent;
+    var platform = window.navigator?.userAgentData?.platform || window.navigator.platform;
+    var macosPlatforms = ['macOS', 'Macintosh', 'MacIntel', 'MacPPC', 'Mac68K'];
+    var windowsPlatforms = ['Win32', 'Win64', 'Windows', 'WinCE'];
+    var iosPlatforms = ['iPhone', 'iPad', 'iPod'];
+
+    var macHtm = document.getElementById('macOS').outerHTML;
+    var winHtm = document.getElementById('windowsOS').outerHTML;
+    var linHtm = document.getElementById('linuxOS').outerHTML;
+
+    if (macosPlatforms.indexOf(platform) !== -1) {
+      document.getElementById('osOptions').innerHTML = winHtm + macHtm + linHtm;
+      document.getElementById('macOS').classList.add('active');
+    } else if (windowsPlatforms.indexOf(platform) !== -1) {
+      document.getElementById('osOptions').innerHTML = macHtm + winHtm + linHtm;
+      document.getElementById('windowsOS').classList.add('active');
+    } else if (/Linux/.test(platform)) {
+      document.getElementById('osOptions').innerHTML = macHtm + linHtm + winHtm;
+      document.getElementById('linuxOS').classList.add('active'); 
+    } 
+  })
+</script>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page>
+    <property name="virtual">true</property>
+    <property name="title">Smart Folder Templates</property>
+    <property name="mimetype">text/html</property>
+    
+    
+    <path-action name="DataEditModule.loadData" >
+    <property name="searchtype">gallerytemplate</property>
+    <property name="pageval">template</property>
+    <property name="idlevel">0</property>
+    
+    </path-action>
+    <inner-layout>${communityhome}/library-templates/details/layout.html</inner-layout>
+</page>

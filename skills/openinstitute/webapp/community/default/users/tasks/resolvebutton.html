@@ -1,0 +1,23 @@
+#set( $target = "resolve#eid($goal.id)")
+#set($value = $mediaarchive.getCachedData("projectstatus",$goal.projectstatus))
+<div id="$target" >
+	#if($value)
+		#if($value == "Completed")
+			<a class="btn btn-xs btn-success" style="color:white">[[Completed]]</a>
+		#else
+			<div>#text($value)</div>
+		#end
+	#end
+	
+	#if($goal.projectstatus != "completed" && $goal.projectstatus != "closed")
+	
+		<a href="${communitylink}/users/tasks/resolvegoal.html?goalid=$goal.id" 
+			data-targetdiv="$target" 
+			data-oemaxlevel="1"
+			title="[[Resolve Ticket]]"
+			class="ajax btn btn-xs btn-resolve btn-warning" 
+			 ><i class="fas fa-check"></i> [[Resolve]]
+		</a>
+	#end
+</div>
+

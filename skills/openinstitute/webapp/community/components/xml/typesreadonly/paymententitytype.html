@@ -1,0 +1,25 @@
+
+#ifnull( $val )
+	#set( $val = $context.getRequestParameter("val"))
+#end
+#if( $val ) 
+	#set( $targetid = $context.getRequestParameter("targetid"))
+	
+	#if($val == "user")
+	
+	[[User]]: $!mediaarchive.getCachedData("user", $targetid)
+	
+	#elseif($val == "librarycollection")
+	$!mediaarchive.getCachedData("librarycollection", $targetid)
+	
+	#elseif($val == "communitytag")
+	
+	[[Campaign]]: $!mediaarchive.getCachedData("communitytag", $targetid)
+	#elseif($val == "externalpaypal")
+		PayPal: $targetid
+	#elseif($val == "workpoints")
+		[[Work Credit]]
+	#else
+		[[None]] $val
+	#end
+#end	

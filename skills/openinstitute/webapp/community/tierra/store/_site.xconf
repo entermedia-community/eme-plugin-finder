@@ -1,0 +1,11 @@
+<page>
+	<property name="collectivesection">store</property>
+
+	<inner-layout>${communityhome}/store/storelayout.html</inner-layout>
+
+	<property name="virtual">true</property>
+
+	<path-action name="ProjectModule.loadCollection">
+	</path-action>
+
+</page>

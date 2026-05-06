@@ -1,0 +1,54 @@
+<div class="main container-fluid text-center">
+#if($canviewsettings)
+<div class="p-4">
+<a href="/projects/reports/rentals/reservations.html" class="btn view-reservation" title="$library.name [[Reservations]]" data-targetdivinner="storeworkarea" data-oemaxlevel="1">
+  <i class="fas fa-house-user me-1"></i>
+    [[View All Reservations]]
+</a> 
+</div>
+#end
+
+$pages.include("${communityhome}/rentals/filters.html", $context)
+
+ #if( $hits.isEmpty() )
+  
+  	[[No availability for ]] $in
+  	
+  #end
+
+  
+  
+  
+
+  <div class="d-flex justify-content-center flex-wrap">
+  	$pages.include("$communityhome/rentals/listrentalresults.html",$context)	
+  </div>
+</div>
+
+<div class="modal fade" id="ownerPreview">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content owner-preview">
+      <button type="button" class="btn-close"></button>
+      <div class="details-card">
+        <img src="#" />
+        <p class="name"></p>
+        <p class="rank"></p>
+        <div class="d-flex justify-content-around w-100 stats">
+          <p class="reviews">
+            <strong></strong>
+            <small>[[Reviews]]</small>
+          </p>
+          <p class="rating">
+            <strong></strong>
+            <small>[[Rating]]</small>
+          </p>
+          <p class="duration">
+            <strong></strong>
+            <small>[[Years hosting]]</small>
+          </p>
+        </div>
+      </div>
+      <p class="description"></p>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,50 @@
+<div class="container">
+  <div class="mx-md-auto text-center my-3">
+    <h1 class="mb-0">
+      eMedia Store
+    </h1>
+    <p class="text-muted mb-0">Discover your next favorite book</p>
+  </div>
+  <div class="d-flex w-100">
+    <div class="w-lg-50 w-md-75 mx-auto search-group">
+      <div class="input-group input-group-lg flex-nowrap mb-3">
+        <span class="input-group-text bg-white" id="addon-wrapping">
+          <i class="fas fa-search text-muted"></i>
+        </span>
+        <input type="text" class="form-control form-control-lg" placeholder="Search books..." aria-label="Search books" aria-describedby="addon-wrapping">
+      </div>
+      <div class="d-flex flex-wrap gap-2 mb-3"><button
+          class="btn btn-primary rounded-pill">All</button><button
+          class="btn btn-light rounded-pill">Technology</button><button
+          class="btn btn-light rounded-pill">Science</button><button
+          class="btn btn-light rounded-pill">Programming</button>
+      </div>
+    </div>
+  </div>
+  <div class="row justify-content-center">
+    #foreach($i in [0..11])
+    <div class="col-4 p-3">
+      <div class="store-item card shadow-sm border-0 overflow-hidden">
+        <img src="https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c" alt="The Digital Mind" class="w-100 h-48 object-cover">
+        <div class="p-4">
+          <div class="d-flex justify-content-between align-items-start">
+            <h3 class="flex-grow-1 mb-0">The Digital Mind</h3>
+            <span class="d-flex align-items-center small text-golden font-light">
+              <i class="fas fa-star" style="margin-bottom: 4px;"></i>
+              <span class="ms-1 font-light">4.5</span>
+            </span>
+          </div>
+          <p class="text-sm text-secondary mb-2">Sarah Chen</p>
+          <p class="line-clamp-2 text-muted">An exploration of artificial intelligence and consciousness.</p>
+          <div class="d-flex justify-content-between align-items-center">
+            <span class="font-bold text-primary">$29.99</span>
+            <button class="btn btn-primary btn-lg">
+              <i class="fas fa-shopping-cart me-1"></i> Add to Cart
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    #end
+  </div>
+</div>

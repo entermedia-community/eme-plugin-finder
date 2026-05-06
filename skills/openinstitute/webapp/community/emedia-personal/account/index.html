@@ -1,0 +1,130 @@
+#if(!$selecteduser)
+	#set($selecteduser = $user)
+	$context.putPageValue("selecteduser", $selecteduser)
+#end
+
+#if( $user.getId() == $selecteduser.getId() || $canviewsettings)
+	#set($canedituserinfo = true)
+#end
+
+#set( $userimageurl = $mediaarchive.asLinkToUserProfile($selecteduser) )
+#if(!$userimageurl)
+	#set( $userimageurl = "${communityhome}/theme/images/user.svg" )
+#end
+
+<div id="useraccount" class="p-2 p-lg-4 mx-auto mt-3" style="max-width: 1400px;" >
+	<div class="container-fluid">
+		<div class="row acc-row">
+			<div class="col-sm-12 col-md-8">
+				<div class="profile-credentials">
+					<div class="edit-profile d-flex align-items-center">
+						#if($canviewsettings)
+						<a href="${communityhome}/account/edit/edit.html?userid=$selecteduser.getId()" 
+							class="btn btn-xs btn-soft-primary emdialog"
+							title="[[Edit User Account]]">
+							<i class="fas fa-edit me-2"></i>
+							[[Edit Profile]]
+						</a>
+						#end
+						<button class="btn btn-xs btn-primary ms-2 d-md-none" type="button" data-toggle="collapse" data-target="#supportchat" aria-controls="supportchat" id="chatToggler">
+							#if($haspendingmessages) ##TODO
+								<span class="me-1">4</span>
+							#end
+							<i class="fas fa-comment-alt"></i>
+						</button>
+					</div>
+					
+
+					<img src="${userimageurl}" alt="$selecteduser.getAnonNickName()" class="profile-image" />
+					
+					
+					#if( $user)
+						<h2>$!selecteduser.get("firstName") $!selecteduser.get("lastName")</h2>
+					#else
+					
+						<h2>$selecteduser.getAnonNickName()</h2>						
+					#end
+					<a class="email d-flex align-items-center">
+						<i class="fas fa-envelope me-2"></i>
+						<span>$!selecteduser.get("email")</span>
+					</a>
+					#if($selecteduser.get("companyname"))
+					<p class="position">
+						<i class="fas fa-briefcase me-2"></i>
+						<span>
+							$!selecteduser.get("companyname")
+						</span>
+					</p>
+					#end
+
+					
+					
+					
+					
+					#set( $ids = $mediaarchive.query("librarycollectionusers").exact("followeruser", $selecteduser.getId()).search($context) )
+					#set($oids = [])
+					#foreach( $ohit in $ids )
+						#set($x = $oids.add($ohit.collectionid))
+					#end
+					
+					#set( $collections = $mediaarchive.query("librarycollection").exact("communitytagcategory", $communitytagcategory).exact("collectiontype", "6").ids($oids).sort("name").search($context) )
+
+					#if($collections.size()>0)
+					<div class="my-4">
+						<h3>[[Libraries]]</h3>
+	
+						<div class="stations-grid p-4">
+							<div class="project-grid d-flex flex-wrap">
+								#foreach( $ohit in $collections )
+										#set($imagelink = false)
+										
+										#set( $project = $mediaarchive.getCachedData("librarycollection",$ohit.getId()))
+										#set( $projectcommunity = $mediaarchive.getCachedData("communitytagcategory",$project.communitytagcategory))
+										#if($project.urlname)
+											#set($hitprojectlink = "$!{projectcommunity.externaldomain}/${project.urlname}/chat/index.html")
+										#end
+										
+										
+										
+										#if($project.assetportrait)
+											#set($asset = $mediaarchive.getAsset($project.assetportrait))
+											#set($imagelink = $mediaarchive.asLinkToPreview($asset,"image200x200"))
+										#else
+											#set($imagelink = "$communitylink/theme/images/OI_flower.png")
+										#end
+										
+										<div class="card-collections me-3 mb-3">
+										<a href="${hitprojectlink}" 
+											class=" #if($selectedproject==$project.id) active #end">
+						
+										<div class="card-collections-thumb" style='#if($imagelink) background-image: url("$imagelink"); #end background-color:#fff;'></div>
+						 				<div class="card-name collectionbox" style="text-align:center">$project.name
+												#if( $modcollections.contains($project.getId())) #end</div>
+										</a>
+										</div>
+										
+								#end
+							</div>
+							<div class="clearfix"></div>	
+						</div>
+					</div>
+					#end
+					
+					
+					$pages.include("${communityhome}/account/createlibrary.html", $context)
+					
+					
+					
+					
+					
+					## $pages.include("${communityhome}/account/subscriptions.html", $context)
+					$pages.include("${communityhome}/account/referrals.html", $context)
+
+				</div>
+			</div>
+			
+			$pages.include("${communityhome}/account/supportchat.html", $context)
+			
+		</div>
+	</div>
+</div>

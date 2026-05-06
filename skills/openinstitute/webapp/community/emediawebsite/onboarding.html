@@ -1,0 +1,25 @@
+<div class="chat-shell" aria-label="eMe onboarding chat">
+  <header class="chat-header">
+    <div>
+      <h1 class="chat-title">eMe Assistant</h1> 
+    </div> 
+  </header>
+
+  <div class="chat-messages" id="chatMessages" aria-live="polite">
+    <article class="msg assistant" id="firstMessage">
+      Welcome. I can tailor your onboarding flow. Which eMe are you creating today?
+      <div class="msg-actions">
+        <button class="choice" data-mode="Personal">Create a Personal eMe</button>
+        <button class="choice" data-mode="Commercial">Create a Commercial eMe</button>
+      </div>
+    </article>
+  </div>
+  
+  <form class="chat-input" id="chatForm">
+    <label for="chatBox" class="sr-only" style="position:absolute;left:-9999px;">Write a message</label>
+    <textarea id="chatBox" placeholder="Type your message..." aria-label="Message input"></textarea>
+    <button type="submit" class="button send">
+      Send <i class="ms-2 bi bi-send-fill"></i>
+    </button>
+  </form>
+</div>

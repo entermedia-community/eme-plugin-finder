@@ -1,0 +1,9 @@
+<page>
+	<path-action name="JsonAdminModule.preprocess" />
+
+	<property name="noredirect">true</property>
+	
+	<path-action name="FinanceModule.loadFinanceManager" />
+
+
+</page>

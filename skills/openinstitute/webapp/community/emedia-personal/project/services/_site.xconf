@@ -1,0 +1,9 @@
+<page>
+
+	<property name="finances_profitandloss">false</property>
+	<property name="finances_accounts">false</property>
+	<property name="finances_workpoints">false</property>
+	<property name="finances_income">false</property>
+	<property name="finances_expenses">false</property>
+
+</page>

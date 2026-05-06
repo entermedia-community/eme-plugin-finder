@@ -1,0 +1,24 @@
+<div style="padding:10px">
+#set( $searcher = $mediaarchive.getSearcher("collectiveproject") )
+#set( $subs = $searcher.query().match("parentcollectionid",$librarycol.getId()).search())
+#if( $subs.isEmpty()) <p>No projects started</p> #end
+Choose Project <select >
+  #foreach( $hit in $subs)
+     <option>$hit.name</option>
+  #end
+
+
+</select>
+ 
+ #if( $caneditcollection)	
+	 <a href="${projectlink}/projects/addnew.html?collectionid=$librarycol.getId()" 
+	 class="emdialog btn btn-primary">[[Create A Project]]</a>
+
+#end
+
+#if( $caneditcollection)	
+	 <a href="${projectlink}/projects/addnewupload.html?collectionid=$librarycol.getId()" 
+	 class="btn btn-primary">[[Upload]]</a>
+#end
+	 
+ </div>

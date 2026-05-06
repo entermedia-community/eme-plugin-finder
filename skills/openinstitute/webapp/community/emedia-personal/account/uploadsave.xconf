@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page>
+	<path-action name="Page.uploadFile"/>
+
+	<path-action name="AssetEditModule.createAssetFromUploads"/>
+
+	<path-action name="User.loadUserByFolder" />
+	
+	<path-action name="Script.run">
+		<script>${communityhome}/users/uploadsave.groovy</script>
+	</path-action>
+
+	<inner-layout />
+</page>

@@ -1,0 +1,6 @@
+<page>
+
+<property name="usemap">true</property>
+	<inner-layout>${communityhome}/theme/layouts/dialoglayout.html</inner-layout>
+
+</page>

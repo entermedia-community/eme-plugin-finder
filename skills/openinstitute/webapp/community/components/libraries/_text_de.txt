@@ -1,0 +1,10 @@
+#
+#Tue Aug 29 16:16:21 BDT 2023
+Details=Einzelheiten
+[Add\ New=[neue hinzuf\u00FCgen
+Project\ Tracker=Projekt-Tracker
+Assets=Dateien
+Libraries=Bibliotheken
+Create\ New=Neu erstellen
+Collections=Sammlungen
+All\ Teams=alle Mannschaften

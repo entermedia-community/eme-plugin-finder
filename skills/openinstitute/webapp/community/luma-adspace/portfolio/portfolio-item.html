@@ -1,0 +1,80 @@
+#set($id = $request.getParameter("id"))
+
+<section id="contact" class="contact section">
+
+  <div class="container space-3" data-aos="fade-up" data-aos-delay="100">
+    <div class="row g-4 g-lg-5 justify-content-center">
+      <div class="col-lg-10">
+        <a class="btn btn-lg text-primary mb-4" href="${communitylink}/portfolio/"><i class="bi bi-arrow-left-short"></i> Back to Portfolio</a>
+      </div>
+
+      <div class="col-lg-5">
+        <img src="${communityhome}/images/masonry/masonry${id}.webp" alt="Masonry Image" class="rounded img-fluid mb-3">
+      </div>
+
+      <div class="col-lg-5">
+        <h2 class="mt-0 mb-5">Project $!id Title &mdash; ClientName</h2>
+        
+        <strong class="text-cap text-secondary">Overview</strong>
+        <p>Animi assumenda aut magni explicabo sed. Ducimus voluptatibus vel perferendis soluta aperiam qui. Dicta laboriosam in dolorum perferendis. Laudantium et saepe est pariatur ex dolorum. Omnis et ipsa est sit odit. Nisi minima veniam nulla similique qui et.</p>
+        <p>Pariatur et voluptatem et voluptatum ea quis eum. Ipsa perferendis et magni. Et ipsam voluptates minima officiis. Deserunt consequatur praesentium alias. Similique id quae recusandae rerum ut corporis quas.</p>
+
+        <hr>
+
+        <ul class="list-unstyled mb-0">
+          <li class="media mb-2">
+            <div class="d-flex media-left">
+              <h3 class="text-secondary">Client</h3>
+            </div>
+            <div class="media-body">
+              <small class="text-muted">
+                Tio Pepe
+              </small>
+            </div>
+          </li>
+
+          <li class="media mb-2">
+            <div class="d-flex media-left">
+              <h3 class="text-secondary">Designers</h3>
+            </div>
+            <div class="media-body">
+              <small class="text-muted">
+                Jane Doe, John Doe
+              </small>
+            </div>
+          </li>
+        </ul>
+        <hr>
+        <div class="media mb-2">
+          <div class="d-flex media-left">
+            <h3 class="text-secondary">Share</h3>
+          </div>
+          <div class="media-body">
+            <ul class="list-inline mb-0">
+              <li class="list-inline-item">
+                <a class="btn btn-xs btn-icon btn-soft-secondary rounded" href="#">
+                  <i class="fab fa-linkedin"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a class="btn btn-xs btn-icon btn-soft-secondary rounded" href="#">
+                  <i class="fab fa-facebook-f"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a class="btn btn-xs btn-icon btn-soft-secondary rounded" href="#">
+                  <i class="fab fa-google"></i>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a class="btn btn-xs btn-icon btn-soft-secondary rounded" href="#">
+                  <i class="fab fa-twitter"></i>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

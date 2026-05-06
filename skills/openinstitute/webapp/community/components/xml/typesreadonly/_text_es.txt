@@ -1,0 +1,5 @@
+#
+#Mon Jun 27 19:42:29 CDT 2022
+No=No
+Work\ Credit=Cr\u00E9dito de trabajo
+Yes=S\u00ED

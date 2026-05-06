@@ -1,0 +1,46 @@
+#set($songid = $context.getRequestParameter("song"))
+
+<div class="container-fluid mt-3">
+	<div class="row">
+		<div class="col-lg-8">
+
+			<div class="overflow-hidden" id="song-expanded">
+				<div class="song-card h-100">
+					<div class="rounded song-player bg-light">
+						<div class="album-art">
+							<img src="${communityhome}/assets/LostSky.jpg" alt="album art">
+						</div>
+						<h5 class="card-title mb-1">Track #${songid}</h5>
+						<p class="card-subtitle mb-3 small text-muted font-bold">Artist Name</p>
+						<div class="song-controls" data-src="${communityhome}/assets/LostSky.mp3" id="song-${songid}">
+							<button class="play-pause-btn">
+								<i class="fas fa-play"></i>
+								<i class="fas fa-pause"></i>
+							</button>
+							<div class="waves">
+								<div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+							</div>
+						</div>
+					</div>
+					<div class="mt-4">
+						<p class="card-text text-muted line-clamp-2 mb-2">
+							Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, voluptatum.
+						</p>
+						<div class="d-flex justify-content-between text-muted mt-auto">
+							<small><i class="fas fa-play me-1"></i>1.2M</small>
+							<small><i class="fas fa-calendar me-1"></i>3 days ago</small>
+						</div>
+					</div>
+				</div>
+			</div>
+			<hr>
+			$pages.include("./comments.html", $context)
+
+		</div>
+
+		<div class="col-lg-4">
+			$pages.include("./suggested-songs.html", $context)
+		</div>
+
+	</div>
+</div>

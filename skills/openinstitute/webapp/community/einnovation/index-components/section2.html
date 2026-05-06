@@ -1,0 +1,33 @@
+<section id="features" class="py-5">
+  <div class="container text-center">
+    <div id="primary-features" class="d-flex justify-content-center gap-2">
+      <div class="col">
+        <div class="px-2">
+          <img src="${communityhome}/images/upload.svg" />
+          <h3 class="mt-6 text-lg font-semibold">Easy Upload</h3>
+          <p class="mt-2 text-gray-600">Upload and organize your content with just a few clicks or use our Desktop App for a more seamless experience</p>
+        </div>
+      </div>
+      <div class="col">
+        <div class="px-2">
+          <img src="${communityhome}/images/share.svg" />
+          <h3 class="mt-6 text-lg font-semibold">Smart Sharing</h3>
+          <p class="mt-2 text-gray-600">Share your content on a scheduled time across multiple platforms reliably</p>
+        </div>
+      </div>
+      <div class="col">
+        <div class="px-2">
+          <img src="${communityhome}/images/chart.svg" />
+          <h3 class="mt-6 text-lg font-semibold">Detailed Analytics</h3>
+          <p class="mt-2 text-gray-600">Track your content performance with powerful insights</p>
+        </div>
+      </div>
+    </div>
+    #set($socials = ["Instagram", "Bluesky", "Mastodon", "Discord", "Slack", "X", "Threads", "Pinterest", "Facebook", "TikTok", "Reddit", "Linkedin", "Dribbble", "Youtube"])
+    <div class="d-flex justify-content-center gap-1 mt-6 socials">
+      #foreach($social in $socials) 
+        <img src="${communityhome}/images/${social}.svg" />   
+      #end
+    </div>
+  </div>
+</section>

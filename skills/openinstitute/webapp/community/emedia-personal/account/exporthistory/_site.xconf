@@ -1,0 +1,12 @@
+<page>
+    <path-action name="PageValue.loadPageVariable"  bean="searcherManager" alltypes="true"/>
+
+	<path-action name="BaseExporter.exportHits" alltypes="true">
+		<property name="searchtype">collectivelinktracker</property>
+	</path-action>
+		
+	<generator name="velocity"/>
+	
+	<property name="virtual">true</property>
+	
+</page>

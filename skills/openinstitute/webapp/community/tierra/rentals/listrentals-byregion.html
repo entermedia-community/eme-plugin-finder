@@ -1,0 +1,47 @@
+
+
+
+#set( $regions = $mediaarchive.getList("activeregions") )
+
+
+<div class="main container-fluid text-center">
+ 
+#foreach( $region in $regions)
+		<h3>$region.getName()</h3>
+ <div class="d-flex justify-content-center flex-wrap">
+		#set( $query = $mediaarchive.query("collectiveproduct").hitsPerPage(20).exact("activeregions",$region).named("products").sort("name") )
+		#set( $hits = $query.search($context) )
+		$context.putPageValue("hits",$hits)
+		$context.putPageValue("region",$region)
+	  	$pages.include("$communityhome/rentals/listrentalresults.html",$context)	
+    </div>
+#end	
+</div>
+
+<div class="modal fade" id="ownerPreview">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content owner-preview">
+      <button type="button" class="btn-close"></button>
+      <div class="details-card">
+        <img src="#" />
+        <p class="name"></p>
+        <p class="rank"></p>
+        <div class="d-flex justify-content-around w-100 stats">
+          <p class="reviews">
+            <strong></strong>
+            <small>Reviews</small>
+          </p>
+          <p class="rating">
+            <strong></strong>
+            <small>Rating</small>
+          </p>
+          <p class="duration">
+            <strong></strong>
+            <small>Years hosting</small>
+          </p>
+        </div>
+      </div>
+      <p class="description"></p>
+    </div>
+  </div>
+</div>

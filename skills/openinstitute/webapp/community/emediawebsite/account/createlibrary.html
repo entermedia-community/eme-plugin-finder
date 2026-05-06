@@ -1,0 +1,28 @@
+<div id="libraryrequest">
+	<div class="text-center my-3">
+		<span class="divider divider-text text-white"><i class="fas fa-database me-2"></i> [[Create an eMedia Library]]</span>
+	</div>
+	
+	<form class="container js-validate form-request ajaxform" 
+		action="createlibrarysave.html" 
+		method="post" 
+		data-targetdiv="useraccount">
+		<div class="w-md-80 mx-md-auto text-center mb-5">
+		  <div class="d-flex flex-wrap text-start justify-content-center align-items-center">
+		    <div class="px-2">
+		      <div class="js-form-message form-group mb-0">
+		        <label for="libraryName">[[Library Name]]</label> 
+		        <input type="text" name="projectname" class="form-control" style="height: 38px;min-width: 300px;" id="libraryName" placeholder="[[The name of your library]]" required data-msg="[[Please enter your library name]]">
+		      </div>
+		    </div> 
+		    <div class="px-2 d-flex flex-column align-items-start">
+		      <label>&nbsp;</label>
+		      <button type="submit" class="button sm">[[Create Now]]</button>
+		    </div>
+		  </div>
+		</div>
+		<input name="user"  type="hidden" value="$context.getUser()" />
+		<input name="project"  type="hidden" value="$!librarycol.getId()" />
+		$context.putSessionValue("clientform", "libraryrequest") 
+	</form>
+</div>

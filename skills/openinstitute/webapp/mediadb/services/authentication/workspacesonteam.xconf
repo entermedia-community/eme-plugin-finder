@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+
+<page>
+	<path-action name="JsonAdminModule.preprocess" />
+	<path-action name="Admin.login" />
+	<property name="noredirect">true</property>
+	<path-action name="Script.run">
+		<!-- applicationid? -->
+		<script>../../../app/workspaces/gotoapp.groovy</script>
+	</path-action>
+	<path-action name="ProjectModule.listCollectionsOnTeam" />
+	<path-action name="Admin.getKey" />
+	<permission name="view">
+	  <blank/>
+	</permission>
+	
+</page>

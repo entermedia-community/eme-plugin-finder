@@ -1,0 +1,8 @@
+#
+#Mon Apr 21 15:35:53 CST 2025
+Referrals=Referencias
+Chat=Charlar
+Finances=Finanzas
+Goals=Objetivos
+Files=Archivos
+Settings=Ajustes

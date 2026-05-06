@@ -1,0 +1,38 @@
+<div class="d-flex flex-column align-items-center">
+	<div id="savedLibraries">
+		
+		
+		#set($sandboxes = [
+			["Video Production", "https://em11.entermediadb.org/videoproduction/find", "A sandbox platform to efficiently store, organize, and manage video assets."],
+			["Photo Studio", "https://em11.entermediadb.org/photostudio/find", "A sandbox hub to organize, store, and manage high-quality image assets."],
+			["TV Media Hub", "https://em11.entermediadb.org/tvhub/find", "A sandbox platform designed to manage and organize vast libraries of video, audio, and graphic assets."],
+			["Music Studio", "https://em11.entermediadb.org/musicstudio/find", "A sandbox repository for audio tracks, stems, project files, and associated assets."],
+			["Publishing Products<br>Catalog", "https://em11.entermediadb.org/publishing/find", "A sandbox platform for organizing, storing, and managing catalogs, book covers, manuscripts, illustrations, and marketing materials."],
+			["Marketing Department", "https://em11.entermediadb.org/marketing/find", "A sandbox platform designed to organize, store, and manage marketing assets like images, videos, campaigns, and branding materials."],
+			["University Department", "https://em11.entermediadb.org/university/find", "A sandbox platform to organize, store, and manage academic and administrative assets."]
+		])
+    #foreach ($sandbox in $sandboxes)
+    <a class="library-card active" href="${sandbox[1]}" title="${sandbox[1]}">
+			<div class="library-thumb">
+				<img src="${sandbox[1]}/theme/lighttheme/logo.png" alt="${sandbox[0]}">
+			</div>
+      <h3>${sandbox[0]}</h3>
+			<p>${sandbox[2]}</p>
+    </a>
+    #end
+    
+  </div>
+
+	<div class="h4 text-center mt-5 fw-light text-dark">
+		Need a Private Hub of Your Own?
+	</div>
+	<p class="text-center text-muted px-3" style="max-width: 800px">
+		We provide services to help you securely host, manage, and share creative
+		assets with ease. Tailored to your specific needs, our private hosting keeps
+		your work organized, accessible, and 100% in your control.
+	</p> 
+	<a href="https://emedialibrary.org" class="btn btn-success fs-6" target="_blank">
+		<i class="bi bi-send-fill me-1"></i>
+		Contact Us
+  </a>
+</div>

@@ -1,0 +1,68 @@
+#if(!$module)
+	#set($module = $mediaArchive.getCachedData($context.module))
+#end
+
+
+#if($librarycol)
+	#set( $collectionid = $librarycol.getId())
+#else
+	#set( $collectionid = $context.getRequestParameter("collectionid"))
+#end
+
+##TODO Remember last selected module of profile
+
+#if(!$hits)
+	#set( $hits = $modulehits)
+	$context.putPageValue("hits",$hits)
+#end
+
+#set( $input = $hits.getInput("description") )
+#if (!$input)
+	#set( $input = "")
+#end
+
+	<div class="search-popup">
+		<div class="d-flex align-items-center">
+			<input class="search-primary active" type="text" id="searchInput" name="description.value"
+				value="#esc($input)" autocomplete="off" placeholder="[[Search Projects]]" data-resultheight="600"
+				data-updateurl="true" data-field="description" ##regularsearch
+				data-maxhitsperpage="10"
+				
+				data-quicksearched='$!context.getRequestParameter("quicksearched")'
+				data-searchurltargetdiv="applicationmaincontent" data-oemaxlevel="2" ##enterkeyaction?
+				data-searchurlentertargetdiv="applicationmaincontent" data-searchurlenteroemaxlevel="2" ##typeahed
+				data-typeaheadurl="${communityhome}/components/quicksearch/results.html"
+				data-typeaheadtargetdiv="applicationmaincontent" data-typeaheadoemaxlevel="2"
+				data-hitssessionid="$!hits.sessionId" data-moduleid="$moduleid" data-operation="freeform" />
+			<button class="btn text-white" id="closeSearch">
+				<i class="fas fa-times"></i>
+			</button>
+		</div>
+		<div id="searchResultContainer">
+			<p class="m-0 small text-center text-secondary" id="searchInputEmpty">
+				Start typing to search for communities, projects, and other contents.
+			</p>
+			<p class="m-0 fw-bold small text-center text-danger" id="searchNoResult">
+				No results found.
+			</p>
+			<div class="align-items-center flex-column" id="searchLoading">
+				<div class="spinner-border text-secondary" role="status">
+					<span class="visually-hidden">Searching...</span>
+				</div>
+				<p class="mb-0 mt-1 small text-center text-secondary">
+					<span class="d-none">...</span>Searching...
+				</p>
+			</div>
+			<div id="searchResult"></div>
+			<div id="searchResultPlaceholder"> 
+				<hr style="border-color: #000000;" />
+				$pages.include("${communityhome}/components/quicksearch/results.html", $context)
+			</div>
+		</div>
+	</div>
+<div class="py-4">
+	<button class="btn btn-primary btn-searchprojects" id="searchBtn">
+		<i class="fas fa-search"></i>
+	</button>
+
+</div>

@@ -1,0 +1,44 @@
+<header class="navigation emedia-community-header">
+  <nav class="navbar navbar-expand-lg">
+    <div class="container">
+      <a class="navbar-brand" href="/">
+          <img src="$communityhome${communitytagcategory.primaryimagepath}" class="me-1 me-md-3" style="height:50px;width: auto;" /> #text($communitytagcategory) <span>Community</span>
+        </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#libNavbar"
+        aria-controls="libNavbar" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="fa fa-bars"></i>
+      </button>
+      <div class="collapse navbar-collapse" id="libNavbar">
+        <ul class="navbar-nav ms-auto mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link #if($content.oisection == 'home') active #end" href="$communitylink/">Home</a>
+          </li> 
+          <li class="nav-item">
+            <a class="nav-link #if($content.oisection == 'project') active #end" href="$communitylink/projects/">
+              Projects
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link #if($content.oisection == 'blogs') active #end" href="$communitylink/blogs/">
+              Blogs
+            </a>
+          </li> 
+          #ifnull($user)
+          <li class="nav-item">
+            <a class="nav-link #if($content.oisection == 'login') active #end" href="$communitylink/authentication/login.html">
+              Login / Register <i class="ms-1 fs-small fas fa-user"></i>
+            </a>
+          </li> 
+          #end
+          #ifnotnull($user)
+          <li class="nav-item">
+            <a class="nav-link" href="$communitylink/authentication/logout.html" title="[[Logout]]">
+              <i class="ms-1 fs-small fas fa-sign-out-alt"></i>
+            </a>
+          </li>
+          #end
+        </ul>
+      </div>
+    </div>
+  </nav>
+</header>

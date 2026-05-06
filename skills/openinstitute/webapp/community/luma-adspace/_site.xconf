@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<page>
+	<property name="editable">false</property>
+
+	<property name="fallbackdirectory">../default</property>
+	<property name="communityhome">/${siteid}/community/luma-adspace</property>
+
+	<property name="flair">true</property>
+	<property name="templatename">Luma AdSpace</property>
+
+	<property name="communitytagcategory">luma-adspace</property>
+
+	<script id="jquery-ui-i18n" cancel="true" src="${communityhome}/components/javascript/jquery-ui/i18n/jquery-ui-i18n.js"/>
+	<script id="jquery-form" src="${communityhome}/components/javascript/jquery.form.js"/>
+	<script id="jquery-validate" src="${communityhome}/components/javascript/validation/jquery.validate.js"/>
+	<script id="validateandedit" src="${communityhome}/components/javascript/validateandedit.js"/>
+	<script id="select2" src="${communityhome}/components/javascript/select2/js/select2.full.js"/>
+	<style id="select2-css" href="${communityhome}/components/javascript/select2/css/select2.css"/>
+
+	<script id="datetimepicker" src="${communityhome}/components/javascript/datepicker/js/bootstrap-datepicker.min.js"/>
+	<style id="datetimepicker-css" href="${communityhome}/components/javascript/datepicker/css/bootstrap-datepicker3.min.css" />
+
+	<script id="liveajax" src="${communityhome}/components/javascript/emedia/liveajax.js" />
+	<script id="utility-plugins" src="${communityhome}/components/javascript/emedia/utility-plugins.js" />
+
+	<script id="runajax" src="${communityhome}/components/javascript/emedia/ajax/runajax.js" />
+	<script id="emdialog" src="${communityhome}/components/javascript/emedia/ajax/emdialog.js" />
+	<script id="ajaxformsubmit" src="${communityhome}/components/javascript/emedia/ajax/ajaxformsubmit.js" />
+
+	<script id="openedit" src="/openedit/components/javascript/openedit.js"/>
+	<script id="uicomponents" src="${communityhome}/components/javascript/community-global.js"/>
+
+	<style id="eminstitute" href="${communityhome}/theme/css/eminstitute.css"/>
+	<!-- <style id="app-css" href="${communityhome}/theme/styles/theme.css"/> -->
+	<style id="aos-css" href="${communityhome}/theme/css/aos.css"/>
+	<style id="luma-adspace" href="${communityhome}/theme/css/luma-adspace.css" />
+</page>

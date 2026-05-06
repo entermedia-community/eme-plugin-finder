@@ -1,0 +1,11 @@
+<page>
+
+   	
+
+<page-action name="Script.run">
+	
+	<script>./account.groovy</script>
+
+</page-action>
+
+</page>

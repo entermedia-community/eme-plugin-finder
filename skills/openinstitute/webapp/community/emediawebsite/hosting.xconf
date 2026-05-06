@@ -1,0 +1,4 @@
+<page>
+<property name="collectivesection">hosting</property>
+<inner-layout>${communityhome}/views/layouts/app.html</inner-layout>
+</page>

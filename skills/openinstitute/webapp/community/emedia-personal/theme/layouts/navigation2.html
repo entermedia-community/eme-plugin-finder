@@ -1,0 +1,75 @@
+<!-- Navigation EnterMediaDb -->
+#set($currentpage = $postdata.sourcepath.toString())
+
+<nav class="navbar navbar-expand-lg navbar-dark navbar-shrink" id="mainNav">
+
+      <div class="container">
+        <a class="navbar-brand js-scroll-trigger" href="/?preview=true" title="EnterMedia Database">
+		<img src="${communityhome}/theme/img/entermedia_database.png" alt="EnterMedia Collaboratibe DAM" class="img-fluid" />
+		</a>
+        <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+          [[Menu]]
+          <i class="fa fa-bars"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+          <ul class="navbar-nav text-uppercase ms-auto">
+            
+            <li class="nav-item dropdown">
+              <a class="nav-link  dropdown-toggle  #if($currentpage.contains("services/support.html")) active #end" href="#" data-toggle="dropdown">[[Products]]</a>
+              <ul class="dropdown-menu">
+    	        	<li class="dropdown-item">
+                    	<a class="subnav-link  #if($currentpage.contains("services/")) active #end" href="${communitylink}/services/support.html?preview=true">[[Support Plans]]</a>
+	            	</li>
+	            	<li class="dropdown-item">
+                    	<a class="subnav-link  #if($currentpage.contains("cloud-hosted-dam/")) active #end" href="${communitylink}/cloud-hosted-dam/?preview=true">[[Cloud Hosting]]</a>
+	            	</li>
+	            	<li class="dropdown-item">
+                    	<a class="subnav-link  #if($currentpage.contains("services/")) active #end" href="${communitylink}/services/for-developers.html?preview=true">[[For Developers]]</a>
+	            	</li>
+	            	<li class="dropdown-item">
+                    	<a class="subnav-link  #if($currentpage.contains("services/")) active #end" href="${communitylink}/services/consulting.html?preview=true">[[Consulting]]</a>
+	            	</li>
+            </ul>
+            </li>
+
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle #if($currentpage.contains("knowledge/")) active #end" href="#"  data-toggle="dropdown">[[Resources]]</a>
+              <ul class="dropdown-menu">
+	              <li class="dropdown-item">
+	              	<a class="subnav-link  #if($currentpage.contains("knowledge/")) active #end" href="${communitylink}/knowledge/10/index.html?preview=true">[[Videos & Documentation]]</a>
+	              </li>
+	              <li class="dropdown-item">
+	              	<a class="subnav-link  #if($currentpage.contains("services/contact-us")) active #end" href="${communitylink}/services/contact-us.html?preview=true">[[Contact Us]]</a>
+	              </li>
+              </ul>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link  #if($currentpage.contains("community/")) active #end" href="${communitylink}/?preview=true">[[Community]]</a>
+            </li>
+	  	  	
+	
+       	  #if( $user )
+		  	<li class="nav-item nav-last-item dropdown" >
+		  		<a class="nav-link dropdown-toggle #if($content.section == "eminstituteapp") active #end" href="#"  data-toggle="dropdown">[[Account]]</a>
+				<ul class="dropdown-menu">
+					<li class="dropdown-item">
+					<a class="subnav-link #if($content.section == "eminstituteapp") active #end" href="${communitylink}/users/$user.getId()/index.html">[[Account]]</a>
+					</li>	
+					<li class="dropdown-item">
+		              <a class="subnav-link #if($content.section == "authentication") active #end" href="${communitylink}/authentication/logout.html" rel="nofollow">[[Log Out]]</a>
+		            </li>	
+				</ul>
+            </li>
+            #else
+            <li class="nav-item ">
+              <a class="nav-link #if($content.section == "authentication") active #end" href="${communitylink}/authentication/login.html" rel="nofollow">[[Login]]</a>
+            </li>
+		    <li class="nav-item">
+              <a class="btn btn-secondary btn-sm" href="${communitylink}/site/sitedeployer/createaccount.html" rel="nofollow">[[Free Account]]</a>
+            </li>
+            #end
+          </ul>
+        </div>
+      </div>
+    </nav>

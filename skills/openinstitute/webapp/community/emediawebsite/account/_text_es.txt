@@ -1,0 +1,7 @@
+#
+#Mon Apr 21 12:43:55 CST 2025
+Edit\ User\ Account=Editar cuenta de usuario
+Edit\ Profile=Editar perfil
+Support\ Chat=Chat de soporte
+Upload\ square\ image\ for\ better\ results=Sube una imagen cuadrada para obtener mejores resultados
+Copy\ Referral\ Link=Copiar enlace de referencia

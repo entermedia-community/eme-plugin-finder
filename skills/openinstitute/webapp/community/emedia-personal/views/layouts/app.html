@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="$!context.getLocale()">
+
+<head>
+
+#set( $title = "#text($content.title) - eMediaLibrary")
+
+  <title>$title</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+  <meta name="title" content="$title">
+  <meta name="description" content="$content.description">
+  <meta name="keywords" content="$content.keywords">
+  <meta name="og:title" content="$title">
+  <meta name="og:description" content="$content.description">
+  <meta name="og:image" content="https://emedialibrary.com/theme/emedia-banner.png"> <!-- This needs to be full URL -->
+  <meta name="og:url" content="https://emedialibrary.com">
+  <meta name="og:site_name" content="eMediaLibrary">
+  <meta name="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="$title">
+  <meta name="twitter:description" content="$content.description">
+  <meta name="twitter:image" content="https://emedialibrary.com/theme/emedia-banner.png"> <!-- This needs to be full URL -->
+  <meta name="twitter:url" content="https://emedialibrary.com">
+  <!-- <meta name="twitter:site" content="@eMediaLibrary">  --> <!-- Add twitter handle if there is one -->
+  
+  <meta name="robots" content="index, follow">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="language" content="English">
+  <meta name="revisit-after" content="7 days">
+  <meta name="author" content="eMediaLibrary">
+
+  <link rel="shortcut icon" href="https://emedialibrary.com/theme/favicon.ico" /> <!-- This should be a full URL -->
+
+  $pages.include("${communityhome}/theme/layouts/includes.html", $context)
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bree+Serif&Manrope:wght@400;500;600;700;800&family=Syne:wght@500;700;800&display=swap"
+    rel="stylesheet" />
+
+  <link rel="stylesheet" href="${communityhome}/theme/css/slick.css" />
+  
+  <link rel="stylesheet" href="${communityhome}/theme/css/aos.css" />
+  <link rel="stylesheet" href="${communityhome}/theme/css/custom.css" />
+  <link rel="stylesheet" href="${communityhome}/theme/css/desktop-library.css" />
+  <link rel="stylesheet" href="${communityhome}/theme/css/newsite.css" />
+</head>
+
+<body #if($desktop) class="desktop" #end>
+  #if($desktop)
+    
+    $pages.include("${apphome}/components/desktop/loading.html")
+  #end
+	<div id="application" 
+		class="bg-emdark" 
+		data-editmode='$!user.get("oe_edit_mode")' 
+		data-apphome="$!apphome" 
+		data-applink="$!{communitylink}"
+		data-finderhome="${finderhome}"
+		data-catalogid="$!content.catalogid"
+		data-user="$!user.id"
+		data-findroot="/website/blockfind"
+	>
+    #if($canviewsettings && !$browser.inApp())
+			$pages.include("${communityhome}/components/sidebars/user/index.html")
+		#end
+
+    <div class="page-shell">
+      $pages.include("${communityhome}/views/layouts/header.html")
+      $pages.includeContent()
+      $pages.include("${communityhome}/views/layouts/footer.html")
+    </div>
+    
+  </div>
+  
+  
+  
+  <script src="${communityhome}/theme/js/gsap.min.js"></script>
+  <script src="${communityhome}/theme/js/ScrollTrigger.min.js"></script>
+  <script src="${communityhome}/theme/js/MotionPathPlugin.min.js"></script>
+  <script src="${communityhome}/theme/js/animator.js"></script> 
+  <script src="${communityhome}/theme/js/jquery-migrate.min.js"></script>
+  <script src="${communityhome}/theme/js/hs.core.js"></script>   
+  <script src="${communityhome}/theme/js/hs-header.min.js"></script>
+  <script src="${communityhome}/theme/js/hs-go-to.min.js"></script>
+  <script src="${communityhome}/theme/js/jquery.validate.min.js"></script>
+  <script src="${communityhome}/theme/js/slick.js"></script>
+  <script src="${communityhome}/theme/js/hs.validation.js"></script>
+  <script src="${communityhome}/theme/js/hs.slick-carousel.js"></script>
+
+  <script id="openedit" src="/openedit/components/javascript/openedit.js"></script>
+  
+  <script src="${communityhome}/theme/js/aos.js"></script>
+  <script src="${communityhome}/theme/js/emediawebsite.js"></script>
+
+  <script src="${communityhome}/theme/js/newsite.js"></script> 
+
+  <script>
+    if (/MSIE \d|Trident.*rv:/.test(navigator.userAgent))
+      document.write('<script src="${communityhome}/theme/js/polifills.js"><\/script>');
+  </script>
+  
+  <!-- Google tag (gtag.js) -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-6YTM8J4987"></script>
+	<script>
+	  window.dataLayer = window.dataLayer || [];
+	  function gtag(){dataLayer.push(arguments);}
+	  gtag('js', new Date());
+	
+	  gtag('config', 'G-6YTM8J4987');
+	</script>
+</body>
+
+</html>

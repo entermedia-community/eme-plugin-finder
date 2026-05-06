@@ -1,0 +1,35 @@
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 justify-content-md-center">
+
+  #set( $templates = $mediaarchive.query("gallerytemplate").all().sort("ordering").search($context)) 
+  
+  #foreach($template in $templates)
+    <div class="col mb-4">
+      <div class="card h-100 template-card shadow-sm transition-3d-hover">
+        <div class="card-thumbnail">
+			    #set( $hero = $mediaarchive.getAsset($template.primarymedia) )
+				#set($imagelink = $mediaarchive.asLinkToPreview($hero,"image550x550"))
+			    <img src="$imagelink" class="card-img-top" alt="#text($template) template preview">
+          <div class="template-action d-flex gap-2">
+            <a class="btn bg-white border shadow-sm" href="${template.url}">
+              <i class="fas fa-eye me-1"></i>
+              Live Preview
+            </a>
+            <a class="btn btn-primary shadow-sm" href="${communitylink}/library-templates/details/${template.urlname}">
+              Details
+            </a>
+          </div>
+        </div>
+        <div class="card-body d-flex flex-column">
+          <h5 class="text-dark d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center">
+              <i class="small fas fa-${template.icon} me-2"></i> #text($template)
+            </div>
+           	<span class="text-muted small">(${template.templatetype})</span>
+          </h5>
+          <p class="card-text mt-1">${template.shortcaption}</p>
+        </div>
+      </div>
+    </div>
+  #end
+  
+</div>

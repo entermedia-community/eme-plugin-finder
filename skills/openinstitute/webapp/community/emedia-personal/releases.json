@@ -1,0 +1,35 @@
+#set( $currrentversion = $mediaarchive.query("desktopversions").all().sort("orderingDown").searchOne() )
+#set( $preset = $mediaarchive.getCachedData("convertpreset","0") )
+#set( $asset = $mediaarchive.getAsset($currrentversion.downloadwindows))
+#set( $downloadWindows = $mediaarchive.asLinkToShare("", $asset, $preset))
+#set( $asset = $mediaarchive.getAsset($currrentversion.downloadapple64))
+#set( $downloadAppleM = $mediaarchive.asLinkToShare("", $asset, $preset))
+#set( $asset = $mediaarchive.getAsset($currrentversion.downloadappleintel))
+#set( $downloadAppleI = $mediaarchive.asLinkToShare("", $asset, $preset))
+#set( $asset = $mediaarchive.getAsset($currrentversion.downloadlinux64))
+#set( $downloadLinux = $mediaarchive.asLinkToShare("", $asset, $preset))
+{
+  "version": "$currrentversion.versionnumber",
+  "name": "$currrentversion.name",
+  "description": "$currrentversion.longcaption",
+  "downloads": {
+    "windows": {
+      #ifnotnull($downloadWindows)
+      "amd": #jesc("$siteroot$downloadWindows")
+      #end
+    },
+    "apple": {
+      #ifnotnull($downloadAppleM)
+      "arm": #jesc("$siteroot$downloadAppleM")#ifnotnull($downloadAppleI), #end
+      #end
+      #ifnotnull($downloadAppleI)
+      "amd": #jesc("$siteroot$downloadAppleI")
+      #end
+    },
+    "linux": {
+      #ifnotnull($downloadLinux)
+      "amd": #jesc("$siteroot$downloadLinux")
+      #end
+    }
+  }
+}

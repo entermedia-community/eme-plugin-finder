@@ -1,0 +1,61 @@
+
+<root>
+  <data id="cdn_prefix" value="">
+    <name><![CDATA[CDN Prefix]]></name>
+  </data>
+  <data id="mediadbappid" value="site/mediadb">
+    <name><![CDATA[MediaDB Application ID]]></name>
+  </data>
+  
+  <data id="allowloginbyemail" value="true">
+    <name><![CDATA[Allow Login By Email]]></name>
+  </data>
+  
+  
+  <data id="donation_email_body">
+    <value><![CDATA[
+
+	<div style="background-color:#f1f1f1; padding:30px 0;">
+	<div style="background-color:#fff; padding:20px; margin:0 auto; width:600px; color:#000;">
+		<div style="background-color:#A5DAD3; padding: 5px 5px; margin-bottom:20px; text-align:center;">
+		<a href="https://openinstitute.org/"><img src="https://openinstitute.org/app/theme/images/oi-logo-w.png"></a>
+		</div>
+		
+
+
+<p>Dear <strong>${donor}</strong>, </p>
+
+<p>Thank you for your donation of <strong>${amount}(${currency})</strong> to <strong><a href="${project_url}">${project}</a></strong> on <strong>${donationdate}</strong>. We at Open Institute (OI) and our partners appreciate your support!</p>
+
+<p>Through your contribution we are improving the lives of others, OI enables free fundraising for humanitarian and cultural projects.</p>
+
+<p>Open Institute does not charge fees for projects, sponsors and donors like you help us to keep our OI platform free of charge. You can continue to contribute to this by becoming a monthly <strong><a href="${project_url_donation}">sponsor</a></strong>.</p>
+
+<p>We thank you again for your continued support!&nbsp;<br />
+<strong><a href="https://openinstitute.org/app/about/index.html">The OI Team</a></strong></p>
+
+<p><em>This email is serving as a 501(c)(3) tax-compliant donation receipt, for your records, and declaring that no goods or services were provided by the not-for-profit organization in return for the contribution. EIN (US-tax #): 82-1707895.</em></p>
+
+</div>
+</div>
+
+    ]]></value>
+  </data>
+  
+  
+  <property id="events_notify_collective_app" value="entermediadb/app">Collective Chat Notify App</property>
+  
+  <data id="invoice_email_header"> 
+    <name><![CDATA[invoice_email_header]]></name>  
+    <value><![CDATA[<h2>Hello ${invoiceto}</h2><p>Thank you for your purchase at ${project}, this is your invoice.</p>]]></value> 
+  </data>  
+  <data id="invoice_email_footer"> 
+    <name><![CDATA[invoice_email_footer]]></name>  
+    <value><![CDATA[<p>If you have any questions about this invoice, reach out to our support team for help.  </p><p>Cheers,<br> The Open Institute Team</p>]]></value> 
+  </data>  
+  <data id="invoice_paid_email"> 
+    <name><![CDATA[invoice_paid_email]]></name>  
+    <value><![CDATA[<p>Thank you for your purchase.</p> <p>If you have any questions about this invoice, reach out to our support team for help.</p>]]></value> 
+  </data>
+  
+</root>

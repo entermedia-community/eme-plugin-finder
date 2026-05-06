@@ -1,0 +1,27 @@
+#set($libraryid = "collectives")
+
+#set( $searcher = $mediaarchive.getSearcher("librarycollection") )
+#set( $xmledithome  = "$apphome/components/xml")
+$context.putPageValue("searcher",$searcher)
+
+
+<form name="saveproject" id="saveproject" action="${communitylink}/projects/add/newsave.html" method="post" class="force-validate-inputs">
+	<input type="hidden" name="field" value="communitytagcategory" />
+	<input type="hidden" name="communitytagcategory.value" value="$!content.communitytagcategory" />
+
+	<input type="hidden" name="save" value="true" />
+	<input type="hidden" name="searchtype" value="librarycollection" />
+
+	<input type="hidden" name="field" value="owner" />
+	<input type="hidden" name="owner.value" value="$user.getId()" />
+
+	<input type="hidden" name="field" value="library" />
+	<input type="hidden" name="library.value" value="$!libraryid" />
+
+	#set( $searcher = $mediaarchive.getSearcher("librarycollection") )
+	$context.putPageValue("searcher",$searcher)
+	$context.putPageValue("viewid", "librarycollectionaddnew")
+	$pages.include("/$applicationid/components/xml/detaileditor4.html", $context)
+</form>
+
+

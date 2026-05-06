@@ -1,0 +1,37 @@
+<div class="d-flex flex-column align-items-center">
+  <div id="savedLibraries">
+		<p class="text-muted text-center lead subheader" style="max-width: 720px;">
+			These are free web sites that anyone can use. They are managed and supported by an open community of users. 
+		</p>
+
+		<div class="row row-cols-1 row-cols-md-2 g-4 justify-content-md-center mt-1">
+			#set($librarires = [
+				["Open Institute", "Non-Profit Project Management", "https://openinstitute.org", "openinstitute", "OI supports a new collaborative economic model for a digital age. The model is an online communication platform where sponsors monitor the ongoing social and ecological impact of their donations. Projects hosted on OI use accountability and transparency to provide measurable, verifiable outcomes for donations received."],
+				["eInnovation","Content Creators", "https://einnovation.com", "einnovation", "Create, organize and share your social media content. Store your posts, videos and emails in one place."], 
+				["Common Roots", "Cultural Heritage Library", "https://commonroots.emedialibrary.com", "commonroots", "A collection of music, literature and video, documenting original works across cultures, locations and generations. We celebrate our shared humanity of stories and songs for future generation to build upon."]
+			])
+			#foreach ($library in $librarires)
+				<div class="col mb-4">
+					<div class="card h-100 template-card shadow">
+						<div class="card-thumbnail">
+							<img src="https://emedialibrary.org${communityhome}/images/${library[3]}.png" class="card-img-top" alt="${library[0]} preview">
+						</div>
+						<hr class="light m-0">
+						<div class="card-body d-flex flex-column">
+							<h5 class="text-dark d-flex align-items-center justify-content-between">
+								<div class="d-flex align-items-center">
+									${library[0]}
+								</div>
+								<span class="text-muted small">(${library[1]})</span>
+							</h5>
+							<p class="card-text mt-1">${library[4]}</p>
+							<a class="btn py-2 btn-primary shadow-sm mt-auto align-self-center transition-3d-hover" href="${library[2]}">
+								Open Library <i class="bi bi-arrow-right fas fa-arrow-right small ms-1"></i>
+							</a>
+						</div>
+					</div>
+				</div>
+			#end
+		</div>
+  </div>
+</div>

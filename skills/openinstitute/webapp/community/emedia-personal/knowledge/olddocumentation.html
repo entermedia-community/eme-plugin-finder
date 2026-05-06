@@ -1,0 +1,188 @@
+#set($sidebarData = {})
+
+#set($sidebarData["Versions"] = ["EnterMedia Workspace", "EnterMedia Version 10", "EnterMedia Version 9"])
+
+#set($sidebarData["API"] = ["Search Assets", "GET all assets from a Collection", {"JSON Rest API": ["Clone", "Delete Asset", "Distribution Link", "Get Asset Details", "Import Local File", "Primary Upload URL", "Replace URL", "Rotate Asset", "Run A Conversion", "Upload URL"]}, "MediaDB API Usage", "XML - Rest API"])
+
+#set($sidebarData["Setup"] = ["Add new locale/language", "Application Export and Import", "Basic Failover Setup", "Clone an EntermediaDB instance", "Command Line", "Configuring NFS and Docker as a service", "Dev environment setup with Eclipse and Ubuntu 18.04 (Linux Mint)", "Distributed Media Sync", "Docker and iptables persistence", "Docker Deployment Mac", {"Docker Installation": ["CentOs", "Redhat / RHEL 7.x/8.x", "Ubuntu", "Upgrade Instructions"]}, "Elasticsearch Cluster Settings", "EMedia Finder - Login", "EMedia Finder Download", "Enable SSH access to an EnterMedia Docker Instance", "EnterMedia 10 Knowledgbase", "Google App Trust", "Implementing Cookie Auto-Login Policies", "IPTables Docker and Nginx", "LDAP Authentication", "Linux Systems Permissions", "Migrate EM9 to EM10", "Mounting a volume", "NGINX Configuration", "OAuth Authenticator (Google , Facebook, Etc.)", "Server Memory Optimization", "Server Requirements", "Setup Eclipse on Windows", "SFTP and SSH into Docker Instance", "SSL - Import self signed certificates", "SSL Lets Encrypt for EnterMedia with Nginx", "Upgrade Methods"])
+
+#set($sidebarData["Features"] = ["Annotations", "Asset Field Type", "Assets Request for Approval", "Badges on Assets", "Collection Managing", "Cropping Tool", "Custom Filters", "Custom Metadata Export", "Custom Print View", "Data Distribution Network using Mirroring", "Distributed Sync Overview", "Drag and Drop", "Email Template Editor", "EMedia Finder (Mobile) Android Studio Setup", "EMedia Finder Login Flow", "EnterMedia Image & Video Inserter Wordpress Plugin", "Geolocation", "Google 2 Factor Authentication", "Google Speech API - Close Captioning", "Google Vision API", "Hot Folders", "Malicious Hidden Files Detection", "MediaBoat", "Merging User Assets", "Notifications on asset collaboration", "Password Regex", "Search Operators", "Site Notifications", "Theme Editor", "Watermarketing Asset"])
+
+#set($sidebarData["Administration"] = ["Assets and Data Export/Import", {"Collections": ["Changing Library", "Custom Thumbnail", "Featured", "Permissions", "Sharing", "Visibility"]}, "Custom Conversion Profile", "Customizing EnterMedia App", "Customizing Layouts", "Disable Auto Categorize by Year", "Entermedia Glossary", "Get the entermediakey", "Google Cloud Platform API Key", "Google OAuth 2.0 Web Client", "Hot Folder - Google Drive", "Hot Folders Advanced Logs", "Manager Snapshots", "Metadata Fields", "Permissions: Editor Base Configuration", "Role Based Permissions", "Sharing Assets Link", "Tomcat Log Rotation", "XCONF Configuration Files"])
+
+
+
+<main id="documentation" role="main" class="bg-white">    
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-12 col-lg-3 sidebarNavCol border-right">
+        <div class="navbar-expand-lg navbar-expand-lg-collapse-block">
+          <button type="button" class="navbar-toggler btn rounded-circle p-3 mt-2" data-bs-toggle="collapse" data-bs-target="#sidebarNav">
+            <span class="d-flex justify-content-between align-items-center">
+              <span class="navbar-toggler-default">
+                <svg width="14" height="14" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
+                  <path fill="currentColor" d="M17.4,6.2H0.6C0.3,6.2,0,5.9,0,5.5V4.1c0-0.4,0.3-0.7,0.6-0.7h16.9c0.3,0,0.6,0.3,0.6,0.7v1.4C18,5.9,17.7,6.2,17.4,6.2z M17.4,14.1H0.6c-0.3,0-0.6-0.3-0.6-0.7V12c0-0.4,0.3-0.7,0.6-0.7h16.9c0.3,0,0.6,0.3,0.6,0.7v1.4C18,13.7,17.7,14.1,17.4,14.1z"/>
+                </svg>
+              </span>
+              <span class="navbar-toggler-toggled">
+                <svg width="14" height="14" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
+                  <path fill="currentColor" d="M11.5,9.5l5-5c0.2-0.2,0.2-0.6-0.1-0.9l-1-1c-0.3-0.3-0.7-0.3-0.9-0.1l-5,5l-5-5C4.3,2.3,3.9,2.4,3.6,2.6l-1,1 C2.4,3.9,2.3,4.3,2.5,4.5l5,5l-5,5c-0.2,0.2-0.2,0.6,0.1,0.9l1,1c0.3,0.3,0.7,0.3,0.9,0.1l5-5l5,5c0.2,0.2,0.6,0.2,0.9-0.1l1-1 c0.3-0.3,0.3-0.7,0.1-0.9L11.5,9.5z"/>
+                </svg>
+              </span>
+            </span>
+          </button>
+          
+          
+          <div id="sidebarNav" class="collapse navbar-collapse">
+            <div class="mt-5 mt-lg-0 p-2">
+              #set($idx = 0)
+              #set($jdx = 0)
+              #foreach ($key in $sidebarData.keySet())
+                <h2 class="h4 text-dark mt-3 mb-1">$key</h2> 
+                #set($kdx = 0)
+                #foreach ($item in $sidebarData[$key])
+
+                  #if($kdx > 5)
+                    <div class="collapse" id="collapsedSubMenu${jdx}">
+                  #end
+
+                  #if ($item.class.getSimpleName() == "String")
+                    <a class="dropdown-item d-flex justify-content-between align-items-center px-0" href="#">
+                      $item
+                    </a>
+                  #else
+                    #foreach ($subitem in $item.keySet())
+                      <div class="position-relative">
+                        <a class="dropdown-nav-link dropdown-toggle dropdown-toggle-collapse" href="javascript:;" role="button" data-bs-toggle="collapse" aria-expanded="false" data-bs-target="#sidebarNav${idx}">
+                          $subitem
+                        </a>
+                      </div>
+                      <div id="sidebarNav${idx}" class="collapse">
+                        #foreach ($subsubitem in $item[$subitem])
+                            <a class="dropdown-item" href="#">$subsubitem</a>
+                        #end
+                      </div>
+                      #set($idx = $idx + 1)
+                    #end
+                  #end
+
+                  #if($kdx > 5)
+                    </div>
+                  #else
+                    #set($kdx = $kdx + 1)
+                  #end
+
+                #end
+
+                #if($kdx == 6) 
+                  <a class="link link-collapse small font-size-1 font-weight-bold pt-1" data-toggle="collapse" href="#collapsedSubMenu${jdx}" role="button" aria-expanded="false" aria-controls="collapsedSubMenu${jdx}">
+                    <span class="link-collapse-default">View more <span class="link-icon ms-1">+</span></span>
+                    <span class="link-collapse-active">View less <span class="text-primary ms-1">&mdash;</span></span>
+                  </a>
+                  #set($jdx = $jdx + 1)
+                #end
+              #end
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-sm-12 col-lg-9">
+        <div class="container">
+          <div class="row justify-content-md-between">
+            <div class="col-md-6 space-1 space-top-lg-4 space-bottom-lg-2">
+              <div class="mb-5">
+                <h1 class="text-navy">How can we help?</h1>
+              </div>
+
+              <form class="input-group input-group-merge mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text" id="askQuestions">
+                    <i class="fas fa-search"></i>
+                  </span>
+                </div>
+                <input type="search" class="form-control search-doc" placeholder="Search the knowledge base..." aria-label="Search the knowledge base..." aria-describedby="askQuestions">
+              </form>
+              
+              <p class="font-size-1 text-navy">
+                Popular topics:
+                <a class="font-weight-bold" href="#">pricing,</a>
+                <a class="font-weight-bold ms-1" href="#">upgrade,</a>
+                <a class="font-weight-bold ms-1" href="#">hosting,</a>
+              </p>
+            </div>
+
+            <div class="col-md-6 align-self-md-end d-none d-md-inline-block">
+              <figure class="space-bottom-2 p-5">
+                <img class="img-fluid" src="${communitylink}/theme/images/help.png" alt="Need Help?">
+              </figure>
+            </div>
+          </div>
+          <div class="w-100 border-bottom"></div>
+          <div class="row justify-content-md-between space-top-1 key-ft">
+            <div class="col-sm-12">
+              <h2 class="text-navy text-center mb-5">
+               Getting Started
+              </h2>
+            </div>
+            <div class="col-md-6 mb-4">
+              <div class="card flex-wrap flex-row">
+                <div class="card-body py-4 h-100">
+                  <h3 class="mb-4">eMediaLibrary Entities</h3>
+                  <figure class="w-100 mx-auto mb-5 rounded overflow-hidden shadow-sm">
+                    <img class="img-fluid" src="${communitylink}/theme/images/entities.png" alt="eMediaLibrary Entities">
+                  </figure>
+                  <p class="text-muted">Entities enables files to be organized in a more automated way, it also makes for faster searching! Entity based systems are a more natural way to store your files than just folders on your computer. When you add facial and object recognition plus automated tags it's even more exciting. </p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6 mb-4">
+              <div class="card flex-wrap flex-row h-100">
+                <div class="card-body py-4">
+                  <h3 class="mb-4">Image Editor</h3>
+                  <figure class="w-100 mx-auto mb-5 rounded overflow-hidden shadow-sm">
+                    <img class="img-fluid" src="${communitylink}/theme/images/editor.png" alt="Image Editor">
+                  </figure>
+                  <p class="text-muted">eMediaLibrary has a built in image editor so you don’t have to swap between apps to do simple edits.<br>Crop, rotate, add filters, text, and convert in the image editor for a more fluid workflow. </p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6 mb-4">
+              <div class="card flex-wrap flex-row h-100">
+                <div class="card-body py-4">
+                  <h3 class="mb-4">Facial Recognition</h3>
+                  <figure class="w-100 mx-auto mb-5 rounded overflow-hidden shadow-sm">
+                    <img class="img-fluid" src="${communitylink}/theme/images/faces.png" alt="Facial Recognition">
+                  </figure>
+                  <p class="text-muted">When you upload a folder, or a collection of files to eMediaLibary, you have the option to enable facial recognition. Once facial recognition is enabled, the software will start recognizing faces and grouping them into facial profiles. The more you use it, the more it will learn, making it more effective over time! You can use this feature for all sorts of useful applications.</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6 mb-4">
+              <div class="card flex-wrap flex-row h-100">
+                <div class="card-body py-4">
+                  <h3 class="mb-4">High Powered Searches</h3>
+                  <figure class="w-100 mx-auto mb-5 rounded overflow-hidden shadow-sm">
+                    <img class="img-fluid" src="${communitylink}/theme/images/search.png" alt="High Powered Searches">
+                  </figure>
+                  <p class="text-muted">Search in 3 different ways with eMediaLibrary. Use the top search bar to browse files by keyword. You can also manually browse entities and directories. To make your process even easier, the summary sidebar allows the user to narrow down and filter results even more by size, date, type, face, and much more!</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6 mb-4">
+              <div class="card flex-wrap flex-row h-100">
+                <div class="card-body py-4">
+                  <h3 class="mb-4">Organize your files with Tags and Metadata</h3>
+                  <figure class="w-100 mx-auto mb-5 rounded overflow-hidden shadow-sm">
+                    <img class="img-fluid" src="${communitylink}/theme/images/metadata.png" alt="Organize your files with Tags and Metadata">
+                  </figure>
+                  <p class="text-muted">eMediaLibrary has an amazing system of tags, profiles, entities and metadata to help you find what you are looking for and organize your files. Metadata is created when a user enters details on the files they are uploading, and it’s also created automatically with artificial intelligence.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>

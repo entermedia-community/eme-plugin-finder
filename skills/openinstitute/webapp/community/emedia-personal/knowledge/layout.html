@@ -1,0 +1,98 @@
+
+<main id="documentation" role="main" class="bg-white documentation">    
+  <div class="container-fluid">
+    <div class="row">
+		
+		<div class="col-sm-3 col-lg-2 sidebarNavCol border-right">
+        <div class="navbar-expand-lg navbar-expand-lg-collapse-block">
+          <button type="button" class="navbar-toggler btn rounded-circle p-3 mt-2" data-bs-toggle="collapse" data-bs-target="#sidebarNav">
+            <span class="d-flex justify-content-between align-items-center">
+              <span class="navbar-toggler-default">
+                <svg width="14" height="14" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
+                  <path fill="currentColor" d="M17.4,6.2H0.6C0.3,6.2,0,5.9,0,5.5V4.1c0-0.4,0.3-0.7,0.6-0.7h16.9c0.3,0,0.6,0.3,0.6,0.7v1.4C18,5.9,17.7,6.2,17.4,6.2z M17.4,14.1H0.6c-0.3,0-0.6-0.3-0.6-0.7V12c0-0.4,0.3-0.7,0.6-0.7h16.9c0.3,0,0.6,0.3,0.6,0.7v1.4C18,13.7,17.7,14.1,17.4,14.1z"/>
+                </svg>
+              </span>
+              <span class="navbar-toggler-toggled">
+                <svg width="14" height="14" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
+                  <path fill="currentColor" d="M11.5,9.5l5-5c0.2-0.2,0.2-0.6-0.1-0.9l-1-1c-0.3-0.3-0.7-0.3-0.9-0.1l-5,5l-5-5C4.3,2.3,3.9,2.4,3.6,2.6l-1,1 C2.4,3.9,2.3,4.3,2.5,4.5l5,5l-5,5c-0.2,0.2-0.2,0.6,0.1,0.9l1,1c0.3,0.3,0.7,0.3,0.9,0.1l5-5l5,5c0.2,0.2,0.6,0.2,0.9-0.1l1-1 c0.3-0.3,0.3-0.7,0.1-0.9L11.5,9.5z"/>
+                </svg>
+              </span>
+            </span>
+          </button>
+          
+          
+	      	<div id="sidebarNav" class="collapse navbar-collapse">
+				$pages.include("${communityhome}/knowledge/sidebar.html", $context)  
+	  		</div>
+      
+		</div>
+		</div>      
+		<div class="col-sm-6 col-lg-6	">
+			<div class="container p-3 documentation-post">
+				#if($postdata.post_title && $user.oe_edit_mode != "postedit")
+					$content.setValue("meta_title", "$postdata.post_title - EnterMediaDB")
+					$content.setValue("meta_canonical", "$siteRoot/$postdata.sourcepath")
+					#set($pagetitle = $postdata.metatitle)
+					#ifnull($pagetitle)
+						#set($pagetitle = $postdata.post_title)
+					#end
+					<h1>$pagetitle</h1>
+				#end
+				#ifnull($postdata.maincontent)
+					$pages.include("./home.html")
+				#end
+				
+				
+				#if($user.oe_edit_mode == "postedit")
+					<form id="edit-$!{postdata.id}"
+						 method="post" 
+						 class="ajaxform"
+						 action="${sitelink}/find/views/modules/postdata/editors/data/save.html" 
+						 data-targetdiv="savedok">
+						<input type="hidden" name="oemaxlevel" value="1" />
+
+						<input type="hidden" name="save" value="true" />
+						<input type="hidden" name="id" value="${postdata.id}" />
+						
+						
+						$context.putPageValue("searcher",$searcherManager.getSearcher($catalogid,"postdata")) 
+						$context.putPageValue("viewid","postdatageneral")
+						$context.putPageValue("data",$postdata)
+						
+						$pages.include("$communityhome/components/xml/detaileditorcss.html", $context)
+						
+						
+						<input type="hidden" name="field" value="maincontent" />
+						<textarea class="oe-editable" id="edit-$!{postdata.id}" name="maincontent.value" placeholder="[[Page Content]]" data-editonly="true">#esc($!postdata.maincontent)</textarea>
+					</form>
+					
+					<div class="d-flex align-items-center py-3">
+						<button class="btn btn-success me-2" type="submit" form="edit-$!{postdata.id}">[[Save]]</button>
+						
+						
+						#set($editurl = "${sitelink}/find/views/settings/lists/datamanager/edit/edit.html?id=${postdata.id}&searchtype=postdata")
+						<a href="$editurl" class="btn btn-primary">[[Edit]]</a>
+						<div id="savedok"></div>
+					</div>
+				#else 
+					$!postdata.maincontent
+					
+					<div class="post-keywords d-flex">
+						#set($tags = $postdata.knowledgebase_tag)
+						#ifnotnull($tags)
+							#set( $tags = $tags.split("\s*\|\s*") )
+							#foreach($vtag in $tags)
+								<div class="pe-3"><i class="fas fa-tag"></i> $!vtag</div>
+							#end
+						#end
+					</div>
+				#end
+	
+			</div>
+		</div>
+	 
+</div>
+</div>
+</main>
+
+

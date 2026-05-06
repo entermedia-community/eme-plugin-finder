@@ -1,0 +1,163 @@
+#if(!$siteroot)
+	#set($siteroot = $context.siteRoot)
+	#if(!$siteroot)
+		#set($siteroot = $url_util.buildRoot())
+	#end
+#end
+<div style="background-color:#f1f1f1; padding:30px 0;">
+<div style="background-color:#fff; padding:20px; margin:0 auto; width:600px; color:#000;">
+<p>Open Institute [[projects updates for user]]: <strong>$!followeruser</strong></p>
+
+#foreach( $collectionid in $collectionsupdated.keySet())
+	#set($tables = $collectionsupdated.get($collectionid))
+	###set( $collectionfull = $mediaarchive.getCachedData("librarycollection",$collectionid) )
+	#set( $collectionfull = $tables.get("collection") )
+	<div style="margin-bottom:20px;">
+		<h2 style="padding:5px 0; margin:0;">
+		[[Project]]: 
+		<a href='$!collectionfull.getValue("finalurl")'>$collectionfull.getName()</a></h2>
+		<div style="padding:0 0 0 20px;">
+		#foreach($tableid as $tables.keySet())
+			#if($tableid != "collection")
+			
+				#set($tableitems = $tables.get($tableid)) 
+				
+				#if($tableid=="tickets")
+					<h3 style="padding:5px 0; margin:0;">[[Tickets]]</h3>
+				#elseif($tableid=="tasks")
+					<h3  style="padding:5px 0; margin:0;">[[Tasks]]</h3>
+				#elseif($tableid=="expenses")
+					<h3 style="padding:5px 0; margin:0;">[[Expenses]]</h3>
+				#elseif($tableid=="posts")
+					<h3 style="padding:5px 0; margin:0;">[[Posts]]</h3>
+				#end
+				
+				$!tableitems.size() $tableid [[updated since]] $!since<br>
+				#set($odd = false)
+				
+				#foreach($data as $tableitems)
+					#set($row = $data.get("data"))
+					#set($bgcolor = "#f8f8f8")
+					###TICKETS
+				
+					#if($tableid=="tickets")
+						#set($ticketurl = "$!siteroot$applink/collective/goals/priorities/index.html?collectionid=$!collectionid&opengoalid=$!row.getId()")
+						
+						#if($row.projectstatus == "critical")
+							#set($bgcolor = "beige!important")
+						#end
+						<div style="padding:10px; margin-bottom:10px; background-color: $bgcolor;">
+							#set($recordstatus = $row.getValue("emrecordstatus"))
+							$context.getDateTime($!recordstatus.recordmodificationdate)&nbsp;
+							<a href="$ticketurl">
+								<strong>[[Ticket]] #$!row.ticketnumber</strong>
+							</a>
+							#if($row.projectstatus == "critical")
+							&nbsp;[[Status]]: <strong>[[URGENT]]</strong>
+							#end 
+							&nbsp;[[by]]: $!mediaarchive.getUser($row.owner).getAnonNickName()
+							<br>
+							<strong>$!row.getName()</strong><br>
+							 $!row.details
+							 
+							 #if ($row.deliverydate)
+								<div style="color:red; font-weight:bold; font-size:0.9em;">[[Due on:]] $row.deliverydate.substring(0, 10)</div>
+							 #end
+							 #set($tasks = $data.get("tasks"))
+							 #if($tasks)
+							 	<div style="margin:5px 0; padding:10px 0 0 20px;">
+							 	<h4 style="margin:0;">$tasks.size() [[Tasks updated]]:</h4>
+								 #foreach($task in $tasks)
+								 	<div style="padding:0px 0 10px 0;">
+								 	#set($recordstatus = $task.getValue("emrecordstatus"))
+									$context.getDateTime($!recordstatus.recordmodificationdate)&nbsp;
+						  			#set( $tree = $mediaarchive.getCachedData("projectdepartment",$task.projectdepartment) )
+								 	<a href="$ticketurl">$!tree [$!context.getText($!mediaarchive.getData("taskstatus", $task.taskstatus))]</a>
+								 	&nbsp;[[Assigned to]]: $!mediaarchive.getUser($task.completedby).getAnonNickName()
+								 	<br>
+								 	$task.comment
+								 	
+								 	</div>
+								 #end
+								 </div>
+							 #end
+						 </div>
+						 
+					###TASKS ONLY
+					
+					#elseif($tableid=="tasks")
+						#set($ticket = $data.get("ticket"))
+						#set($ticketurl = "$!siteroot$applink/collective/goals/priorities/index.html?collectionid=$!collectionid&opengoalid=$!ticket.getId()")
+	
+						#if($ticket.projectstatus == "critical")
+							#set($bgcolor = "beige!important")
+						#end
+						#set( $tree =  $mediaarchive.getCategory($row.projectdepartment))
+						<div style="padding:10px 0 15px 20px; margin-bottom:5px; background-color: $bgcolor;">
+						[[Ticket]]: 
+							<a href="$ticketurl">
+							<strong>[[Ticket]] #$!ticket.ticketnumber</strong> 
+							</a><br>
+							 <strong>$!ticket.getName()</strong><br>
+							#set($recordstatus = $row.getValue("emrecordstatus"))
+							$!context.getDateTime($!recordstatus.recordmodificationdate)&nbsp;
+							<a href="$ticketurl">$!tree [$!context.getText($!mediaarchive.getData("taskstatus", $row.taskstatus))]</a>
+							&nbsp;[[Assigned to]]: $!mediaarchive.getUser($row.completedby).getAnonNickName()
+							<br> 
+							$!row.comment 
+							<br>
+						</div>
+						
+					###EXPENSES
+					
+					#elseif($tableid=="expenses")
+						#set($expenseurl= "$!siteroot$applink/collective/services/expenses/index.html?collectionid=$!collectionid")
+						
+						#if($odd)
+							#set($bgcolor = "#fffff")
+						#end
+						<div style="padding:5px 10px; margin-bottom:0px; background-color: $bgcolor; border-bottom:1px solid #e1e1e1;">
+							<table style="width:100%">
+							<tr>
+								<td style="width: 30%;">
+								#set($recordstatus = $row.getValue("emrecordstatus"))
+								$context.getDateTime($!recordstatus.recordmodificationdate)&nbsp;
+								</td>
+								
+								<td style="width: 20%;">
+								<a href="$expenseurl">$!mediaarchive.getCachedData("collectiveproject", $row.collectiveproject)</a></td>
+	                        	<td>
+	                        		<a href="$expenseurl">
+	                        		$!context.getText($!mediaarchive.getCachedData("expensetype", $row.expensetype))</a>
+	                        		#if($row.ispaid == true)&nbsp;&nbsp;<strong>([[Paid]])</strong> #end
+	                        	</td>
+	                        	<td style="text-align:right; width: 18%;">
+	                        		$!context.doubleToMoney($!row.total, 2) $!context.getText($!mediaarchive.getCachedData("currencytype", $row.currencytype))
+	                        		
+	                        	</td>
+							 	</tr>
+							</table>
+						</div>
+					
+					##POSTS
+					
+					#elseif($tableid=="posts")
+						#set($postURl= $collectionfull.getValue("finalurl"))
+						<div>
+						<a href="$postURl">$row.getValue("title")</a>
+						</div>
+					#end
+					#set($odd = !$odd)
+				#end
+				#end
+			#end
+		</div>
+	</div>
+#end
+
+
+<p>
+[[To change notification preferences please edit your]] <a href="$!siteroot$applink/users/index.html">[[Account Preferences]]</a>
+</p>
+</div>
+</div>

@@ -1,0 +1,26 @@
+<main id="content " role="main">
+  <div class="container space-top-3 space-bottom-lg-2">
+    <div class="row no-gutters">
+      <div class="col-md-8 col-lg-7 col-xl-6 offset-md-2 offset-lg-2 offset-xl-3 space-2">
+		  
+		  	
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+  $(document).ready(function() {
+    $('#noPass').change(function() {
+      if (this.checked) {
+        $('#signinSrPassword').prop('disabled', true);
+        // $('#signinSrPassword').prop('required', false);
+        $('#signinSrPassword').parent().hide();
+      } else {
+        $('#signinSrPassword').prop('disabled', false);
+        // $('#signinSrPassword').prop('required', true);
+        $('#signinSrPassword').parent().show();
+      }
+    });
+  });
+</script>

@@ -1,0 +1,13 @@
+{
+  "response":
+      {
+        "status":"ok"
+      }
+  ,
+  "data": 
+	$context.putPageValue("hit",$userprofile)
+	#set( $searcher = $mediaarchive.getSearcher("userprofile") )
+	$context.putPageValue("searcher",$searcher)
+	$pages.include(	"${apphome}/services/module/${searcher.getSearchType()}/hit.json",$context)
+ 
+}

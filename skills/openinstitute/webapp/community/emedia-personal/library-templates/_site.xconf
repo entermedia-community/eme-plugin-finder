@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<page>
+    <property name="collectivesection">templates</property>
+    <property name="title">Smart Folder Templates</property>
+    <inner-layout>${communityhome}/views/layouts/app.html</inner-layout>
+</page>

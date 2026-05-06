@@ -7,7 +7,7 @@
 	<property name="appname" value="${ant.project.name}"/>
 	<property name="org" value="EnterMediaSoftware.com"/>
 	<property name="etc" location="${basedir}/etc"/>
-	<property name="build" location="${basedir}/build"/>
+	<property name="bin" location="${basedir}/bin"/>
 
 	<property environment="env" />
 	<property name="majorversion" value="12" />
@@ -36,15 +36,16 @@
 
 	<!-- Just make sure it all compiles ok -->
 	<target name="compile">
-		<mkdir dir="${build}/compile"/>
+		<mkdir dir="${bin}"/>
 
-	<javac debug="true" destdir="${build}/compile" source="17" target="17" nowarn="on">
-		<src path="${basedir}/skills/emediabase/code"/>
+	<javac debug="true" destdir="${bin}" source="17" target="17" nowarn="on">
+		<src path="${basedir}/skills/system/code"/>
 		<src path="${basedir}/skills/openedit/code"/>
+		<src path="${basedir}/skills/finder/code"/>
 		<src path="${basedir}/skills/openinstitute/code"/>
 
 		<classpath>
-				<fileset dir="${basedir}/skills/emediabase/lib/">
+				<fileset dir="${basedir}/skills/system/lib/">
 					<include name="*.jar"/>
 					<include name="compile/*.jar"/>
 				</fileset>
@@ -52,11 +53,14 @@
 					<include name="*.jar"/>
 					<include name="compile/*.jar"/>
 				</fileset>
+				<fileset dir="${basedir}/skills/finder/lib/">
+					<include name="*.jar"/>
+					<include name="compile/*.jar"/>
+				</fileset>
 				<fileset dir="${basedir}/skills/openinstitute/lib/">
 					<include name="*.jar"/>
 					<include name="compile/*.jar"/>
 				</fileset>
-
 			</classpath>
 			<include name="**"/>
 		</javac>
@@ -74,6 +78,7 @@
 		<tarfileset dir="${basedir}/agents" prefix="agents"/>
 		<tarfileset dir="${basedir}/tomcat" prefix="tomcat"/>
 		<tarfileset dir="${basedir}/webapp" prefix="webapp"/>
+		<tarfileset dir="${basedir}/bin" prefix="bin"/>
 		</tar>
 
 		<copy overwrite="true" file="${deployDir}/builds/${versionedApp}.tar.gz" tofile="${deployDir}/eme-lib.tar.gz"/>

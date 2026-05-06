@@ -1,0 +1,63 @@
+#set($detailid = $context.getRequestParameter("detailid") )
+#ifnull($detailid)
+	#set($detailid = $detail.getId() ) 
+#end
+
+#set($listfilterid = $context.getRequestParameter("listfilterid") )
+#ifnull($listfilterid)
+	#set($listfilterid = $detail.get("listfilterid") ) 
+#end
+	
+#set($paymententitytype = $context.getRequestParameter("paymententitytype") )
+#ifnull($paymententitytype)
+	#set($paymententitytype = "user" ) 
+#end
+
+#ifnull($val)
+	#set($val = $context.getRequestParameter("value") )
+#end
+
+
+<div id="collectionpickerinner$detailid" class="librarycollectionpicker" data-listfilterid="$listfilterid" data-detailid="$detailid" data-oemaxlevel="1" data-value="$!val" >
+	
+		<script type="text/javascript">
+			$("#${listfilterid}value").change( function() {
+				var div = jQuery("#collectionpickerinner$detailid");
+				var data = div.data();
+				data["paymententitytype"] = $("#${listfilterid}value").val();
+				jQuery.ajax(
+				{
+					url: "$page.getPath()",
+					data: data,
+					success: function(html)
+					{
+						div.replaceWith(html);										
+					}
+				});
+			});
+		</script>
+	
+		<div class="collectionpicker" style="min-width:200px">
+						#set( $text = "[[Search]]" )
+						#if( $selecteduser)
+							#set( $text = "$selecteduser.toString()" )
+						#end
+						
+						#if( $paymententitytype == "externalbank")
+							<textarea name="${detailid}.value" style="width: 450px; height:65px" id="picker$detailid" placeholder="[[Enter Bank Name, Account Type, Account# Routing and Full Name]]"></textarea>
+						#elseif( $paymententitytype == "externalwise")
+							<input name="${detailid}.value" size="35" id="picker$detailid" placeholder="[[Enter Wise Email]]"/>
+						#elseif( $paymententitytype == "externalpaypal")
+							<input name="${detailid}.value" size="35" id="picker$detailid" placeholder="[[Enter Paypal Email]]"/>
+						#else
+						<select name="${detailid}.value" id="picker$detailid" 
+							class="listautocomplete form-control" 
+							data-showdefault="$text" data-addnewlabel="[[[Add New]]]" 
+							data-catalogid="$catalogid"
+							data-searchfield="name" data-searchtype="$paymententitytype"  
+							data-placeholder="$text" data-sortby="name">
+						</select>
+						#end
+				</div>
+
+	</div>

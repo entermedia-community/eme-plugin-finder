@@ -1,0 +1,45 @@
+##TODO: add details
+#set($daterange = $context.getRequestParameter("datarange"))
+<input id="inlinedateinput" name="datarange" type="hidden" class="form-control inlinedate"
+	value="$!daterange"  
+	data-targetid="inlinedate" /> 
+<div id="inlinedatecontainer" style="min-width:480px;min-height:240px"></div>
+<script type="module">
+$(document).ready(function() 
+{
+	var app = $("#application");
+	var browserlanguage = app.data("browserlanguage");
+	if (browserlanguage == undefined || browserlanguage == "") {
+		browserlanguage = "en";
+	}
+
+	var disabledDatesText = []; //["2023-01-28"];
+	#foreach( $date in $blockeddates.getBlockedDates())
+		disabledDatesText.push("$date.toDateString()");
+	#end
+	
+	//https://github.com/longbill/jquery-date-range-picker
+	lQuery('#inlinedateinput').livequery(function()
+	{
+		$(this).dateRangePicker({
+		inline:true,
+		minDays: 3,
+		container: '#inlinedatecontainer',
+		alwaysOpen:true,
+		showShortcuts: false,
+		beforeShowDay: function(t)
+		{
+			var m = moment(t.toUTCString());
+			var formated = m.format('YYYY-MM-DD');  
+			if( disabledDatesText.includes(formated))
+			{
+				var _tooltip = 'Dates are taken';
+				return [false,'',_tooltip];				
+			}
+			return [true,'',''];
+		}
+		});
+	});
+
+});
+</script>

@@ -1,0 +1,6 @@
+<main id="content" role="main" class="mainwebsitedark">
+	#set($selecteduser = $context.getRequestParameter("id")) 
+	$context.putPageValue("selecteduser", $mediaarchive.getUser($selecteduser))
+	
+	$pages.include("${communityhome}/account/index.html", $context)
+</div>

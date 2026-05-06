@@ -1,0 +1,11 @@
+<page>
+	<inner-layout />
+	<page-action name="Script.run">
+	
+		<script>./createlibrarysave.groovy</script>
+
+	</page-action>
+	
+
+			
+</page>

@@ -1,0 +1,60 @@
+<div class="container mt-5">
+	<div class="search-container w-100">
+		<form class="input-group rounded-pill mb-3">
+			<input type="text" class="form-control form-control-lg py-3" type="search" 
+			placeholder="Search products..." aria-label="Search"">
+			<button class="btn btn-primary px-4" type="submit">
+				<i class="fas fa-search"></i>
+			</button>
+		</form>
+	</div>
+</div>
+
+<main class="container mt-2 pt-4">
+	
+	<h2>Products</h2>
+	
+	<div class="d-flex align-items-center justify-content-center flex-wrap mb-4 auto-active-container">
+		#foreach( $collection in $collectionhits.getPageOfHits())
+			<a class="btn btn-outline-primary  mx-1 ajax auto-active-link" data-targetdiv="homegallery" data-oemaxlevel="1" href="#">#text($collection)</a>
+		#end
+		</div>
+	
+	<div class="row mb-4 g-4">
+		#foreach( $product in $hits.getPageOfHits())
+			#set($collection = $mediaarchive.getCachedData("librarycollection",$product.collectionid))
+				<div class="col-md-6 col-lg-3 h-100">
+					<div class="card video-card h-100"
+					data-href="/" 
+					##data-href="/${collection.urlname}/details/${product.urlname}"
+					>
+						<div class="media-container">
+						
+							#set($productimage = $product.get("primarymedia"))
+							#ifnull($productimage) 
+								#set($productimage = $product.get("primaryimage"))
+                            #end
+							#set($asset = $mediaarchive.getAsset($productimage))
+							#ifnotnull($asset)
+								#set( $productimageurl = $mediaarchive.asLinkToPreview($asset, "image550x350"))
+							#end
+							
+							<img src="${productimageurl}" class="card-img-top video-thumbnail" alt="">
+						</div>
+						<div class="card-body line-clamp-2">
+							<h5 class="card-title">#text($product)</h5>
+							##<p class="card-text line-clamp-2">$!product.productdescription</p>
+							<p class="card-text line-clamp-2">
+								#set($subtotal = $product.getDouble("productprice"))
+								$!context.getText($!mediaarchive.getCachedData("currencytype", $product.currencytype ))
+								$$!context.doubleToMoney($subtotal, 2)
+							</p>
+							
+						</div>
+					</div>
+				</div>
+		#end
+			
+	</div>
+
+</main>

@@ -1,0 +1,27 @@
+#
+#Tue Aug 29 16:16:17 BDT 2023
+Related\ Media=Verwandte Medien
+Asset\ is\ missing=Datei fehlt
+Approvals=Zulassungen
+System\ Settings=Systemeinstellungen
+Dashboard=Instrumententafel
+Manager=Manager
+Attachments=Anh\u00E4nge
+Add\ a\ Project=F\u00FCge ein Projekt hinzu
+Annotations=Anmerkungen
+There\ was\ a\ problem\ completing\ this\ request=Es gab ein Problem beim Abschluss dieser Anfrage
+Language=Sprache
+Logout=Logout
+My\ Account=Mein Konto
+Settings=Einstellungen
+Selected\ Media=Ausgew\u00E4hlte Medien
+Applications=Anwendungen
+Media=Medien
+Add\ Media=Medien hinzuf\u00FCgen
+Login=Einloggen
+Create\ a\ Proposal=einen Vorschlag erstellen
+About=um
+Contact=Kontakt
+closed=geschlossen
+Share=Teilen
+open=ge\u00F6ffnet

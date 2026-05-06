@@ -1,0 +1,30 @@
+#set($collectivesection = $content.collectivesection)
+
+$context.putPageValue("communitylink", "${communityhome}")
+
+#*
+<div id="application" class="community-layout bg-light" class="eminstitutecollective" data-home="$home" data-user="$!user.id" data-apphome="$apphome"
+data-applink="${communitylink}" data-inapp="$browser.inApp()" data-themeprefix="${communityhome}/theme"
+data-browserlanguage="$!{browserlanguage}" data-editmode='$!user.get("oe_edit_mode")'
+data-mediadbappid="$!mediaarchive.getMediaDbId()" data-componenthome="$!componenthome" #if( $showupload)
+data-showuploadid="${showupload.id}" #end data-viewertemplate="${communitylink}/collective/channel/show/index.html">
+*#
+
+<div class="community-layout bg-light">
+
+	<div class="main-content">
+		$pages.include("${communityhome}/project/layout/project-header.html",$context)
+		<div id="maincontent">
+			
+			
+			$pages.includeContent()	
+		</div>
+	</div>
+	
+	<div class="sidebar-right">
+		$pages.include("${communityhome}/project/layout/sidebar-right.html",$context)
+	</div>
+	<div id="community-drawer-mask" class="community-drawer-close" role="button" style="display: none;"></div>
+</div>
+
+##</div>
