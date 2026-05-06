@@ -69,15 +69,14 @@
 	<target name="tar">
 		<mkdir dir="${deployDir}/builds" />
 
-<!-- write the version.txt file to the deploy directory so it can be used by the startup script -->
-		<echo file="${deployDir}/version.txt" message="${version}"/>
-
 		<tar destfile="${deployDir}/builds/${versionedApp}.tar.gz" compression="gzip" longfile="gnu">
 		<tarfileset dir="${basedir}/skills" prefix="skills"/>
 		<tarfileset dir="${basedir}/agents" prefix="agents"/>
 		<tarfileset dir="${basedir}/tomcat" prefix="tomcat"/>
 		<tarfileset dir="${basedir}/webapp" prefix="webapp"/>
 		<tarfileset dir="${basedir}/bin" prefix="bin"/>
+		<tarfileset dir="${basedir}/bin" prefix="bin"/>
+		<tarfileset file="${basedir}/version.txt" />
 		</tar>
 
 		<copy overwrite="true" file="${deployDir}/builds/${versionedApp}.tar.gz" tofile="${deployDir}/eme-lib.tar.gz"/>
