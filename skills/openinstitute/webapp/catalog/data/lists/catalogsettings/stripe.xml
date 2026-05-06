@@ -1,8 +1,8 @@
 <properties>
- <data id="stripe_test_private_key" value="sk_test_K3zY6b6XmlgMmlnGxu4kI3oc"> 
+ <data id="stripe_test_private_key" value="sk_test_XXX"> 
     <name><![CDATA[Stripe Test Private Key]]></name> 
   </data>  
-  <data id="stripe_test_publishable_key" value="pk_test_GpsVQwEDnxZ7GSpDdmJSddkM"> 
+  <data id="stripe_test_publishable_key" value="pk_test_XXX"> 
     <name><![CDATA[Stripe Test Publishable Key]]></name> 
   </data>  
   <data id="productionmode" value="false"> 
