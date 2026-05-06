@@ -10,8 +10,6 @@ ENV LANG=en_US.UTF-8
 ENV LANGUAGE=en_US:en
 ENV LC_ALL=en_US.UTF-8
 
-# Entermedia server
-ADD ./scripts /usr/bin
 
 ARG CACHE_BREAKER=1
 RUN mkdir /tmp/untar && cd /tmp/untar/ && wget --no-cache -q http://dev.entermediadb.org/jenkins/view/EM12/job/eme-lib/lastSuccessfulBuild/artifact/deploy/eme-lib.tar.gz && \
@@ -24,4 +22,7 @@ RUN mkdir /tmp/untar && cd /tmp/untar/ && wget --no-cache -q http://dev.entermed
     rm -rf /tmp/* && \
     ln -s /usr/share/eme-lib/resources/eme.sh /usr/bin/eme 
 
+USER entermedia
+RUN mkdir -p /usr/share/eme-instance && cd /usr/share/eme-instance && /usr/bin/eme init
+WORKDIR /usr/share/eme-instance
 CMD ["/usr/bin/eme", "start"]
