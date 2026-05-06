@@ -39,6 +39,20 @@ case "$CMD" in
     mkdir -p "$TARGET/webapp/WEB-INF/base"
     ln -s "$EMELIB/webapp/WEB-INF/base/_site.xconf" "$TARGET/webapp/WEB-INF/base/_site.xconf"
 
+    if [ ! -d "$TARGET/webapp/WEB-INF/bin" ]; then
+    ln -s "$EMELIB/webapp/WEB-INF/bin" "$TARGET/webapp/WEB-INF/bin"
+    fi
+
+    if [ ! -d "$TARGET/data/system" ]; then
+        mkdir -p "$TARGET/data/system"
+        cp -rp "$EMELIB/data/system/users" "$TARGET/data/system/"
+    fi
+
+    if [ ! -d "$TARGET/webapp/WEB-INF/data" ]; then
+        ln -s "$TARGET/data" "$TARGET/webapp/WEB-INF/data" 
+    fi
+
+
     ## symbolically link each of the $EMELI/skills/*/webapp folders to $TARGET/webapp/WEB-INF/base/*
     for skill in "$EMELIB/skills/"*/; do
         ##See if the skill has a webapp folder
