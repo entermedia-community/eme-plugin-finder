@@ -1,5 +1,5 @@
-#!/bin/bash 
-set -e
+#!/bin/bash -ex
+
 
 ##This is run from the /bin/eme location that is linked
 
@@ -10,6 +10,16 @@ if [ -z "$JAVA_HOME" ]; then
 fi  
 
 JAVA="$JAVA_HOME/bin/java"
+
+if [ -z "$USERID" ]; then
+    USERID="entermedia"
+    GROUPID="entermedia"
+fi  
+
+if [[ ! $(id -u entermedia 2>/dev/null) ]]; then
+    groupadd -g $GROUPID entermedia
+    useradd -ms /bin/bash entermedia -g entermedia -u $USERID
+fi
 
 # Resolve EMELIB: prefer sibling eme-lib, then env var, then system default
 
@@ -29,7 +39,6 @@ fi
 CMD="${1:-start}"
 
 
-
 case "$CMD" in
   init)
   
@@ -39,92 +48,67 @@ case "$CMD" in
   start)    
 
     TARGET="$2"
-    TARGET="$(mkdir -p "$TARGET" && cd "$TARGET" && pwd)"
+    TARGET="$(sudo mkdir -p "$TARGET" && cd "$TARGET" && pwd)"
  #   echo "Initializing new eme-server at: $TARGET"
 
     echo "**** Initializing eme-server instance at: $TARGET"
 
-    if [[ ! $(id -u entermedia 2>/dev/null) ]]; then
-        groupadd -g $GROUPID entermedia
-        useradd -ms /bin/bash entermedia -g entermedia -u $USERID
-    fi
 
-    chown ${USERID}:${GROUPID} $TARGET
+    sudo chown ${USERID}:${GROUPID} $TARGET
 
     if [ ! -d "$TARGET/tomcat" ]; then
         # Copy tomcat conf and webapp templates from eme-lib deploy
         # Create directory structure
-        mkdir -p "$TARGET/tomcat/conf" "$TARGET/tomcat/logs" "$TARGET/tomcat/webapps" "$TARGET/tomcat/work"
-        cp -rn "$EMELIB/tomcat/conf/." "$TARGET/tomcat/conf/" 2>/dev/null || true
-        chown -R ${USERID}:${GROUPID} "$TARGET/tomcat" 
+        sudo -u entermedia mkdir -p "$TARGET/tomcat/conf" "$TARGET/tomcat/logs" "$TARGET/tomcat/webapps" "$TARGET/tomcat/work"
+        sudo -u entermedia cp -rn "$EMELIB/tomcat/conf/." "$TARGET/tomcat/conf/" 2>/dev/null || true
+        sudo chown -R ${USERID}:${GROUPID} "$TARGET/tomcat" 
     fi
 
-    
 
     if [ ! -f "$TARGET/webapp/WEB-INF/base/_site.xconf" ]; then
-        mkdir -p "$TARGET/webapp/WEB-INF/base"
-        ln -s "$EMELIB/webapp/WEB-INF/base/_site.xconf" "$TARGET/webapp/WEB-INF/base/_site.xconf"
+        sudo -u entermedia mkdir -p "$TARGET/webapp/WEB-INF/base"
+        sudo -u entermedia ln -s "$EMELIB/webapp/WEB-INF/base/_site.xconf" "$TARGET/webapp/WEB-INF/base/_site.xconf"
         
     fi
 
     if [ ! -f "$TARGET/webapp/WEB-INF/web.xml" ]; then
-        cp -rp "$EMELIB/webapp/WEB-INF/web.xml" "$TARGET/webapp/WEB-INF/web.xml"
+        sudo -u entermedia  cp -rp "$EMELIB/webapp/WEB-INF/web.xml" "$TARGET/webapp/WEB-INF/web.xml"
     fi
 
     if [ ! -f "$TARGET/webapp/WEB-INF/node.xml" ]; then
-        cp -rp "$EMELIB/webapp/WEB-INF/node.xml" "$TARGET/webapp/WEB-INF/node.xml"
+         sudo -u entermedia cp -rp "$EMELIB/webapp/WEB-INF/node.xml" "$TARGET/webapp/WEB-INF/node.xml"
     fi
 
 
     if [ ! -d "$TARGET/webapp/WEB-INF/bin" ]; then
-    ln -s "$EMELIB/webapp/WEB-INF/bin" "$TARGET/webapp/WEB-INF/bin"
+       sudo -u entermedia ln -s "$EMELIB/webapp/WEB-INF/bin" "$TARGET/webapp/WEB-INF/bin"
     fi
 
-    chown -R ${USERID}:${GROUPID} "$TARGET/webapp"
+ #   sudo chown ${USERID}:${GROUPID} "$TARGET/webapp/"
 
     if [ ! -d "$TARGET/data/system" ]; then
-        mkdir -p "$TARGET/data/system"
-        cp -rp "$EMELIB/skills/system/webapp/data/defaultdata/" "$TARGET/data/system/"
+        sudo -u entermedia mkdir -p "$TARGET/data/system"
+        sudo -u entermedia cp -rp "$EMELIB/skills/system/webapp/data/defaultdata/" "$TARGET/data/system/"
     fi
 
     if [ ! -d "$TARGET/webapp/WEB-INF/data" ]; then
-        ln -s "$TARGET/data" "$TARGET/webapp/WEB-INF/data" 
-        chown -R ${USERID}:${GROUPID} "$TARGET/webapp/WEB-INF/data"
+        sudo -u entermedia ln -s "$TARGET/data" "$TARGET/webapp/WEB-INF/data" 
+        sudo chown -R ${USERID}:${GROUPID} "$TARGET/webapp/WEB-INF/data"
     fi
 
     ## symbolically link each of the $EMELI/skills/*/webapp folders to $TARGET/webapp/WEB-INF/base/*
+    for pair in "$TARGET/skills:$TARGET/webapp" "$EMELIB/skills:$TARGET/webapp/WEB-INF/base"; do
+        src="${pair%%:*}"
+        dst="${pair##*:}"
+        for skill in "$src"/*/; do
+            if [ -d "$skill/webapp" ] && [ ! -L "$dst/$(basename "$skill")" ]; then
+                sudo -u entermedia ln -s "${skill}webapp" "$dst/$(basename "$skill")"
+            fi
+        done
+    done
 
-   for skill in "$TARGET/skills/"*/; do
-        ##See if the skill has a webapp folder
-        if [ ! -d "$skill/webapp" ]; then
-            continue
-        fi  
-
-        ##Dont link if its already linked        
-        if [ -L "$TARGET/webapp/$(basename "$skill")" ]; then
-            continue
-        fi
-        ln -s "${skill}webapp" "$TARGET/webapp/$(basename "$skill")"
-    done 
-
-    for skill in "$EMELIB/skills/"*/; do
-        ##See if the skill has a webapp folder
-        if [ ! -d "$skill/webapp" ]; then
-            continue
-        fi  
-
-        ##Dont link if its already linked        
-        if [ -L "$TARGET/webapp/WEB-INF/base/$(basename "$skill")" ]; then
-            continue
-        fi
-        ln -s "${skill}webapp" "$TARGET/webapp/WEB-INF/base/$(basename "$skill")"
-    done 
-
-    chown ${USERID}:${GROUPID} "$TARGET/webapp/WEB-INF/base" "$TARGET/bin"
+    sudo chown ${USERID}:${GROUPID} "$TARGET/webapp/WEB-INF/base"
     
-
-    ##echo "Done. Run: $TARGET/eme.sh start"
-
     echo "**** Starting eme-server"
     export EMSERVER="${2:-$SCRIPT_DIR}"
     export EMSERVER="$(cd "$EMSERVER" && pwd)"
@@ -137,15 +121,13 @@ case "$CMD" in
 
     # Java @argfile does not expand shell variables, so expand them here
     EXPANDED_ARGS=$(sudo -u entermedia mktemp $TARGET/tomcat/work/tomcat-args.XXXXXX)
-    trap "rm -f $EXPANDED_ARGS" EXIT
-    sed -e "s|\$EMELIB|$EMELIB|g" -e "s|\$EMSERVER|$EMSERVER|g" "$ARGS_TEMPLATE" > "$EXPANDED_ARGS"
+    trap "sudo -u entermedia rm -f $EXPANDED_ARGS" EXIT
+    sudo -u entermedia sed -e "s|\$EMELIB|$EMELIB|g" -e "s|\$EMSERVER|$EMSERVER|g" "$ARGS_TEMPLATE" > "$EXPANDED_ARGS"
 
-    echo "EMELIB=$EMELIB"
-    echo "EMSERVER=$EMSERVER"
     echo "$JAVA $(cat "$EXPANDED_ARGS") org.apache.catalina.startup.Bootstrap start"
-    
+
     #Run Tomcat as entermedia user
-    exec sudo -u entermedia  "$JAVA" "@$EXPANDED_ARGS" org.apache.catalina.startup.Bootstrap start
+    sudo -u entermedia  "$JAVA" "@$EXPANDED_ARGS" org.apache.catalina.startup.Bootstrap start
     ;;
 
   *)
