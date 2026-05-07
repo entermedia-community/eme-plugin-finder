@@ -26,11 +26,9 @@ RUN rm -rf /tmp/* && \
     ln -s /usr/share/eme-lib/resources/eme.sh /usr/bin/eme && \
     chmod +x /usr/bin/eme
 
-
 RUN mkdir -p /usr/share/eme-instance && chown ${USERID}:${GROUPID} /usr/share/eme-instance &&  /usr/bin/eme init
 
 USER ${USERID}
-
 
 RUN mkdir -p /usr/share/eme-instance && cd /usr/share/eme-instance &&  /usr/bin/eme init
 
