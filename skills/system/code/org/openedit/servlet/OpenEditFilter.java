@@ -88,8 +88,9 @@ public class OpenEditFilter implements Filter
 	/**
 	 * @see Filter#init(FilterConfig)
 	 */
-	public void init(FilterConfig inConfig) throws ServletException
+	public void initOpenEdit(FilterConfig inConfig) throws Exception
 	{
+
 		String rootPath = null;
 		ServletContext servletContext = null;
 		if( inConfig != null)
@@ -123,12 +124,22 @@ public class OpenEditFilter implements Filter
 			servletContext.setAttribute(WebServer.class.getName(), server); //TODO: Why is this here?
 		}
 		fieldEngine = server.getOpenEditEngine();
+		
 		server.finalizeStartup();
-		
-		
-		
-		
-		
+				
+	}
+
+	public void init(FilterConfig inConfig) throws ServletException
+	{
+		try
+		{
+			initOpenEdit(inConfig);
+		}
+		catch (Exception ex)
+		{
+			log.error("Error initializing OpenEdit Engine", ex);
+			throw new ServletException("Error initializing OpenEdit Engine", ex);
+		}
 	}
 
 	protected OpenEditEngine getEngine()
