@@ -4,8 +4,6 @@ LABEL maintainer="EnterMedia <help@entermediadb.org>"
 #Environment
 ENV CLIENT_NAME=entermedia
 ENV INSTANCE_PORT=8080
-ENV USERID=9009
-ENV GROUPID=9009
 ENV LANG=en_US.UTF-8
 ENV LANGUAGE=en_US:en
 ENV LC_ALL=en_US.UTF-8
@@ -26,12 +24,4 @@ RUN rm -rf /tmp/* && \
     ln -s /usr/share/eme-lib/resources/eme.sh /usr/bin/eme && \
     chmod +x /usr/bin/eme
 
-RUN mkdir -p /usr/share/eme-instance && chown ${USERID}:${GROUPID} /usr/share/eme-instance &&  /usr/bin/eme init
-
-USER ${USERID}
-
-RUN mkdir -p /usr/share/eme-instance && cd /usr/share/eme-instance &&  /usr/bin/eme init
-
-WORKDIR /usr/share/eme-instance
-
-CMD ["/usr/bin/eme", "start"]
+CMD ["/usr/bin/eme", "start", "/usr/share/eme-instance" ]

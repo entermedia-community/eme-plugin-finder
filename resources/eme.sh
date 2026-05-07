@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash 
 set -e
 
 ##This is run from the /bin/eme location that is linked
@@ -12,7 +12,7 @@ fi
 JAVA="$JAVA_HOME/bin/java"
 
 # Resolve EMELIB: prefer sibling eme-lib, then env var, then system default
-SCRIPT_PATH="$(readlink -f "${BASH_SOURCE[0]}")"
+
 SCRIPT_DIR="$(pwd)"
 
 if [ -z "$EMELIB" ]; then
@@ -28,23 +28,43 @@ fi
 
 CMD="${1:-start}"
 
+
+
 case "$CMD" in
   init)
-    TARGET="$SCRIPT_DIR"
+  
+   
+    ;;
+
+  start)    
+
+    TARGET="$2"
     TARGET="$(mkdir -p "$TARGET" && cd "$TARGET" && pwd)"
  #   echo "Initializing new eme-server at: $TARGET"
 
+    echo "**** Initializing eme-server instance at: $TARGET"
+
+    if [[ ! $(id -u entermedia 2>/dev/null) ]]; then
+        groupadd -g $GROUPID entermedia
+        useradd -ms /bin/bash entermedia -g entermedia -u $USERID
+    fi
+
+    chown ${USERID}:${GROUPID} $TARGET
 
     if [ ! -d "$TARGET/tomcat" ]; then
         # Copy tomcat conf and webapp templates from eme-lib deploy
         # Create directory structure
         mkdir -p "$TARGET/tomcat/conf" "$TARGET/tomcat/logs" "$TARGET/tomcat/webapps" "$TARGET/tomcat/work"
         cp -rn "$EMELIB/tomcat/conf/." "$TARGET/tomcat/conf/" 2>/dev/null || true
+        chown -R ${USERID}:${GROUPID} "$TARGET/tomcat" 
     fi
-    mkdir -p "$TARGET/webapp/WEB-INF/base"
+
+    
 
     if [ ! -f "$TARGET/webapp/WEB-INF/base/_site.xconf" ]; then
+        mkdir -p "$TARGET/webapp/WEB-INF/base"
         ln -s "$EMELIB/webapp/WEB-INF/base/_site.xconf" "$TARGET/webapp/WEB-INF/base/_site.xconf"
+        
     fi
 
     if [ ! -f "$TARGET/webapp/WEB-INF/web.xml" ]; then
@@ -60,6 +80,8 @@ case "$CMD" in
     ln -s "$EMELIB/webapp/WEB-INF/bin" "$TARGET/webapp/WEB-INF/bin"
     fi
 
+    chown -R ${USERID}:${GROUPID} "$TARGET/webapp"
+
     if [ ! -d "$TARGET/data/system" ]; then
         mkdir -p "$TARGET/data/system"
         cp -rp "$EMELIB/skills/system/webapp/data/defaultdata/" "$TARGET/data/system/"
@@ -67,6 +89,7 @@ case "$CMD" in
 
     if [ ! -d "$TARGET/webapp/WEB-INF/data" ]; then
         ln -s "$TARGET/data" "$TARGET/webapp/WEB-INF/data" 
+        chown -R ${USERID}:${GROUPID} "$TARGET/webapp/WEB-INF/data"
     fi
 
     ## symbolically link each of the $EMELI/skills/*/webapp folders to $TARGET/webapp/WEB-INF/base/*
@@ -97,10 +120,12 @@ case "$CMD" in
         ln -s "${skill}webapp" "$TARGET/webapp/WEB-INF/base/$(basename "$skill")"
     done 
 
-    echo "Done. Run: $TARGET/eme.sh start"
-    ;;
+    chown ${USERID}:${GROUPID} "$TARGET/webapp/WEB-INF/base" "$TARGET/bin"
+    
 
-  start)
+    ##echo "Done. Run: $TARGET/eme.sh start"
+
+    echo "**** Starting eme-server"
     export EMSERVER="${2:-$SCRIPT_DIR}"
     export EMSERVER="$(cd "$EMSERVER" && pwd)"
     ARGS_TEMPLATE="$EMELIB/resources/tomcat.args"
@@ -111,14 +136,16 @@ case "$CMD" in
     fi
 
     # Java @argfile does not expand shell variables, so expand them here
-    EXPANDED_ARGS=$(mktemp /tmp/tomcat-args.XXXXXX)
+    EXPANDED_ARGS=$(sudo -u entermedia mktemp $TARGET/tomcat/work/tomcat-args.XXXXXX)
     trap "rm -f $EXPANDED_ARGS" EXIT
     sed -e "s|\$EMELIB|$EMELIB|g" -e "s|\$EMSERVER|$EMSERVER|g" "$ARGS_TEMPLATE" > "$EXPANDED_ARGS"
 
     echo "EMELIB=$EMELIB"
     echo "EMSERVER=$EMSERVER"
     echo "$JAVA $(cat "$EXPANDED_ARGS") org.apache.catalina.startup.Bootstrap start"
-    exec "$JAVA" "@$EXPANDED_ARGS" org.apache.catalina.startup.Bootstrap start
+    
+    #Run Tomcat as entermedia user
+    exec sudo -u entermedia  "$JAVA" "@$EXPANDED_ARGS" org.apache.catalina.startup.Bootstrap start
     ;;
 
   *)
