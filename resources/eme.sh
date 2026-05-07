@@ -113,7 +113,7 @@ case "$CMD" in
     # Java @argfile does not expand shell variables, so expand them here
     EXPANDED_ARGS=$(mktemp /tmp/tomcat-args.XXXXXX)
     trap "rm -f $EXPANDED_ARGS" EXIT
-    envsubst '$EMELIB $EMSERVER' < "$ARGS_TEMPLATE" > "$EXPANDED_ARGS"
+    sed -e "s|\$EMELIB|$EMELIB|g" -e "s|\$EMSERVER|$EMSERVER|g" "$ARGS_TEMPLATE" > "$EXPANDED_ARGS"
 
     echo "EMELIB=$EMELIB"
     echo "EMSERVER=$EMSERVER"
