@@ -138,7 +138,7 @@ public class OpenEditFilter implements Filter
 		catch (Exception ex)
 		{
 			log.error("Error initializing OpenEdit Engine", ex);
-			throw new ServletException("Error initializing OpenEdit Engine", ex);
+			//throw new ServletException("Error initializing OpenEdit Engine", ex);
 		}
 	}
 
