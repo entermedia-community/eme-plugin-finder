@@ -3,6 +3,14 @@
 
 ##This is run from the /bin/eme location that is linked
 
+CMD="${1:-start}"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
+if [ "$CMD" = "version" ]; then
+    echo "eme-lib version: 0.1.0"
+    exit 0
+fi
+
 ##JAVA_HOME is not set throw an error if JAVA_HOME is not set
 if [ -z "$JAVA_HOME" ]; then
     #checi if there is a jre path
@@ -22,8 +30,6 @@ fi
 
 # Resolve EMELIB: prefer sibling eme-lib, then env var, then system default
 
-SCRIPT_DIR="$(pwd)"
-
 if [ -z "$EMELIB" ]; then
     if [ -d "$SCRIPT_DIR/../eme-lib" ]; then
         export EMELIB="$(cd "$SCRIPT_DIR/../eme-lib" && pwd)"
@@ -34,8 +40,6 @@ if [ -z "$EMELIB" ]; then
         exit 1
     fi
 fi
-
-CMD="${1:-start}"
 
 
 case "$CMD" in
@@ -203,7 +207,7 @@ case "$CMD" in
     ;;
 
   *)
-    echo "Usage: eme.sh [init <new-server-path> | start [server-path]]" >&2
+        echo "Usage: eme.sh [version | dockerstart <server-path> | start [server-path]]" >&2
     exit 1
     ;;
 esac
