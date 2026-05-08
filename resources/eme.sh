@@ -1,5 +1,4 @@
-#!/bin/bash -ex
-
+#!/bin/bash -e
 
 ##This is run from the /bin/eme location that is linked
 
