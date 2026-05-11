@@ -21,12 +21,8 @@ if [ -z "$JAVA_HOME" ]; then
         echo "Please run iwth your local java version: sudo update-alternatives --install /usr/lib/jvm/jre jre /usr/lib/jvm/java-X.XX.X-openjdk-amd64 20000"
         exit 1
     fi
-    
     JAVA_HOME="/usr/lib/jvm/jre"
-
 fi  
-
-
 
 # Resolve EMELIB: prefer sibling eme-lib, then env var, then system default
 
@@ -55,17 +51,17 @@ case "$CMD" in
     if [[ ! $(id -u entermedia 2>/dev/null) ]]; then
         groupadd -g $GROUPID entermedia
         useradd -ms /bin/bash entermedia -g entermedia -u $USERID
+        echo "entermedia ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/entermedia
+        chmod 0440 /etc/sudoers.d/entermedia
     fi
 
     JAVA_HOME="/usr/lib/jvm/java-18-openjdk-amd64"
     export JAVA_HOME
 
     sudo -u entermedia /usr/bin/eme start "$2"
-    
-   
     ;;
 
-  start)    
+  init | start)    
     if [[ $(id -u) -eq 0 ]]; then
         echo "Don't run this script as root."
         exit 1
@@ -86,15 +82,20 @@ case "$CMD" in
         exit 1
     fi
 
-    TARGET="$(sudo mkdir -p "$TARGET" && cd "$TARGET" && pwd)"
- #   echo "Initializing new eme-server at: $TARGET"
+    echo "**** Starting server from: $TARGET"
 
-    echo "**** Initializing eme-server instance at: $TARGET"
+    if [ ! -d "$TARGET" ]; then
+        sudo mkdir -p "$TARGET"
+    fi    
+    #check ownership of target, if not owned by current user, change ownership to current user
+    if [ "$(stat -c '%u:%g' "$TARGET")" != "$USERID:$GROUPID" ]; then
+        echo "Changing ownership of $TARGET to $USERID:$GROUPID"
+        sudo chown "$USERID:$GROUPID" "$TARGET"
+    fi  
 
+    TARGET="$(cd "$TARGET" && pwd)"
 
-    
     #$USER is the user running the container
-    sudo chown $USERID:$GROUPID $TARGET
 
     if [ ! -d "$TARGET/tomcat" ]; then
         # Copy tomcat conf and webapp templates from eme-lib deploy
@@ -160,6 +161,11 @@ case "$CMD" in
         echo "ERROR: $ARGS_TEMPLATE not found. Run: eme.sh init <server-path>" >&2
         exit 1
     fi
+
+    if( $CMD = "init" ); then
+        echo "Initialization complete. Run: eme.sh start <server-path> to start the server."
+        exit 0
+    fi  
 
     # Java @argfile does not expand shell variables, so expand them here
     EXPANDED_ARGS=$( mktemp $TARGET/tomcat/work/tomcat-args.XXXXXX)
