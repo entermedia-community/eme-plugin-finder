@@ -66,9 +66,6 @@
 .msg-bubble .chat-author a:hover {
 	color: #000;
 }
-.msg-bubble .msg-body {
-	color: #444;
-}
 .chatterbox-write .chatterbox-media {
 	height: 24px;
 	background-color: #9cdc81;
@@ -118,12 +115,8 @@
 		font-size: 0.88rem;
 	}
 	.chatterbox-messages {
-		height: calc(100% - 132px) !important;
+		height: calc(100% - 118px) !important;
 		min-height: 100px;
-	}
-	.chatterbox-messages .resultspositions {
-		line-height: 18px;
-		font-size: 0.85rem;
 	}
 	.emwidget-chatterbox .emwidget-header {
 		padding: 8px 0 0 15px;
@@ -199,7 +192,6 @@
 	padding: 1px;
 	margin: 6px 0;
 	border-radius: 8px;
-	background-color: transparent;
 	box-shadow: none;
 }
 .chatterbox-chat .card-task {
@@ -370,17 +362,20 @@
 	border-radius: 6px;
 }
 .msg-bubble .msg-body {
+	color: #444;
 	flex: 1;
-	padding: 0.5rem 0.95rem;
+	padding: 0.75rem;
 	border-radius: 0.7rem;
 	position: relative;
+	background: #ffffff;
 	box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
 }
 .msg-bubble .msg-body.me {
-	background: var(--themed-btn-acc);
+	background: #eff1ff;
+	color: #000 !important;
 }
-.msg-bubble .msg-body.me {
-	color: var(--themed-btn-acc-text);
+.msg-bubble .msg-body.me:has(.goalrow) {
+	background: #ffffff;
 }
 .msg-body-content {
 	line-height: 1.5rem;
@@ -428,7 +423,7 @@
 .msg-citations a {
 	display: inline-block;
 	margin-left: 16px;
-	color: var(--text-link-color)!important;
+	color: var(--text-link-color) !important;
 }
 .chat-icon {
 	position: absolute;
@@ -457,10 +452,9 @@
 }
 .chat-msg-attachments-asset {
 	margin: 0.25rem;
-	
 }
 .chat-msg-attachments-asset img {
-	max-height:200px;
+	max-height: 200px;
 }
 .chatterbox-write .chatterboxreplyto {
 	width: calc(100% - 22px);
@@ -509,7 +503,6 @@
 @media screen and (max-width: 1199px) {
 	.msg-bubble .msg-body {
 		border-radius: 0.75rem;
-		padding: 0.35rem 0.75rem;
 	}
 }
 
