@@ -1,5 +1,6 @@
 #!/bin/bash -e
 
+set -x
 ##This is run from the /bin/eme location that is linked
 
 CMD="${1:-start}"
@@ -34,11 +35,14 @@ if [ -z "$EMELIB" ]; then
         export EMELIB="$(cd "$SCRIPT_DIR/../eme-lib" && pwd)"
     elif [ -d "/usr/share/eme-lib" ]; then
         export EMELIB="/usr/share/eme-lib"
+    elif [ -d "/usr/local/lib/eme-lib" ]; then
+        export EMELIB="/usr/local/lib/eme-lib"
     else
         echo "ERROR: Cannot find eme-lib. Set EMELIB env var or place eme-lib next to this script." >&2
         exit 1
     fi
 fi
+
 
 
 case "$CMD" in
@@ -76,6 +80,7 @@ case "$CMD" in
     fi
 
     TARGET="$2"
+
     TARGET="$(sudo mkdir -p "$TARGET" && cd "$TARGET" && pwd)"
  #   echo "Initializing new eme-server at: $TARGET"
 
@@ -124,7 +129,7 @@ case "$CMD" in
     fi
 
     if [ ! -d "$TARGET/webapp/WEB-INF/data" ]; then
-         ln -s "$TARGET/data" "$TARGET/webapp/WEB-INF/data" 
+        ln -s "$TARGET/data" "$TARGET/webapp/WEB-INF/data" 
         sudo chown -R $USERID:$GROUPID "$TARGET/webapp/WEB-INF/data"
     fi
 
