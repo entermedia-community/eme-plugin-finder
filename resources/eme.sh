@@ -120,7 +120,7 @@ case "$CMD" in
 
     if [ ! -d "$TARGET/data/system" ]; then
          mkdir -p "$TARGET/data/system"
-         cp -rp "$EMELIB/skills/system/webapp/data/defaultdata/" "$TARGET/data/system/"
+         cp -rp "$EMELIB/skills/system/webapp/data/defaultdata/." "$TARGET/data/system/"
     fi
 
     if [ ! -d "$TARGET/webapp/WEB-INF/data" ]; then
