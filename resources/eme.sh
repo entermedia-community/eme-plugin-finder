@@ -81,6 +81,11 @@ case "$CMD" in
 
     TARGET="$2"
 
+    if [ -z "$TARGET" ]; then
+        echo "No target path specified. Using current directory."
+        TARGET="$PWD"
+    fi
+
     TARGET="$(sudo mkdir -p "$TARGET" && cd "$TARGET" && pwd)"
  #   echo "Initializing new eme-server at: $TARGET"
 
