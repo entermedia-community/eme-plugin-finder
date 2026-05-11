@@ -12,7 +12,7 @@ sudo docker image rm $DOCKERIMAGE
 #sudo docker system prune
 set -x
 
-cp '../../../deploy/eme-lib.tar.gz' eme-lib.tar.gz
+cp '../../deploy/eme-lib.tar.gz' eme-lib.tar.gz
 sudo docker build -t $DOCKERIMAGE .
 
 

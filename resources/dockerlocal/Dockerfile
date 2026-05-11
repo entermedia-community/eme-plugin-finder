@@ -21,7 +21,7 @@ RUN cp /usr/share/eme-lib/resources/docker/delegates.xml /usr/local/share/ImageM
     cp /usr/share/eme-lib/resources/docker/nproc.conf /etc/security/limits.d/20-nproc.conf
 
 RUN rm -rf /tmp/* && \
-    ln -s /usr/share/eme-lib/resources/eme.sh /usr/bin/eme && \
+    ln -s /usr/share/eme-lib/resources/bin/eme.sh /usr/bin/eme && \
     chmod +x /usr/bin/eme
 
 CMD ["/usr/bin/bash"]

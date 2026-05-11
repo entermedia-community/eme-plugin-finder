@@ -74,7 +74,8 @@
 		<tarfileset dir="${basedir}/agents" prefix="eme-lib/agents"/>
 		<tarfileset dir="${basedir}/tomcat" prefix="eme-lib/tomcat"/>
 		<tarfileset dir="${basedir}/webapp" prefix="eme-lib/webapp"/>
-		<tarfileset dir="${basedir}/resources" prefix="eme-lib/resources"/>
+		<tarfileset dir="${basedir}/resources/docker" prefix="eme-lib/resources/docker"/>
+		<tarfileset dir="${basedir}/resources/bin" prefix="eme-lib/resources/bin"/>
 		<tarfileset dir="${basedir}/bin" prefix="eme-lib/bin"/>
 		<tarfileset file="${basedir}/version.txt" />
 		</tar>

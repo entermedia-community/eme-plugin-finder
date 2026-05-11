@@ -155,7 +155,7 @@ case "$CMD" in
     echo "**** Starting eme-server"
     export EMSERVER="${2:-$SCRIPT_DIR}"
     export EMSERVER="$(cd "$EMSERVER" && pwd)"
-    ARGS_TEMPLATE="$EMELIB/resources/tomcat.args"
+    ARGS_TEMPLATE="$EMELIB/resources/bin/tomcat.args"
 
     if [ ! -f "$ARGS_TEMPLATE" ]; then
         echo "ERROR: $ARGS_TEMPLATE not found. Run: eme.sh init <server-path>" >&2
