@@ -23,10 +23,10 @@
 	<commandmap os="MAC OS X">
 		<commandbase>./WEB-INF/bin/mac</commandbase>
 		<exiftoolthumb>./exiftoolthumb.sh</exiftoolthumb>
-		<convert>/usr/local/bin/convert</convert>
-		<composite>/usr/local/bin/composite</composite>
+		<convert>/opt/homebrew/bin/convert</convert>
+		<composite>/opt/homebrew/bin/composite</composite>
 		<ghostscript>/opt/homebrew/bin/gs</ghostscript>
-		<ffmpeg>/usr/local/bin/ffmpeg</ffmpeg>
+		<ffmpeg>/opt/homebrew/bin/ffmpeg</ffmpeg>
 		<qt-faststart>./qt-faststart</qt-faststart>
 		<ghostscript>/opt/homebrew/bin/gs</ghostscript>
 	</commandmap>
