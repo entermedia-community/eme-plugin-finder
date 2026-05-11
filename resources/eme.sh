@@ -83,7 +83,7 @@ case "$CMD" in
 
     if [ -z "$TARGET" ]; then
         echo "No target path specified. Using current directory."
-        TARGET="$PWD"
+        exit 1
     fi
 
     TARGET="$(sudo mkdir -p "$TARGET" && cd "$TARGET" && pwd)"
