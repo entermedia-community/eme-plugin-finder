@@ -109,21 +109,21 @@ case "$CMD" in
 
     if [ ! -f "$TARGET/webapp/WEB-INF/base/_site.xconf" ]; then
          mkdir -p "$TARGET/webapp/WEB-INF/base"
-         ln -s "$EMELIB/webapp/WEB-INF/base/_site.xconf" "$TARGET/webapp/WEB-INF/base/_site.xconf"
+         ln -s "$EMELIB/resources/webapp/WEB-INF/base/_site.xconf" "$TARGET/webapp/WEB-INF/base/_site.xconf"
         sudo chown -R $USERID:$GROUPID "$TARGET/webapp"
     fi
 
     if [ ! -f "$TARGET/webapp/WEB-INF/web.xml" ]; then
-          cp -rp "$EMELIB/webapp/WEB-INF/web.xml" "$TARGET/webapp/WEB-INF/web.xml"
+          cp -rp "$EMELIB/resources/webapp/WEB-INF/web.xml" "$TARGET/webapp/WEB-INF/web.xml"
     fi
 
     if [ ! -f "$TARGET/webapp/WEB-INF/node.xml" ]; then
-          cp -rp "$EMELIB/webapp/WEB-INF/node.xml" "$TARGET/webapp/WEB-INF/node.xml"
+          cp -rp "$EMELIB/resources/webapp/WEB-INF/node.xml" "$TARGET/webapp/WEB-INF/node.xml"
     fi
 
 
     if [ ! -d "$TARGET/webapp/WEB-INF/bin" ]; then
-        ln -s "$EMELIB/webapp/WEB-INF/bin" "$TARGET/webapp/WEB-INF/bin"
+        ln -s "$EMELIB/resources/webapp/WEB-INF/bin" "$TARGET/webapp/WEB-INF/bin"
     fi
 
  #   sudo chown ${USERID}:${GROUPID} "$TARGET/webapp/"
