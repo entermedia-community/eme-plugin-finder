@@ -1,0 +1,6 @@
+<page>
+	
+	
+	<property name="fallbackdirectoryX">/${applicationid}/components/chatterbox</property>
+	<property name="fallbackdirectory">/WEB-INF/base/system/commonbase/components/chatterbox</property>
+</page>

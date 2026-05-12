@@ -1,0 +1,6 @@
+<page>
+
+	  <inner-layout>${communityhome}/theme/layouts/layout.html</inner-layout>
+
+
+</page>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<page>
+
+	<property name="fallbackdirectory">/WEB-INF/base/eminstitute/find</property>
+	<property name="siteid">site</property>
+	<property name="catalogid">${siteid}/catalog</property>
+	<property name="findroot">/${siteid}/blockfind</property>
+
+</page>
