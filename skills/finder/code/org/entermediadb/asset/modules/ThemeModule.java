@@ -2,12 +2,15 @@ package org.entermediadb.asset.modules;
 
 import java.awt.Dimension;
 import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.entermediadb.asset.Asset;
 import org.entermediadb.asset.MediaArchive;
 import org.openedit.Data;
@@ -18,14 +21,15 @@ import org.openedit.generators.Output;
 import org.openedit.page.Page;
 import org.openedit.page.PageRequestKeys;
 import org.openedit.page.PageSettings;
-import org.openedit.repository.filesystem.StringItem;
+import org.openedit.repository.ContentItem;
 import org.openedit.util.CSSUtils;
 import org.openedit.util.RequestUtils;
 import org.openedit.util.URLUtilities;
 
 public class ThemeModule extends BaseMediaModule
 {
-
+	private static final Log log = LogFactory.getLog(ThemeModule.class);
+	
 	protected RequestUtils fieldRequestUtils;
 	protected SearcherManager fieldSearcherManager;
 
@@ -74,13 +78,12 @@ public class ThemeModule extends BaseMediaModule
 			}
 			inputfile = inReq.getContentPage().replaceProperty(inputfile);
 
-			String outputfile = "/" + appid + "/theme/" + theme.getId() + "/custom.css";
-
 			Page page = getPageManager().getPage(inputfile);
 
 			WebPageRequest req = getRequestUtils().createPageRequest(page, inReq.getRequest(), inReq.getResponse(), inReq.getUser(), (URLUtilities) inReq.getPageValue(PageRequestKeys.URL_UTILITIES));
-			Page outputpage = getPageManager().getPage(outputfile);
-			getPageManager().putPage(outputpage);
+			String outputfile = "/" + appid + "/theme/" + theme.getId() + "/custom.css";
+			ContentItem outputcContentItem = getPageManager().getContent(outputfile);
+			//getPageManager().putPage(outputpage);
 			// loadTheme(req);
 			req.putPageValue("theme", theme);
 			req.putPageValue("mediaarchive", archive);
@@ -91,19 +94,22 @@ public class ThemeModule extends BaseMediaModule
 			URLUtilities urlUtil = (URLUtilities) inReq.getPageValue(PageRequestKeys.URL_UTILITIES);
 
 			req.putProtectedPageValue(PageRequestKeys.HOME, urlUtil.relativeHomePrefix());
-			ByteArrayOutputStream scapture = new ByteArrayOutputStream();
-			Writer capture = null;
-			capture = new OutputStreamWriter(scapture, page.getCharacterEncoding());
-			Output out = new Output(capture, outputpage.getContentItem().getOutputStream());
+			OutputStream stream = outputcContentItem.getOutputStream();
+			Writer capture = new OutputStreamWriter(stream, page.getCharacterEncoding());
+			Output out = new Output(capture, null);
 
 			page.generate(req, out);
-			String output = scapture.toString();
-			StringItem revision = new StringItem(outputpage.getPath(), output, outputpage.getCharacterEncoding());
-			revision.setAuthor(inReq.getUserName());
+			try
+			{
+				capture.flush();
+				stream.close();
+			}
+			catch (Exception e)
+			{
+				log.error("Error saving theme css", e);
+			}
 
-			revision.setMessage("updated by  user");
-			outputpage.setContentItem(revision);
-			getPageManager().putPage(outputpage);
+
 		}
 	}
 
