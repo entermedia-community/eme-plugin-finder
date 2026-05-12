@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-set -x
+#set -x
 ##This is run from the /bin/eme location that is linked
 
 CMD="${1:-start}"
@@ -11,35 +11,34 @@ if [ "$CMD" = "version" ]; then
     exit 0
 fi
 
-##JAVA_HOME is not set throw an error if JAVA_HOME is not set
-if [ -z "$JAVA_HOME" ]; then
-    #checi if there is a jre path
-    if [ -d "/usr/lib/jvm/jre" ]; then
-        JAVA_HOME="/usr/lib/jvm/jre"
-    else
-        echo "JAVA_HOME is not set and /usr/lib/jvm/jre does not exist. Please set JAVA_HOME to a valid JRE path."
-        echo "Please run iwth your local java version: sudo update-alternatives --install /usr/lib/jvm/jre jre /usr/lib/jvm/java-X.XX.X-openjdk-amd64 20000"
-        exit 1
-    fi
-    JAVA_HOME="/usr/lib/jvm/jre"
-fi  
-
 # Resolve EMELIB: prefer sibling eme-lib, then env var, then system default
 
 if [ -z "$EMELIB" ]; then
-    if [ -d "$SCRIPT_DIR/../eme-lib" ]; then
-        export EMELIB="$(cd "$SCRIPT_DIR/../eme-lib" && pwd)"
+    if [ -d "$SCRIPT_DIR/../../eme-lib" ]; then
+        export EMELIB="$(cd "$SCRIPT_DIR/../../eme-lib" && pwd)"
     elif [ -d "/usr/share/eme-lib" ]; then
         export EMELIB="/usr/share/eme-lib"
     elif [ -d "/usr/local/lib/eme-lib" ]; then
         export EMELIB="/usr/local/lib/eme-lib"
     else
-        echo "ERROR: Cannot find eme-lib. Set EMELIB env var or place eme-lib next to this script." >&2
+        echo "ERROR: Cannot find eme-lib. Set EMELIB env" >&2
         exit 1
     fi
 fi
 
-
+##JAVA_HOME is not set throw an error if JAVA_HOME is not set
+if [ -z "$JAVA_HOME" ]; then
+    #checi if there is a jre path
+    if [ -d "/usr/lib/jvm/jre" ]; then
+        JAVA_HOME="/usr/lib/jvm/jre"
+    elif [ -d "/usr/lib/jvm/default-java" ]; then
+        JAVA_HOME="/usr/lib/jvm/default-java"
+    else
+        echo "JAVA_HOME is not set and /usr/lib/jvm/jre does not exist. Please set JAVA_HOME to a valid JRE path."
+        echo "Please run iwth your local java version: sudo update-alternatives --install /usr/lib/jvm/jre jre /usr/lib/jvm/java-X.XX.X-openjdk-amd64 20000"
+        exit 1
+    fi
+fi  
 
 case "$CMD" in
   dockerstart)
@@ -152,7 +151,8 @@ case "$CMD" in
 
     sudo chown $USERID:$GROUPID "$TARGET/webapp/WEB-INF/base"
     
-    echo "**** Starting eme-server"
+    echo "**** Starting eme-server using JAVA_HOME  = $JAVA_HOME"
+
     export EMSERVER="${2:-$SCRIPT_DIR}"
     export EMSERVER="$(cd "$EMSERVER" && pwd)"
     ARGS_TEMPLATE="$EMELIB/resources/bin/tomcat.args"
