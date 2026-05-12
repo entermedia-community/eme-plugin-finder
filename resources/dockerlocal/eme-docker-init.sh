@@ -27,7 +27,7 @@ fi
 
 # Setup
 DOCKERPROJECT=entermediadb
-DOCKERIMAGE=eme-lib
+DOCKERIMAGE=eme-lib-local
 BRANCH=latest
 DOCKERNETWORKBASE=172.18.0
 ENDPOINTBASE=/media/emsites
@@ -42,7 +42,7 @@ INSTANCE=$SITE$NODENUMBER
 DOCKERNETWORK=entermedia
 
 # Pull latest images
-docker pull $DOCKERPROJECT/$DOCKERIMAGE:$BRANCH
+#docker pull $DOCKERPROJECT/$DOCKERIMAGE:$BRANCH
 
 ALREADY=$(docker ps -aq --filter name=$INSTANCE)
 [[ $ALREADY ]] && docker stop -t 60 $ALREADY && docker rm -f $ALREADY
@@ -114,8 +114,8 @@ docker run -t -d \
 	-e CLIENT_NAME=$SITE \
 	-e INSTANCE_PORT=$NODENUMBER \
 	-v ${ENDPOINT}/:/usr/share/eme-instance \
-	$DOCKERPROJECT/$DOCKERIMAGE:$BRANCH \
-	/usr/bin/eme dockerstart /usr/share/eme-instance
+	$DOCKERIMAGE:$BRANCH \
+	/usr/bin/eme start /usr/share/eme-instance
 
 # Fix /etc/resolv.conf to independently reflect Cloudflare and Google DNS
 

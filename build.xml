@@ -22,8 +22,7 @@
 			- "deployDir" is set by anthill.publish.dir ========================================================================
 	-->
 	<property name="version" value="${majorversion}.${env.BUILD_NUMBER}"/>
-	<property name="deployDir" value="deploy"/>
-	<property name="report" value="${deployDir}"/>
+	<property name="deploy" value="deploy"/>
 	<property name="branch" value="main" />
 
 	<!-- A convenience variable for documentation output -->
@@ -31,8 +30,7 @@
 
 	<target name="clean">
 		<delete dir="${build}"/>
-		<delete dir="${wardir}"/>
-		<delete file="${deployDir}/builds/${versionedApp}.tar.gz" failonerror="false"/>
+		<delete file="${deploy}/builds/${versionedApp}.tar.gz" failonerror="false"/>
 
 	</target>
 
@@ -69,19 +67,20 @@
 		Create TAR ========================================================================
 	-->
 	<target name="tar">
-		<mkdir dir="${deployDir}/builds" />
+		<mkdir dir="${deploy}/builds" />
 
-		<tar destfile="${deployDir}/builds/${versionedApp}.tar.gz" compression="gzip" longfile="gnu" >
+		<tar destfile="${deploy}/builds/${versionedApp}.tar.gz" compression="gzip" longfile="gnu" >
 		<tarfileset dir="${basedir}/skills" prefix="eme-lib/skills"/>
 		<tarfileset dir="${basedir}/agents" prefix="eme-lib/agents"/>
 		<tarfileset dir="${basedir}/tomcat" prefix="eme-lib/tomcat"/>
 		<tarfileset dir="${basedir}/webapp" prefix="eme-lib/webapp"/>
-		<tarfileset dir="${basedir}/resources" prefix="eme-lib/resources"/>
+		<tarfileset dir="${basedir}/resources/docker" prefix="eme-lib/resources/docker"/>
+		<tarfileset dir="${basedir}/resources/bin" prefix="eme-lib/resources/bin"/>
 		<tarfileset dir="${basedir}/bin" prefix="eme-lib/bin"/>
 		<tarfileset file="${basedir}/version.txt" />
 		</tar>
 
-		<copy overwrite="true" file="${deployDir}/builds/${versionedApp}.tar.gz" tofile="${deployDir}/eme-lib.tar.gz"/>
+		<copy overwrite="true" file="${deploy}/builds/${versionedApp}.tar.gz" tofile="${deploy}/eme-lib.tar.gz"/>
 
 	</target>
 
