@@ -45,7 +45,6 @@ h3 {
 	color: var(--paper);
 }
 
-
 a {
 	color: inherit;
 	text-decoration: none;
@@ -61,6 +60,11 @@ h2 {
 .offcanvas-open .schedule-nav {
 	display: none !important;
 } */
+
+.bg-white  h1, .bg-white h2, .bg-white h3, .bg-white p {
+	color: var(--deep) !important;
+	
+}	
 
 .page-shell {
 	overflow: clip;
@@ -190,6 +194,7 @@ h2 {
 }
 .hero-bg img {
 	position: absolute;
+	left: 0;
 }
 .site-nav {
 	display: inline-flex;
@@ -547,6 +552,7 @@ h2 {
 
 .section.hero {
 	display: flex;
+	position: relative;
 }
 .section__content.hero__grid {
 	width: calc(100vw - 160px);
@@ -1039,7 +1045,7 @@ svg#animation {
 }
 
 .profile-credentials .email {
-	margin: 16px 0 4px;
+	margin: 10px 0 4px 4px;
 	font-size: 1rem;
 }
 
@@ -1231,7 +1237,7 @@ h2.pf-chat-header {
 }
 
 .modal-header {
-	border-bottom: 1px solid #999;
+	border-bottom: 1px solid #e0dfdf;
 	background-color: #eee;
 }
 

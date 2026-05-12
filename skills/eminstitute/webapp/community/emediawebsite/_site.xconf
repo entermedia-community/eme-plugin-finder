@@ -52,6 +52,9 @@
   <script id="dataentryfields" src="/${applicationid}/components/javascript/emedia/dataentryfields.js" />
   <script id="ajaxformsubmit" src="${communityhome}/components/javascript/emedia/ajax/ajaxformsubmit.js" />
 
+  <script id="videojs" src="/${applicationid}/components/javascript/videojs/8.20.0/video.min.js" defer="true" />
+	<script id="videojs-qs" src="/${applicationid}/components/javascript/videojs/8.20.0/videojs-quality-selector.min.js" defer="true" />
+	<style id="videojs-css" href="/${applicationid}/components/javascript/videojs/8.20.0/video-js.min.css" />
 
   <script id="oicomponents" src="${communityhome}/components/javascript/oicomponents.js" />
   <script id="openedit" src="/openedit/components/javascript/openedit.js"/>

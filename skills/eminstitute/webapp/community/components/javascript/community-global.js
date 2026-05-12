@@ -1107,6 +1107,28 @@ $(document).ready(function () {
 		}
 	});
 
+	lQuery("form.addproductform").livequery(function (e) {
+		var form = $(this);
+		var isrecurring = form.find('input[name="recurring.value"]');
+		if (isrecurring) {
+			form.find('select[name="recurringperiodvalue"]').addClass("isrecurringrequiredfields");
+			form.find('input.datepicker-nextbillon').addClass("isrecurringrequiredfields validatehidden");
+		}
+
+	});
+
+	$.validator.addClassRules("isrecurringrequiredfields", {
+		required: {
+			depends: function(element) {
+				// Only required if '#other-field' is checked
+				var form = $(element).closest("form");
+				var isrecurring = form.find('input[name="recurring.value"]').is(":checked");
+				return isrecurring;
+			}
+		}
+	});
+
+
 	toggleUserProperty = function (property, onsuccess) {
 		jQuery.ajax({
 			url:

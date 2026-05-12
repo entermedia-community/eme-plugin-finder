@@ -1,56 +1,7 @@
 #set($collectionid = $librarycol.getId())
 
-#set( $topicid = $context.getRequestParameter("topic"))
-#set( $searcher = $mediaarchive.getSearcher("collectiveproject") )
-
 #if($collectionid)
-
-#if($caneditcollection)
-	#set( $alltopics = $searcher.query().match("parentcollectionid",$collectionid).sort("name").search($context) )
-#else
-	#set( $alltopics = $searcher.query().match("parentcollectionid",$collectionid).exact("teamproject","false").sort("name").search($context) )
-#end
-
-<div class="emwidget emwidget-chatterbox">
-	<div class="emwidget-header">
-		<div class="emwidget-name">
-			#if($alltopics.size()>1)
-			<div class="dropdown show">
-				<a href="#" class="dropdown-toggl" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-					#if($caneditcollection)
-						#if ($currentchannel.teamproject == "true")
-							<i class="fas fa-lock chanel-teamonly"></i>
-						#else 
-							<i class="fas fa-lock-open  chanel-teamonly"></i>
-						#end
-					#end
-					<span class="d-inline-block mx-2">#text($currentchannel)</span>
-					<i class="bi bi-caret-down-fill"></i>
-				</a>
-				<div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-					#foreach( $hit in $alltopics)
-					#if ($hit.id != $currentchannel.id)
-					<a href="$communityhome/project/chat/index.html?collectionid=${collectionid}&topic=${hit.getId()}"
-						class="dropdown-item">
-						#if($caneditcollection)
-							#if ($hit.teamproject == "true")
-								<i class="fas fa-lock"></i>
-							#else 
-								<i class="fas fa-lock-open"></i>
-							#end
-						#end 
-						$hit.name
-					</a>
-					#end
-					#end
-				</div>
-			</div>
-			#else
-			<span>$currentchannel</span>
-			#end
-		</div>
-			
-	</div>
-	$pages.include("$communityhome/project/chat/index.html", $context)
-</div> 
+	<div class="emwidget emwidget-chatterbox">
+		$pages.include("$communityhome/project/chat/index.html", $context)
+	</div> 
 #end

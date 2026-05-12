@@ -63,10 +63,11 @@
 					   		</select>
 					   		</div>
 					   		<div class="col-auto">
-					   		<label>[[Status]]</label>
+					   		<label>[[Payment Status]]</label>
 					   		<select class="form-control form-control-sm" name="status">
 							   <option value="paid" #if($status == "paid") selected="selected" #end>[[Paid]]</option>
 							   <option value="invoiced" #if($status == "invoiced") selected="selected" #end>[[Invoiced]]</option>
+							   <option value="error" #if($status == "error") selected="selected" #end>[[Error]]</option>
 					   		</select>
 					   		</div>
 					   		<div class="col-auto align-self-end">

@@ -3,11 +3,11 @@
 	<property name="virtual">true</property>
 	<property name="oisection">profiles</property>
 	<path-action name="User.loadUserByFolder" />
-	
+
 	<property name="appsection">profile</property>
-		
-  	<path-action name="ChatModule.getChatManager"/>
-  	
-  	<inner-layout>${communityhome}/users/userprofilelayout.html</inner-layout>
+
+	<path-action name="ChatModule.getChatManager"/>
+
+	<inner-layout>${communityhome}/users/userprofilelayout.html</inner-layout>
 
 </page>

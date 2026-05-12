@@ -99,10 +99,10 @@ a.primary:hover .fa-solid {
 	height: calc(100% - 80px);
 }
 .no-gutters {
-	margin:0;
+	margin: 0;
 }
 .no-gutters .col-* {
-	padding:0;
+	padding: 0;
 }
 .bg-white,
 .bg-light {
@@ -161,10 +161,14 @@ a.primary:hover .fa-solid {
 	background-color: #198754 !important;
 	cursor: default;
 }
+table {
+	color: inherit;
+}
 .table {
 	--bs-table-striped-bg: #e8f1ed;
 	--bs-table-hover-bg: #e7e7e7;
 }
+
 .table-hover a:hover {
 	text-decoration: none;
 }
@@ -293,9 +297,15 @@ a.primary:hover .fa-solid {
 }
 @media (min-width: 992px) {
 	#mainNav {
-		-webkit-transition: padding-top 0.3s, padding-bottom 0.3s;
-		-moz-transition: padding-top 0.3s, padding-bottom 0.3s;
-		transition: padding-top 0.3s, padding-bottom 0.3s;
+		-webkit-transition:
+			padding-top 0.3s,
+			padding-bottom 0.3s;
+		-moz-transition:
+			padding-top 0.3s,
+			padding-bottom 0.3s;
+		transition:
+			padding-top 0.3s,
+			padding-bottom 0.3s;
 		border: none;
 		background-color: transparent;
 	}
@@ -331,8 +341,8 @@ a.primary:hover .fa-solid {
 	width: 32px;
 	padding: 0 10px;
 	line-height: 32px;
-	color: #666 !important;
-	background-color: #e0e0e0 !important;
+	color: #ffffff !important;
+	background-color: #0b172c !important;
 	font-size: 1.1rem;
 	/* line-height: 2; */
 	border-radius: 0 !important;
@@ -444,9 +454,9 @@ a.primary:hover .fa-solid {
 	z-index: 20;
 }
 .sidebar-box-header {
-	background-color: #ddd;
-	border-bottom: 1px solid #bbb;
-	color: #333;
+	background-color: #0b172c;
+	/* border-bottom: 1px solid #bbb; */
+	color: #ffffff;
 	font-size: 1rem;
 	font-weight: bold;
 	line-height: 2;
@@ -454,7 +464,10 @@ a.primary:hover .fa-solid {
 	position: relative;
 }
 .sidebar-box a {
-	color: #444;
+	color: #0c223b;
+}
+.sidebar-box-header a {
+	color: #ffffff !important;
 }
 .sidebar-box a:hover {
 	color: #000;
@@ -486,7 +499,7 @@ a.primary:hover .fa-solid {
 }
 .sidebar-list a:hover {
 	color: #111;
-	background-color: #c9e8f2;
+	background-color: #f5f5f5;
 }
 .sidebar-list .badge {
 	display: inline-block;
@@ -497,7 +510,7 @@ a.primary:hover .fa-solid {
 	font-size: 0.8rem;
 }
 .usersidebartopmessages .messagearea {
-	margin-bottom:5px;
+	margin-bottom: 5px;
 }
 .usersidebartopmessages .messageselection {
 	background-color: #fff;
@@ -506,17 +519,20 @@ a.primary:hover .fa-solid {
 	background-color: #f2f2f2;
 }
 .usersidebartopmessages .messageselection:hover {
-	background-color: #c9e8f2;
+	background-color: #f2f2f2;
+}
+.usersidebartopmessages .messageselection.current {
+	background-color: #e1ecff;
 }
 .card-collections {
-  width: 200px;
-  float: none;
-  text-align:center;
-  margin:5px;
+	width: 200px;
+	float: none;
+	text-align: center;
+	margin: 5px;
 }
 .card-collections:hover {
 	background-color: #eee;
-	}
+}
 .card-collections-thumb {
 	height: 88px;
 	width: 108px;
@@ -527,17 +543,17 @@ a.primary:hover .fa-solid {
 }
 
 .card-collections a .collectionbox {
-  color: #444;
+	color: #444;
 }
 .card-collections:hover a .collectionbox {
 	color: #000;
-	}
+}
 .card-collections .collectionbox {
-  padding: 4px 8px;
-  background-color: transparent;
-  margin-top: 8px;
-  font-weight: 700;
-  font-size: 0.8rem;
+	padding: 4px 8px;
+	background-color: transparent;
+	margin-top: 8px;
+	font-weight: 700;
+	font-size: 0.8rem;
 }
 
 .card-name.collectionbox {
@@ -840,7 +856,9 @@ a.primary:hover .fa-solid {
 	min-height: auto;
 	overflow: hidden;
 	background-color: #fff;
-	box-shadow: 0 0 1px rgba(0, 0, 0, 0.25), 0 1px 3px rgba(0, 0, 0, 0.3);
+	box-shadow:
+		0 0 1px rgba(0, 0, 0, 0.25),
+		0 1px 3px rgba(0, 0, 0, 0.3);
 }
 .emwidget-header {
 	padding: 8px 15px;
@@ -1648,8 +1666,8 @@ ul.inlinelist li {
 }
 .project-thumb-link img {
 	width: 100%;
-    height: 100%;
-    object-fit: cover;
+	height: 100%;
+	object-fit: cover;
 }
 .project-thumb:hover img {
 	transform: scale(1.1);
@@ -1696,20 +1714,22 @@ ul.inlinelist li {
 }
 
 .tablefinances {
-  width:900px!important;
-  margin-bottom: 30px;
+	width: 900px !important;
+	margin-bottom: 30px;
 }
 
 .tablefinances td {
-  padding: 0.5rem;
+	padding: 0.5rem;
 }
 
 .tablefinances-header td {
-  background-color: #f5f5f5;
-  font-weight:bold;
+	background-color: #f5f5f5;
+	font-weight: bold;
 }
 
-.currencysmall { font-size: 0.85rem;}
+.currencysmall {
+	font-size: 0.85rem;
+}
 
 .viewinvoice .card-body {
 	padding: 0.75rem;
@@ -1755,10 +1775,10 @@ label.error {
 	background-color: #efefef;
 }
 .inlinesearch .searchfield {
-	margin-right:6px;
+	margin-right: 6px;
 }
 .inlinesearch .searchfield .form-control {
-	padding:0.15rem 0.25rem;
+	padding: 0.15rem 0.25rem;
 }
 .inlinesearch .emsearchfieldrow {
 	margin-bottom: 5px;
@@ -1920,19 +1940,18 @@ textarea.form-control {
 .ajaxloginbox .text-contrast {
 	color: #444444;
 }
-
+.chatterbox-messages:has(.resultspositions) {
+	padding-top: 40px;
+}
 .emwidget-chatterbox {
 	height: calc(100vh - 275px) !important;
+	min-height: 600px;
 }
 .chatterbox-messages-readonly {
 	height: calc(100% - 48px) !important;
 }
 .chatterbox-messages {
-	height: calc(100% - 188px) !important;
-}
-.msg-bubble .msg-body.me {
-	background: #eff1ff !important;
-	color: #000 !important;
+	height: calc(100% - 150px) !important;
 }
 
 table.table-striped tr.table-row-subtotals:first-of-type td {
@@ -1952,8 +1971,8 @@ table.table-striped tr.table-row-totals td {
 		width: 80% !important;
 	}
 	.loginbox {
-		width:600px;
-		}
+		width: 600px;
+	}
 }
 .form-group {
 	margin-bottom: 1rem;

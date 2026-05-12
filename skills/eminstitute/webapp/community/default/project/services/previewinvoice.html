@@ -35,11 +35,11 @@
 				class="btn btn-sm btn-secondary ajax" 
 				data-targetdiv="invoicecontainer"
 				title="[[Edit Invoice Details]]"
-				>[[Edit Invoice]]</a>
+				>[[Edit]]</a>
 			#end
 			
 			#if($invoiceready == "true")
-				#if($status.equals("invoiced"))
+				#if($sentstatus.equals("sent"))
 					<input type="submit" class="btn btn-sm btn-primary" value="[[Re-send Invoice]]"/>
 				#elseif(!$status.equals("paid"))
 					<input type="submit" class="btn btn-sm btn-primary" value="[[Send Invoice]]"/>

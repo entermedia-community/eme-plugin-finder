@@ -20,7 +20,7 @@
 					<div class="edit-profile d-flex align-items-center">
 						#if($canviewsettings)
 						<a href="${communityhome}/account/edit/edit.html?userid=$selecteduser.getId()" 
-							class="btn btn-xs btn-soft-primary emdialog"
+							class="btn btn-sm btn-secondary emdialog"
 							title="[[Edit User Account]]">
 							<i class="fas fa-edit me-2"></i>
 							[[Edit Profile]]
@@ -39,10 +39,10 @@
 					
 					
 					#if( $user)
-						<h2>$!selecteduser.get("firstName") $!selecteduser.get("lastName")</h2>
+						<h2 class="mb-0">$!selecteduser.get("firstName") $!selecteduser.get("lastName")</h2>
 					#else
 					
-						<h2>$selecteduser.getAnonNickName()</h2>						
+						<h2 class="mb-0">$selecteduser.getAnonNickName()</h2>						
 					#end
 					<a class="email d-flex align-items-center">
 						<i class="fas fa-envelope me-2"></i>
@@ -56,17 +56,20 @@
 						</span>
 					</p>
 					#end
-
-					
-					
-					
 					
 					#set( $ids = $mediaarchive.query("librarycollectionusers").exact("followeruser", $selecteduser.getId()).search($context) )
 					#set($oids = [])
 					#foreach( $ohit in $ids )
-						#set($x = $oids.add($ohit.collectionid))
+						#ifnotnull($ohit.collectionid)
+							#set($x = $oids.add($ohit.collectionid))
+						#end
 					#end
-					
+
+					#set( $ids2 = $mediaarchive.query("librarycollection").exact("owner", $selecteduser.getId()).search($context) )
+					#foreach( $ohit in $ids2 )
+						#set($x = $oids.add($ohit.id))
+					#end
+
 					#set( $collections = $mediaarchive.query("librarycollection").exact("communitytagcategory", $communitytagcategory).exact("collectiontype", "6").ids($oids).sort("name").search($context) )
 
 					#if($collections.size()>0)

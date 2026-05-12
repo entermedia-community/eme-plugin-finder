@@ -148,9 +148,19 @@ $context.putPageValue("collection", $collection)
                     </div>
 
             </div>
-            
-            #if ($invoice.paymentstatus == "invoiced" || $invoice.paymentstatus == "error" || $invoice.paymentstatus == "autopayfailed")
-			
+            <div class="col-sm-5  col-md-6">
+            #if ($invoice.paymentstatus == 'canceled')
+				
+					<div class="card">
+						<div class="card-header alert-danger">
+						[[This invoice was canceled]]
+						</div>
+						<div class="card-body">
+							[[Please contact support or reach us via chat]]
+						</div>
+					</div>
+				      
+			#else
 				#ifnotnull($collection.parentprojectinvoicing)
 					#set($parentcollectionivoice = $mediaarchive.getCachedData("librarycollection", $collection.parentprojectinvoicing))
 					#ifnotnull($parentcollectionivoice)
@@ -170,91 +180,61 @@ $context.putPageValue("collection", $collection)
             	#if($invoice.currencytype == "usd" ||  $invoice.currencytype == "1")
 					#set( $stripeenabled = true)
 				#end
-		
-			
-			<div class="col-sm-5  col-md-6">
-				
-				
-				<div class="accordion" id="accordionExample">
-				  #if($stripeenabled)
-					  <div class="accordion-item">
-					    <h2 class="accordion-header" id="headingOne">
-					      <button class="accordion-button" type="button"
-						  	 #ifnotnull($invoicepayoptions)
-							 data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne"
-							 #end
-							 >
-					        <i class="bi bi-credit-card me-2"></i> [[Credit Card]]
-					      </button>
-					    </h2>
-					    <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
-					      <div class="accordion-body">
-								##Disable Stripe for not USD
-				            	#if($invoice.currencytype == "usd" ||  $invoice.currencytype == "1")
-									$pages.include("./paynow-stripe.html", $context)
-								#else
-									<div style="text-align:center; ">
-								    	[[Credit Card payment not available for currency]] $!{currency.currencycode}.
-								    </div>
-								            	
-					            #end
-					      </div>
-					    </div>
-					  </div>
-				  #end
-				  #ifnotnull($invoicepayoptions)
-					  <div class="accordion-item">
-					    <h2 class="accordion-header" id="headingTwo">
-					      <button class="accordion-button #if($stripeenabled) collapsed #end" type="button" 
-							#if(!$stripeenabled) 
-								data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-controls="collapseTwo" aria-expanded="true" 
-							#end
-							>
-					        <i class="bi bi-cash-coin me-2"></i>
-							#if(!$stripeenabled) 
-							[[Payment Options]]
-							#else
-							[[Other Payment Options]]
-							#end
-					      </button>
-					    </h2>
-					    <div id="collapseTwo" class="accordion-collapse collapse #if(!$stripeenabled) show #end" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
-					      <div class="accordion-body">
-								$!invoicepayoptions
-					      </div>
-					    </div>
-					  </div>
-				  #end
 
-				</div>
+				<div class="accordion" id="accordionExample">
+						#if($stripeenabled)
+							<div class="accordion-item">
+								<h2 class="accordion-header" id="headingOne">
+								<button class="accordion-button" type="button"
+									#ifnotnull($invoicepayoptions)
+									data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne"
+									#end
+									>
+									<i class="bi bi-credit-card me-2"></i> [[Credit Card]]
+								</button>
+								</h2>
+								<div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+								<div class="accordion-body">
+										##Disable Stripe for not USD
+										#if($invoice.currencytype == "usd" ||  $invoice.currencytype == "1")
+											$pages.include("./paynow-stripe.html", $context)
+										#else
+											<div style="text-align:center; ">
+												[[Credit Card payment not available for currency]] $!{currency.currencycode}.
+											</div>
+														
+										#end
+								</div>
+								</div>
+							</div>
+						#end
+						#ifnotnull($invoicepayoptions)
+							<div class="accordion-item">
+								<h2 class="accordion-header" id="headingTwo">
+								<button class="accordion-button #if($stripeenabled) collapsed #end" type="button" 
+									#if(!$stripeenabled) 
+										data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-controls="collapseTwo" aria-expanded="true" 
+									#end
+									>
+									<i class="bi bi-cash-coin me-2"></i>
+									#if(!$stripeenabled) 
+									[[Payment Options]]
+									#else
+									[[Other Payment Options]]
+									#end
+								</button>
+								</h2>
+								<div id="collapseTwo" class="accordion-collapse collapse #if(!$stripeenabled) show #end" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+								<div class="accordion-body">
+										$!invoicepayoptions
+								</div>
+								</div>
+							</div>
+						#end
+
+					</div>
+				#end
 			</div>
-				
-				
-				
-				
-	          #elseif ($invoice.paymentstatus == 'paid')
-		          <div class="col-sm-4">
-		          	<div class="card">
-			          	<div class="card-header alert-success">
-			          	   [[Invoice already paid]]
-			          	</div>
-			          	<div class="card-body">
-			          		[[Thank you for your preference]]
-			          	</div>
-		          	</div>
-		          </div>
-	          #elseif ($invoice.paymentstatus == 'canceled')
-		          <div class="col-sm-4">
-		          	<div class="card">
-			          	<div class="card-header alert-danger">
-			          	   [[This invoice was canceled]]
-			          	</div>
-			          	<div class="card-body">
-			          		[[Please contact support or reach us via chat]]
-			          	</div>
-		          	</div>
-		          </div>          
-	          #end
 	          
         </div> <!-- end row -->
         

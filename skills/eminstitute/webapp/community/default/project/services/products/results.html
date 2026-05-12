@@ -72,19 +72,22 @@
 							<td style="text-align: center;">$!context.getDate($hit.nextbillon)</td>
                             <td>
                                 #if( $canviewsettings )
-								<a
+                                
+                                    #if($hit.recurring != "true")
+							    	<a
                                     href="${projectlink}/services/generateinvoice.html?collectionid=${collectionid}&id=${hit.id}"
                                     title="[[Invoice Product or Service]]"
-                                    class="emdialog btn btn-xs btn-secondary"
+                                    class="emdialog btn btn-xs btn-secondary mb-1"
                                     data-hidefooter="true">[[Create Invoice]]</a>
+                                    #end
                                     <a
                                         href="${projectlink}/services/editproduct.html?collectionid=${collectionid}&id=${hit.id}"
                                         title="[[Edit Product or Service]]"
-                                        class="emdialog btn btn-xs btn-secondary "><i class="fa fa-edit"></i></a>
+                                        class="emdialog btn btn-xs btn-secondary mb-1"><i class="fa fa-edit"></i></a>
                                     <a
                                         href="${projectlink}/services/copyproduct.html?collectionid=${collectionid}&id=${hit.id}"
                                         title="[[Copy Product or Service]]"
-                                        class="emdialog btn btn-xs btn-secondary"><i class="fa fa-copy"></i></a>
+                                        class="emdialog btn btn-xs btn-secondary mb-1"><i class="fa fa-copy"></i></a>
 
                                         
 
@@ -94,17 +97,17 @@
 	                                         #if ($hit.isautopaid == true)
 	                                             <a
 	                                                 href="${projectlink}/services/toggleautopay.html?collectionid=${collectionid}&id=${hit.id}"
-	                                                 class="btn btn-xs btn-success">[[AutoPay Enabled]]</a>
+	                                                 class="btn btn-xs btn-success mb-1">[[AutoPay Enabled]]</a>
 	                                         #else
 	                                             <a
 	                                                 href="${projectlink}/services/toggleautopay.html?collectionid=${collectionid}&id=${hit.id}"
-	                                                 class="btn btn-xs btn-secondary">[[AutoPay Paused]]</a>
+	                                                 class="btn btn-xs btn-secondary mb-1">[[AutoPay Paused]]</a>
 	                                         #end
 	                                     #end
 	                                     #if ($hit.billingstatus == "active")
 	                                         <a
 	                                             href="${projectlink}/services/cancelsubscription.html?collectionid=${collectionid}&productid=${hit.id}"
-	                                             class="emdialog btn btn-xs btn-danger">[[Cancel]]</a>
+	                                             class="emdialog btn btn-xs btn-danger mb-1">[[Cancel]]</a>
 	                                     #end
 	                                 #end
 	                                 

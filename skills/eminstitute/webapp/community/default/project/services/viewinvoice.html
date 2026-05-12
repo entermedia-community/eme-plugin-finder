@@ -13,6 +13,9 @@
 	 
 	#set($status = $invoice.getValue("paymentstatus")) 
 	$context.putPageValue("status", $status)
+
+	#set($sentstatus = $invoice.getValue("invoicesentstatus")) 
+	$context.putPageValue("sentstatus", $sentstatus)
 	
 	#set($invoicemonth = $context.getLocaleManager().getMonthName($invoice.getValue("duedate"), $context.getLocale())) 
 	
@@ -38,12 +41,23 @@
 	    <div class=" d-flex justify-content-between">
 		<div>
 		    <div style="padding: 0 0 5px">
+				
 		      <strong>[[Invoice Status]]:</strong>
-		      #if($status.equals("invoiced")) [[Invoice sent]]
+		      #if($sentstatus.equals("sent")) [[Invoice sent]]
 		      #elseif($status.equals("pending")) [[Pending]]
-		      #elseif($status.equals("payd")) [[Payd]] #end
+			  #elseif($sentstatus.equals("error")) 
+			  	<span class="billinginvoiceerror">
+					[[Error]] #ifnotnull($invoice.invoicesentstatusreason): $invoice.invoicesentstatusreason #end
+				</span>
+			  #end
+		      #if($status.equals("paid")) [[Paid]] 
+			  #elseif($status.equals("error")) 
+			  	<span class="billinginvoiceerror">
+					[[Error]] #ifnotnull($invoice.paymentstatusreason): $invoice.paymentstatusreason #end
+				</span>
+			  #end
 		    </div>
-		    #if($status.equals("invoiced") && $invoice.getValue("sentdate"))
+		    #if($sentstatus.equals("sent") && $invoice.getValue("sentdate"))
 		    <div style="padding: 0 0 5px 0">
 		      <strong>[[Sent Date]]</strong>: $invoice.getValue("sentdate")
 		    </div>
@@ -59,7 +73,7 @@
 		    </div>
 		</div>
 	    <div style="margin: 0 0 20px">
-	      #if($status.equals("invoiced"))
+	      #if($sentstatus.equals("sent"))
 	      <strong>[[Sent to]]:</strong>
 	      #else
 	      <strong>[[Send invoice to]]:</strong>
@@ -82,7 +96,7 @@
 		
 	    $pages.include("viewinvoiceheader.html", $context)
 
-		<div style="background-color: #efefef; padding: 10px; margin: 10px 0">
+		<div style="background-color: #efefef; color:#333!important; padding: 10px; margin: 10px 0">
 	      <table style="width: 100%">
 	        <tr>
 	          <td>

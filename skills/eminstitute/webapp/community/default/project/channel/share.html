@@ -1,4 +1,4 @@
-<div class="embedlink">
+<div class="embedlink p-2">
 
 
 	#set( $mediadbappid = $mediaarchive.getMediaDbId() )
@@ -27,15 +27,15 @@
 	  #set($bloglink = "${projectlink}/blog/${userpost.id}")
 	#end
 
-	<h3>$userpost.name</h3>
+	##<h3>$userpost.name</h3>
 	
 		
-<div class="sharepostlink mt-4 mb-4">#urlescape($bloglink)</div>
-<a href="#" class="copytoclipboard btn btn-sm btn-light me-2" data-targetdiv="userpostsharecopied" data-copytext="copyuserpostlink" title="[[Copy to Clipboard]]"><i class="far fa-copy"></i> [[Copy Link]]</a>
+<div class="sharepostlink py-2">#urlescape($bloglink)</div>
+<a href="#" class="copytoclipboard btn btn-sm btn-primary me-2" data-targetdiv="userpostsharecopied" data-copytext="copyuserpostlink" title="[[Copy to Clipboard]]"><i class="far fa-copy"></i> [[Copy Link]]</a>
 <input style="position:absolute; top:-1000px;" id="copyuserpostlink" value="#urlescape($bloglink)">
 
 
-<a href="#urlescape($bloglink)" target="_blank" class="btn btn-sm btn-light">[[Preview]]</a>
+<a href="#urlescape($bloglink)" target="_blank" class="btn btn-sm btn-secondary">[[Preview]]</a>
 
 <div id="userpostsharecopied" class="alert alert-save" style="display:none;">[[Link copied to clipboard]]</div>
 

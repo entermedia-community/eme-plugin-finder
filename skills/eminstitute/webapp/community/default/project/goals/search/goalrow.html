@@ -9,10 +9,9 @@
 #end
 
 <li id="goal$goal.id" class="card card-mini card-goal goalstatus$!{goal.projectstatus} goallevel$!{goal.ticketlevel}" data-goalid="$goal.id">
-
    	<div class="#if( $caneditcollection) ui-draggable ui-draggable-handle #end "
-   		 data-goalid="$goal.id" 
-   		 data-cloneparentid="goal$goal.id">
+			data-goalid="$goal.id" 
+			data-cloneparentid="goal$goal.id">
 			
 			#set( $project = $!mediaarchive.getData("collectiveproject",$goal.goaltrackercolumn) )
 			#set( $collection = $!mediaarchive.getData("librarycollection",$goal.collectionid) )

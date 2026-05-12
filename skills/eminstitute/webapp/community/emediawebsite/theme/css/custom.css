@@ -829,7 +829,8 @@ button:focus {
 	width: calc(100% - 250px);
 }
 .offcanvas.offcanvas-start {
-	border-right: 1px solid #e7eaf3;
+	border-right: none;
+	box-shadow: 5px 0 16px rgb(0 0 0 / 10%);
 }
 header {
 	box-shadow: none;
@@ -3927,8 +3928,8 @@ a.badge-soft-navy:focus {
 }
 .themed-btn:hover,
 .btn-primary:hover {
-	background-color: #377dff;
-	border-color: #377dff;
+	background-color: #377dff !important;
+	border-color: #377dff !important;
 }
 /* secondary button :hover, :focus, :active effects */
 .btn-secondary[href]:hover,
@@ -10579,6 +10580,25 @@ svg #images image.glow {
 .table-autoresize-inner::-webkit-scrollbar-track,
 .emselectablemodule::-webkit-scrollbar-track {
 	background-color: #0d2847;
+}
+.soft-scrollbar {
+	overflow: auto;
+	scrollbar-width: thin;
+	scrollbar-color: #e0e0e0 #fff;
+}
+
+.soft-scrollbar::-webkit-scrollbar {
+	width: 5px;
+	height: 5px;
+	background: #e0e0e0;
+}
+
+.soft-scrollbar::-webkit-scrollbar-thumb {
+	background: #e0e0e0;
+}
+
+.soft-scrollbar::-webkit-scrollbar-track {
+	background: var(--light-bg);
 }
 .modal-content .space-2 {
 	overflow-y: auto !important;

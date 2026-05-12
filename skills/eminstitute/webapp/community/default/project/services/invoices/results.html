@@ -35,7 +35,8 @@
 ##                                        </td>
                                         <td style="text-align: right;">$ $!context.roundDouble($!hit.totalprice, 2)</td>
                          <td style="text-align: center;">
-                             #set($status = $mediaarchive.query("paymentstatus").match("id", "$hit.paymentstatus").searchOne())
+                            
+                             #set($status = $mediaarchive.query("invoicesentstatus").match("id", $hit.invoicesentstatus).searchOne())
                              $!context.getText($status)
                          </td>
                          <td style="text-align: left;">

@@ -1,0 +1,4 @@
+<page>
+    <!-- comma separated list of communities to display blogs from -->
+    <property name="communitytagcategories">emediawebsite,3</property>
+</page>

@@ -2,36 +2,48 @@
 <html lang="$!context.getLocale()">
 
 <head>
-
-#set( $title = "#text($content.title) - eMediaLibrary")
-
-  <title>$title</title>
+  #set( $meta_title = $context.getPageValue("meta_title") )
+  #ifnull($meta_title)
+    #set( $meta_title = "#text($content.title) - eMediaLibrary")
+  #end
+  #set( $meta_image = $context.getPageValue("meta_image") )
+  #ifnull($meta_image)
+    #set( $meta_image = "/theme/emedia-banner.png" )
+  #end
+  #set( $meta_url = $context.getPageValue("meta_url") )
+  #ifnull($meta_url)
+    #set( $meta_url = "https://emedialibrary.com" )
+  #end
+  #set( $meta_description = $context.getPageValue("meta_description") )
+  #ifnull($meta_description)
+    #set( $meta_description = $!content.description )
+  #end
+  <title>$meta_title</title>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 
-  <meta name="title" content="$title">
-  <meta name="description" content="$content.description">
-  <meta name="keywords" content="$content.keywords">
-  <meta name="og:title" content="$title">
-  <meta name="og:description" content="$content.description">
-  <meta name="og:image" content="https://emedialibrary.com/theme/emedia-banner.png"> <!-- This needs to be full URL -->
-  <meta name="og:url" content="https://emedialibrary.com">
+  <meta name="title" content="$!meta_title">
+  <meta name="description" content="$!meta_description">
+  <meta name="keywords" content="$!content.keywords">
+  <meta name="og:title" content="$!meta_title">
+  <meta name="og:description" content="$!meta_description">
+  <meta name="og:image" content="${siteroot}$!meta_image"> 
+  <meta name="og:url" content="$!meta_url">
   <meta name="og:site_name" content="eMediaLibrary">
   <meta name="og:type" content="website">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="$title">
-  <meta name="twitter:description" content="$content.description">
-  <meta name="twitter:image" content="https://emedialibrary.com/theme/emedia-banner.png"> <!-- This needs to be full URL -->
-  <meta name="twitter:url" content="https://emedialibrary.com">
-  <!-- <meta name="twitter:site" content="@eMediaLibrary">  --> <!-- Add twitter handle if there is one -->
-  
+  <meta name="twitter:title" content="$!meta_title">
+  <meta name="twitter:description" content="$!meta_description">
+  <meta name="twitter:image" content="${siteroot}$!meta_image"> 
+  <meta name="twitter:url" content="$!meta_url">
+    
   <meta name="robots" content="index, follow">
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <meta name="language" content="English">
   <meta name="revisit-after" content="7 days">
   <meta name="author" content="eMediaLibrary">
 
-  <link rel="shortcut icon" href="https://emedialibrary.com/theme/favicon.ico" /> <!-- This should be a full URL -->
+  <link rel="shortcut icon" href="${siteroot}/theme/favicon.ico" /> <!-- This should be a full URL -->
 
   $pages.include("${communityhome}/theme/layouts/includes.html", $context)
 

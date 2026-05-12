@@ -96,7 +96,9 @@ a.primary:hover .fas {
 .collective-grid-logo,
 .shadowbox {
 	/*box-shadow:2px 2px 6px 0 rgba(0,0,0,0.4)*/
-	box-shadow: 0 0 1px rgba(0, 0, 0, 0.25), 0 1px 3px rgba(0, 0, 0, 0.3);
+	box-shadow:
+		0 0 1px rgba(0, 0, 0, 0.25),
+		0 1px 3px rgba(0, 0, 0, 0.3);
 }
 .feed-maincol {
 	box-shadow: none;
@@ -210,9 +212,15 @@ a.primary:hover .fas {
 }
 @media (min-width: 992px) {
 	#mainNav {
-		-webkit-transition: padding-top 0.3s, padding-bottom 0.3s;
-		-moz-transition: padding-top 0.3s, padding-bottom 0.3s;
-		transition: padding-top 0.3s, padding-bottom 0.3s;
+		-webkit-transition:
+			padding-top 0.3s,
+			padding-bottom 0.3s;
+		-moz-transition:
+			padding-top 0.3s,
+			padding-bottom 0.3s;
+		transition:
+			padding-top 0.3s,
+			padding-bottom 0.3s;
 		border: none;
 		background-color: transparent;
 	}
@@ -655,7 +663,9 @@ a.primary:hover .fas {
 	border-radius: 12px;
 	overflow: hidden;
 	background-color: #fff;
-	box-shadow: 0 0 1px rgba(0, 0, 0, 0.25), 0 1px 3px rgba(0, 0, 0, 0.3);
+	box-shadow:
+		0 0 1px rgba(0, 0, 0, 0.25),
+		0 1px 3px rgba(0, 0, 0, 0.3);
 }
 .collaborate-channel-header {
 	padding: 8px 16px;
@@ -828,9 +838,6 @@ a.primary:hover .fas {
 	overflow-y: auto;
 	border: 0 none;
 }
-.goalticket-level {
-	color: #277371;
-}
 .chatterbox-body-inside {
 	padding: 8px;
 	scrollbar-color: #dfdfdf #fff;
@@ -867,16 +874,6 @@ a.primary:hover .fas {
 	width: 32px;
 	height: 32px;
 	border-radius: 5px;
-}
-.msg-bubble .msg-body {
-	flex: 1;
-	padding: 8px;
-	border-radius: 8px;
-	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-	position: relative;
-}
-.msg-bubble .msg-body.me {
-	background-color: #e2f2ff;
 }
 .msg-body-content {
 	white-space: pre-wrap;

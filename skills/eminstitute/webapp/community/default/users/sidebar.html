@@ -97,27 +97,24 @@ data-ajaxpath="$communitylink/users/sidebar.html?appsection=$!appsection&oemaxle
 					<a href="${communitylink}/wallet/$user.id/index.html"><i class="fas fa-clipboard-check"></i> [[My Wallet]]</a>
 					</li>*#
 					#if(!$userprojects.isEmpty() )
-					<li class="#if($appsection == "mygoals") current #end" >
-						<a href="$communitylink/users/tasks/mygoals.html?goaltrackerstaff=$user.getId()">
-							<i class="fas fa-tasks me-1"></i> [[My Goals]]</a>
-					</li>
-					<li class="#if($appsection == "mytasks") current #end" >
-						<a href="$communitylink/users/tasks/mytasks.html?goaltrackerstaff=$user.getId()">
-							<i class="fas fa-tools me-1"></i> [[Pending Actions]]</a>
-					</li>
-					<li class="#if($appsection == "completed") current #end" >
-						<a href="$communitylink/users/tasks/report.html?collectionid=*&goaltrackerstaff=*">
-							<i class="fas fa-chart-line me-1"></i> [[Completed Tasks]]</a>
-					</li>
+						<li class="#if($appsection == "planning") current #end" >
+							<a href="$!{communitylink}/users/tasks/index.html?$!{args}"><i class="fas fa-calendar-alt me-1"></i> [[Goal Planning]]</a>
+						</li>
+						#set($ticketlevel = $context.getRequestParameter("ticketlevel"))
+						<li class='#if($appsection == "search" && $ticketlevel == 2) current #end'>
+							<a href="$!{communitylink}/users/tasks/search.html?ticketlevel=2"><i class="fas fa-bolt me-1"></i> [[Priority Goals]]</a>
+						</li>
+						<li class="#if($appsection == "mytasks") current #end" >
+							<a href="$communitylink/users/tasks/mytasks.html?goaltrackerstaff=$user.getId()"><i class="fas fa-tasks me-1"></i> [[My Goals]]</a>
+						</li>
+						<li class='#if($appsection == "search" && $ticketlevel != 2) current #end'>
+							<a href="$!{communitylink}/users/tasks/search.html"><i class="fas fa-search me-1"></i> [[All Open Goals]]</a>
+						</li>
+						<li class="#if($appsection == "completed") current #end" >
+							<a href="$communitylink/users/tasks/report.html?collectionid=*&goaltrackerstaff=*"><i class="fas fa-check-circle me-1"></i> [[Completed Goals]]</a>
+						</li>
 					#end
 				</ul>
-			#if(!$userprojects.isEmpty() )
-			<div style="padding:15px 10px 15px; border-bottom: 1px solid #e5e5e5;">
-			<a href="$!{communitylink}/users/tasks/index.html?$!{args}" class="btn btn-xs btn-secondary">[[All]]</a>
-			<a href="$!{communitylink}/users/tasks/search.html?ticketlevel=1&$!{args}" class="btn btn-xs btn-secondary">[[Agendas]]</a>
-			<a href="$!{communitylink}/users/tasks/search.html?ticketlevel=2&$!{args}" class="btn btn-xs btn-secondary">[[Goals]]</a>
-			</div>
-			#end
 			
 	    ##	<ul class="sidebar-list">
 		##	<li class="#if($appsection == "activity") current #end" >
@@ -143,10 +140,10 @@ data-ajaxpath="$communitylink/users/sidebar.html?appsection=$!appsection&oemaxle
 				*#
 			
 				#*<li class="#if($appsection == "tixreport") current #end" >
-					<a href="${communitylink}/users/tasks/tixreport.html?goaltrackerstaff=$user.getId()"><i class="fas fa-chart-line"></i> [[Tix Report]]</a>
+					<a href="${communitylink}/users/tasks/tixreport.html?goaltrackerstaff=$user.getId()"><i class="fas fa-chart-line me-1"></i> [[Tix Report]]</a>
 				*#
 				<li class="#if($appsection == "invoices") current #end">
-					<a href="${communitylink}/projects/reports/invoices/invoicepaidyear.html" ><i class="fas fa-file-invoice-dollar"></i> [[Invoices]]</a>
+					<a href="${communitylink}/projects/reports/invoices/invoicepaidyear.html" ><i class="fas fa-file-invoice-dollar me-1 "></i> [[Invoices]]</a>
 				</li>
 			</ul>
 	</div>
