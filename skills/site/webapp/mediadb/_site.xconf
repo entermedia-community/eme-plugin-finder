@@ -3,4 +3,6 @@
 <page>
   <property name="catalogid">site/catalog</property>
   <property name="applicationid">site/mediadb</property>
+
+  <property name="fallbackdirectory">/WEB-INF/base/finder/mediadb</property>
 </page>

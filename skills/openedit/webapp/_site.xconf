@@ -12,6 +12,7 @@
 	<property name="themeprefix">/${applicationid}/theme</property>
 
 	<path-action name="MediaArchiveModule.loadApplicationId" />
+	<path-action name="ProfileModule.loadUserProfile" />
 
 	<path-action name="Admin.loadPermissions"/>
 	<path-action name="Admin.allowViewing" />
