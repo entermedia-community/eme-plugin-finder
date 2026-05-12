@@ -6,4 +6,4 @@
 -Dstdout.encoding=UTF-8
 -Dstderr.encoding=UTF-8
 -DEMELIB=$EMELIB
--cp "$EMELIB/bin:$EMSERVER/bin:$EMELIB/tomcat/bin/*:$EMELIB/tomcat/lib/*:$EMELIB/skills/openedit/lib/*:$EMELIB/skills/openinstitute/lib/*:$EMELIB/skills/system/lib/*:$EMELIB/skills/finder/lib/*:$EMELIB/skills/manager/lib/*:$EMELIB/skills/mediadb/lib/*"
+-cp "$EMELIB/bin:$EMSERVER/bin:$EMELIB/tomcat/bin/*:$EMELIB/tomcat/lib/*:$EMELIB/skills/openedit/lib/*:$EMELIB/skills/eminstitute/lib/*:$EMELIB/skills/system/lib/*:$EMELIB/skills/finder/lib/*:$EMELIB/skills/manager/lib/*:$EMELIB/skills/mediadb/lib/*"

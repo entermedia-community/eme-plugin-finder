@@ -3,15 +3,15 @@
 	<classpathentry kind="src" path="skills/system/code"/>
 	<classpathentry kind="src" path="skills/openedit/code"/>
 	<classpathentry kind="src" path="skills/finder/code"/>
-	<classpathentry kind="src" path="skills/openinstitute/code"/>
+	<classpathentry kind="src" path="skills/eminstitute/code"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-22"/>
 	<classpathentry kind="lib" path="skills/finder/lib/pdfbox-app-2.0.6.jar"/>
-	<classpathentry kind="lib" path="skills/openinstitute/lib/compile/servlet-api.jar"/>
-	<classpathentry kind="lib" path="skills/openinstitute/lib/compile/websocket-api.jar"/>
-	<classpathentry kind="lib" path="skills/openinstitute/lib/openedit-money-5.626.jar"/>
-	<classpathentry kind="lib" path="skills/openinstitute/lib/stripe-java-5.25.0.jar"/>
-	<classpathentry kind="lib" path="skills/openinstitute/lib/zxingcore-3.5.4.jar"/>
-	<classpathentry kind="lib" path="skills/openinstitute/lib/zxingjavase-3.5.4.jar"/>
+	<classpathentry kind="lib" path="skills/eminstitute/lib/compile/servlet-api.jar"/>
+	<classpathentry kind="lib" path="skills/eminstitute/lib/compile/websocket-api.jar"/>
+	<classpathentry kind="lib" path="skills/eminstitute/lib/openedit-money-5.626.jar"/>
+	<classpathentry kind="lib" path="skills/eminstitute/lib/stripe-java-5.25.0.jar"/>
+	<classpathentry kind="lib" path="skills/eminstitute/lib/zxingcore-3.5.4.jar"/>
+	<classpathentry kind="lib" path="skills/eminstitute/lib/zxingjavase-3.5.4.jar"/>
 	<classpathentry kind="lib" path="skills/system/lib/HdrHistogram-2.1.6.jar"/>
 	<classpathentry kind="lib" path="skills/system/lib/activation-1.1.jar"/>
 	<classpathentry kind="lib" path="skills/system/lib/antlr-runtime-3.5.jar"/>

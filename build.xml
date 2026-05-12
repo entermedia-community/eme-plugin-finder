@@ -42,7 +42,7 @@
 		<src path="${basedir}/skills/system/code"/>
 		<src path="${basedir}/skills/openedit/code"/>
 		<src path="${basedir}/skills/finder/code"/>
-		<src path="${basedir}/skills/openinstitute/code"/>
+		<src path="${basedir}/skills/eminstitute/code"/>
 
 		<classpath>
 				<fileset dir="${basedir}/skills/system/lib/">
@@ -53,7 +53,7 @@
 					<include name="*.jar"/>
 					<include name="compile/*.jar"/>
 				</fileset>
-				<fileset dir="${basedir}/skills/openinstitute/lib/">
+				<fileset dir="${basedir}/skills/eminstitute/lib/">
 					<include name="*.jar"/>
 					<include name="compile/*.jar"/>
 				</fileset>
