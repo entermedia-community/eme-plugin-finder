@@ -107,7 +107,7 @@ case "$CMD" in
         #chmod 755 "$TARGET/tomcat/bin/*.sh"
     fi
 
-    if [ ! -f "$TARGET/webapp/WEB-INF/base/_site.xconf" ]; then
+    if [ ! -L "$TARGET/webapp/WEB-INF/base/_site.xconf" ]; then
          mkdir -p "$TARGET/webapp/WEB-INF/base"
          ln -s "$EMELIB/resources/webapp/WEB-INF/base/_site.xconf" "$TARGET/webapp/WEB-INF/base/_site.xconf"
         sudo chown -R $USERID:$GROUPID "$TARGET/webapp"
@@ -122,7 +122,7 @@ case "$CMD" in
     fi
 
 
-    if [ ! -d "$TARGET/webapp/WEB-INF/bin" ]; then
+    if [ ! -L "$TARGET/webapp/WEB-INF/bin" ]; then
         ln -s "$EMELIB/resources/webapp/WEB-INF/bin" "$TARGET/webapp/WEB-INF/bin"
     fi
 
