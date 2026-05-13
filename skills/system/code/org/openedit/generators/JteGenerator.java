@@ -12,7 +12,6 @@ import org.apache.commons.logging.LogFactory;
 import gg.jte.CodeResolver;
 import gg.jte.ContentType;
 import gg.jte.TemplateEngine;
-import gg.jte.TemplateException;
 import gg.jte.TemplateNotFoundException;
 import gg.jte.output.WriterOutput;
 import gg.jte.resolve.DirectoryCodeResolver;
