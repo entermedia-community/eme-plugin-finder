@@ -175,9 +175,9 @@ EOL
 
     cp "$EMELIB/resources/editor-configs/formatter.xml" "$TARGET/formatter.xml"
 
-    envsubst < "$EMELIB/resources/editor-configs/eme.code-workspace" > "$TARGET/eme.code-workspace"
+    envsubst < "$EMELIB/resources/editor-configs/eme.code-workspace" > "$TARGET/$EMSERVER_NAME.code-workspace"
 
-    code "$TARGET/eme.code-workspace" && echo "Launching VS Code, press F5 to start your server" && exit 0
+    code "$TARGET/$EMSERVER_NAME.code-workspace" && echo "Launching VS Code, press F5 to start your server" && exit 0
 
 
 

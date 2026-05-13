@@ -5,6 +5,7 @@
 			"type": "java",
 			"name": "Launch eMedia",
 			"request": "launch",
+			"console": "internalConsole",
 			"mainClass": "org.apache.catalina.startup.Bootstrap",
 			"vmArgs": "-XX:+ShowCodeDetailsInExceptionMessages -Dcatalina.home=${workspaceFolder:eme-lib}/tomcat/ -Dcatalina.base=${workspaceFolder:$EMSERVER_NAME}/tomcat -Djava.io.tmpdir=${workspaceFolder:$EMSERVER_NAME}/tomcat/work -Dfile.encoding=UTF-8 -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8 -DEMELIB=${workspaceFolder:eme-lib}",
 			"classPaths": [
