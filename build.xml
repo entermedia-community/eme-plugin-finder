@@ -38,13 +38,13 @@
 	<target name="compile">
 		<mkdir dir="${bin}"/>
 
-	<javac debug="true" destdir="${bin}" source="17" target="17" nowarn="on">
-		<src path="${basedir}/skills/system/code"/>
-		<src path="${basedir}/skills/openedit/code"/>
-		<src path="${basedir}/skills/finder/code"/>
-		<src path="${basedir}/skills/eminstitute/code"/>
+		<javac debug="true" destdir="${bin}" source="17" target="17" nowarn="on">
+			<src path="${basedir}/skills/system/code"/>
+			<src path="${basedir}/skills/openedit/code"/>
+			<src path="${basedir}/skills/finder/code"/>
+			<src path="${basedir}/skills/eminstitute/code"/>
 
-		<classpath>
+			<classpath>
 				<fileset dir="${basedir}/skills/system/lib/">
 					<include name="*.jar"/>
 					<include name="compile/*.jar"/>
@@ -69,15 +69,13 @@
 	<target name="tar">
 		<mkdir dir="${deploy}/builds" />
 
-		<tar destfile="${deploy}/builds/${versionedApp}.tar.gz" compression="gzip" longfile="gnu" >
-		<tarfileset dir="${basedir}/skills" prefix="eme-lib/skills"/>
-		<tarfileset dir="${basedir}/agents" prefix="eme-lib/agents"/>
-		<tarfileset dir="${basedir}/tomcat" prefix="eme-lib/tomcat"/>
-		<tarfileset dir="${basedir}/webapp" prefix="eme-lib/webapp"/>
-		<tarfileset dir="${basedir}/resources/docker" prefix="eme-lib/resources/docker"/>
-		<tarfileset dir="${basedir}/resources/bin" prefix="eme-lib/resources/bin"/>
-		<tarfileset dir="${basedir}/bin" prefix="eme-lib/bin"/>
-		<tarfileset file="${basedir}/version.txt" />
+		<tar destfile="${deploy}/builds/${versionedApp}.tar.gz" compression="gzip" longfile="gnu">
+			<tarfileset dir="${basedir}/skills" prefix="eme-lib/skills"/>
+			<tarfileset dir="${basedir}/agents" prefix="eme-lib/agents"/>
+			<tarfileset dir="${basedir}/tomcat" prefix="eme-lib/tomcat"/>
+			<tarfileset dir="${basedir}/resources" prefix="eme-lib/resources"/>
+			<tarfileset dir="${basedir}/bin" prefix="eme-lib/bin"/>
+			<tarfileset file="${basedir}/version.txt" />
 		</tar>
 
 		<copy overwrite="true" file="${deploy}/builds/${versionedApp}.tar.gz" tofile="${deploy}/eme-lib.tar.gz"/>

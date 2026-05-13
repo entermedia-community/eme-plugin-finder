@@ -97,5 +97,8 @@
 	<classpathentry kind="lib" path="skills/system/lib/t-digest-3.0.jar"/>
 	<classpathentry kind="lib" path="skills/system/lib/velocity-engine-core-2.3.jar"/>
 	<classpathentry kind="lib" path="skills/system/lib/velocity-tools-generic-3.1.jar"/>
+	<classpathentry kind="lib" path="skills/system/lib/jte-3.1.12.jar"/>
+	<classpathentry kind="lib" path="skills/system/lib/jte-runtime-3.1.12.jar"/>
+	<classpathentry kind="lib" path="skills/system/lib/jte-extension-api-3.1.12.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

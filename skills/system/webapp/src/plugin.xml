@@ -255,6 +255,23 @@
 		</property>
 	</bean>
 
+	<bean id="jte" class="org.openedit.generators.JteGenerator">
+		<property name="rootDirectory">
+			<ref bean="root" />
+		</property>
+		<property name="pageManager">
+			<ref bean="pageManager" />
+		</property>
+	</bean>
+	<bean id="jteGenerator" class="org.openedit.generators.JteGenerator">
+		<property name="rootDirectory">
+			<ref bean="root" />
+		</property>
+		<property name="pageManager">
+			<ref bean="pageManager" />
+		</property>
+	</bean>
+
 	<bean id="file" class="org.openedit.generators.FileGenerator">
 		<property name="pageManager">
 			<ref bean="pageManager"/>
