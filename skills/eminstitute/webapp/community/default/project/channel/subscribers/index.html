@@ -12,7 +12,6 @@
 		#end
 	</div> 
 	
-	#set($collectionid = $librarycol.getId())
 	<div>
 		#set( $team = $mediaarchive.query("librarycollectionusers").exact("collectionid",$collectionid).exact("ontheteam",true).search($context) )
 		
