@@ -203,7 +203,7 @@ EOL
     # Java @argfile does not expand shell variables, so expand them here
     EXPANDED_ARGS=$( mktemp $TARGET/tomcat/work/tomcat-args.XXXXXX)
     sudo chmod 600 "$EXPANDED_ARGS"
-    #trap " rm -f $EXPANDED_ARGS" EXIT
+    trap " rm -f $EXPANDED_ARGS" EXIT
      sed -e "s|\$EMELIB|$EMELIB|g" -e "s|\$EMSERVER|$EMSERVER|g" "$ARGS_TEMPLATE" > "$EXPANDED_ARGS"
 
     JAVA="$JAVA_HOME/bin/java"
