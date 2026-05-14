@@ -177,7 +177,11 @@ EOL
 
     envsubst < "$EMELIB/resources/editor-configs/eme.code-workspace" > "$TARGET/$EMSERVER_NAME.code-workspace"
 
-    code "$TARGET/$EMSERVER_NAME.code-workspace" && echo "Launching VS Code, press F5 to start your server" && exit 0
+    if command -v code >/dev/null 2>&1; then
+        code "$TARGET/$EMSERVER_NAME.code-workspace" && echo "Launching VS Code, press F5 to start your server" && exit 0
+    else
+        echo "VS Code 'code' command not found. Open $TARGET/$EMSERVER_NAME.code-workspace manually."
+    fi
 
 
 
