@@ -3821,6 +3821,13 @@ ul.inlinelist li {
 .btn-navbar {
 	display: inline-block;
 }
+.resultsdiv .btn-navbar {
+	display: block;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
 .expandedmodule .emresultscontainer {
 	z-index: 200;
 	position: relative;
