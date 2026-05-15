@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<page>
+  <property name="fallbackdirectory">/WEB-INF/base/eminstitute/mediadb/services/module/user</property>
+  <property name="module">user</property>
+  <property name="searchtype">user</property>
+</page>

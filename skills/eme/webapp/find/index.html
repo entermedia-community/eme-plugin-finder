@@ -1,0 +1,199 @@
+##
+## Chat-First Dashboard — site/find/index.html
+##
+#set($edithome = "$applink/views/modules/user/editors/aichatsearch")
+#set($chatterboxhome = "${edithome}/chatterbox")
+
+<div id="applicationmaincontent" class="applicationmaincontent">
+
+  <div class="chat-dashboard">
+
+    $pages.include("./components/chat-dashboard/sidebar.html", $context)
+
+    <main class="chat-main">
+
+      <button id="sidebarExpandFab" title="[[Show sidebar]]">
+        <i class="bi bi-layout-sidebar"></i>
+      </button>
+
+      <div id="chatMainContent" class="chat-main-content">
+        $pages.include("./components/chat-dashboard/landing.html", $context)
+        $pages.include("./components/chat-dashboard/chat-input.html", $context)
+      </div>
+
+    </main>
+
+  </div><!-- /chat-dashboard -->
+
+</div><!-- /applicationmaincontent --> 
+
+<script>
+/* global lQuery */
+(function () {
+  'use strict';
+
+  var EDITHOME = '$edithome';
+  var currentMode = 'rag';
+  var modeLabels = {
+    rag:      '[[Ask Docs]]',
+    howto:    '[[How-To]]',
+    search:   '[[Search]]',
+    generate: '[[Generate]]'
+  };
+  var modePlaceholders = {
+    rag:      '[[Ask a question about your documents...]]',
+    howto:    '[[Describe what you need help with...]]',
+    search:   '[[Search your file library by name, tag or description...]]',
+    generate: '[[Describe the content you want to create...]]'
+  };
+
+  function qOne(sel, ctx) { return (ctx || document).querySelector(sel); }
+  function qAll(sel, ctx) { return Array.from((ctx || document).querySelectorAll(sel)); }
+
+  var ta      = qOne('#chatTextarea');
+  var sendBtn = qOne('#chatSendBtn');
+  var sidebar = qOne('#chatSidebar');
+
+  /* ── Textarea: auto-grow + enable send ─────────────────────────── */
+  if (ta) {
+    ta.addEventListener('input', function () {
+      this.style.height = 'auto';
+      this.style.height = Math.min(this.scrollHeight, 180) + 'px';
+      sendBtn.disabled = !this.value.trim();
+    });
+    ta.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        if (!sendBtn.disabled) sendBtn.click();
+      }
+    });
+  }
+
+  /* ── Send: create session then post message ─────────────────── */
+  if (sendBtn) {
+    sendBtn.addEventListener('click', function () {
+      var msg = ta && ta.value.trim();
+      if (!msg) return;
+      initiateChat(msg);
+      ta.value = '';
+      ta.style.height = 'auto';
+      sendBtn.disabled = true;
+    });
+  }
+
+  function initiateChat(message) {
+    var targetDiv = document.getElementById('chatMainContent');
+    if (!targetDiv) return;
+    if (typeof lQuery !== 'undefined') {
+      lQuery.ajax({
+        url: EDITHOME + '/sessionadd.html',
+        data: { message: message, mode: currentMode, createnew: true },
+        success: function (html) {
+          targetDiv.innerHTML = html;
+          lQuery(targetDiv).trigger('emLoaded');
+          hideLanding();
+        }
+      });
+    } else {
+      var url = EDITHOME + '/sessionadd.html'
+        + '?message=' + encodeURIComponent(message)
+        + '&mode=' + currentMode
+        + '&createnew=true';
+      window.location.href = url;
+    }
+  }
+
+  function hideLanding() {
+    var el = document.getElementById('chatLanding');
+    if (el) el.style.display = 'none';
+  }
+
+  /* ── Suggestion chips ────────────────────────────────────────── */
+  qAll('[data-suggestion]').forEach(function (chip) {
+    chip.addEventListener('click', function (e) {
+      e.preventDefault();
+      if (ta) {
+        ta.value = this.dataset.suggestion;
+        ta.dispatchEvent(new Event('input'));
+        ta.focus();
+      }
+    });
+  });
+
+  /* ── Mode pills (landing) ────────────────────────────────────── */
+  qAll('.mode-pill').forEach(function (pill) {
+    pill.addEventListener('click', function () {
+      qAll('.mode-pill').forEach(function (p) { p.classList.remove('active'); });
+      this.classList.add('active');
+      setMode(this.dataset.mode);
+      if (ta) ta.focus();
+    });
+  });
+
+  /* ── Mode dropdown (input bar) ───────────────────────────────── */
+  qAll('[data-chatmode]').forEach(function (item) {
+    item.addEventListener('click', function (e) {
+      e.preventDefault();
+      setMode(this.dataset.chatmode);
+      qAll('.mode-pill').forEach(function (p) {
+        p.classList.toggle('active', p.dataset.mode === currentMode);
+      });
+    });
+  });
+
+  function setMode(mode) {
+    currentMode = mode;
+    var lbl = document.getElementById('chatModeLabel');
+    if (lbl) lbl.textContent = modeLabels[mode] || mode;
+    if (ta && modePlaceholders[mode]) ta.placeholder = modePlaceholders[mode];
+    qAll('[data-chatmode] .mode-check').forEach(function (ic) { ic.classList.add('d-none'); });
+    var check = qOne('[data-chatmode="' + mode + '"] .mode-check');
+    if (check) check.classList.remove('d-none');
+    qAll('[data-chatmode]').forEach(function (it) {
+      it.classList.toggle('active', it.dataset.chatmode === mode);
+    });
+  }
+
+  /* ── Search toggle ───────────────────────────────────────────── */
+  var searchToggle = document.getElementById('chatSearchToggle');
+  if (searchToggle) {
+    searchToggle.addEventListener('click', function () {
+      var isSearch = this.classList.toggle('active');
+      var target = isSearch ? 'search' : 'rag';
+      setMode(target);
+      qAll('.mode-pill').forEach(function (p) { p.classList.toggle('active', p.dataset.mode === target); });
+      if (ta) ta.focus();
+    });
+  }
+
+  /* ── Sidebar collapse / expand ───────────────────────────────── */
+  var collapseBtn = document.getElementById('sidebarCollapseBtn');
+  var expandFab   = document.getElementById('sidebarExpandFab');
+
+  if (collapseBtn && sidebar) {
+    collapseBtn.addEventListener('click', function () {
+      sidebar.classList.add('sidebar-collapsed');
+      if (expandFab) expandFab.style.display = 'flex';
+    });
+  }
+  if (expandFab && sidebar) {
+    expandFab.addEventListener('click', function () {
+      sidebar.classList.remove('sidebar-collapsed');
+      this.style.display = 'none';
+    });
+  }
+
+  /* ── Hide landing when chatterbox loads via AJAX ─────────────── */
+  var mainContent = document.getElementById('chatMainContent');
+  if (mainContent && typeof MutationObserver !== 'undefined') {
+    new MutationObserver(function (mutations) {
+      mutations.forEach(function (m) {
+        if (m.addedNodes.length && mainContent.querySelector('.chatterbox, .aichatsearch')) {
+          hideLanding();
+        }
+      });
+    }).observe(mainContent, { childList: true, subtree: false });
+  }
+
+})();
+</script>

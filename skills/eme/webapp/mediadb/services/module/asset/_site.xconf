@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<page>
+  <property name="fallbackdirectory">/WEB-INF/base/finder/mediadb/services/module/asset</property>
+  <property name="module">asset</property>
+  <property name="searchtype">asset</property>
+</page>
