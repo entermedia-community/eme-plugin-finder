@@ -107,7 +107,6 @@ docker run -t -d \
 	--name $INSTANCE \
 	--log-opt max-size=10m --log-opt max-file=10 \
 	--cap-add=SYS_PTRACE \
-	--add-host=deepface.entermediadb.net:172.18.0.200 \
 	-e TZ="America/New_York" \
 	-e USERID=$USERID \
 	-e GROUPID=$GROUPID \

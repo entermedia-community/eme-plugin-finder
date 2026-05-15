@@ -143,7 +143,7 @@ case "$CMD" in
         src="${pair%%:*}"
         dst="${pair##*:}"
         for skill in "$src"/*/; do
-            if [ -d "$skill/webapp" ] && [ ! -L "$dst/$(basename "$skill")" ]; then
+            if [ -d "${skill}webapp" ] && [ ! -L "$dst/$(basename "$skill")" ]; then
                  ln -s "${skill}webapp" "$dst/$(basename "$skill")"
             fi
         done
