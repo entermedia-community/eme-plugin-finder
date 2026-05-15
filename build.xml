@@ -35,7 +35,7 @@
 	<target name="compile">
 		<mkdir dir="${bin}"/>
 
-		<javac debug="true" destdir="${bin}" source="17" target="17" nowarn="on">
+		<javac debug="true" destdir="${bin}" source="21" target="21" nowarn="on">
 			<src path="${basedir}/skills/system/code"/>
 			<src path="${basedir}/skills/openedit/code"/>
 			<src path="${basedir}/skills/finder/code"/>
