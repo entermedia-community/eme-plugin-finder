@@ -34,8 +34,20 @@
 	<!-- Just make sure it all compiles ok -->
 	<target name="compile">
 		<mkdir dir="${bin}"/>
+	 
+		<copy todir="${bin}">
+			<fileset dir="${basedir}/skills/system/code">
+				<include name="**/*.xml"/>
+				<include name="**/*.properties"/>
+			</fileset>
+			<fileset dir="${basedir}/skills/openedit/code">
+				<include name="**/*.xml"/>
+				<include name="**/*.properties"/>
+			</fileset>
 
-		<javac debug="true" destdir="${bin}" source="21" target="21" nowarn="on">
+		</copy>
+
+		<javac verbose="true" debug="true" destdir="${bin}" source="21" target="21" nowarn="on">
 			<src path="${basedir}/skills/system/code"/>
 			<src path="${basedir}/skills/openedit/code"/>
 			<src path="${basedir}/skills/finder/code"/>
