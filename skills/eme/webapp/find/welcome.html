@@ -1,0 +1,43 @@
+#set( $setuptips = [
+  ["Run Smart Organizer", "magic", "Use rules to automatically file new content into folders and collections."],
+  ["Complete Your Profile", "person-circle", "Update your account details and preferred language/theme settings."],
+  ["Create Starter Collections", "collection", "Make a few top-level collections so your media is easy to browse."],
+  ["Upload Your First Files", "cloud-upload", "Add a few sample files to verify your workflow and metadata setup."]
+])
+<div id="applicationmaincontent" class="applicationmaincontent">
+	##$pages.include("${themeprefix}/layouts/header.html", $context)
+  <div class="bg-light text-dark" style="height: calc(100vh - 90px);">
+    <main class="d-flex flex-column">
+      <div class="py-5 bg-light">
+        <div class="container">
+          <div class="text-center mb-5">
+            <h1 class="display-4 mb-3">[[Welcome to Your EME]]</h1>
+            <p class="lead mb-5">
+              [[Your personal media workspace is ready. Start with a few setup steps to organize content from day one.]]
+            </p>
+          </div>
+          <div class="p-5 w-lg-50 mx-auto rounded alert alert-info mb-5" style="background-color: #3884fd11;">
+            <div class="container text-center">
+              <h2 class="h2 mb-3 text-primary">[[Get Set Up in Minutes]]</h2>
+              <p class="mb-4 text-dark">[[Use Smart Organizer to automatically configure your file organization flow.]]</p>
+              <a href="/$apphome/components/smartautomation/index.html" class="py-2 btn btn-lg btn-primary emdialog" data-oemaxlevel="1"  data-dialogid="smartautomation" title="Smart Automation"><i class="bi bi-magic me-1"></i> [[Open Smart Organizer]]</a>
+            </div>
+          </div> 
+          <div class="row mt-5">
+            #foreach($tip in $setuptips)
+            <div class="col-md-6 col-lg-3 mb-4">
+              <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center">
+                  <i class="mb-2 text-primary bi bi-$tip[1]" style="font-size: 32px;"></i>
+                  <h5 class="card-title mb-4">$tip[0]</h5>
+                  <p class="card-text text-muted">$tip[2]</p>
+                </div>
+              </div>
+            </div>
+            #end
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
