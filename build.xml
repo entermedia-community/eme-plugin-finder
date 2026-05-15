@@ -11,9 +11,6 @@
 
 	<property environment="env" />
 	<property name="majorversion" value="12" />
-
-
-
 	<!-- ========================================================================
 		Anthill build server properties.  These properties will be passed in
 		by anthill when this script is executed on the build server.
@@ -73,7 +70,9 @@
 			<tarfileset dir="${basedir}/skills" prefix="eme-lib/skills"/>
 			<tarfileset dir="${basedir}/agents" prefix="eme-lib/agents"/>
 			<tarfileset dir="${basedir}/tomcat" prefix="eme-lib/tomcat"/>
-			<tarfileset dir="${basedir}/resources" prefix="eme-lib/resources"/>
+			<tarfileset dir="${basedir}/resources" prefix="eme-lib/resources">
+				<exclude name="**/*.tar.gz"/>
+			</tarfileset>
 			<tarfileset dir="${basedir}/bin" prefix="eme-lib/bin"/>
 			<tarfileset file="${basedir}/version.txt" />
 		</tar>
