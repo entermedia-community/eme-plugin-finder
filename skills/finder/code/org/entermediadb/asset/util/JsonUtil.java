@@ -302,6 +302,10 @@ public class JsonUtil
 		{
 			return "{}";
 		}
+		if (inMap instanceof JSONObject)
+		{
+			return ((JSONObject) inMap).toJSONString();
+		}
 		JSONObject obj = new JSONObject(inMap);
 		return obj.toJSONString();
 	}

@@ -244,7 +244,7 @@ EOL
     "$JAVA" "@$EXPANDED_ARGS" org.apache.catalina.startup.Bootstrap start 
     
     catalinapid=0
-    while [ $catalinapid -eq "0" ]; do
+    while [ "$catalinapid" -eq "0" ]; do
         catalinapid=$(pgrep -f "eme start")
         echo "Catalina PID: $catalinapid"
         sleep 1
