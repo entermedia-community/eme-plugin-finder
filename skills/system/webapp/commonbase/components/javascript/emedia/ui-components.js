@@ -34,6 +34,27 @@ jQuery(document).ready(function () {
 		}
 	});
 
+	lQuery("#chatSearchToggle").livequery("click", function () {
+		$(this).toggleClass("active");
+		if ($(this).hasClass("active")) {
+			$("#suggestionGrid").addClass("active");
+		} else {
+			$("#suggestionGrid").removeClass("active");
+		}
+	});
+
+	lQuery("#sidebarCollapseBtn").livequery("click", function () {
+		$("#chatSidebar").addClass("sidebar-collapsed");
+		$("#header").addClass("sidebar-collapsed");
+	});
+
+	lQuery("#sidebarOpenBtn").livequery("click", function () {
+		$("#chatSidebar").removeClass("sidebar-collapsed");
+		$("#header").removeClass("sidebar-collapsed");
+	});
+
+	// $("#suggestionGrid")
+
 	lQuery(".uipanel").livequery(function () {
 		$(this).addClass("ui-widget");
 		var header = $(this).attr("header");

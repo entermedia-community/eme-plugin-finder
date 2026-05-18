@@ -101,6 +101,38 @@ body {
 	z-index: 1000;
 }
 
+.mediacenterheader.personal-menu {
+	position: absolute;
+	width: calc(100% - 268px);
+	height: 72px;
+	left: 268px;
+	transition:
+		left 0.3s ease,
+		width 0.3s ease;
+	--themed-logo-height: 32px;
+	background-color: #ffffff;
+	border-bottom: 1px solid #f3f4f6;
+}
+.personal-brand,
+.top-breadcrumb {
+	line-height: 32px;
+	font-weight: bold;
+	font-size: 1.25rem;
+	color: #4a4a4a;
+}
+.mediacenterheader.personal-menu.sidebar-collapsed {
+	left: 0;
+	width: 100%;
+}
+#sidebarOpenBtn {
+	display: none;
+}
+.sidebar-collapsed #sidebarOpenBtn {
+	display: block;
+}
+.chat-main {
+	padding-top: 72px;
+}
 .pickfromiframe {
 	display: none;
 }

@@ -2,12 +2,10 @@
 
 	<path-action name="ProfileModule.savePreference"/>
 	<path-action name="UserProfileModule.loadSideBarWidth" />
-	
-	<property name="modulesearchclearfilters">true</property>
-	
-	<page-loader loader="finderPages" />
 
-		
+	<property name="modulesearchclearfilters">true</property>
+
+
 	<inner-layout>/${applicationid}/theme/layouts/maincontent.html</inner-layout>
 
 

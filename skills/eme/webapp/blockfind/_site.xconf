@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<page>
-  <property name="siteid">eme</property>
-  <property name="applicationid">eme/blockfind</property>
-  <property name="catalogid">eme/catalog</property>
-  <property name="fallbackdirectory">/WEB-INF/base/finder/blockfind</property>
-</page>

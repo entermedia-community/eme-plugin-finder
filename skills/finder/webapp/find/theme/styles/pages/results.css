@@ -40,7 +40,9 @@
 .emsubnav ul.resultsnav li a.resultsnavlink {
 	text-decoration: none;
 	padding: 0 1em;
-	display: inline-block;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 	line-height: var(--nav-btn-height);
 	height: var(--nav-btn-height);
 	background: var(--themed-navbar-secondary);

@@ -1,0 +1,41 @@
+<aside id="chatSidebar">
+
+  <div class="sidebar-header">
+    <div class="sidebar-brand">
+      <div class="sidebar-brand-icon"><i class="bi bi-robot"></i></div>
+      <span>[[EME]]</span>
+    </div>
+    <button class="btn btn-sm icon-btn" id="sidebarCollapseBtn" title="[[Collapse sidebar]]">
+      <i class="bi bi-layout-sidebar-reverse" style="font-size:1.25rem;"></i>
+    </button>
+  </div>
+
+  <a class="btn btn-accent ajax m-3"
+    href="$edithome/sessionadd.html"
+    data-targetdiv="chatMainContent"
+    data-oemaxlevel="1"
+    data-createnew="true">
+    <i class="bi bi-plus-lg"></i> [[New Chat]]
+  </a>
+
+  <div class="sidebar-divider"></div>
+
+  <div class="sidebar-scroll">
+
+    <div class="pb-2">
+      $pages.include("./sidebar-history.html", $context)
+    </div>
+
+    <div class="pb-2">
+      $pages.include("./sidebar-menu.html", $context)
+    </div>
+
+    <div class="pb-2">
+      $pages.include("./sidebar-team.html", $context)
+    </div>
+
+    $pages.include("./sidebar-admin.html", $context)
+
+  </div>
+  
+</aside>
