@@ -48,9 +48,10 @@
 	  
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 	
+	$pages.include("/${applicationid}/theme/layouts/includes.html", $context)
+
 	<link rel="stylesheet" href="$apphome/theme/css/eme.css" />
 
-	$pages.include("/${applicationid}/theme/layouts/includes.html", $context)
 	
 </head>
 <body id="embody" #if($desktop) class="desktop" #end showadmintoolbar="$!canshowadmintoolbar" #if($content.isPropertyTrue("hidemediaviewer")) data-hidemediaviewer="true" #end> 

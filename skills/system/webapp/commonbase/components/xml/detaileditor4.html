@@ -79,7 +79,7 @@ $context.putPageValue("longform",false)
     #if(!$fieldcolumnsize)
     	#set($fieldcolumnsize = 10)
     #end
-    <div class="col-$fieldcolumnsize" style="padding-left:10px;">
+    <div class="col-$fieldcolumnsize" style="padding: 0 0 10px 10px;">
     	$pages.include("$xmledithome/detailedit.html", $context)
     </div>
 	</div>	
