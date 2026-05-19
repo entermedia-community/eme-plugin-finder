@@ -3,7 +3,13 @@
 <page>
 
 	<property name="fallbackdirectory">/WEB-INF/base/finder/find</property>
-	<property name="catalogid">finder/catalog</property>
+	<property name="catalogid">system</property>
+	<property name="siteid">manager</property>
+	<property name="applicationid">manager</property>
 	<property name="findroot">/finder/blockfind</property>
+
+	<permission name="view">
+		<user />
+	</permission>
 
 </page>
