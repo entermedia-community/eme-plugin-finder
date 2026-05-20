@@ -3,7 +3,7 @@
 <page>
   <property name="themeid">defaulttheme</property>
   <property name="catalogid">site/catalog</property>
-  <property name="applicationid">site/eme</property>
+  <property name="applicationid">eme</property>
   <property name="fallbackdirectory">/finder/find</property>
   <property name="findroot">/site/blockfind</property>
 
