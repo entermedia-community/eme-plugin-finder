@@ -2,7 +2,7 @@
 
 <page>
   	
-	<property name="Xfallbackdirectory">/WEB-INF/base/finder/find</property> <!-- added to individual folders to avoid load all css/js finder stuff -->
+	<property name="Xfallbackdirectory">/finder/find</property> <!-- added to individual folders to avoid load all css/js finder stuff -->
 	
 	<generator  name="velocityGenerator" mimetypes="text/html"/>
 	<generator  name="velocityGenerator" mimetypes="text/json"/>

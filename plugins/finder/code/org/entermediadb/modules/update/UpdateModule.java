@@ -352,7 +352,7 @@ public class UpdateModule extends BaseMediaModule
 
 		// UNZIP
 		ZipUtil ziputil = new ZipUtil();
-		File destination = new File(getRoot(), "/WEB-INF/base/layouts/");
+		File destination = new File(getRoot(), "/layouts/");
 		destination.mkdirs();
 		ziputil.unzip(tmp, destination);
 
@@ -363,7 +363,7 @@ public class UpdateModule extends BaseMediaModule
 		// if( fall == null)
 		// {
 		// fall = new PageProperty("fallbackdirectory");
-		// fall.setValue("/WEB-INF/base/layouts");
+		// fall.setValue("/layouts");
 		// settings.putProperty(fall);
 		// getPageManager().getPageSettingsManager().saveSetting(settings);
 		// }
@@ -404,7 +404,7 @@ public class UpdateModule extends BaseMediaModule
 
 		// UNZIP
 		ZipUtil ziputil = new ZipUtil();
-		File destination = new File(getRoot(), "/WEB-INF/base/themes/");
+		File destination = new File(getRoot(), "/themes/");
 		destination.mkdirs();
 		ziputil.unzip(tmp, destination);
 
@@ -467,7 +467,7 @@ public class UpdateModule extends BaseMediaModule
 			Page page = getPageManager().getPage(path);
 			if (!page.exists())
 			{
-				String temppath = "/WEB-INF/base/entermedia/tools/sync/template.xconf";
+				String temppath = "/entermedia/tools/sync/template.xconf";
 				Page template = getPageManager().getPage(temppath);
 				List bar = template.getPageSettings().getFieldPathActions();
 				page.getPageSettings().setPathActions(bar);

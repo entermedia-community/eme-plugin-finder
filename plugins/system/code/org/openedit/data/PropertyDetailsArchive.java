@@ -43,9 +43,9 @@ public class PropertyDetailsArchive implements CatalogEnabled
 	protected Map fieldPropertyDetails;
 	protected List fieldChildTables;
 	protected List fieldChildTableNames;
-	protected String fieldSaveTo = "data"; //base,catalog,data
+	protected String fieldSaveTo = "data"; // base,catalog,data
 	protected List fieldSearchTypes;
-	
+
 	protected ModuleManager fieldModuleManager;
 
 	public ModuleManager getModuleManager()
@@ -118,17 +118,16 @@ public class PropertyDetailsArchive implements CatalogEnabled
 		return details.findIndexProperties();
 	}
 
-//	public List getStoredProperties(String inType)
-//	{
-//		PropertyDetails details = getPropertyDetails(inType);
-//		if (details == null)
-//		{
-//			return Collections.EMPTY_LIST;
-//		}
-//		return details.findStoredProperties();
-//	}
+	// public List getStoredProperties(String inType)
+	// {
+	// PropertyDetails details = getPropertyDetails(inType);
+	// if (details == null)
+	// {
+	// return Collections.EMPTY_LIST;
+	// }
+	// return details.findStoredProperties();
+	// }
 
-	
 	public ViewFieldList getViewFields(String inSearchType, String inViewId, UserProfile inProfile)
 	{
 		Data viewdata = getSearcherManager().getCachedData(getCatalogId(), "view", inViewId);
@@ -139,7 +138,8 @@ public class PropertyDetailsArchive implements CatalogEnabled
 
 	public ViewFieldList getViewFields(PropertyDetails propdetails, Data inViewData, UserProfile inProfile)
 	{
-		if(inViewData == null) {
+		if (inViewData == null)
+		{
 			log.error("No viewdata found");
 			return null;
 		}
@@ -148,7 +148,7 @@ public class PropertyDetailsArchive implements CatalogEnabled
 		if (inProfile != null) // this is important since they may have created
 								// a custom search screen or something
 		{
-			//id = id + "_" + inProfile.get("settingsgroup");
+			// id = id + "_" + inProfile.get("settingsgroup");
 			String propId = "view_" + id;
 			values = inProfile.getValues(propId);
 			if (values != null)
@@ -160,7 +160,7 @@ public class PropertyDetailsArchive implements CatalogEnabled
 		ViewFieldList details = null;
 		if (id != null)
 		{
-			details = getViewCache().get(id);  //TODO: Replace with standard CacheManager
+			details = getViewCache().get(id); // TODO: Replace with standard CacheManager
 		}
 		if (details != null)
 		{
@@ -179,7 +179,7 @@ public class PropertyDetailsArchive implements CatalogEnabled
 		if (details == null || details.isEmpty())
 		{
 			details = new ViewFieldList();
-			details.setId(inViewData.getId());  //Not needed
+			details.setId(inViewData.getId()); // Not needed
 		}
 
 		if (inProfile != null)
@@ -230,9 +230,9 @@ public class PropertyDetailsArchive implements CatalogEnabled
 
 	public XmlFile getViewXml(Data inViewData)
 	{
-		
+
 		String moduleid = inViewData.get("moduleid");
-		if( moduleid == null)
+		if (moduleid == null)
 		{
 			String backuppath = findConfigurationFile("/views/" + inViewData.getId() + ".xml");
 			XmlFile file = getXmlArchive().getXml(backuppath);
@@ -240,20 +240,20 @@ public class PropertyDetailsArchive implements CatalogEnabled
 
 		}
 
-		//First Data
+		// First Data
 		String inViewPath = moduleid + "/" + inViewData.getId();
 		String readwritepath = "/WEB-INF/data/" + getCatalogId() + "/views/" + inViewPath + ".xml";
-		XmlFile file = getXmlArchive().getXml(readwritepath);  //This comes from base page
-		
-		if( !file.isExist() )
+		XmlFile file = getXmlArchive().getXml(readwritepath); // This comes from base page
+
+		if (!file.isExist())
 		{
-			//Look in base
+			// Look in base
 			String backuppath = findConfigurationFile("/views/" + inViewPath + ".xml");
 			file = getXmlArchive().getXml(backuppath);
 
-			if( !file.isExist() )
+			if (!file.isExist())
 			{
-				//Replace the name with default
+				// Replace the name with default
 				String name = inViewData.getId();
 				if (name.length() > moduleid.length())
 				{
@@ -261,17 +261,17 @@ public class PropertyDetailsArchive implements CatalogEnabled
 					String path = "/" + getCatalogId() + "/data/views/defaults/" + name + ".xml";
 					file = getXmlArchive().getXml(path);
 				}
-				//Random anything
-				if( !file.isExist() )
+				// Random anything
+				if (!file.isExist())
 				{
 					log.error("No default view found " + name);
 					String path = "/" + getCatalogId() + "/data/views/defaults/resultstable.xml";
 					file = getXmlArchive().getXml(path);
 				}
 			}
-			file.setPath(readwritepath); //In case they save it
+			file.setPath(readwritepath); // In case they save it
 		}
-		
+
 		return file;
 	}
 
@@ -323,11 +323,10 @@ public class PropertyDetailsArchive implements CatalogEnabled
 	}
 
 	/**
-	 * This returns the properties found in store/configuration/{inType}.xml. In
-	 * other words, all the possible properties for that type.
+	 * This returns the properties found in store/configuration/{inType}.xml. In other words, all the
+	 * possible properties for that type.
 	 * 
-	 * @param The
-	 *            type of data (i.e., product, catalog, item, order, etc...)
+	 * @param The type of data (i.e., product, catalog, item, order, etc...)
 	 * @return PropertyDetails
 	 */
 	public PropertyDetails getPropertyDetails(String inType)
@@ -335,68 +334,69 @@ public class PropertyDetailsArchive implements CatalogEnabled
 		PropertyDetails details = (PropertyDetails) getPropertyDetails().get(inType);
 		try
 		{
-			//Check cache
+			// Check cache
 			String path = "/WEB-INF/data/" + getCatalogId() + "/fields/" + inType + ".xml";
 			XmlFile dataxmlfile = getXmlArchive().getXml(path); // checks time
-			
+
 			String basedataxmlfile = "/" + getCatalogId() + "/data/fields/" + inType + ".xml";
 			XmlFile basesettingsdefaults = getXmlArchive().getXml(basedataxmlfile);
-			if (details != null && details.getInputFile() == dataxmlfile) //Cache Check. Same instance
+			if (details != null && details.getInputFile() == dataxmlfile) // Cache Check. Same instance
 			{
 				fixBeanName(details, inType, basesettingsdefaults, dataxmlfile);
 				return details;
 			}
-			
-			//log.debug("Loading " + getCatalogId() + " " + inType);
-			
+
+			// log.debug("Loading " + getCatalogId() + " " + inType);
+
 			HashMap allfields = new HashMap();
-			
-			if (!dataxmlfile.isExist() && !basesettingsdefaults.isExist() )
+
+			if (!dataxmlfile.isExist() && !basesettingsdefaults.isExist())
 			{
 				if (inType.endsWith("Log"))
 				{
 					path = findConfigurationFile("/fields/defaultLog.xml");
-					dataxmlfile = getXmlArchive().getXml(path); //RELOAD
+					dataxmlfile = getXmlArchive().getXml(path); // RELOAD
 					dataxmlfile.setRoot(dataxmlfile.getRoot().createCopy());
 				}
 				else
 				{
 					path = findConfigurationFile("/fields/default.xml");
-					dataxmlfile = getXmlArchive().getXml(path); //RELOAD
+					dataxmlfile = getXmlArchive().getXml(path); // RELOAD
 					dataxmlfile.setRoot(dataxmlfile.getRoot().createCopy());
-					dataxmlfile.getRoot().addAttribute("beanname",null); //let the fixBeanName work
+					dataxmlfile.getRoot().addAttribute("beanname", null); // let the fixBeanName work
 				}
-				
+
 			}
-			else if(!basesettingsdefaults.isExist())
-			{
-				String beanname = dataxmlfile.getRoot().attributeValue("beanname");
-				if( beanname == null || beanname.equals("listSearcher"))
+			else
+				if (!basesettingsdefaults.isExist())
 				{
-					String listpath = findConfigurationFile("/fields/default.xml");
-					basesettingsdefaults = getXmlArchive().getXml(listpath);
-					
+					String beanname = dataxmlfile.getRoot().attributeValue("beanname");
+					if (beanname == null || beanname.equals("listSearcher"))
+					{
+						String listpath = findConfigurationFile("/fields/default.xml");
+						basesettingsdefaults = getXmlArchive().getXml(listpath);
+
+					}
 				}
+
+			details = new PropertyDetails(this, inType); // Start fresh
+
+			// Go from specific to general details
+			if (dataxmlfile.getContentItem().exists()) // data exact
+			{
+				loadDetails(details, allfields, inType, dataxmlfile.getContentItem().getPath(), dataxmlfile.getRoot(), false); // data exact
 			}
 
-			details = new PropertyDetails(this,inType); //Start fresh
+			if (basesettingsdefaults.isExist())
+			{
+				loadDetails(details, allfields, inType, basesettingsdefaults.getContentItem().getPath(), basesettingsdefaults.getRoot(), false); // Base data exact
+			}
+			details.setBaseSettings(basesettingsdefaults); // For bean name etc
+			fixBeanName(details, inType, basesettingsdefaults, dataxmlfile);
 
-			//Go from specific to general details
-			if( dataxmlfile.getContentItem().exists() ) //data exact
-			{
-				loadDetails(details, allfields, inType, dataxmlfile.getContentItem().getPath(), dataxmlfile.getRoot(), false);    //data exact
-			}
-			
-			if( basesettingsdefaults.isExist() )
-			{
-				loadDetails(details, allfields, inType, basesettingsdefaults.getContentItem().getPath(), basesettingsdefaults.getRoot(), false);    //Base data exact
-			}
-			details.setBaseSettings(basesettingsdefaults);  //For bean name etc
-			fixBeanName(details,inType, basesettingsdefaults, dataxmlfile);
-			
 			// load any defaults by folder - AFTER we have loaded all the existing stuff.
 			// don't overwrite anything that is here already.
-			List datapaths = getPageManager().getChildrenPaths("/WEB-INF/data/" + getCatalogId() + "/fields/" + inType + "/", true); //data FOLDERS.. Is this used?
+			List datapaths = getPageManager().getChildrenPaths("/WEB-INF/data/" + getCatalogId() + "/fields/" + inType + "/", true); // data FOLDERS.. Is this used?
 			for (Iterator iterator = datapaths.iterator(); iterator.hasNext();)
 			{
 				String baseandfolderfiles = (String) iterator.next();
@@ -407,7 +407,7 @@ public class PropertyDetailsArchive implements CatalogEnabled
 				}
 			}
 
-			List basefolders = getPageManager().getChildrenPaths("/" + getCatalogId() + "/data/fields/" + inType + "/", true); //This is base FOLDERS
+			List basefolders = getPageManager().getChildrenPaths("/" + getCatalogId() + "/data/fields/" + inType + "/", true); // This is base FOLDERS
 			for (Iterator iterator = basefolders.iterator(); iterator.hasNext();)
 			{
 				String baseandfolderfiles = (String) iterator.next();
@@ -417,33 +417,33 @@ public class PropertyDetailsArchive implements CatalogEnabled
 					loadDetails(details, allfields, inType, defaults.getContentItem().getPath(), defaults.getRoot(), true);
 				}
 			}
-			
+
 			for (Iterator iterator = allfields.values().iterator(); iterator.hasNext();)
 			{
 				PropertyDetail detail = (PropertyDetail) iterator.next();
-				//Dont add it twice?
-				
-				if(!detail.isDeleted())
+				// Dont add it twice?
+
+				if (!detail.isDeleted())
 				{
 					details.addDetail(detail);
 				}
 			}
 			details.setInputFile(dataxmlfile);
-			
-			Collections.sort( details.getDetails() );
-			
-			getPropertyDetails().put(inType, details);
-			
-			//Sort em
 
-//			PropertyDetail name = details.getDetail("name");
-//			if( name != null)
-//			{
-//				if( !name.isMultiLanguage() )
-//				{
-//					log.info(inType + " Nope");
-//				}
-//			}			
+			Collections.sort(details.getDetails());
+
+			getPropertyDetails().put(inType, details);
+
+			// Sort em
+
+			// PropertyDetail name = details.getDetail("name");
+			// if( name != null)
+			// {
+			// if( !name.isMultiLanguage() )
+			// {
+			// log.info(inType + " Nope");
+			// }
+			// }
 			return details;
 		}
 		catch (OpenEditException ex)
@@ -452,31 +452,32 @@ public class PropertyDetailsArchive implements CatalogEnabled
 		}
 	}
 
-	protected void fixBeanName(PropertyDetails inDetails, String inSearchtype, XmlFile basesettings, XmlFile settings) 
+	protected void fixBeanName(PropertyDetails inDetails, String inSearchtype, XmlFile basesettings, XmlFile settings)
 	{
-		if( basesettings != null && basesettings.getRoot() != null)
+		if (basesettings != null && basesettings.getRoot() != null)
 		{
 			String enforcedname = basesettings.getRoot().attributeValue("enforcebeanname");
-			if(enforcedname != null) {
-				 inDetails.setBeanName(enforcedname);
-				 return;
+			if (enforcedname != null)
+			{
+				inDetails.setBeanName(enforcedname);
+				return;
 			}
 		}
-		
-		
+
 		String beanName = null;
-		if( getModuleManager().contains(getCatalogId(), inSearchtype + "Searcher") ) //this might be a lookup
-		{
-			beanName = inSearchtype + "Searcher";
-		}	
-		else if( getModuleManager().contains(inSearchtype + "Searcher"))
+		if (getModuleManager().contains(getCatalogId(), inSearchtype + "Searcher")) // this might be a lookup
 		{
 			beanName = inSearchtype + "Searcher";
 		}
-		if( beanName == null)
+		else
+			if (getModuleManager().contains(inSearchtype + "Searcher"))
+			{
+				beanName = inSearchtype + "Searcher";
+			}
+		if (beanName == null)
 		{
-			beanName =settings.getRoot().attributeValue("beanname");
-			if( beanName != null)
+			beanName = settings.getRoot().attributeValue("beanname");
+			if (beanName != null)
 			{
 				return;
 			}
@@ -488,58 +489,62 @@ public class PropertyDetailsArchive implements CatalogEnabled
 		}
 		String islists = "/" + getCatalogId() + "/data/lists/" + inDetails.getId() + ".xml";
 		String isfolder = "/" + getCatalogId() + "/data/lists/" + inDetails.getId() + "/";
-		
+
 		String isDatalists = "/WEB-INF/data/" + getCatalogId() + "/lists/" + inDetails.getId() + ".xml";
 		String isDatafolder = "/WEB-INF/data/" + getCatalogId() + "/lists/" + inDetails.getId() + "/";
-		
+
 		if (inDetails.getId().endsWith("Log"))
 		{
 			beanName = "dynamicLogSearcher";
 		}
-		else if( getPageManager().getPage(isfolder).exists())
-		{
-			beanName = "folderSearcher";
-		}
-		else if( getPageManager().getPage(islists).exists())
-		{
-			beanName = "listSearcher";
-		}
-		else if( getPageManager().getPage(isDatafolder).exists())
-		{
-			beanName = "folderSearcher";
-		}
-		else if( getPageManager().getPage(isDatalists).exists())
-		{
-			beanName = "listSearcher";
-		}
 		else
-		{
-			beanName = basesettings.getRoot().attributeValue("beanname");
-			if (beanName == null)
+			if (getPageManager().getPage(isfolder).exists())
 			{
-				beanName = "dataSearcher";
+				beanName = "folderSearcher";
 			}
-		}
+			else
+				if (getPageManager().getPage(islists).exists())
+				{
+					beanName = "listSearcher";
+				}
+				else
+					if (getPageManager().getPage(isDatafolder).exists())
+					{
+						beanName = "folderSearcher";
+					}
+					else
+						if (getPageManager().getPage(isDatalists).exists())
+						{
+							beanName = "listSearcher";
+						}
+						else
+						{
+							beanName = basesettings.getRoot().attributeValue("beanname");
+							if (beanName == null)
+							{
+								beanName = "dataSearcher";
+							}
+						}
 		inDetails.setBeanName(beanName);
 	}
-	
+
 	public PropertyDetail createDetail(String inSearchtype, String inId, String inName)
 	{
 		PropertyDetail detail = null;
-		
+
 		Collection all = listSearchTypes();
-		for (Iterator iterator = all.iterator(); iterator.hasNext();) 
+		for (Iterator iterator = all.iterator(); iterator.hasNext();)
 		{
 			String type = (String) iterator.next();
 			PropertyDetails details = getPropertyDetailsCached(type);
 			detail = details.getDetail(inId);
-			if( detail != null)
+			if (detail != null)
 			{
 				detail = detail.copy();
 				break;
 			}
 		}
-		if( detail == null)
+		if (detail == null)
 		{
 			PropertyDetails details = getPropertyDetailsCached(inSearchtype);
 			detail = details.createDetail(inId);
@@ -552,8 +557,7 @@ public class PropertyDetailsArchive implements CatalogEnabled
 		}
 		return detail;
 	}
-	
-	
+
 	public PropertyDetails getPropertyDetailsCached(String inType)
 	{
 		PropertyDetails details = (PropertyDetails) getPropertyDetails().get(inType);
@@ -563,21 +567,24 @@ public class PropertyDetailsArchive implements CatalogEnabled
 		}
 		return details;
 	}
+
 	public void savePropertyDetail(PropertyDetail inDetail, String inType, User inUser)
 	{
 		String path = findSavePath() + "/fields/" + inType + ".xml";
-		savePropertyDetail(inDetail,path,inType,inUser);
+		savePropertyDetail(inDetail, path, inType, inUser);
 	}
+
 	public void updatePropertyDetail(PropertyDetail inDetail, String inType, User inUser)
 	{
 		String path = inDetail.getInputFilePath();
-		if( path == null)
+		if (path == null)
 		{
-			 path = findSavePath() + "/fields/" + inType + ".xml";
+			path = findSavePath() + "/fields/" + inType + ".xml";
 		}
-		savePropertyDetail(inDetail,path,inType,inUser);
+		savePropertyDetail(inDetail, path, inType, inUser);
 
 	}
+
 	public void savePropertyDetail(PropertyDetail inDetail, String inPath, String inType, User inUser)
 	{
 
@@ -602,20 +609,20 @@ public class PropertyDetailsArchive implements CatalogEnabled
 
 	}
 
-	//	public void savePropertyDetails(PropertyDetails inDetails, String inType,
-	//			User inUser) {
-	//		XmlFile file = createDetailsFile(inDetails, inType);
+	// public void savePropertyDetails(PropertyDetails inDetails, String inType,
+	// User inUser) {
+	// XmlFile file = createDetailsFile(inDetails, inType);
 	//
-	//		for (Iterator iterator = inDetails.getDetails().iterator(); iterator
-	//				.hasNext();) {
-	//			PropertyDetail detail = (PropertyDetail) iterator.next();
-	//			Element element = file.addNewElement();
-	//			fillElement(inDetails.getDefaults(), element, detail);
-	//		}
+	// for (Iterator iterator = inDetails.getDetails().iterator(); iterator
+	// .hasNext();) {
+	// PropertyDetail detail = (PropertyDetail) iterator.next();
+	// Element element = file.addNewElement();
+	// fillElement(inDetails.getDefaults(), element, detail);
+	// }
 	//
-	//		getXmlArchive().saveXml(file, inUser);
-	//		clearCache();
-	//	}
+	// getXmlArchive().saveXml(file, inUser);
+	// clearCache();
+	// }
 
 	private XmlFile createDetailsFile(String inType)
 	{
@@ -651,13 +658,13 @@ public class PropertyDetailsArchive implements CatalogEnabled
 
 		file.setPath(path);
 		Element root = DocumentHelper.createElement("properties");
-		if( inDetails.getBaseSettings() == null) //The parent take precedence
+		if (inDetails.getBaseSettings() == null) // The parent take precedence
 		{
 			if (inDetails.getPrefix() != null)
 			{
 				root.addAttribute("prefix", inDetails.getPrefix());
 			}
-	
+
 			if (inDetails.getBeanName() != null)
 			{
 				root.addAttribute("beanname", inDetails.getBeanName());
@@ -678,7 +685,7 @@ public class PropertyDetailsArchive implements CatalogEnabled
 		for (Iterator iterator = inDetails.getDetails().iterator(); iterator.hasNext();)
 		{
 			PropertyDetail detail = (PropertyDetail) iterator.next();
-			if( !detail.isFolderBased() )
+			if (!detail.isFolderBased())
 			{
 				Element element = file.addNewElement();
 				fillElement(element, detail);
@@ -704,13 +711,13 @@ public class PropertyDetailsArchive implements CatalogEnabled
 		{
 			Element element = (Element) iter.next();
 			String id = element.attributeValue("id");
-			if( tosave.get(id) != null)
+			if (tosave.get(id) != null)
 			{
 				continue;
 			}
 			PropertyDetail detail = createDetail(inDetails, inInputFile, element, inType);
 			detail.setFolderBased(folderbased);
-			tosave.put(detail.getId(),detail);
+			tosave.put(detail.getId(), detail);
 		}
 	}
 
@@ -729,7 +736,7 @@ public class PropertyDetailsArchive implements CatalogEnabled
 			if (child != null)
 			{
 				element.remove(child);
-				//Clean any other text?
+				// Clean any other text?
 			}
 
 			child = element.addElement("name");
@@ -742,12 +749,11 @@ public class PropertyDetailsArchive implements CatalogEnabled
 				child.addElement("language").addAttribute("id", lang).addCDATA((String) val);
 			}
 		}
-		saveBoolean(element, "index",inDetail.isIndex());
-		saveBoolean(element, "keyword",inDetail.isKeyword());
-		saveBoolean(element, "filter",inDetail.isFilter());
-		saveBoolean(element, "editable",inDetail.isEditable());
+		saveBoolean(element, "index", inDetail.isIndex());
+		saveBoolean(element, "keyword", inDetail.isKeyword());
+		saveBoolean(element, "filter", inDetail.isFilter());
+		saveBoolean(element, "editable", inDetail.isEditable());
 
-		
 		for (Iterator iterator = inDetail.getElementData().keySet().iterator(); iterator.hasNext();)
 		{
 			String key = (String) iterator.next();
@@ -757,27 +763,24 @@ public class PropertyDetailsArchive implements CatalogEnabled
 				element.addAttribute(key, val);
 			}
 		}
-		
+
 		ArrayList toremove = new ArrayList();
-		for (Iterator iterator = element.attributeIterator(); iterator.hasNext();) {
+		for (Iterator iterator = element.attributeIterator(); iterator.hasNext();)
+		{
 			Attribute attr = (Attribute) iterator.next();
-			if(!inDetail.getElementData().keySet().contains(attr.getName())){
+			if (!inDetail.getElementData().keySet().contains(attr.getName()))
+			{
 				toremove.add(attr);
 			}
-			
+
 		}
-		
-		for (Iterator iterator = toremove.iterator(); iterator.hasNext();) {
+
+		for (Iterator iterator = toremove.iterator(); iterator.hasNext();)
+		{
 			Attribute attr = (Attribute) iterator.next();
 			element.remove(attr);
 		}
-		
-	
-		
-		
-		
-		
-		
+
 		String type = inDetail.getDataType();
 		if (type != null)
 		{
@@ -788,60 +791,60 @@ public class PropertyDetailsArchive implements CatalogEnabled
 		if (viewtype != null)
 		{
 			element.addAttribute("viewtype", viewtype);
-		} else{
+		}
+		else
+		{
 			Attribute viewattr = element.attribute("viewtype");
-			if(viewattr != null){
+			if (viewattr != null)
+			{
 				element.remove(viewattr);
 			}
-			 viewattr = element.attribute("rendertype");
-			if(viewattr != null){
+			viewattr = element.attribute("rendertype");
+			if (viewattr != null)
+			{
 				element.remove(viewattr);
 			}
-			
-			
+
 		}
 
 		String datatype = inDetail.getDataType();
 		if (datatype != null)
 		{
 			element.addAttribute("datatype", datatype);
-		} else{
-			Attribute viewattr = element.attribute("datatype");
-			if(viewattr != null){
-				element.remove(viewattr);
-			}			
 		}
-		//Cleanup and standardize
-		
-		
-		
-		
-		
+		else
+		{
+			Attribute viewattr = element.attribute("datatype");
+			if (viewattr != null)
+			{
+				element.remove(viewattr);
+			}
+		}
+		// Cleanup and standardize
+
 		Attribute typeattr = element.attribute("type");
-		if(typeattr != null){
+		if (typeattr != null)
+		{
 			element.remove(typeattr);
 		}
-		
-		
-		
+
 	}
 
 	private void saveBoolean(Element inElement, String inId, boolean inIndex)
 	{
-		if( inIndex )
+		if (inIndex)
 		{
 			inElement.addAttribute("index", "true");
 		}
 		else
 		{
 			Attribute atr = inElement.attribute(inId);
-			if( atr != null)
+			if (atr != null)
 			{
 				inElement.remove(atr);
-			}	
+			}
 		}
 	}
-
 
 	protected PropertyDetail createDetail(PropertyDetails inDetails, String inInputFile, Element element, String inType)
 	{
@@ -849,15 +852,15 @@ public class PropertyDetailsArchive implements CatalogEnabled
 		d.setElementData(new ElementData(element, inDetails));
 		d.setTextLabelManager(getTextLabelManager());
 		d.setInputFilePath(inInputFile);
-		//		for (Iterator iterator = defaults.keySet().iterator(); iterator.hasNext();)
-		//		{
-		//			String key = (String) iterator.next();
-		//			String value = (String) defaults.get(key);
-		//			d.setValue(key, value);
-		//		}
-		
+		// for (Iterator iterator = defaults.keySet().iterator(); iterator.hasNext();)
+		// {
+		// String key = (String) iterator.next();
+		// String value = (String) defaults.get(key);
+		// d.setValue(key, value);
+		// }
+
 		//
-		//populateViewElements(element, d);
+		// populateViewElements(element, d);
 
 		d.setCatalogId(getCatalogId());
 		d.setSearchType(inType);
@@ -877,8 +880,8 @@ public class PropertyDetailsArchive implements CatalogEnabled
 		Set set = new HashSet();
 		addFolder(inPath, "", set, subdirectories);
 		String datapath = "/WEB-INF/data/" + getCatalogId() + "/" + inFolderType;
-		addFolder(datapath, "" ,set, subdirectories);
-		
+		addFolder(datapath, "", set, subdirectories);
+
 		// // We don't want this in a loop or to follow a chain.
 		List sorted = new ArrayList(set);
 		// if (includeExtensions)
@@ -901,7 +904,7 @@ public class PropertyDetailsArchive implements CatalogEnabled
 		return sorted;
 
 	}
-	
+
 	protected void addFolder(String inPath, String sub, Collection files, boolean subdirectories)
 	{
 		List children = getPageManager().getChildrenPaths(inPath, true);
@@ -910,9 +913,9 @@ public class PropertyDetailsArchive implements CatalogEnabled
 			String path = (String) iterator.next();
 
 			String type = sub;
-			if(type.length() > 0)
+			if (type.length() > 0)
 			{
-				type = type  + "/" + PathUtilities.extractPageName(path);
+				type = type + "/" + PathUtilities.extractPageName(path);
 			}
 			else
 			{
@@ -920,18 +923,18 @@ public class PropertyDetailsArchive implements CatalogEnabled
 			}
 
 			ContentItem file = getPageManager().getRepository().getStub(path);
-			if( subdirectories && file.isFolder() )
+			if (subdirectories && file.isFolder())
 			{
 				addFolder(inPath + "/" + file.getName(), type, files, subdirectories);
 			}
 			else
 			{
-				
-				if (!type.startsWith("_") && !type.isEmpty()) //ignore .DS_Store
-				{	
+
+				if (!type.startsWith("_") && !type.isEmpty()) // ignore .DS_Store
+				{
 					files.add(type);
 				}
-			}	
+			}
 		}
 
 	}
@@ -942,22 +945,23 @@ public class PropertyDetailsArchive implements CatalogEnabled
 		HashSet all = new HashSet(fields);
 		List lists = listFilesByFolderType("lists", false);
 		all.addAll(lists);
-		
+
 		Collection remote = getSearcherManager().getList(getCatalogId(), "searchtypes");
 		for (Iterator iterator = remote.iterator(); iterator.hasNext();)
 		{
 			Data other = (Data) iterator.next();
-			all.add(other.getId());  //Users and Groups
+			all.add(other.getId()); // Users and Groups
 		}
-		
+
 		List sorted = new ArrayList(all);
 		Collections.sort(sorted);
 		fieldSearchTypes = sorted;
 		return fieldSearchTypes;
 	}
+
 	public List getSearchTypes()
 	{
-		if( fieldSearchTypes == null)
+		if (fieldSearchTypes == null)
 		{
 			fieldSearchTypes = listSearchTypes();
 		}
@@ -1045,7 +1049,7 @@ public class PropertyDetailsArchive implements CatalogEnabled
 			}
 			else
 			{
-				if( "true".equals( elem.attributeValue("deleted")) )
+				if ("true".equals(elem.attributeValue("deleted")))
 				{
 					continue;
 				}
@@ -1084,13 +1088,14 @@ public class PropertyDetailsArchive implements CatalogEnabled
 				PropertyDetail prop = (PropertyDetail) object;
 				child.addAttribute("id", prop.getId());
 			}
-			else if (object instanceof ViewFieldList)
-			{
-				Element child = inRoot.addElement("section");
-				ViewFieldList view = (ViewFieldList) object;
-				child.addAttribute("title", view.getTitle());
-				appendValues(child, view);
-			}
+			else
+				if (object instanceof ViewFieldList)
+				{
+					Element child = inRoot.addElement("section");
+					ViewFieldList view = (ViewFieldList) object;
+					child.addAttribute("title", view.getTitle());
+					appendValues(child, view);
+				}
 
 		}
 
@@ -1179,11 +1184,11 @@ public class PropertyDetailsArchive implements CatalogEnabled
 		detail.setId(inSearcher + inDetail);
 		detail.setProperty("legacy", inDetail);
 		savePropertyDetail(detail, inSearcher, null);
-		//savePropertyDetails(details, inSearcher, null);
+		// savePropertyDetails(details, inSearcher, null);
 		PropertyDetail old = details.getDetail(inDetail);
 		deletePropertyDetail(old, inSearcher, null);
 
-		//should we search and reset any list ids?
+		// should we search and reset any list ids?
 		for (Iterator iterator = listSearchTypes().iterator(); iterator.hasNext();)
 		{
 			String type = (String) iterator.next();
@@ -1229,30 +1234,26 @@ public class PropertyDetailsArchive implements CatalogEnabled
 
 	public String findSavePath()
 	{
-//		//PLEASE leave this here :)
-//		Searcher catalogsettings = getSearcherManager().getSearcher(getCatalogId(), "catalogsettings");
-//		Data savepath = (Data) catalogsettings.searchById("detailsavepath");
-//		if(savepath != null) {
-//			return savepath.get("value"); 
-//		}
-		//Thanks!
-		
-		if( "base".equals( getSaveTo()))
+		// //PLEASE leave this here :)
+		// Searcher catalogsettings = getSearcherManager().getSearcher(getCatalogId(), "catalogsettings");
+		// Data savepath = (Data) catalogsettings.searchById("detailsavepath");
+		// if(savepath != null) {
+		// return savepath.get("value");
+		// }
+		// Thanks!
+
+		if ("base".equals(getSaveTo()))
 		{
-			return "/WEB-INF/base/entermedia/catalog/data/";
-		}	
-		if( "catalog".equals( getSaveTo()))
+			return "/entermedia/catalog/data/";
+		}
+		if ("catalog".equals(getSaveTo()))
 		{
 			return "/" + getCatalogId() + "/data";
 		}
-	
-		
-		
+
 		return "/WEB-INF/data/" + getCatalogId();
 	}
 
-	
-	
 	public String findConfigurationFile(String inPath)
 	{
 		String path = "/WEB-INF/data/" + getCatalogId() + inPath;
@@ -1263,7 +1264,7 @@ public class PropertyDetailsArchive implements CatalogEnabled
 		return path;
 	}
 
-	public void addToView(Data inViewData , String inNewField)
+	public void addToView(Data inViewData, String inNewField)
 	{
 		XmlFile file = getViewXml(inViewData);
 
@@ -1272,9 +1273,9 @@ public class PropertyDetailsArchive implements CatalogEnabled
 		element.clearContent();
 		getXmlArchive().saveXml(file, null);
 		getViewCache().clear();// clearCache(); //Only clear this type
-			
+
 	}
-	
+
 	public void removeFromView(Data inViewData, String indetailid)
 	{
 		XmlFile file = getViewXml(inViewData);
@@ -1292,12 +1293,13 @@ public class PropertyDetailsArchive implements CatalogEnabled
 		}
 
 		getXmlArchive().saveXml(file, null);
-		getViewCache().clear();// clearCache(); //Only clear this type		
+		getViewCache().clear();// clearCache(); //Only clear this type
 	}
 
 	public void saveView(Data inViewData, String[] inSortedIds)
 	{
-		if (inSortedIds == null) {
+		if (inSortedIds == null)
+		{
 			throw new OpenEditException("Missing sort list ids");
 		}
 		XmlFile file = getViewXml(inViewData);
@@ -1305,12 +1307,12 @@ public class PropertyDetailsArchive implements CatalogEnabled
 		List tosave = new ArrayList();
 		for (int i = 0; i < inSortedIds.length; i++)
 		{
-			//Element sourceelement = file.getElementById();
+			// Element sourceelement = file.getElementById();
 			String id = inSortedIds[i];
 			Element sourceelement = loadViewElement(file, id);
 			if (sourceelement != null)
 			{
-				sourceelement = (Element)sourceelement.clone();
+				sourceelement = (Element) sourceelement.clone();
 				tosave.add(sourceelement);
 			}
 		}
@@ -1321,10 +1323,10 @@ public class PropertyDetailsArchive implements CatalogEnabled
 
 		file.getElements().clear();
 		file.getElements().addAll(tosave);
-		
+
 		getXmlArchive().saveXml(file, null);
-		getViewCache().clear();// clearCache(); //Only clear this type		
-		
+		getViewCache().clear();// clearCache(); //Only clear this type
+
 	}
 
 	protected Element loadViewElement(XmlFile file, String toremove)
@@ -1338,18 +1340,17 @@ public class PropertyDetailsArchive implements CatalogEnabled
 		return element;
 	}
 
-
 	public Collection<String> listLiveTables()
 	{
 		Collection<String> types = listSearchTypes();
 		Set<String> names = new HashSet();
 
-		Collection<String> livetypes  = getSearcherManager().getNodeManager(getCatalogId()).getMappedTypes(getCatalogId());
+		Collection<String> livetypes = getSearcherManager().getNodeManager(getCatalogId()).getMappedTypes(getCatalogId());
 
 		for (Iterator iterator = types.iterator(); iterator.hasNext();)
 		{
 			String tablename = (String) iterator.next();
-			if( !livetypes.contains(tablename) )
+			if (!livetypes.contains(tablename))
 			{
 				continue;
 			}

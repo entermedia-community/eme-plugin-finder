@@ -2,6 +2,6 @@
 
 <page>
   	
-	<property name="fallbackdirectory">/WEB-INF/base/finder/find/theme</property>
+	<property name="fallbackdirectory">/finder/find/theme</property>
 	
 </page>

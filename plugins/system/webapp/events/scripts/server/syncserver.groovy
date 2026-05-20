@@ -34,11 +34,11 @@ public void runit()
 	
 	Page oldlib = pm.getPage("/WEB-INF/lib/");
 	Page backuplib = pm.getPage("/WEB-INF/libold/");
-	Page oldbase = pm.getPage("/WEB-INF/base/");
+	Page oldbase = pm.getPage("/");
 	Page backupbase = pm.getPage("/WEB-INF/baseold/");
 	
 	Page newlib = pm.getPage("/WEB-INF/temp/libnew/WEB-INF/lib/");
-	Page newbase = pm.getPage("/WEB-INF/temp/basenew/WEB-INF/base/");	
+	Page newbase = pm.getPage("/WEB-INF/temp/basenew/");	
 	if(backuplib.exists()) {
 		pm.removePage(backuplib);
 	}

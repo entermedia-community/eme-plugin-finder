@@ -2,7 +2,7 @@
 
 <page>
 
-  <property name="fallbackdirectory">/WEB-INF/base/emshare</property>
+  <property name="fallbackdirectory">/emshare</property>
   <property name="catalogid">media/catalogs/public</property>
   <property name="applicationid">emshare</property>
   

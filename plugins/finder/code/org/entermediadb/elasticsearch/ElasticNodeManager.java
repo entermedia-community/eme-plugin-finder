@@ -187,7 +187,7 @@ public class ElasticNodeManager extends BaseNodeManager implements Shutdownable
 		params.put("webroot", webroot);
 		params.put("nodeid", getLocalNodeId());
 
-		getLocalNode().setValue("path.plugins", webroot + "/WEB-INF/base/system/elasticplugins");
+		getLocalNode().setValue("path.plugins", webroot + "/system/elasticplugins");
 
 		Replacer replace = new Replacer();
 
@@ -261,7 +261,7 @@ public class ElasticNodeManager extends BaseNodeManager implements Shutdownable
 				// nb.settings().put("index.mapper.dynamic",false);
 
 				// <property
-				// id="path.plugins">${webroot}/WEB-INF/base/entermedia/elasticplugins</property>
+				// id="path.plugins">${webroot}/entermedia/elasticplugins</property>
 
 				// extras
 				// nb.settings().put("index.store.type", "mmapfs");

@@ -578,7 +578,7 @@ public class WorkspaceManager
 			homesettings.setProperty("catalogid", inAppcatalogid);
 			if (homesettings.getProperty("fallbackdirectory") == null)
 			{
-				homesettings.setProperty("fallbackdirectory", "/WEB-INF/base/emshare");
+				homesettings.setProperty("fallbackdirectory", "/emshare");
 			}
 			getPageManager().getPageSettingsManager().saveSetting(homesettings);
 

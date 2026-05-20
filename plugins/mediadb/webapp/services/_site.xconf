@@ -1,7 +1,7 @@
 <page>
 	<inner-layout />
 	
-	<property name="fallbackdirectory">/WEB-INF/base/finder/find/services</property>
+	<property name="fallbackdirectory">/finder/find/services</property>
 
 	<path-action name="MediaArchiveModule.loadApplicationId" />
 	<path-action name="Admin.autoLogin" alltypes="true"/>

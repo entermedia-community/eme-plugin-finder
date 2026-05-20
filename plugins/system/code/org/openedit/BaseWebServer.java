@@ -311,7 +311,7 @@ public class BaseWebServer implements WebServer
 				populateDependants(allplugins, depends);
 
 				// Now look in all the base folder
-				// File folders = new File(getRootDirectory(), "/WEB-INF/base/");
+				// File folders = new File(getRootDirectory(), "/");
 				loadChildren(getRootDirectory(), allplugins);
 				fieldAllPlugIns.addAll(allplugins.values());
 				for (Iterator iterator = fieldAllPlugIns.iterator(); iterator.hasNext();)

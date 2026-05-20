@@ -24,6 +24,6 @@
  -->
 <!-- 
   <property id="learningmedia" ordering="01"   url="http://dev.entermediadb.org/assets" username="admin" password="admin" caption="Media sharing web site" longdescription="EnterMedia Share is a media sharing website. It allows users to comment, share to Facebook, upload, view assets in galleries, and play videos. Starting with EMShare you can customize your own web site by changing the logo and color scheme.">EnterMedia - Learning Media</property>
-  <property id="em-mobile" ordering="03"  module="asset"  path="/WEB-INF/base/em-mobile/components/deploy" caption="Mobile Client" longdescription="Mobile client has gallery, search and filtering">EnterMediaDB - Mobile Media</property>
+  <property id="em-mobile" ordering="03"  module="asset"  path="/em-mobile/components/deploy" caption="Mobile Client" longdescription="Mobile client has gallery, search and filtering">EnterMediaDB - Mobile Media</property>
   -->   
 </properties>

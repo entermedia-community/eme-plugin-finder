@@ -3,7 +3,7 @@
 <page>
   	<property name="subtab">users</property>
   	<property name="oeuseradmintabid">userstab</property>
-  	<property name="fallbackdirectory">/WEB-INF/base/mediadb/services/module/default</property>
+  	<property name="fallbackdirectory">/mediadb/services/module/default</property>
   	<property name="module">group</property>
   	<property name="searchtype">group</property>
   

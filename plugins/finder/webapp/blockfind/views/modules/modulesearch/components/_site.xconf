@@ -2,5 +2,5 @@
 
 <page>
 	<property name="module">modulesearch</property>
-	<property name="fallbackdirectory">/WEB-INF/base/finder/blockfind/components</property>
+	<property name="fallbackdirectory">/finder/blockfind/components</property>
 </page>

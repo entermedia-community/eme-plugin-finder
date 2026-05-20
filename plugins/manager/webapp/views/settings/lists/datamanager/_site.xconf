@@ -12,5 +12,5 @@
 	
 	
 	
-	<property name="fallbackdirectoryZ">/WEB-INF/base/finder/find/views/settings/lists/datamanager</property>
+	<property name="fallbackdirectoryZ">/finder/find/views/settings/lists/datamanager</property>
 </page>

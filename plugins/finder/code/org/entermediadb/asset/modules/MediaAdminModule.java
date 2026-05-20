@@ -202,7 +202,7 @@ public class MediaAdminModule extends BaseMediaModule
 		Data frontend = getSearcherManager().getData("system", "frontend", frontendid);
 		Page copyfrompage = getPageManager().getPage(frontend.get("path"));
 		// Page copyfrompage =
-		// getPageManager().getPage("/WEB-INF/base/manager/components/newworkspace");
+		// getPageManager().getPage("/manager/components/newworkspace");
 
 		Page topage = getPageManager().getPage(deploypath);
 		if (!topage.exists())
@@ -579,7 +579,7 @@ public class MediaAdminModule extends BaseMediaModule
 		{
 			PageSettings settings = cat.getPageSettings();
 			settings.setProperty("catalogid", catalogid);
-			String fallbackdirectory = "/WEB-INF/base/eminstitute";
+			String fallbackdirectory = "/eminstitute";
 			settings.setProperty("fallbackdirectory", fallbackdirectory);
 			settings.setProperty("siteid", siteid);
 			getPageManager().getPageSettingsManager().saveSetting(settings);
@@ -1248,7 +1248,7 @@ public class MediaAdminModule extends BaseMediaModule
 				data.setProperty("ordering", System.currentTimeMillis() + "");
 
 				// //Put the XML file in the right place?
-				// String addpath = "/WEB-INF/base/finder" + archive.getCatalogId() + "/views/"
+				// String addpath = "/finder" + archive.getCatalogId() + "/views/"
 				// + childmodule.getId() + "/" + childmodule.getId() + "submoduletable.xml";
 				// Page from = getPageManager().getPage(addpath);
 				//

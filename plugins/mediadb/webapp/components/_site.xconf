@@ -2,6 +2,6 @@
 
 <page>
   	
-	<property name="fallbackdirectory">/WEB-INF/base/finder/find/components</property>
+	<property name="fallbackdirectory">/finder/find/components</property>
 	
 </page>

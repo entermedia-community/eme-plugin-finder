@@ -2,6 +2,6 @@
 
 <page>
   	
-	<property name="fallbackdirectory">/WEB-INF/base/finder/find/views/modules/asset/results/categoryviewfiles</property>
+	<property name="fallbackdirectory">/finder/find/views/modules/asset/results/categoryviewfiles</property>
 	
 </page>

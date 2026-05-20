@@ -2,6 +2,6 @@
 
 <page>
 
-	<property name="fallbackdirectory">/WEB-INF/base/finder/blockfind</property>
+	<property name="fallbackdirectory">/finder/blockfind</property>
 	
 </page>

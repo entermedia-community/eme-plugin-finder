@@ -107,9 +107,9 @@ case "$CMD" in
         #chmod 755 "$TARGET/tomcat/bin/*.sh"
     fi
 
-    if [ ! -L "$TARGET/webapp/WEB-INF/base/_site.xconf" ]; then
+    if [ ! -L "$TARGET/webapp/_site.xconf" ]; then
          mkdir -p "$TARGET/webapp/WEB-INF/base"
-         ln -s "$EMELIB/resources/webapp/WEB-INF/base/_site.xconf" "$TARGET/webapp/WEB-INF/base/_site.xconf"
+         ln -s "$EMELIB/resources/webapp/_site.xconf" "$TARGET/webapp/_site.xconf"
         sudo chown -R $USERID:$GROUPID "$TARGET/webapp"
     fi
 
@@ -138,7 +138,7 @@ case "$CMD" in
         sudo chown -R $USERID:$GROUPID "$TARGET/webapp/WEB-INF/data"
     fi
 
-    ## symbolically link each of the $EMELI/plugins/*/webapp folders to $TARGET/webapp/WEB-INF/base/*
+    ## symbolically link each of the $EMELI/plugins/*/webapp folders to $TARGET/webapp/*
     for pair in "$TARGET/plugins:$TARGET/webapp" "$EMELIB/plugins:$TARGET/webapp/"; do
         src="${pair%%:*}"
         dst="${pair##*:}"

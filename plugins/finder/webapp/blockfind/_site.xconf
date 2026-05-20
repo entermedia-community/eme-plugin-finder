@@ -6,7 +6,7 @@
 
 	<property name="catalogid">${siteid}/catalog</property>
 
-	<property name="fallbackdirectory">/WEB-INF/base/finder/find</property>
+	<property name="fallbackdirectory">/finder/find</property>
 
 	<path-action name="Admin.allowViewing" />
 

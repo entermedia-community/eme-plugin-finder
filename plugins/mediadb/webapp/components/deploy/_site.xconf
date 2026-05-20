@@ -2,7 +2,7 @@
 
 <page>
 
-  <property name="fallbackdirectory">/WEB-INF/base/mediadb</property>
+  <property name="fallbackdirectory">/mediadb</property>
   <property name="catalogid">media/catalogs/public</property>
   <property name="applicationid">mediadb</property>
   
