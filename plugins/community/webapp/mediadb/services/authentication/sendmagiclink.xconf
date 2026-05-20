@@ -1,0 +1,13 @@
+<page>
+	
+	<path-action name="JsonAdminModule.preprocess" />
+	<path-action cancel="true" name="Admin.emailPasswordReminder" />
+
+  	<property name="emaillayout">/${siteid}/mediadb/services/authentication/sendmagiclinkemail.html</property>
+	<property name="subject">Login Link</property>
+	
+  	<path-action name="Admin.createTempUser"/>
+  	<path-action name="Admin.emailUserLoginCode"/>
+
+
+</page>

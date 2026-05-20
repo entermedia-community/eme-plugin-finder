@@ -1,0 +1,7 @@
+{
+#jsonpartial($hit $searcher.getPropertyDetails())
+#set( $auser = $mediaarchive.getUser($hit.id ) )
+#set( $userimageurl = $mediaarchive.asLinkToUserProfile($auser) )
+#if($userimageurl), "portrait": "$userimageurl" #end
+
+}

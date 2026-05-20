@@ -1,0 +1,170 @@
+package org.entermediadb.asset.publish.publishers;
+
+import java.io.File;
+import java.util.Collection;
+import java.util.Iterator;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.http.HttpEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
+import org.entermediadb.asset.Asset;
+import org.entermediadb.asset.MediaArchive;
+import org.entermediadb.asset.orders.Order;
+import org.entermediadb.asset.publishing.BasePublisher;
+import org.entermediadb.asset.publishing.PublishResult;
+import org.entermediadb.asset.publishing.Publisher;
+import org.entermediadb.projects.LibraryCollection;
+import org.openedit.Data;
+import org.openedit.OpenEditException;
+import org.openedit.data.PropertyDetail;
+import org.openedit.page.Page;
+import org.openedit.util.HttpRequestBuilder;
+
+public class wordpresspublisher extends BasePublisher implements Publisher
+{
+	private static final Log log = LogFactory.getLog(wordpresspublisher.class);
+	protected ThreadLocal perThreadCache = new ThreadLocal();
+
+	public PublishResult publish(MediaArchive mediaArchive, Order inOrder, Data inOrderItem, Data inDestination, Data inPreset, Asset inAsset)
+	{
+		try
+		{
+			PublishResult result = checkOnConversion(mediaArchive, inOrderItem, inAsset, inPreset);
+			if (!result.isReadyToPublish())
+			{
+				return result;
+			}
+
+			result = new PublishResult();
+
+			String url = inDestination.get("url");
+
+			String password = inDestination.get("accesskey");
+			String exportname = inOrderItem.get("itemexportname");
+
+			log.info("Publishing " + inAsset + " to EnterMedia server " + url + "With export name: " + exportname);
+
+			// http://hc.apache.org/httpcomponents-client-4.4.x/httpmime/examples/org/apache/http/examples/entity/mime/ClientMultipartFormPost.java
+			HttpPost method = new HttpPost(url);
+
+			/* example for adding an image part */
+			HttpRequestBuilder builder = new HttpRequestBuilder();
+
+			// TODO: Use HttpRequestBuilder.addPart()
+
+			builder.addPart("accesskey", password);
+			builder.addPart("sourcepath", inAsset.getSourcePath());
+			builder.addPart("assetid", inAsset.getId());
+			builder.addPart("exportname", exportname);
+			builder.addPart("title", inAsset.toString());
+			// builder.addPart("caption", asset.get("headline"));
+			// builder.addPart("description", asset.get("longcaption"));
+			builder.addPart("uploadby", "entermedia");
+
+			for (Iterator iterator = mediaArchive.getAssetSearcher().getPropertyDetails().iterator(); iterator.hasNext();)
+			{
+				PropertyDetail detail = (PropertyDetail) iterator.next();
+
+				String wordpressfield = detail.get("wordpressfield");
+				if (wordpressfield != null)
+				{
+					//
+					String assetvalue = inAsset.get(detail.getId());
+					if (assetvalue != null)
+					{
+						if (detail.isList())
+						{
+							Data remote = mediaArchive.getData(detail.getListId(), assetvalue);
+							if (remote != null)
+							{
+								assetvalue = remote.getName();
+							}
+						}
+					}
+					if (assetvalue != null)
+					{
+						builder.addPart(wordpressfield, assetvalue);
+					}
+
+				}
+			}
+
+			if (inAsset.getKeywords().size() > 0)
+			{
+				StringBuffer buffer = new StringBuffer();
+				for (Iterator iterator = inAsset.getKeywords().iterator(); iterator.hasNext();)
+				{
+					String keyword = (String) iterator.next();
+					buffer.append(keyword);
+					if (iterator.hasNext())
+					{
+						buffer.append(',');
+					}
+				}
+				if (buffer.length() > 0)
+				{
+					builder.addPart("keywords", buffer.toString());
+				}
+			}
+			Collection collections = inAsset.getCollections();
+			if (collections != null && collections.size() > 0)
+			{
+				for (Iterator iterator = collections.iterator(); iterator.hasNext();)
+				{
+					LibraryCollection librarycollection = (LibraryCollection) iterator.next();
+					Data library = (Data) librarycollection.getLibrary();
+					if (library != null)
+					{
+						builder.addPart("library", library.getName());
+					}
+					builder.addPart("collection", librarycollection.getName());
+				}
+			}
+			Page inputpage = findInputPage(mediaArchive, inAsset, inPreset);
+			File file = new File(inputpage.getContentItem().getAbsolutePath());
+			if (!file.exists())
+			{
+				throw new OpenEditException("Input file missing " + file.getPath());
+			}
+			builder.addPart("file", file);
+
+			method.setEntity(builder.build());
+
+			CloseableHttpClient httpclient = HttpClients.createDefault(); // TODO: Cache this
+
+			CloseableHttpResponse response2 = httpclient.execute(method);
+			try
+			{
+				if (response2.getStatusLine().getStatusCode() != 200)
+				{
+					result.setErrorMessage("Wordpress Server error returned " + response2.getStatusLine().getStatusCode());
+				}
+				else
+				{
+					result.setComplete(true);
+				}
+				HttpEntity entity2 = response2.getEntity();
+				log.info("Wordpress Server response: " + response2.getStatusLine().getStatusCode() + " " + EntityUtils.toString(entity2));
+				// do something useful with the response body
+				// and ensure it is fully consumed
+				EntityUtils.consume(entity2);
+			}
+			finally
+			{
+				response2.close();
+			}
+			return result;
+		}
+		catch (Exception ex)
+		{
+			throw new OpenEditException(" Request failed: status code", ex);
+		}
+
+	}
+
+}

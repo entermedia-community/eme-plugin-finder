@@ -1,0 +1,99 @@
+<div class="col-sidebar-header">
+	<h2>[[Settings]]</h2>
+	<a href="#"
+		title="[[Hide Settings Sidebar]]"
+		class="sidebar-toggler sidebar-toggler-hide"
+		data-action="hide" 
+		data-targetdiv="col-sidebars">
+		<i class="bi bi-chevron-left closebar"></i>
+	</a>	
+</div>
+
+
+#set ($lastselected = $content.module )
+#if(!$lastselected)
+		#set($lastselected = $userprofile.last_selected_module )
+	#end
+#set($module = $searcherManager.getCachedData($catalogid, "module", $lastselected ) )
+#if ( !$module || $module.id == "modulesearch")
+	#set ($module = $searcherManager.getCachedData($catalogid, "module", "asset") )
+#end
+#set($userprofile.last_selected_module = $module.id)
+<div class="col-sidebar-scroll auto-active-container">
+	<div class="overflow-y h-100" >
+	#if($module)
+	<div class="col-sidebar-subheader">
+		<h3 class="dropdown">
+			<a class="dropdown-toggle d-flex align-items-center" href="#"  data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static">
+				<i class="bi bi-box ns me-2" style="font-size: 12px"></i>  #text($module)
+			</a>
+			<div class="dropdown-menu overflow-y" style="max-height: calc(100vh - 200px);">
+			#foreach ( $amodule in $userprofile.getModules() )
+					<a class="dropdown-item" 
+					href="$!{apphome}/views/settings/modules/${amodule.id}/info/module-setup.html?propertyfield=last_selected_module&last_selected_module.value=${amodule.id}">
+						#text($amodule)
+					</a>
+				#end
+			</div>
+		</h3>
+	</div>
+	<div>
+		<ul id="settings-menu" class="sidebar-list">
+			<li id="setup" #if( $tab == "setup" ) class="current" #end>
+				<a href="$!home$apphome/views/settings/modules/${module.id}/info/module-setup.html" class="ajax auto-active-link" 
+				data-targetdiv="applicationmaincontent" data-updateurl="true" data-oemaxlayout="3">[[Properties]]</a>
+			</li>
+		
+			#set( $searcher = $searcherManager.getSearcher($catalogid,"settingsmenumodule") )
+			#set( $query = $searcher.createSearchQuery() )
+			#set( $null = $query.addExact("menulevel","toplevel") )
+			#set( $null = $query.addExact("moduleid",$module.id) )
+			$!query.addSortBy("ordering")
+			#set($screens =  $searcher.search($query))
+			
+			#foreach($screen in $screens) 
+				<li id="$!{screen.id}" 
+					#if( $tab == "$screen.id" ) class="current" #end
+				>
+					<a href="${apphome}${screen.path}" 
+					class="ajax auto-active-link" 
+					data-targetdiv="applicationmaincontent" 
+					data-updateurl="true" 
+					data-oemaxlayout="3">$context.getText($screen.toString())</a>
+				</li>
+			#end
+		</ul>
+	</div>
+
+#end
+
+<div class="mt-1">
+	<h3 class="d-flex align-items-center"><i class="bi bi-box ns me-2" style="font-size: 12px"></i>  [[System]]</h3>
+</div>
+
+<div  class="ui-widget-content categories-widget no-padding-for-real">
+	<ul id="system-menu" class="sidebar-list overflow-y">
+		#set( $searcher = $searcherManager.getSearcher($catalogid,"settingsmenumodule") )
+		#set( $query = $searcher.createSearchQuery() )
+		#set( $null = $query.addExact("menulevel","toplevel") )
+		#set( $null = $query.addExact("moduleid","system") )						
+		$!query.addSortBy("ordering")
+		#foreach($screen in $searcher.search($query) )
+			#if($screen.id != "modules")
+			<li id="$screen.id" >
+				<a href="${apphome}${screen.path}" 
+					class="ajax auto-active-link ${screen.id}-system-menu" 
+					data-targetdiv="applicationmaincontent" 
+					data-updateurl="true" 
+					data-oemaxlevel="4" 
+					data-scrolltotop="true">$context.getText($screen.toString())</a>
+			</li>
+			#end
+		#end
+	</ul>
+</div>
+</div>
+</div>
+
+
+

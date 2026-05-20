@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<root> 
+
+  
+    <data id="luma-adspace"  entitytype="librarycollection" primaryimagepath="/theme/images/logos/atitlan.svg" templatepath="/community/luma-adspace" urlname="luma-adspace" 
+  primaryimagepathwide="/theme/images/home-technology-wide.jpg" externaldomain="https://luma-adspace.entermediadb.org"  domainlist="luma-adspace.entermediadb.org|luma-adspace.emedialibrary.com"
+  domaincommunityid="5"
+  > 
+    <name> 
+      <language id="en"><![CDATA[Luma Ad Space]]></language> 
+    </name>
+    <caption><![CDATA[Luma Ad Space]]></caption>
+    
+    <summary>
+    <![CDATA[Luma Ad Space.]]>
+    </summary>
+   
+  </data>
+
+  <data id="cinecraft" caption="CineCraft" domainlist="cinecraft.localhost|cinecraft.entermediadb.org|cinecraft.emedialibrary.com" externaldomain="https://cinecraft.entermediadb.org" templatepath="/community/cinecraft" urlname="CineCraft">
+    <name>
+      <language id="en"><![CDATA[CineCraft]]></language>
+    </name>
+  </data>
+
+  <data id="mrmaverick" caption="MrMaverick" domainlist="mrmaverick.localhost.com|mrmaverick.entermediadb.org|mrmaverick.emedialibrary.com" externaldomain="https://mrmaverick.emedialibrary.com" templatepath="/community/mrmaverick" urlname="MrMaverick">
+    <name>
+      <language id="en"><![CDATA[MrMaverick]]></language>
+    </name>
+  </data>
+
+  <data id="imagine-nation" caption="Imagine-Nation" domainlist="imagine-nation.localhost.com|imagine-nation.entermediadb.org|imagine-nation.emedialibrary.com" externaldomain="https://imagine-nation.emedialibrary.com" templatepath="/community/imagine-nation" urlname="Imagine-Nation">
+    <name>
+      <language id="en"><![CDATA[Imagine-Nation]]></language>
+    </name>
+  </data>
+
+  <data id="fashionweek" caption="FashionWeek" domainlist="fashionweek.localhost.com|fashionweek.entermediadb.org|fashionweek.emedialibrary.com" externaldomain="https://fashionweek.emedialibrary.com" templatepath="/community/fashionweek" urlname="FashionWeek">
+    <name>
+      <language id="en"><![CDATA[FashionWeek]]></language>
+    </name>
+  </data>
+
+  <data id="guidance" caption="GuiDance" domainlist="guidance.localhost.com|guidance.entermediadb.org|guidance.emedialibrary.com" externaldomain="https://guidance.emedialibrary.com" templatepath="/community/guidance" urlname="GuiDance">
+    <name>
+      <language id="en"><![CDATA[GuiDance]]></language>
+    </name>
+  </data>
+
+  <data id="yoganation" caption="YogaNation" domainlist="yoganation.localhost.com|yoganation.entermediadb.org|yoganation.emedialibrary.com" externaldomain="https://yoganation.emedialibrary.com" templatepath="/community/yoganation" urlname="YogaNation">
+    <name>
+      <language id="en"><![CDATA[YogaNation]]></language>
+    </name>
+  </data>
+  
+  <data id="homedesign" caption="Homedesign" domainlist="homedesign.entermediadb.org|homedesign.emedialibrary.com" externaldomain="https://homedesign.entermediadb.org" templatepath="/community/homedesign" urlname="HomeDesign">
+    <name>
+      <language id="en"><![CDATA[Home Design - Online Store Template]]></language>
+    </name>
+  </data>
+
+
+</root>

@@ -1,0 +1,16 @@
+<page>
+
+	<path-action name="JsonAssetModule.preprocess" alltypes="true" />
+
+	<path-action name="Script.run">
+    <script>/${catalogid}/events/scripts/users/deletefinish.groovy</script>
+  	</path-action>
+	
+	<!---
+	<permission name="view">
+		<group id="administrators"/>
+	</permission>	
+	-->
+	
+</page>
+

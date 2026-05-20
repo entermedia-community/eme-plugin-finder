@@ -1,0 +1,10 @@
+<page>
+	<path-action name="JsonAdminModule.preprocess" />
+	<path-action name="Admin.login" />
+	<property name="noredirect">true</property>
+	
+	<page-action name="TaskModule.loadUserTickets" />	
+	<property name="collectivesection">instances</property>
+
+
+</page>
