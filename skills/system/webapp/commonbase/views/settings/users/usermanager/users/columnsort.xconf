@@ -1,4 +1,0 @@
-<page>
-<property name="searchtype">user</property>
- <path-action name="DataEditModule.changeSort"/> 
-</page>

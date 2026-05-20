@@ -1,8 +1,0 @@
-<page>
-
-	<path-action name="DataEditModule.saveData">
-		<property name="searchtype">projectgoal</property>
-		<property name ="pageval">goal</property>
-	</path-action>
-
-</page>

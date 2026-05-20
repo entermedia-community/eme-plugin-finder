@@ -1,5 +1,0 @@
-<page>
-	 <page-action bean="dateStorageUtil2" name="PageValue.loadPageVariable"  class="org.openedit.util.DateStorageUtil" />
-	<property name="collectiveadminsection">invoices</property> 
-	
-</page>

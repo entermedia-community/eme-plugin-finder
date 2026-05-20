@@ -1,4 +1,0 @@
-<page>
-	<property name="fallbackdirectory">/system/commonbase/components/xml</property>
-	<property name="xmledithome">/${applicationid}/components/xml</property>
-</page>

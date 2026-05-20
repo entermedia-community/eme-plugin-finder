@@ -1,6 +1,0 @@
-#
-#Thu Aug 25 18:35:34 CDT 2022
-Delete=Borrar
-Add\ New\ Project=A\u00F1adir nuevo proyecto
-Are\ you\ sure=Est\u00E1 seguro
-Save=Guardar

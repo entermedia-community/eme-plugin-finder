@@ -1,9 +1,0 @@
-<page>
-	<property name="section">uploadmedia</property>
-	
-	<inner-layout>${communityhome}/innerlayout.html</inner-layout>
-
-	<permission name="view">
-		<userprofile property="viewupload" equals="true" />
-	</permission>
-</page>

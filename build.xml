@@ -36,33 +36,33 @@
 		<mkdir dir="${bin}"/>
 	 
 		<copy todir="${bin}">
-			<fileset dir="${basedir}/skills/system/code">
+			<fileset dir="${basedir}/plugins/system/code">
 				<include name="**/*.xml"/>
 				<include name="**/*.properties"/>
 			</fileset>
-			<fileset dir="${basedir}/skills/openedit/code">
+			<fileset dir="${basedir}/plugins/openedit/code">
 				<include name="**/*.xml"/>
 				<include name="**/*.properties"/>
 			</fileset>
 
 		</copy>
 
-		<javac verbose="true" debug="true" destdir="${bin}" source="21" target="21" nowarn="on">
-			<src path="${basedir}/skills/system/code"/>
-			<src path="${basedir}/skills/openedit/code"/>
-			<src path="${basedir}/skills/finder/code"/>
-			<src path="${basedir}/skills/eminstitute/code"/>
+		<javac debug="true" destdir="${bin}" source="21" target="21" nowarn="on">
+			<src path="${basedir}/plugins/system/code"/>
+			<src path="${basedir}/plugins/openedit/code"/>
+			<src path="${basedir}/plugins/finder/code"/>
+			<src path="${basedir}/plugins/community/code"/>
 
 			<classpath>
-				<fileset dir="${basedir}/skills/system/lib/">
+				<fileset dir="${basedir}/plugins/system/lib/">
 					<include name="*.jar"/>
 					<include name="compile/*.jar"/>
 				</fileset>
-				<fileset dir="${basedir}/skills/finder/lib/">
+				<fileset dir="${basedir}/plugins/finder/lib/">
 					<include name="*.jar"/>
 					<include name="compile/*.jar"/>
 				</fileset>
-				<fileset dir="${basedir}/skills/eminstitute/lib/">
+				<fileset dir="${basedir}/plugins/community/lib/">
 					<include name="*.jar"/>
 					<include name="compile/*.jar"/>
 				</fileset>
@@ -79,7 +79,7 @@
 		<mkdir dir="${deploy}/builds" />
 
 		<tar destfile="${deploy}/builds/${versionedApp}.tar.gz" compression="gzip" longfile="gnu">
-			<tarfileset dir="${basedir}/skills" prefix="eme-lib/skills"/>
+			<tarfileset dir="${basedir}/plugins" prefix="eme-lib/plugins"/>
 			<tarfileset dir="${basedir}/agents" prefix="eme-lib/agents"/>
 			<tarfileset dir="${basedir}/tomcat" prefix="eme-lib/tomcat"/>
 			<tarfileset dir="${basedir}/resources" prefix="eme-lib/resources">

@@ -1,7 +1,0 @@
-<page>
-	<page-action name="ProjectModule.loadCollectionChild" allowduplicates="true">
-		<property name="searchtype">collectiveproduct</property>
-	</page-action>
-	
-	<inner-layout>${communityhome}/innerlayout.html</inner-layout>
-</page>

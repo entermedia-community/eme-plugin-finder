@@ -1,9 +1,0 @@
-<page>
- 	<inner-layout>${communityhome}/innerlayout.html</inner-layout>
-	
-	
- 	<path-action name="Script.run" alltypes="true" >
-		<script>${communityhome}/project/rentaldetails/calculate.groovy</script>
-	</path-action>
- 
-</page>

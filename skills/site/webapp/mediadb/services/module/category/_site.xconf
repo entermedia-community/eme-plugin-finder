@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<page>
-  <property name="fallbackdirectory">/WEB-INF/base/mediadb/services/module/category</property>
-  <property name="module">category</property>
-  <property name="searchtype">category</property>
-</page>

@@ -1,4 +1,0 @@
-#
-#Sat Jun 04 16:26:32 CST 2022
-[Add\ New=[Agregar nuevo
-All\ Users=Todos los usuarios
