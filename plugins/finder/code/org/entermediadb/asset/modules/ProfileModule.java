@@ -59,6 +59,7 @@ public class ProfileModule extends MediaArchiveModule
 	{
 		User user = inReq.getUser();
 		String userid = null;
+
 		if (user != null && user.getId() != null && !user.getId().equals("null") && !user.isVirtual())
 		{
 			userid = user.getId();

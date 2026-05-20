@@ -302,6 +302,7 @@ public class UserProfileManager
 			}
 			else
 			{
+				log.error("No permissions found for settings group, corrupt DB " + settingsgroupid);
 				permissions.setSystemRolePermissions(new HashSet());
 			}
 		}

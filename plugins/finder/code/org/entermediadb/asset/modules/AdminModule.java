@@ -397,6 +397,7 @@ public class AdminModule extends BaseMediaModule
 
 	public void loadPermissions(WebPageRequest inReq) throws Exception
 	{
+
 		String catid = inReq.findPathValue("catalogid");
 		if (catid == null)
 		{
@@ -1000,6 +1001,7 @@ public class AdminModule extends BaseMediaModule
 
 	public void autoLogin(WebPageRequest inReq) throws OpenEditException
 	{
+
 		createUserSession(inReq);
 		String forceAuto = inReq.findValue("forceautologin");
 

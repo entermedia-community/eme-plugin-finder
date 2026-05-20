@@ -108,7 +108,7 @@ case "$CMD" in
     fi
 
     if [ ! -L "$TARGET/webapp/_site.xconf" ]; then
-         mkdir -p "$TARGET/webapp/WEB-INF/base"
+         mkdir -p "$TARGET/webapp/WEB-INF/"
          ln -s "$EMELIB/resources/webapp/_site.xconf" "$TARGET/webapp/_site.xconf"
         sudo chown -R $USERID:$GROUPID "$TARGET/webapp"
     fi
@@ -149,7 +149,7 @@ case "$CMD" in
         done
     done
 
-    sudo chown $USERID:$GROUPID "$TARGET/webapp/WEB-INF/base"
+   ## sudo chown $USERID:$GROUPID "$TARGET/webapp/WEB-INF/"
 
 
     export EMSERVER="${2:-$SCRIPT_DIR}"
