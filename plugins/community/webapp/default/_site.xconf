@@ -2,8 +2,6 @@
 
 <page>
 
-    <property name="fallbackdirectory">/WEB-INF/base/system/commonbase</property>
-
     <property name="loginroot">${communityhome}/authentication</property>
     <property name="login-path">${communityhome}/authentication/login.html</property>
 	
