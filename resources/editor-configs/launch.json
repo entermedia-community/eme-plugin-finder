@@ -4,6 +4,7 @@
 		{
 			"type": "java",
 			"name": "Launch eMedia",
+			"projectName": "$EMSERVER_NAME",
 			"request": "launch",
 			"console": "internalConsole",
 			"mainClass": "org.apache.catalina.startup.Bootstrap",
