@@ -113,7 +113,7 @@ public class PageSettingsManager
 			throw new OpenEditException(ex);
 		}
 		// As long as it does not end with _default.xconf nor _site.xconf ir must be a real page
-		if (!xconfPath.equals("/_site.xconf") && !xconfPath.equals("/_site.xconf"))
+		if (!xconfPath.equals("/_site.xconf") && !xconfPath.equals("/WEB-INF/base/_site.xconf"))
 		{
 			String path = PathUtilities.extractDirectoryPath(xconfPath); // go up a level
 			if (xconfPath.endsWith("/_site.xconf"))

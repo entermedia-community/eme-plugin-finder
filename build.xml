@@ -47,9 +47,9 @@
 
 		</copy>
 
-		<javac debug="true" destdir="${bin}" source="21" target="21" nowarn="on">
-			<src path="${basedir}/plugins/system/code"/>
+		<javac verbose="true" debug="true" destdir="${bin}" source="21" target="21" nowarn="on">
 			<src path="${basedir}/plugins/openedit/code"/>
+			<src path="${basedir}/plugins/system/code"/>
 			<src path="${basedir}/plugins/finder/code"/>
 			<src path="${basedir}/plugins/community/code"/>
 
