@@ -138,15 +138,24 @@ case "$CMD" in
         sudo chown -R $USERID:$GROUPID "$TARGET/webapp/WEB-INF/data"
     fi
 
-    ## symbolically link each of the $EMELI/plugins/*/html folders to $TARGET/html/*
-    for pair in "$TARGET/plugins:$TARGET/html" "$EMELIB/plugins:$TARGET/html/"; do
-        src="${pair%%:*}"
-        dst="${pair##*:}"
-        for skill in "$src"/*/; do
-            if [ -d "${skill}html" ] && [ ! -L "$dst/$(basename "$skill")" ]; then
-                 ln -s "${skill}html" "$dst/$(basename "$skill")"
+    # symbolically link users plugins to webapp first!
+    for plugin in "$TARGET/plugins"/*/; do
+        pluginname="$(basename "$plugin")"
+        if [ -d "${plugin}html" ]; then
+            if [ ! -L "$TARGET/webapp/$pluginname" ]; then
+                ln -s "${plugin}html" "$TARGET/webapp/$pluginname"
             fi
-        done
+        fi
+    done
+
+    # symbolically link built-in plugins from emelib to webapp, but only if they don't already exist in the target plugins directory (i.e. user overwrote them)
+    for plugin in "$EMELIB/plugins"/*/; do
+        pluginname="$(basename "$plugin")"
+        if [ -d "${plugin}html" ]; then
+            if [ ! -L "$TARGET/webapp/$pluginname" ]; then
+                ln -s "${plugin}html" "$TARGET/webapp/$pluginname"
+            fi
+        fi
     done
 
    ## sudo chown $USERID:$GROUPID "$TARGET/html/WEB-INF/"
