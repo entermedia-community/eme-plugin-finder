@@ -1,5 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
 <page>
-	<inner-layout>/${applicationid}/theme/layouts/settingssubtablayout.html</inner-layout>
-	<property name="module">asset</property>
- 	<property name="fallbackdirectory">../default</property>
- </page>
+  <property name="fallbackdirectory">../default</property>
+  <property name="module">asset</property>
+  <inner-layout>/${applicationid}/theme/layouts/settingssubtablayout.html</inner-layout>
+</page>

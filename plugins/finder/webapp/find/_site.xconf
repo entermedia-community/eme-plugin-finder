@@ -9,8 +9,8 @@
   <style id="jqueryui-css" href="/${applicationid}/components/javascript/jquery-ui/1.14/jquery-ui.css"/>
   <script src="/${applicationid}/components/javascript/jquery.form.js" id="jquery-form"/>
   <script src="/${applicationid}/components/javascript/validation/jquery.validate.min.js" id="validation"/>
-  <script src="/${applicationid}/components/javascript/emedia/ajax/ajaxformsubmit.js" id="ajaxformsubmit"/>
-  <script src="/${applicationid}/components/javascript/emedia/liveajax.js" id="liveajax"/>
+  <script id="ajaxformsubmit" src="/${applicationid}/components/javascript/emedia/ajax/ajaxformsubmit.js"/>
+  <script id="liveajax" src="/${applicationid}/components/javascript/emedia/liveajax.js"/>
   <style id="bootstrap-css" href="/${applicationid}/components/javascript/bootstrap/5.3.8/css/bootstrap.min.css"/>
   <style id="fontawesome-css" href="/${applicationid}/components/javascript/bootstrap/fonts/css/fontawesome-all.min.css"/>
   <style id="bootstra-icons" href="/${applicationid}/components/javascript/bootstrap/5.3.8/icons/bootstrap-icons.min.css"/>
