@@ -44,6 +44,7 @@
 		}
 
 		var modaldialog = $("#" + id);
+
 		if (modaldialog.length == 0) {
 			var modalClass = initiator.data("modalclass") || "";
 			jQuery("#application").append(
@@ -162,6 +163,7 @@
 				) {
 					modalOptions.focus = false;
 				}
+				console.log(modaldialog[0]);
 
 				var modalInstance = new bootstrap.Modal(modaldialog[0], modalOptions);
 				modalInstance.show();

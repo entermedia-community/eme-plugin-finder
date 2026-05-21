@@ -4,5 +4,5 @@
 
 	<page-action name="FinderModule.loadTopMenu" />
 
-	<inner-layout>/${applicationid}/theme/layouts/layout.html</inner-layout>
+	<inner-layout>/${applicationid}/theme/layouts/application.html</inner-layout>
 </page>

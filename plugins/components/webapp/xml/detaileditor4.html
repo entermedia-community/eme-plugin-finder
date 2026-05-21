@@ -22,7 +22,7 @@ $context.putPageValue("longform",false)
 
 #if(!$view)
 	#if($viewid)
-		#set($view = "${searcher.searchType}/${viewid}")
+		#set($view = $searcherManager.getCachedData($searcher.getCatalogId(), "view", "librarycollectionaddteam"))
 	#end
 #end
 
