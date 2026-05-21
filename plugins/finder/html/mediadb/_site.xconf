@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<page>
-  <property name="fallbackdirectory">/mediadb</property>
-  <property name="catalogid">${siteid}/catalog</property>
-  <property name="applicationid">${siteid}/mediadb</property>
-  <property name="temporary_password_expiry">30</property>
-</page>
- 
