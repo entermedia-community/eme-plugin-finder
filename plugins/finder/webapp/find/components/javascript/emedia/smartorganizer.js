@@ -1157,7 +1157,16 @@ $(document).ready(function () {
 				y: y,
 			});
 			readerUnmarshal(canvas, newFolder);
+
 			var folderGroup = canvas.getFigure(newFolder[0].id);
+			folderGroup.setWidth(150);
+			folderGroup.setHeight(125);
+
+			var folderLabel = canvas.getFigure(folderGroup.getId() + "-label");
+			if (folderLabel) {
+				folderLabel.setX(folderGroup.getX() + folderGroup.getWidth() / 2);
+				folderLabel.setY(folderGroup.getY() + folderGroup.getHeight() / 2);
+			}
 
 			var prevSelections = canvas.getSelection();
 			if (prevSelections) {
