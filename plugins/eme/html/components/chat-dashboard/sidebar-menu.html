@@ -1,0 +1,71 @@
+<div class="sidebar-section-btn" style="background-color: #f2f2f2;">
+  <span class="d-flex align-items-center gap-2">
+    <i class="bi bi-folder2-open sect-icon"></i>[[Data]]
+  </span> 
+</div>
+
+<div class="py-2" id="sbFilesBody">
+  #set($sectionid = $context.getRequestParameter("section"))
+  #set($topmenuselected = $sectionid)
+
+  #foreach( $link in $topmenu)
+    #set( $topmenuentity = $mediaarchive.getCachedData("module",$link.toplevelentity) )
+    #set($url = "$applink/views/modules/$topmenuentity.getId()/index.html")
+
+    #if($link.getValue("custompath"))
+        ##sample: ${apphome}/views/modules/searchcategory/index.html?categoryid=AY82YpA9RucN_HGNkhB-
+        #set($url = $content.replaceProperty($link.getValue("custompath")))
+    #end
+    
+    #if($link.toplevelentity == $moduleid )
+      #set($topmenuselected = $link.getId() )
+    #end						
+    
+    #if($link.get("submenu"))
+      #foreach($s in $submenu)
+      $s.entity == $moduleid
+        #if($s.entity == $moduleid)
+          #set($topmenuselected = $s.parentsection)
+          #set($submenuselected = $s.entity )
+          #set($submenu = $link.getValue("submenu"))
+        #end
+      #end
+      
+    #end
+    
+    <a href="$url" 
+      class="ajax activelistener file-row #if( $topmenuselected == $link.getId()) active#end" 
+      data-targetdiv="applicationmaincontent" 
+      data-oemaxlevel="3" 
+      data-updateurl="true"
+      data-$!{topmenuentity.getId()}clearselection="true"
+      #ifnotnull($topmenuentity.getId())
+        data-profilepreference="defaultmodule" 
+        data-profilepreference.value="${topmenuentity.getId()}"
+      #end 
+      data-scrolltotop="true"
+      #if($topmenuentity.getId() == "asset")
+        data-sidebarcomponent="none"
+      #end
+      title="[[View]] #text($link)">
+      #set($moduleicon = "grid")
+        #if ($topmenuentity.moduleicon)
+          #set($moduleicon = $topmenuentity.moduleicon)
+        #end
+      <i class="bi bi-${moduleicon} module-icon f-icon"></i>
+      <span class="f-name">#text($link)</span>
+    </a>
+  #end
+
+  <a class="activelistener file-row mt-2"
+    href="${apphome}/views/modules/searchcategory/index.html"
+    data-targetdiv="applicationmaincontent" 
+    data-oemaxlevel="3" 
+    data-updateurl="true"
+    style="color:#10b981; font-weight:500;">
+    <i class="bi bi-grid f-icon" style="color:#10b981;"></i>
+    <span class="f-name">[[Categories]]</span>
+    <i class="bi bi-arrow-right" style="font-size:0.7rem; color:#9ca3af;"></i>
+  </a>
+
+</div>
