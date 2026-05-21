@@ -1,5 +1,7 @@
-<page>
-	<property name="module">category</property>
-	<property name="fallbackdirectory">../default</property>
+<?xml version="1.0" encoding="UTF-8"?>
 
+<page>
+  <property name="fallbackdirectory">/mediadb/services/module/default</property>
+  <property name="module">category</property>
+  <property name="searchtype">category</property>
 </page>
