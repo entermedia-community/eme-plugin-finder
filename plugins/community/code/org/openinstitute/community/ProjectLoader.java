@@ -60,14 +60,15 @@ public class ProjectLoader extends BaseManager implements PageLoader, CatalogEna
 		// Only works with domains being set. Otherwise use normal page actions to load
 		// project pages
 		String[] url = requestedPath.split("/");
-		if (url.length > 1 && (url[1].equals("mediadb")))
-		{
-			return null;
-		}
 
 		// Check that we are actually going to the page /site/community/...
 		String appid = inPage.getProperty("applicationid");
 		if (appid != null && url.length > 0 && appid.startsWith(url[1]))
+		{
+			return null;
+		}
+
+		if (url.length > 1 && (url[1].equals("mediadb")))
 		{
 			return null;
 		}
