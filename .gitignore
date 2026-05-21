@@ -17,3 +17,6 @@ tomcat/work/*
 webapp/WEB-INF/data/entermedia/catalogs/testcatalog/
 .vscode/settings.json
 .env
+
+**/index.min.js
+**/indexdefer.min.js
