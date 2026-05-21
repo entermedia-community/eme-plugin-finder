@@ -197,7 +197,9 @@ $(document).ready(function () {
 				selectable: false,
 				composite: groupId,
 				cssClass: "folderIcon",
-				path: applink + "/theme/icons/bootstrap/folder.svg",
+				path:
+					applink +
+					"/components/javascript/bootstrap/5.3.8/icons/bootstrap/folder.svg",
 			},
 		];
 	};
@@ -1380,7 +1382,7 @@ $(document).ready(function () {
 				e.stopImmediatePropagation();
 				var iconPath =
 					apphome +
-					"/theme/icons/bootstrap/" +
+					"/components/javascript/bootstrap/5.3.8/icons/bootstrap/" +
 					$(this).parent().attr("title") +
 					".svg";
 				var selectedFolder = canvas.getPrimarySelection();
