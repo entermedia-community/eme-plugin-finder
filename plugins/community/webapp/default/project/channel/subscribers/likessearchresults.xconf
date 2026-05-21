@@ -1,6 +1,0 @@
-<page>
-	
-	<page-action name="ProjectModule.loadProjectLikes" />
-	<inner-layout />
-
-</page>

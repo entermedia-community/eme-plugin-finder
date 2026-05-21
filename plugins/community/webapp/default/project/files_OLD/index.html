@@ -1,8 +1,0 @@
-#set($module = $mediaarchive.getCachedData("module", "librarycollection"))
-$context.putPageValue("module", $module)
-$context.putPageValue("entity", $librarycol)
-$context.putPageValue("entityid", $librarycol.getId())
-$context.putPageValue("apphome", $finderhome)
-
-$context.putPageValue("edithome", "$finderhome/views/modules/$module.getId()/editors/entitymedia")
-$pages.include("$finderhome/views/modules/$module.getId()/editors/entitymedia/index.html", $context)	

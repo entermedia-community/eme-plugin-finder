@@ -1,4 +1,0 @@
-{
-	"userid": "${sendtouser.id}",
-	"screenname": "$sendtouser.getScreenName()"
-}
