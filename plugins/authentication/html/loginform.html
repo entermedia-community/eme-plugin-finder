@@ -129,7 +129,7 @@ $context.putSessionValue("fullOriginalEntryPage", $!loginokpage)
 	#end
 	<script>
 	$(document).ready(function() {
-	    $('.loginmethod').click(function() {
+	    $('.loginmethod').on("click", function() {
 				$("#loginMethod").find(".nav-link").removeClass("active");
 				$(this).addClass("active");
 				var target = $(this).data("target");

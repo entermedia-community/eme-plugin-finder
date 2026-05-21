@@ -169,7 +169,7 @@ $(document).ready(function () {
 				type: "draw2d.shape.basic.Label",
 				id: groupId + "-label",
 				x: x,
-				y: y + 88,
+				y: y + 90,
 				width: 150,
 				text: "New Folder",
 				stroke: 0,
@@ -454,7 +454,15 @@ $(document).ready(function () {
 			setTimeout(function () {
 				var figures = canvas.getFigures();
 				figures.each(function (_, figure) {
-					if (
+					if (figure.cssClass === "folderGroup") {
+						figure.setWidth(150);
+						figure.setHeight(125);
+
+						var folderLabel = canvas.getFigure(figure.getId() + "-label");
+						if (folderLabel) {
+							centerFolderLabel(folderLabel);
+						}
+					} else if (
 						["label", "title", "caption"].some((t) =>
 							figure.id.endsWith("-" + t),
 						)
@@ -1164,8 +1172,7 @@ $(document).ready(function () {
 
 			var folderLabel = canvas.getFigure(folderGroup.getId() + "-label");
 			if (folderLabel) {
-				folderLabel.setX(folderGroup.getX() + folderGroup.getWidth() / 2);
-				folderLabel.setY(folderGroup.getY() + folderGroup.getHeight() / 2);
+				centerFolderLabel(folderLabel);
 			}
 
 			var prevSelections = canvas.getSelection();
@@ -1319,7 +1326,7 @@ $(document).ready(function () {
 			var h = $(span).height();
 			while ((w > 134 || h > 36) && fs > 16) {
 				fs--;
-				$(span).css("font-size", fs);
+				$(span).css("font-size", fs + "px");
 				w = $(span).width();
 				h = $(span).height();
 			}
@@ -1338,7 +1345,17 @@ $(document).ready(function () {
 				selectedLabel.setText(lines.join("\n"));
 				var fs = getFontSize(lines.join("<br>"));
 				selectedLabel.setFontSize(fs);
+
+				centerFolderLabel(selectedLabel);
 			}
+		}
+
+		function centerFolderLabel(label) {
+			const groupNode = label.getComposite();
+			label.setX(
+				groupNode.getX() + groupNode.getWidth() / 2 - label.getWidth() / 2,
+			);
+			label.setY(groupNode.getY() + 120 - label.getHeight());
 		}
 
 		$("#folderLabel").on("input", function (e) {
@@ -1474,8 +1491,6 @@ $(document).ready(function () {
 								node.composite === childId && node.cssClass === "folderLabel",
 						);
 
-						//var childNode = json.find((node) => node.composite + "-label" === childId); //Hard to read
-						//groupId + "-label",
 						if (childNode) {
 							let parents = childNode.userData.parents;
 							if (parents.indexOf(parentNode.userData.moduleid) === -1) {

@@ -163,7 +163,6 @@
 				) {
 					modalOptions.focus = false;
 				}
-				console.log(modaldialog[0]);
 
 				var modalInstance = new bootstrap.Modal(modaldialog[0], modalOptions);
 				modalInstance.show();

@@ -1343,7 +1343,7 @@ $(document).ready(function () {
 					`scenario-${id || "untitled"}.json`,
 				);
 				document.body.appendChild(downloadAnchorNode); // required for firefox
-				downloadAnchorNode.click();
+				$(downloadAnchorNode).trigger("click");
 				downloadAnchorNode.remove();
 			});
 		});
