@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-set -x
+# set -x 
 ##This is run from the /bin/eme location that is linked
 
 CMD="${1:-start}"
@@ -129,8 +129,8 @@ case "$CMD" in
  #   sudo chown ${USERID}:${GROUPID} "$TARGET/webapp/"
 
     if [ ! -d "$TARGET/data/system" ]; then
-         mkdir -p "$TARGET/data/system"
-         cp -rp "$EMELIB/plugins/system/webapp/data/defaultdata/." "$TARGET/data/system/"
+         mkdir -p "$TARGET/webapp/WEB-INF/data/system/"
+         cp -rp "$EMELIB/plugins/system/defaultdata/." "$TARGET/webapp/WEB-INF/data/system/"
     fi
 
     if [ ! -d "$TARGET/webapp/WEB-INF/data" ]; then
