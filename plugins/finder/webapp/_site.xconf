@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<page>
-
-	<property name="siteid">finder</property>
-	<property name="catalogid">catalog</property>
-	<property name="findroot">/${siteid}/blockfind</property>
-
-</page>

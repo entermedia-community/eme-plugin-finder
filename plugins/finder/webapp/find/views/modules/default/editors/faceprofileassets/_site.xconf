@@ -1,9 +1,0 @@
-<page>
-
-	<path-action name="EntityModule.getEntity"/>
-
-	<property name="edithomename">faceprofileassets</property>
-	<property name="fallbackdirectory">../default</property>
-
-
-</page>

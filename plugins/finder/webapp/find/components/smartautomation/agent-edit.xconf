@@ -1,5 +1,0 @@
-<page>
-  <inner-layout />
-  <path-action name="DataEditModule.saveData" />
-  <path-action name="AutomationModule.handleAgentSaved" />
-</page>

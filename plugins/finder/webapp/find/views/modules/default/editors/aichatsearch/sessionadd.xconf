@@ -1,4 +1,0 @@
-<page>
-	<path-action name="ChatModule.loadChatChannel"/>
-	<path-action name="AgentModule.loadAgentContext" />
-</page>

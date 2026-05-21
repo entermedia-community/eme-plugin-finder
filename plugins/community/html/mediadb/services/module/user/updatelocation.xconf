@@ -1,0 +1,8 @@
+<page>
+
+	<path-action name="JsonAssetModule.preprocess" alltypes="true" />
+
+	<path-action name="ProfileModule.updateLocation" />
+
+</page>
+ 

@@ -1,4 +1,0 @@
-<page>
-	<path-action name="AgentModule.createQueryFromParams"/>
-	<path-action name="DataEditModule.search"/>
-</page>

@@ -1,5 +1,0 @@
-<page>
-	<path-action name="AssetEditModule.getAsset"/>
-	<path-action name="AssetEditModule.toggleAssetLock"/>
-
-</page>

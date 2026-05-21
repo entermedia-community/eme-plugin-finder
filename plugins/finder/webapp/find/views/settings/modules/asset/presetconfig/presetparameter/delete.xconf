@@ -1,5 +1,0 @@
-<page>
-	<page-action name="DataEditModule.deleteData" >
-		<property name="searchtype">presetparameter</property>
-    </page-action>
-</page>

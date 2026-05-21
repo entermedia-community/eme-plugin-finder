@@ -1,0 +1,11 @@
+<div class="nopermissions">
+
+<h2 class="text-center">[[No Permissions]]</h2>
+
+<p class="text-center">[[You do not have permissions to perform the previous action.]]</p>
+
+#if( !$user.getId() )
+
+	$pages.include("$content.loginroot/login.html",$context)
+#end
+</div>

@@ -1,0 +1,52 @@
+#set($method = $context.getMethod())
+#set ($status = "ok")
+#if (!$data)
+  #set ($status = "not found")
+#end
+#if($method == "DELETE")
+{
+  "response":
+      {
+        "status":"$status",
+        "deleted":"true"
+      }
+}
+#elseif($method == "PUT")## for updating assets
+{
+  "response":
+      {
+        "status":"$status",
+        "id":"$!data.id"
+      }
+  ,
+  "data": $pages.include("./user.json")
+}  
+#elseif($method == "POST")## for creating assets
+{
+  "response":
+      {
+        "status":"$status",
+        "id":"$data.id"
+      }
+  ,
+  "data": $pages.include("./user.json")
+}
+#elseif($method == "GET")
+{
+  "response":
+      {
+        "status":"$status",
+        "id":"$!data.id"
+      }
+      #if( $data )
+  ,
+  
+  "data": $pages.include("./user.json")
+  #end
+}
+#else
+  {
+    "status":"error",
+  	"error":"Invalid request"
+  }
+#end

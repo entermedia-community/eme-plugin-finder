@@ -1,0 +1,7 @@
+#set($collectionid = $librarycol.getId())
+
+#if($collectionid)
+	<div class="emwidget emwidget-chatterbox">
+		$pages.include("$communityhome/project/chat/index.html", $context)
+	</div> 
+#end

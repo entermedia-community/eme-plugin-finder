@@ -1,7 +1,0 @@
-<page>
-
-	<path-action name="ProfileModule.savePreference"/>
-
-	<page-action name="DataEditModule.loadEditHome" />
-
-</page>

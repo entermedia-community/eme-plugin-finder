@@ -1,8 +1,0 @@
-<page>
-	<property name="searchtype">module</property>
-	
-	<path-action name="DataEditModule.saveData" />
-	
-	<path-action name="MediaAdminModule.saveModule" />
-	
-</page>

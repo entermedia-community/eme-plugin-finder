@@ -1,7 +1,0 @@
-<page>
-
-	<path-action name="DataEditModule.clearFilter">
-		<searchtype>${module}</searchtype>
-	</path-action>
-	
-</page>

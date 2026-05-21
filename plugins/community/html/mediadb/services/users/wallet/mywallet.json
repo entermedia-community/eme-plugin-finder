@@ -1,0 +1,27 @@
+{"tickets":[
+
+
+
+#foreach($ticket in $opentickets)
+#if( ${foreach.count} != 1 ), #end
+{
+	"id" : "$ticket.id" ,
+	"name" : "$ticket.name",
+	"tasks" : [
+	#foreach($item in $tasklookup.get($ticket.id))
+	#if( ${foreach.count} != 1 ), #end
+		$item.getSearchHit().getSourceAsString()
+	#end
+	]
+	}
+#end
+
+
+
+]
+}
+
+
+
+
+

@@ -1,0 +1,66 @@
+{
+"total": "$topuploads.getTotal()",
+"totalpages": "$topuploads.getTotalPages()",
+"hitsperpage": "$topuploads.getHitsPerPage()",
+"page": "$topuploads.getPage()",
+"uploads":[
+#foreach( $upload in $topuploads.getPageOfHits())
+	#if( ${foreach.count} != 1 ), #end
+{
+	"id" : "$upload.id" ,
+	"name" : #jesc($upload.title),
+	#if ($upload.longdescription)
+	"longdescription" : #jesc($upload.longdescription),
+	#end
+	"librarycollection" : "$upload.librarycollection",
+	#set( $librarycol = $mediaarchive.getData("librarycollection",$upload.librarycollection) )
+	"librarycollectionname" : "$librarycol.name",
+	"exclusivecontent" : #if( $upload.exclusivecontent )"true" #else "false" #end,
+ 	#set( $tags = $upload.getValues("usertags") )
+	#if($tags && !$tags.isEmpty() )
+		"tags" : [
+		#foreach( $tag in $tags )
+			#if( ${foreach.count} != 1 ), #end
+			#jesc($tag)
+		#end
+		],
+	#end
+	"uploaddate": "$context.getDateTime($upload.getDate("uploaddate"))",
+	"age" : "$context.getAge($upload.getDate("uploaddate"))",	
+	"ownerid" : "$upload.owner",	
+	#set( $postuser = $userManager.getUser($upload.owner, true)) 
+	"ownername" : "$postuser.getAnonNickName()",	
+	"uploadcategory":"$!upload.uploadcategory",
+	"url": "/site/app/collective/channel/${librarycol.getId()}/index.html?showupload=${upload.id}#showupload-${upload.id}"
+	#set( $assets = $mediaarchive.getAssetSearcher().query().exact("category-exact",$upload.uploadcategory).hitsPerPage(3).search() )
+	#if( !$assets.isEmpty())
+		,"assets":[
+		#foreach( $hit in $assets)			#if( ${foreach.count} != 1 ), #end
+		{
+			"assetid":#jesc($hit.id),
+			"assetname":#jesc($hit.name),
+			"importstatus": "$hit.importstatus",
+			"previewstatus": "$hit.previewstatus",
+			"imagewidth": "$mediaarchive.getRealImageWidth($hit)",
+			"imageheight": "$mediaarchive.getRealImageHeight($hit)",
+			"downloads":[
+			#set($presets = $mediaarchive.asListOfPreviewLinks($hit) )
+			#foreach( $preset in $presets )#if( ${foreach.count} != 1 ), #end
+			{	
+				"name":#jesc($preset.name),
+				"id":#jesc($preset.id),	
+				#if( $preset.getId() == "0")#set( $url = "$home$apphome/services/module/asset/downloads/originals/${hit.sourcepath}/$hit.getMediaName()")
+					"url":"#urlencode($url)"
+				#else#set( $url = $mediaarchive.asLinkToPreview($hit, $preset.get("generatedoutputfile") ) )
+					"url":"$url"
+				#end			
+			}
+			#end
+			]
+		}
+		#end
+	]
+	#end
+}
+#end
+]}

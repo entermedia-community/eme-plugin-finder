@@ -1,5 +1,0 @@
-<page>
-	<property name="module">modulesearch</property>
-	<property name="fallbackdirectory">../default</property>
-	<property name="showaddnew">false</property>
-</page>

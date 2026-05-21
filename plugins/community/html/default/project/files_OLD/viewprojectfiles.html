@@ -1,0 +1,10 @@
+<div id="projects-content">
+
+#if( $caneditcollection)	
+	 <a href="${projectlink}/projects/addnewupload.html?collectionid=$librarycol.getId()" 
+	 class="btn btn-primary">[[Upload]]</a>
+#end
+
+$pages.include("$communityhome/project/projects/index.html",$context)
+
+</div>

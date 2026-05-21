@@ -1,0 +1,19 @@
+<page>
+	<property name="forcelayout">true</property>
+	<layout>/${applicationid}/services/module/user/data/layout.json</layout>
+	<property name="virtual">true</property>
+
+	<property name="alternative_extension">json</property>
+	
+	<permission name="view">
+		<or>
+			<userprofile property="api-delete-data" equals="true" method="DELETE" />
+			<userprofile property="api-update-data" equals="true" method="PUT" />
+			<userprofile property="api-create-data" equals="true" method="POST" />
+			
+			<userprofile property="api-load-data" equals="true" method="GET" />			
+		</or>
+	</permission>
+	
+</page>
+
