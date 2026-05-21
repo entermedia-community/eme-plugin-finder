@@ -7,7 +7,7 @@
 
 
 		
-		<property name="xmledithome">${communityhome}/components/xml</property>
+		<property name="xmledithome">/${applicationid}/components/xml</property>
 
 		<property name="usestartswith">true</property>
 		<property name="searchhome">/${applicationid}/collective/goals/search</property>

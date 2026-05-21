@@ -5,7 +5,7 @@
 <div id="roleeditor${task.id}" class="d-flex flex-wrap gap-2 rolelist">
 	#foreach( $role in $rolesarray )
 		
-		#set($link = "${communityhome}/project/goals/priorities/index.html?collectionid=$!collectionid&keyword=$val")
+		#set($link = "${apphome}/project/goals/priorities/index.html?collectionid=$!collectionid&keyword=$val")
 		#set($collectiverole = $mediaarchive.getCachedData("collectiverole",$role.collectiverole))
 		#set($collectiveuser = $mediaarchive.getCachedData("user",$role.roleuserid))
 
@@ -16,7 +16,7 @@
 					rolemyself
 					#if($task.taskstatus == "3") completed #end
 				#end" role="group">
-			<a href="#if($caneditcollection)${communityhome}/project/goals/task/editrole/editrole.html#end"
+			<a href="#if($caneditcollection)${apphome}/project/goals/task/editrole/editrole.html#end"
 				title="#text($collectiverole)"
 			 	data-taskid="$task.id" 
 			 	data-collectionid="$!collectionid"
@@ -43,7 +43,7 @@
 					data-collectionid="$!collectionid"
 					data-collectiverole="$role.collectiverole"
 					data-roleuserid="$!role.roleuserid"
-					href="#if($caneditcollection)${communityhome}/project/goals/task/rolelistaddone.html#end" 
+					href="#if($caneditcollection)${apphome}/project/goals/task/rolelistaddone.html#end" 
 					title="#esc($val)">
 					#if($role.actioncount)
 						<strong class="mx-1">

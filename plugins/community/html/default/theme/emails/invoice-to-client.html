@@ -1,4 +1,4 @@
-$pages.include("${communityhome}/theme/emails/layout-top.html", $context)
+$pages.include("${apphome}/theme/emails/layout-top.html", $context)
 #set($currency = $mediaarchive.getCachedData("currencytype", $invoice.getValue("currencytype")))
 	<span class="preheader">This is an invoice for your purchase on $!context.getDate($invoice.getValue("createdon")). Please submit payment by $!context.getDate($invoice.getValue("duedate"))</span>
 	
@@ -168,7 +168,7 @@ $pages.include("${communityhome}/theme/emails/layout-top.html", $context)
       </tr>
     </table>
 
-$pages.include("${communityhome}/theme/emails/layout-bottom.html", $context)
+$pages.include("${apphome}/theme/emails/layout-bottom.html", $context)
 
 	
 	

@@ -32,7 +32,7 @@ data-ajaxpath="$communitylink/users/sidebar.html?appsection=$!appsection&oemaxle
 				<div class="d-flex p-1" >
 						#ifnotnull($otherperson)
 							$context.putPageValue("chatuser",$otherperson)
-							$pages.include("${communityhome}/users/icon.html",$context)
+							$pages.include("${apphome}/users/icon.html",$context)
 						#end
 						#ifnull($otherperson)
 							#if($project.assetportrait)

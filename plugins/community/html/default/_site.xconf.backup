@@ -2,8 +2,8 @@
 
 <page>
 
-    <property name="loginroot">${communityhome}/authentication</property>
-    <property name="login-path">${communityhome}/authentication/login.html</property>
+    <property name="loginroot">${apphome}/authentication</property>
+    <property name="login-path">${apphome}/authentication/login.html</property>
 	
     <path-action name="Admin.autoLogin"/>
 	  <path-action name="MediaArchiveModule.loadApplicationId"/>
@@ -21,11 +21,11 @@
 	  
 	  <path-action name="OiModule.loadCommunityTagFolder" />
 	
-	  <inner-layout>${communityhome}/innerlayout.html</inner-layout>
+	  <inner-layout>${apphome}/innerlayout.html</inner-layout>
 	  
-	  <property name="xmledithome">${communityhome}/components/xml</property>
+	  <property name="xmledithome">${apphome}/components/xml</property>
 
-  <style id="blog" href="${communityhome}/theme/css/blog.css"/>
+  <style id="blog" href="${apphome}/theme/css/blog.css"/>
 	
 	<permission name="openeditdirectedit">
     <group id="administrators"/>

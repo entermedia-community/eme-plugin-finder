@@ -9,21 +9,21 @@
           #set($loginok =	"$projectlink/donate/index.html")
           [[Please Login to Donate with Credit Card]] 
           <div style="padding:20px 0 10px;">
-            <a href="${communityhome}/authentication/login.html?loginokpage=$!loginok" class="btn btn-sm btn-follow">
+            <a href="${apphome}/authentication/login.html?loginokpage=$!loginok" class="btn btn-sm btn-follow">
               [[Login to Donate With Credit Card]]
             </a>
           </div>
         </div>
         #if($paypalclientid)
         <p style="text-align:center;padding-top:5px;"><strong>[[Or Use]] PayPal:</strong></p>
-          $pages.include("${communityhome}/project/donate/paypalform.html",$context)
+          $pages.include("${apphome}/project/donate/paypalform.html",$context)
         #end 
       #else
-          $pages.include("${communityhome}/project/donate/donatenow.html",$context)
+          $pages.include("${apphome}/project/donate/donatenow.html",$context)
           
           #if($paypalclientid)
           <p style="text-align:center;padding-top:20px;"><strong>[[Or Use]] PayPal:</strong></p>
-          $pages.include("${communityhome}/project/donate/paypalform.html",$context)
+          $pages.include("${apphome}/project/donate/paypalform.html",$context)
         #end
       #end
     </div>

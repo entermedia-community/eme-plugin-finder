@@ -7,15 +7,15 @@
 	
 	<property name="fullwidth">true</property>
 	
-	<inner-layout>${communityhome}/project/chat/chatlayout.html</inner-layout>
+	<inner-layout>/${applicationid}/project/chat/chatlayout.html</inner-layout>
 	
-	<style id="tasks" href="${communityhome}/project/goals/goals.css" />
+	<style id="tasks" href="/${applicationid}/project/goals/goals.css" />
 
-    <script id="goals" src="${communityhome}/project/goals/goals.js"/>
+    <script id="goals" src="/${applicationid}/project/goals/goals.js"/>
 
-	<script id="chatterbox" src="${communityhome}/components/chatterbox/chatterbox.js" /> 
-	<style id="chatterbox" href="${communityhome}/components/chatterbox/chatterbox.css" />
-	<script id="twemoji" src="${communityhome}/components/javascript/twemoji/twemoji.js" defer="true" />
+	<script id="chatterbox" src="/${applicationid}/components/chatterbox/chatterbox.js" /> 
+	<style id="chatterbox" href="/${applicationid}/components/chatterbox/chatterbox.css" />
+	<script id="twemoji" src="/${applicationid}/components/javascript/twemoji/twemoji.js" defer="true" />
 	<script id="simplelightbox" src="/${applicationid}/components/javascript/simpleLightbox/simple-lightbox.jquery.min.js" />
 	
 	<property name="module">librarycollection</property>
@@ -28,7 +28,7 @@
 	
 	<page-action name="ProjectModule.loadChatChannel"/>
 
-	<property name="chatterboxhome">${communityhome}/project/chat/chatterbox</property>
+	<property name="chatterboxhome">/${applicationid}/project/chat/chatterbox</property>
 	<property name="chatterboxgoalsenabled">true</property>
 
 	<path-action name="Admin.loadPermissions"/>

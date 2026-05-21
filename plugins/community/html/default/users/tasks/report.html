@@ -5,12 +5,12 @@
 	    <div style="padding:5px 0;">
 	    <div style="display:inline-block; padding-right:10px;">[[Month]]: $context.getDateTime($since)</div> 
 	    <a class="btn btn-xs btn-light ajax" 
-	    	href="${communityhome}/users/tasks/report.html?collectionid=$!collectionid&monthsback=$monthsback&oemaxlevel=1"
+	    	href="${apphome}/users/tasks/report.html?collectionid=$!collectionid&monthsback=$monthsback&oemaxlevel=1"
 	    	data-targetdiv="pointsreport"> [[Go Back]] ${monthsback} [[Month]]</a>
 	    
 	    #if($monthsback!='1')
 	    <a class="btn btn-xs btn-light ajax" 
-	    href="${communityhome}/users/tasks/report.html?collectionid=$!collectionid&monthsback=0&oemaxlevel=1"
+	    href="${apphome}/users/tasks/report.html?collectionid=$!collectionid&monthsback=0&oemaxlevel=1"
 	    data-targetdiv="pointsreport"> [[Current Month]]</a>
 	    #end
 	    </div>

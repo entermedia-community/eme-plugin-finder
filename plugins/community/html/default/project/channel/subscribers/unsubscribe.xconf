@@ -7,5 +7,5 @@
 	</path-action>
 	
 	
-	<inner-layout>${communityhome}/innerlayout.html</inner-layout>
+	<inner-layout>/${applicationid}/innerlayout.html</inner-layout>
 </page>

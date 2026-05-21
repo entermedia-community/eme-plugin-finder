@@ -49,7 +49,7 @@
 			#foreach($goal in $hits)
 				#set( $goal = $mediaarchive.getSearcher("projectgoal").loadData($goal))
 				$context.putPageValue("goal",$goal)
-				$pages.include("${communityhome}/project/goals/priorities/goalsearchrow.html",$context)
+				$pages.include("${apphome}/project/goals/priorities/goalsearchrow.html",$context)
 			#end
 		#else
 			<div class="text-center text-muted my-5">

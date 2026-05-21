@@ -15,7 +15,7 @@ $context.putPageValue("searcher",$searcher)
 
 <form name="saveproject" 
 	id="saveproject" 
-	action="${communityhome}/project/store/save.html" 
+	action="${apphome}/project/store/save.html" 
 	method="post"
 	enctype="multipart/form-data"
 	class="ajaxform autocloseform"
@@ -45,7 +45,7 @@ $context.putPageValue("searcher",$searcher)
 	$context.putPageValue("viewid", "collectiveproductaddnewproduct")
 	$context.putPageValue("data", $data)
 	
-	$pages.include("${communityhome}/components/xml/detaileditor4.html", $context)
+	$pages.include("${apphome}/components/xml/detaileditor4.html", $context)
 	
 	<button type="submit" class="btn btn-primary" hidden>[[Submit]]</button>
 </form>

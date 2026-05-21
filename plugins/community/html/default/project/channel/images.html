@@ -19,7 +19,7 @@
 		
 		<div id="status$upload.getId()"  
 				class="#if ($stilloading) ajaxstatus #end"  
-				ajaxpath="${communityhome}/project/channel/images.html?uploadid=$upload.id" >
+				ajaxpath="${apphome}/project/channel/images.html?uploadid=$upload.id" >
 ##	#end
 	
 	#if( $stilloading == "true")
@@ -34,14 +34,14 @@
 		#foreach($hit in $assets.getPageOfHits())
 			$context.putPageValue("hit", $hit)
 			<li class="center-cropped">
-			$pages.include("${communityhome}/project/channel/images-image.html", $context)
+			$pages.include("${apphome}/project/channel/images-image.html", $context)
 			</li>
 		#end
 		</ul>
 	#elseif ($assets.size()==1)
 		 #set($hit = $assets[0])
 		 $context.putPageValue("hit", $hit)
-		 $pages.include("${communityhome}/project/channel/images-image.html", $context)
+		 $pages.include("${apphome}/project/channel/images-image.html", $context)
 	#end
 	
 ##	#if( $assets.size() > 0 && $assets.size() < 4)

@@ -28,7 +28,7 @@ $context.putPageValue("searcher",$searcher)
 	#if( $data.id )
 		$context.putPageValue("viewid", "projectgoalgeneral")
 		<div class="text-muted">
-			$pages.include("${communityhome}/project/goals/like.html")
+			$pages.include("${apphome}/project/goals/like.html")
 		</div>
 	#else
 		$context.putPageValue("viewid", "projectgoaladdnew")
@@ -40,17 +40,17 @@ $context.putPageValue("searcher",$searcher)
 	id="saveproject" 
 	method="post" 
 	#if($newgoal == "true")
-		action="${communityhome}/project/goals/${goalfolder}/goalsavenew.html" 	
+		action="${apphome}/project/goals/${goalfolder}/goalsavenew.html" 	
 		data-targetdiv="$!{targetdiv}"
 	#else
 		#if($goalfolder=="agent" || $goalfolder=="chat")
-			action="$!{communityhome}/project/goals/priorities/goalsearchrowsave.html"
+			action="$!{apphome}/project/goals/priorities/goalsearchrowsave.html"
 			data-targetdiv="$!{targetdiv}"
 		#elseif($goalfolder=="agentcalendar")
 			action="/users/tasks/goalsave.html"  
 			data-targetdiv="$!{targetdiv}"
 		#else
-			action="$!{communityhome}/project/goals/${goalfolder}/goalsave.html" 
+			action="$!{apphome}/project/goals/${goalfolder}/goalsave.html" 
 			data-targetdiv="$!{targetdiv}"
 		#end
 	#end
@@ -103,7 +103,7 @@ $context.putPageValue("searcher",$searcher)
 	#end
 
 #else
-	$pages.include("$!{communityhome}/components/xml/detaileditorcss.html?detailsreadonly=true", $context)
+	$pages.include("$!{apphome}/components/xml/detaileditorcss.html?detailsreadonly=true", $context)
 #end
 
 <div class="mt-3 py-3">

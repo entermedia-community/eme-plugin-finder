@@ -8,6 +8,6 @@
 
 	<path-action name="ChatModule.getChatManager"/>
 
-	<inner-layout>${communityhome}/users/userprofilelayout.html</inner-layout>
+	<inner-layout>/${applicationid}/users/userprofilelayout.html</inner-layout>
 
 </page>

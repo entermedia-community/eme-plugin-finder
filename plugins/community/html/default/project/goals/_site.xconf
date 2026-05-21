@@ -13,7 +13,7 @@
 
 	<property name="defaulttab">goaltab</property>
 	
-	<style id="tasks" href="${communityhome}/project/goals/goals.css" />
-    <script id="goals" src="${communityhome}/project/goals/goals.js"/>
+	<style id="tasks" href="/${applicationid}/project/goals/goals.css" />
+    <script id="goals" src="/${applicationid}/project/goals/goals.js"/>
 
 </page>

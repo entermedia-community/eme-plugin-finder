@@ -22,7 +22,7 @@ $context.putPageValue("caneditlists",false)
 #if( $edit)
 $context.putPageValue("edit",$edit)
 #end
-<form  name="advancedsearch" action="${communityhome}/project/goals/search/search.html?searchall=true" 
+<form  name="advancedsearch" action="${apphome}/project/goals/search/search.html?searchall=true" 
 class="em-widget-content" 
 method="GET">
 ##We need 2 things passed in: $searcher, $view or $searcher $details
@@ -52,7 +52,7 @@ $context.putPageValue("idprefix","search")
 	<td class="submit">
 	<input class="btn btn-sm btn-primary" type="submit" value="[[Search]]" />
 			#if($caneditcollection)
-			<a href="${projectlink}/projects/addnew.html?collectionid=$librarycol.getId()&collectionroot=${communityhome}/project/goals/search/index.html" class="btn-toolbar  emdialog" title="[[Add a Topic]]">[[New Topic]]</a>
+			<a href="${projectlink}/projects/addnew.html?collectionid=$librarycol.getId()&collectionroot=${apphome}/project/goals/search/index.html" class="btn-toolbar  emdialog" title="[[Add a Topic]]">[[New Topic]]</a>
 		#end
 	
 	</td>

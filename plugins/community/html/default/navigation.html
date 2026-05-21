@@ -16,7 +16,7 @@
 <nav class="navbar sticky-top navbar-expand community-nav #ifnotnull($navbgdark) bg-black #end ">
   <div class="container">
     <a href="$!{communitytagcategory.externaldomain}">
-      <img src="${communityhome}${communitytagcategory.primaryimagepath}" class="me-3" style="height:50px;width: auto;" />
+      <img src="${apphome}${communitytagcategory.primaryimagepath}" class="me-3" style="height:50px;width: auto;" />
     </a>
     <a href="$!{communitytagcategory.externaldomain}"> 
       <h3 class="text-white my-1 me-3">
@@ -26,7 +26,7 @@
     <div class="d-flex align-items-center justify-content-center ms-auto">
       <ul class="nav nav-underline">
 		  <li class="nav-item">
-				$pages.include("${communityhome}/components/quicksearch/navbar.html")
+				$pages.include("${apphome}/components/quicksearch/navbar.html")
 			</li>
         <li class="nav-item  #if($action == 'community') active #end">
                 <a class="nav-link" href="$!{communitytagcategory.externaldomain}">[[Home]]</a>

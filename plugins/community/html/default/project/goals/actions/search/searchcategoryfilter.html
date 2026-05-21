@@ -5,7 +5,7 @@ $context.putPageValue("hits",$results)
 $context.putPageValue("searcher",$searcher)
 #set ($details = $searcher.getDetailsForView("category/searchcategory", $userprofile))
 	<form id="dialogautosubmitfilter" name="autosubmitfilter" class="autosubmit  ajaxform" autocomplete="off"  data-targetdiv="goalscategoryresults" 
-	action="${communityhome}/project/goals/actions/search/searchpath.html">
+	action="${apphome}/project/goals/actions/search/searchpath.html">
 		
 			<input type="hidden" name="searchtype" value="category" />
 			<input type="hidden" name="sortby" value="categorypathUp" />
@@ -30,7 +30,7 @@ $context.putPageValue("searcher",$searcher)
 		
 	<form class="pickedcategoryform emmultivalue" action="${communitylink}/views/categories/index.html">
 		<div id="goalscategoryresults">
-			$pages.include("${communityhome}/project/goals/actions/search/searchpath.html", $context)
+			$pages.include("${apphome}/project/goals/actions/search/searchpath.html", $context)
 		</div>
 			<input name="categoryid" class="emselectedrow" type="hidden" id="selectedcategories" value="$!existingcategories" />
 			<input name="nodeID" class="emselectedrow" type="hidden" />

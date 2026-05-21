@@ -17,7 +17,7 @@
     <div class="d-flex flex-grow-1"></div>
     <p class="my-0"><i class="fas fa-share-alt"></i> Share</p>
     #if( $caneditcollection) 
-      <a class="emdialog btn btn-sm btn-outline-success ms-3" title="[[Edit Product]]" href="$communityhome/project/store/edit.html?id=${aproduct.id}&collectionid=$librarycol.id">
+      <a class="emdialog btn btn-sm btn-outline-success ms-3" title="[[Edit Product]]" href="$apphome/project/store/edit.html?id=${aproduct.id}&collectionid=$librarycol.id">
         <i class="fas fa-edit"></i> [[Edit Product]]
       </a> 
       #set($uploadlink = "${communitylink}/views/modules/asset/add/start.html?entityupload=true&entitytype=$searchtype&entityvalue=$aproduct.id&collectionid=$librarycol.id")

@@ -1,13 +1,13 @@
 <div class="d-flex flex-column">
 	#if($caneditcollection  || $librarycol.priviacylevel != "commercial" )
-	$pages.include("$communityhome/project/channel/subscribers/index.html", $context)
+	$pages.include("$apphome/project/channel/subscribers/index.html", $context)
 	#end
 	
 	#if($librarycol.priviacylevel == "community")
-		$pages.include("$communityhome/project/donate/donate.html", $context)
+		$pages.include("$apphome/project/donate/donate.html", $context)
 	#end
 	
-	$pages.include("$communityhome/project/channel/likeoptions.html", $context)
+	$pages.include("$apphome/project/channel/likeoptions.html", $context)
 
 	#if($librarycol.proposaltestimonials)
 		<div class="proposal-sidebarbox">

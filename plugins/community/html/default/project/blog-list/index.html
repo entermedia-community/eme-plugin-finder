@@ -57,11 +57,11 @@ $context.putPageValue("showchannel",false)
 		<div class="blog-list-container">
 			#foreach( $userpost in $userposts.getPageOfHits())
 				$context.putPageValue("userpost",$userpost)
-				$pages.include("${communityhome}/project/blog-list/blog-item.html",$context)
+				$pages.include("${apphome}/project/blog-list/blog-item.html",$context)
 			#end
 		</div>
 	#end
 
-	## $pages.include("${communityhome}/project/blog-list/pagination.html", $context)
+	## $pages.include("${apphome}/project/blog-list/pagination.html", $context)
 
 </div>

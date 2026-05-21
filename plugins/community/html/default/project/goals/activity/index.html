@@ -24,18 +24,18 @@
 	$context.putPageValue("goal",$goal)
 	<td >
 	#set( $project= $!mediaarchive.getData("collectiveproject",$goal.goaltrackercolumn) )
-	<a href="${communityhome}/project/goals/search/search.html?collectionid=$collectionid&field=goaltrackercolumn&operation=matches&goaltrackercolumn.value=$!project.id">
+	<a href="${apphome}/project/goals/search/search.html?collectionid=$collectionid&field=goaltrackercolumn&operation=matches&goaltrackercolumn.value=$!project.id">
 	$!project
 	</a>
 	</td>
 
 	<td >
-	<a href="${communityhome}/project/goals/editgoalpanel.html?id=$goal.id&collectionid=$librarycol.getId()&goalfolder=search" 
-		title="" class="emdialog editgoalshow" style="text-decoration:underline;" data-urlbar="${communityhome}/project/goals/editgoalpanel.html?id=$goal.id&collectionid=$librarycol.getId()&opengoalid=AWs9VXR1fsnO52OamiNQ" 
+	<a href="${apphome}/project/goals/editgoalpanel.html?id=$goal.id&collectionid=$librarycol.getId()&goalfolder=search" 
+		title="" class="emdialog editgoalshow" style="text-decoration:underline;" data-urlbar="${apphome}/project/goals/editgoalpanel.html?id=$goal.id&collectionid=$librarycol.getId()&opengoalid=AWs9VXR1fsnO52OamiNQ" 
 		data-width="900">$goal.name</a>
 	</td>
 	<td >
-  			$pages.include("${communityhome}/project/goals/like.html",$context)
+  			$pages.include("${apphome}/project/goals/like.html",$context)
 	</td>	
 	<td >
 		$!goal.details 		

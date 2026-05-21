@@ -11,7 +11,7 @@ $context.putPageValue("searcher",$searcher) #set($targetdiv = "subscriberssideba
       style="margin-bottom: 10px"
       class="autosubmit ajaxform"
       data-targetdivinner="adduserpicker"
-      action="$!{communityhome}/project/channel/subscribers/usersearchresults.html"
+      action="$!{apphome}/project/channel/subscribers/usersearchresults.html"
     >
       <input type="hidden" name="collectionid" value="$collectionid" />
       <input type="hidden" name="searchtype" value="user" />
@@ -68,7 +68,7 @@ $context.putPageValue("searcher",$searcher) #set($targetdiv = "subscriberssideba
 	  data-communityid="${communitytagcategory.getId()}"
       data-hitssessionid="$!hits.sessionId"
 	  data-addtoteam="true"
-      data-url="$!{communityhome}/project/channel/subscribers/addsave.html"
+      data-url="$!{apphome}/project/channel/subscribers/addsave.html"
     >
       <div class="clearfix"></div>
     </div>

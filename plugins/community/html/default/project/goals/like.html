@@ -1,7 +1,7 @@
 #set( $users = $goal.getValues("userlikes"))
 <div id="like${goal.id}" class="goallike" >
 #if($user)
- <a href="${communityhome}/project/goals/like.html?goalid=${goal.id}"
+ <a href="${apphome}/project/goals/like.html?goalid=${goal.id}"
 	  	title="[[Toggle]]" 
 		class="editgoallike ajax" targetdiv="like$goal.id"> 
 			<i class="fas fa-thumbs-up"></i>
@@ -10,7 +10,7 @@
 		<i class="fas fa-thumbs-up"></i>
 #end
 	#if($caneditcollection)
-	  <a href="${communityhome}/project/goals/like.html?goalid=${goal.id}"
+	  <a href="${apphome}/project/goals/like.html?goalid=${goal.id}"
 	  	title="[[Make Priority]]" 
 		class="editgoallike ajax" targetdiv="like$goal.id" 
 	  	 #if( $users )

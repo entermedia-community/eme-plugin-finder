@@ -10,7 +10,7 @@
 $context.putPageValue("searcher",$searcher)
 <form name="saveproject" 
 		id="saveproject" 
-		action="$communityhome/project/services/transfers/sendsave.html" 
+		action="$apphome/project/services/transfers/sendsave.html" 
 		method="post"  autocomplete="off"
 		class="ajaxform autocloseform validate"
 		data-targetdivinner="walletdashboard"
@@ -45,5 +45,5 @@ $context.putPageValue("searcher",$searcher)
 $context.putPageValue("viewid", "currencytransfersend")
 $context.putPageValue("data", $data)
  
-$pages.include("${communityhome}/components/xml/detaileditor4.html", $context)
+$pages.include("${apphome}/components/xml/detaileditor4.html", $context)
 </form>

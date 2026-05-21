@@ -133,7 +133,7 @@
 		<h3>[[Pending Work Points]]</h3>>
 	</div>
 	$context.putPageValue("transfers",$completedpointtransfers) 
-	$pages.include("${communityhome}/wallet/transferresults.html",$context)
+	$pages.include("${apphome}/wallet/transferresults.html",$context)
 #end
 #set( $transfers = $financeManager.getTransfersForEntity($collectionid, "2", "2", $daterange) )
 #if( !$transfers.isEmpty())
@@ -141,7 +141,7 @@
 	<h3>[[Paid Work Points]]</h3>
 	</div>
 	$context.putPageValue("transfers",$transfers)
-	$pages.include("${communityhome}/wallet/transferresults.html",$context)
+	$pages.include("${apphome}/wallet/transferresults.html",$context)
 #end
 </div>
 

@@ -28,6 +28,6 @@
 	
 	<path-action name="ChatModule.getChatManager"/>
 
-	<inner-layout min-width="1024">/${communityhome}/projects/allcthatsactivity/messagelayout.html</inner-layout>
+	<inner-layout min-width="1024">//${applicationid}/projects/allcthatsactivity/messagelayout.html</inner-layout>
   
 </page>

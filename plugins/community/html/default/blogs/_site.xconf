@@ -9,7 +9,7 @@
 	<property name="communitytag">true</property>
 	<property name="virtual">true</property>
 
-	<inner-layout>${communityhome}/blogs/layout.html</inner-layout>
+	<inner-layout>/${applicationid}/blogs/layout.html</inner-layout>
 	
  	<page-action name="Date.now"/>
 	<page-action name="TransactionModule.loadTransactionManager"/>

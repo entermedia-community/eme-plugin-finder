@@ -6,7 +6,7 @@
 	#if ($logo)
 	    #set($logourl = "/$mediaarchive.getMediaDbId()/services/module/asset/generated/${logo.sourcepath}/image200x200.webp")
 	#else
-	    #set($logourl = "$communityhome/theme/images/OI_flower.png")
+	    #set($logourl = "$apphome/theme/images/OI_flower.png")
 	#end
 	
 	#if ($librarycol.collectivebanner)
@@ -26,7 +26,7 @@
 	            <img src="$logourl" alt="logo" />
 	        </a>
 	        
-	        $pages.include("${communityhome}/project/layout/menu-collectives.html",$context)
+	        $pages.include("${apphome}/project/layout/menu-collectives.html",$context)
 	        #if($librarycol.name)
 	            <h1 class="project-title">#text($librarycol.name)</h1>
 	        #end
