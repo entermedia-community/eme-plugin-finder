@@ -29,7 +29,7 @@ $(window).on("showToast", function (_, anchor) {
 				${toastMessage}
 			</div>
 			<div class="toastClose">&times;</div>
-		</div>`
+		</div>`,
 	);
 
 	toastTO[uid] = setTimeout(function () {
@@ -81,7 +81,7 @@ customToast = function (message, options = {}) {
 				<div class="toastMessage">${message.trim()}</div>
 				${btnText ? `<button class="${btnClass}">${btnText}</button>` : ""}
 				<div class="toastClose">&times;</div>
-			</div>`
+			</div>`,
 	);
 
 	if (oldToast && oldToast.length > 0) {
@@ -108,7 +108,7 @@ destroyToast = function (toast, success = true) {
 		.replaceWith(
 			success
 				? '<div class="toastSuccess"></div>'
-				: '<div class="toastError"></div>'
+				: '<div class="toastError"></div>',
 		);
 	var msg = toast.find(".toastMessage").data(success ? "success" : "error");
 	if (msg) {

@@ -6,7 +6,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -63,8 +63,27 @@ public class JavaScriptGenerator extends TempFileGenerator
 		// List<String> appscripts = loadScriptPathsFor(site);
 		// return appscripts;
 
-		List<Script> scripts = getPageManager().getScriptsForApp(rootpage);
-		if (scripts == null)
+		List<Script> allscripts = getPageManager().getScriptsForApp(rootpage);
+
+		if (allscripts == null || allscripts.isEmpty())
+		{
+			return;
+		}
+
+		List<Script> scripts = new ArrayList<Script>();
+		Map<String, Script> uniqueids = new HashMap<String, Script>();
+
+		for (Script script : allscripts)
+		{
+			if (!uniqueids.containsKey(script.getId()))
+			{
+				uniqueids.put(script.getId(), script);
+				scripts.add(script);
+			}
+		}
+		// filter by unique id
+
+		if (scripts.isEmpty())
 		{
 			return;
 		}
@@ -211,7 +230,8 @@ public class JavaScriptGenerator extends TempFileGenerator
 							+ System.lineSeparator());
 						getOutputFiller().fill(reader, out);
 						out.write(System.lineSeparator() + System.lineSeparator() + System.lineSeparator());
-						out.write(System.lineSeparator() + "//Ended: " + script.getSrc() + " Size: " + sizer.inEnglish(infile.length()) + System.lineSeparator() + System.lineSeparator());
+						out.write(System.lineSeparator() + "//Ended: " + script.getSrc() + " ID: " + script.getId() + " Size: " + sizer.inEnglish(infile.length()) + System.lineSeparator()
+							+ System.lineSeparator());
 					}
 					finally
 					{
