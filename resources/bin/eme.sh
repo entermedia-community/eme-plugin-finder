@@ -138,18 +138,18 @@ case "$CMD" in
         sudo chown -R $USERID:$GROUPID "$TARGET/webapp/WEB-INF/data"
     fi
 
-    ## symbolically link each of the $EMELI/plugins/*/webapp folders to $TARGET/webapp/*
-    for pair in "$TARGET/plugins:$TARGET/webapp" "$EMELIB/plugins:$TARGET/webapp/"; do
+    ## symbolically link each of the $EMELI/plugins/*/html folders to $TARGET/html/*
+    for pair in "$TARGET/plugins:$TARGET/html" "$EMELIB/plugins:$TARGET/html/"; do
         src="${pair%%:*}"
         dst="${pair##*:}"
         for skill in "$src"/*/; do
-            if [ -d "${skill}webapp" ] && [ ! -L "$dst/$(basename "$skill")" ]; then
-                 ln -s "${skill}webapp" "$dst/$(basename "$skill")"
+            if [ -d "${skill}html" ] && [ ! -L "$dst/$(basename "$skill")" ]; then
+                 ln -s "${skill}html" "$dst/$(basename "$skill")"
             fi
         done
     done
 
-   ## sudo chown $USERID:$GROUPID "$TARGET/webapp/WEB-INF/"
+   ## sudo chown $USERID:$GROUPID "$TARGET/html/WEB-INF/"
 
 
     export EMSERVER="${2:-$SCRIPT_DIR}"
