@@ -1,22 +1,13 @@
 package org.entermediadb.translator.agents;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
+
 import org.entermediadb.ai.BaseSkill;
 import org.entermediadb.ai.informatics.InformaticsContext;
 import org.entermediadb.ai.llm.AgentContext;
 import org.entermediadb.translator.TranslationManager;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.openedit.Data;
-import org.openedit.MultiValued;
 import org.openedit.data.PropertyDetail;
-import org.openedit.hittracker.HitTracker;
-import org.openedit.modules.translations.LanguageMap;
 
 public class TranslationSkill extends BaseSkill
 {
@@ -30,7 +21,7 @@ public class TranslationSkill extends BaseSkill
 	public void process(AgentContext inContext)
 	{
 		InformaticsContext mycontext = new InformaticsContext(inContext);
-
+		String sourceLang = (String) inContext.getContextValue("sourceLang");
 		// Process Assets
 		Collection pageofhits = mycontext.getAssetsToProcess();
 		if (pageofhits == null || pageofhits.isEmpty())
@@ -41,28 +32,10 @@ public class TranslationSkill extends BaseSkill
 		{
 			// Process Assets or Records
 			long startTime = System.currentTimeMillis();
-			getTranslationManager().translateDataFields(pageofhits);
+			Collection<PropertyDetail> detailstotranslate = (Collection<PropertyDetail>) mycontext.getContextValue("detailsToTranslate");
+			getTranslationManager().translateDataFields(pageofhits, detailstotranslate, sourceLang);
 			long duration = System.currentTimeMillis() - startTime;
 			mycontext.info("Translated: " + pageofhits.size() + " items took " + (duration > 1000L ? duration / 1000L + "s" : duration + " ms"));
-		}
-		else
-		{
-			// nullchecks sourceLang , targetLangs , text
-			String sourceLang = (String) inContext.getContextValue("sourceLang");
-			Collection<String> targetLangs = (Collection<String>) inContext.getContextValue("targetLangs");
-			String text = (String) inContext.getContextValue("text");
-
-			if (sourceLang == null || targetLangs == null || text == null)
-			{
-				inContext.info("Nothing to Translate");
-				return; // Missing required context values
-			}
-			Map<String, String> translations = getTranslationManager().translatePlainText(sourceLang, targetLangs, text);
-
-			mycontext.info("Translated text to: " + translations.keySet() + " languages.");
-
-			inContext.addContext("sourcelang", sourceLang);
-			inContext.addContext("translations", translations);
 		}
 
 		super.process(inContext);
