@@ -188,6 +188,9 @@ convert --version | head -1    # imagemagick
 gs --version
 ```
 
+Re recommend downloading jdk-22.0.1/ or newer. Java can be configured using SDKMAN curl -s "https://get.sdkman.io" | bash to install Java and manage versions. For Linux, you can use your package manager or SDKMAN as well. After installing Java, ensure that the `java` command points to the correct version (22 or higher) and that the JAVA_HOME environment variable is set correctly.
+
+
 ---
 
 ## Step 2 — Clone the Repository
