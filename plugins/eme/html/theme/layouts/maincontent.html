@@ -35,7 +35,9 @@
 		<main class="chat-main" id="mainContent">
 			$pages.streamContent()
 
-			$pages.include("${apphome}/chat.html", $context)
+			#ifnull($librarycol)
+				$pages.include("${apphome}/chat.html", $context)
+			#end
 		</main>
 	
 	</div>

@@ -196,6 +196,13 @@
 	background: #fee2e2;
 	color: #dc2626;
 }
+.team-logo {
+	width: 30px;
+	height: 30px;
+	border-radius: 6px;
+	object-fit: contain;
+	flex-shrink: 0;
+}
 
 /* ── File items ──────────────────────────────────────────────────────────── */
 .file-row {

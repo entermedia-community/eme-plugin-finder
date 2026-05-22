@@ -1,43 +1,31 @@
-#set( $appsection = $context.getRequestParameter("appsection"))
-#if( !$appsection)
-	#set( $appsection = $content.appsection )
-#end
-
 <div id="sidebarreload" 
-class="ajaxsocketautoreload"  
-data-ajaxpath="$communitylink/users/sidebar.html?appsection=$!appsection&oemaxlevel=1&collectionid=$!librarycol.id" >
+	class="ajaxsocketautoreload"  
+	data-ajaxpath="$apphome/html/components/chat-dashboard/sidebar-team.html?oemaxlevel=1">
 
-	<div class="sidebar-box" style="height:auto;"> 
-	    <div class="sidebar-box-header">
-	        [[Recent Chats]]        
-	        <button class="oi-sidebar-toggler toggleuserpreference userOffcanvasToggler" 
-	        	data-action="hide" 
-	        	data-bs-dismiss="offcanvas" 
-	        	data-userpreference="showsidebar"
-	        	title="[[Hide User Sidebar]]">
-	        	<i class="fas fa-times"></i>
-	        </button>
-	    </div>
-  </div>
+	<div class="sidebar-section-btn mb-2" style="background-color: #f2f2f2;">
+		<span class="d-flex align-items-center gap-2">
+			<i class="bi bi-people sect-icon"></i> [[Teams]]   
+		</span>
+		#if($canviewsettings)
+			<a href="$apphome/projects/add/addnew.html" class="emdialog">
+				<i class="fas fa-plus"></i>
+			</a>
+		#end
+	</div>
 
-#set($libraryhits = $mediaarchive.query("librarycollection").all().search($context))
+	#set($libraryhits = $mediaarchive.query("librarycollection").all().search($context))
 
-#foreach($hit in $libraryhits) 
-  <div class="sidebar-box my-3"> 
-    <a href="$apphome/projects/$hit.id.html" class="btn btn-light w-100">
-      <i class="fas fa-comments me-1"></i>
-      $hit.getName()
-    </a>
-  </div> 
-#end
-	
-#if($canviewsettings)
-<div class="sidebar-box my-3" style="text-align:center">
-<a href="$apphome/projects/add/addnew.html" class="emdialog btn btn-primary  m-1">
-      <i class="fas fa-plus me-1"></i>
-      [[Create a Project]]
-    </a>
-</div>
-#end
+	#foreach($hit in $libraryhits)
+		#set($logo = $mediaarchive.getAsset($hit.assetportrait) )
+		#if ($logo)
+			#set($logourl = "/$mediaarchive.getMediaDbId()/services/module/asset/generated/${logo.sourcepath}/image200x200.webp")
+		#else
+			#set($logourl = "$apphome/theme/images/OI_flower.png")
+		#end
+		<a href="$siteroot/${hit.urlname}" class="file-row">
+			<img class="team-logo me-1" src="$logourl" alt="$hit.getName()">
+			$hit.getName()
+		</a> 
+	#end
 
 </div> 
