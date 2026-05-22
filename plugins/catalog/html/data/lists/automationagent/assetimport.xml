@@ -3,9 +3,9 @@
 <!-- using more descriptive ids for easier debugging -->
 <records>
 
-   <data id="hotfoldersourceagent" bean="hotFolderSourceSkill" ordering="10">
-      <name>
-         <language id="en"><![CDATA[Hot Folder Source Scanner]]></language>
+   <data id="hotfoldersourceagent" bean="hotFolderSourceSkill" ordering="10" agenttype="eventagent" enabled="true">
+       <name>
+         <language id="en"><![CDATA[Hot Folder Source]]></language>
       </name>
    </data>
 
@@ -20,7 +20,6 @@
          <language id="en"><![CDATA[Asset Import]]></language>
       </name>
    </data>
-
    <!-- Not used -->
    <data id="importing_assetsreadmetadata" bean="runEventSkill" agenttype="eventagent" folder="importing" runoperation="importing/assetsreadmetadata">
       <name>
