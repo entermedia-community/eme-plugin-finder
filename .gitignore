@@ -15,7 +15,6 @@ tomcat/work/*
 *.DS_Store
 
 webapp/WEB-INF/data/entermedia/catalogs/testcatalog/
-.vscode/settings.json
 .env
 
 **/index.min.js
