@@ -22,9 +22,10 @@ $context.putPageValue("searcher",$searcher)
 	#set($projectname = $mediaarchive.getData("librarycollection", $!collectionid))
 	#if ($projectname)
 		<h4 class="mb-2 text-center">
-			<a href="${projectlink}/goals/priorities" title="[[Goals]]: $projectname">$projectname</a>
+			<a href="${projectlink}/goals/priorities" title="[[Goals]]: $projectname">Add goals to ${projectname}</a>
 		</h4>
 	#end
+
 	#if( $data.id )
 		$context.putPageValue("viewid", "projectgoalgeneral")
 		<div class="text-muted">
@@ -34,7 +35,7 @@ $context.putPageValue("searcher",$searcher)
 		$context.putPageValue("viewid", "projectgoaladdnew")
 	#end
 </div>
-<div class="clearfix"></div>
+
 <form name="saveproject" 
 	class ="ajaxform autocloseform showwaiting autoreloadsource" 
 	id="saveproject" 
@@ -96,7 +97,7 @@ $context.putPageValue("searcher",$searcher)
 #end
 
 #if( $caneditcollection || !$data || $canviewsettings)
-	$pages.include("/$applicationid/components/xml/detaileditor4.html", $context)
+	$pages.include("/$applicationid/components/xml/detaileditorcss.html", $context)
 	#set( $fullscreen = $context.getRequestParameter("fullscreen"))
 	#if( $fullscreen == "true")
 		<input class="btn btn-accent" type="submit" value="[[Save]]"></input><br><br>

@@ -1091,8 +1091,8 @@ img.cat-thumb {
 	font-size: 0.95rem;
 	margin-left: 0;
 	transition: margin-left 0.25s ease-in-out;
-	border-top-left-radius: 24px;
-	border-top-right-radius: 24px;
+	border-top-left-radius: 8px;
+	border-top-right-radius: 8px;
 }
 .community-layout .sidebar-left {
 	min-height: 100%;
@@ -1105,7 +1105,7 @@ img.cat-thumb {
 	width: 300px;
 	min-height: 100%;
 	padding: 0 0.5rem 1rem 1rem;
-	margin: 1rem 0;
+	margin: 0;
 	padding: 1rem 0.5rem 1rem 1rem;
 	background-color: #ffffff;
 	position: relative;
