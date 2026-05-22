@@ -96,7 +96,7 @@
 				<td>
 					<a data-cancelsubmit="true" 
 						data-hidefooter="true"
-						data-urlbar="${communityhome}/users/tasks/search.html?ticketlevel=$goal.ticketlevel&goaltrackerstaff=*&opengoalid=$goal.id" 
+						data-urlbar="${apphome}/users/tasks/search.html?ticketlevel=$goal.ticketlevel&goaltrackerstaff=*&opengoalid=$goal.id" 
 						href="$sitelink/app/collective/goals/editgoalpanel.html?id=$goal.id&collectionid=$goal.collectionid&goalfolder=agent" 
 						title="[[Open Ticket]]" 
 						class="emdialog editgoalshow goal-description" 
@@ -108,14 +108,14 @@
 					
 					<div class="goal-body">
 						
-						$pages.include("$communityhome/project/goals/search/goaltasks.html?indialog=true&onlyuser=true", $context)
+						$pages.include("$apphome/project/goals/search/goaltasks.html?indialog=true&onlyuser=true", $context)
 					</div>
 					
 				</td>
 				<td class="text-center" >
 					
 					#if ($caneditproject)
-					$pages.include("${communityhome}/users/tasks/resolvebutton.html",$context)
+					$pages.include("${apphome}/users/tasks/resolvebutton.html",$context)
 					 #end
 					<div class="clearfix" style="padding:5px;"> </div>
 					<span class="headersubtext">

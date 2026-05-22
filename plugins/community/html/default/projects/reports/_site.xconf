@@ -7,7 +7,7 @@
     </or>
   </permission>
   
-  <inner-layout min-width="1024">/${communityhome}/projects/reports/layout.html</inner-layout>
+  <inner-layout min-width="1024">//${applicationid}/projects/reports/layout.html</inner-layout>
   
   
 </page>  

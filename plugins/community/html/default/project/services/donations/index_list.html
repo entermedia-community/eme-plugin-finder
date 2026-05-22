@@ -32,7 +32,7 @@
 			
         	<td>
 	        	#set( $followeruser = $mediaarchive.getUser($transaction.userid) )
-			    #set( $userlink = "${communityhome}/users/${followeruser.getId()}/${followeruser.getAnonNickName()}.html")
+			    #set( $userlink = "${apphome}/users/${followeruser.getId()}/${followeruser.getAnonNickName()}.html")
 				###set( $userimageurl = $mediaarchive.asLinkToProfile($followeruser.assetportrait) )
 				###if(!$userimageurl)
 				##	#set( $userimageurl = "${communitylink}/theme/images/user.svg" )

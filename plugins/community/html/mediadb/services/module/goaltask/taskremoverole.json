@@ -1,9 +1,0 @@
-$context.putPageValue("hit",$data)
-{
-  "response": {
-    "status": "ok",
-    "id": "$data.id"
-	},
-	"data":
-	$pages.include("./hit.json",$context)
-}

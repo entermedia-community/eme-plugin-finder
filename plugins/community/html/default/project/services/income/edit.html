@@ -11,7 +11,7 @@
 	#set($data = $mediaarchive.getData($searchtype, $id))
 	<form name="saveproject" 
 			id="saveproject" 
-			action="$communityhome/project/services/income/addsave.html" 
+			action="$apphome/project/services/income/addsave.html" 
 			method="post"
 			class="ajaxform autocloseform"
 			data-targetdivinner="collectivesettingscontent"
@@ -37,7 +37,7 @@
 	<div style="padding:20px 0 0;">
 		#if( $caneditcollection ||  $canviewsettings)
 	<a class="submitform btn btn-sm btn-primary">[[Save]]</a>
-	<a href="$communityhome/project/services/income/delete.html?id=$!id&collectionid=$!collectionid&searchtype=$searchtype&catalogid=$searcher.catalogId&oemaxlevel=1" 
+	<a href="$apphome/project/services/income/delete.html?id=$!id&collectionid=$!collectionid&searchtype=$searchtype&catalogid=$searcher.catalogId&oemaxlevel=1" 
 		class="btn btn-sm btn-danger closemodal ajax " data-targetdivinner="collectivesettingscontent" data-confirm="[[Confirm Delete Expense?]]" 
 		style="margin-left:5px;">[[Delete]]</a>
 		#end

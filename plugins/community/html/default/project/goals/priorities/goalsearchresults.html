@@ -24,7 +24,7 @@
 #set( $opengoalid = $context.getRequestParameter("opengoalid"))
 #if( $opengoalid )
 	#set( $goal = $mediaarchive.getData("projectgoal",$opengoalid))
-	#set( $goallink = "${communityhome}/project/goals/editgoalpanel.html?id=${goal.id}&collectionid=$collectionid&categoryid=$!selectedcat.getId()&hitssessionid=$!{goalhits.getSessionId()}&goalfolder=$goalfolder")
+	#set( $goallink = "${apphome}/project/goals/editgoalpanel.html?id=${goal.id}&collectionid=$collectionid&categoryid=$!selectedcat.getId()&hitssessionid=$!{goalhits.getSessionId()}&goalfolder=$goalfolder")
 	<a href="$goallink" title="$goal.name" class="emdialog editgoalshow">[[Goal link]]</a>	
 #end
 	
@@ -33,6 +33,6 @@
 #foreach($goal in $hits)
 	#set( $goal = $mediaarchive.getSearcher("projectgoal").loadData($goal))
 	$context.putPageValue("goal",$goal)
-	$pages.include("${communityhome}/project/goals/priorities/goalsearchrow.html",$context)
+	$pages.include("${apphome}/project/goals/priorities/goalsearchrow.html",$context)
 #end
 </div>

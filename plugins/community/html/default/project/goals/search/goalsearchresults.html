@@ -21,7 +21,7 @@
 	    #end
 	    </div>
 		#if($caneditcollection)
-			<a href="${projectlink}/projects/addnew.html?collectionid=$librarycol.getId()&collectionroot=${communityhome}/project/goals/search/index.html" 
+			<a href="${projectlink}/projects/addnew.html?collectionid=$librarycol.getId()&collectionroot=${apphome}/project/goals/search/index.html" 
 				class="btn-toolbar emdialog" 
 				title="[[Create a Topic]]">
 				<i class="fas fa-plus"></i></a>
@@ -32,13 +32,13 @@
  	data-width="900"
  	data-hidefooter="true"
  	style="margin-left: 10px;"
- 	href="${communityhome}/project/goals/editgoalpanel.html?collectionid=$librarycol.getId()&categoryid=$!selectedcat.getId()&goalfolder=search" ><i class="fas fa-plus"></i> [[Add Ticket]]</a>
+ 	href="${apphome}/project/goals/editgoalpanel.html?collectionid=$librarycol.getId()&categoryid=$!selectedcat.getId()&goalfolder=search" ><i class="fas fa-plus"></i> [[Add Ticket]]</a>
 	 #if( $goalhits )
 	 <a class="btn-toolbar float-right" 
 	 	title="[[Export Results]]" 
 	 	data-width="900"
 	 	style="margin-left: 10px;"
-	 	href="${communityhome}/project/goals/search/export/projectgoals.csv?hitssessionid=$goalhits.getSessionId()" ><i class="fas fa-download"></i> [[Export]]</a>
+	 	href="${apphome}/project/goals/search/export/projectgoals.csv?hitssessionid=$goalhits.getSessionId()" ><i class="fas fa-download"></i> [[Export]]</a>
 	#end
 <div class="clearfix"></div>
 </div>
@@ -66,11 +66,11 @@
 
 <ul class="projectgoals ui-sortable"
 data-oemaxlevel="2"  data-collectionid="$librarycol.getId()" data-categoryid="$!selectedcat.id" 
-	data-savepath="${communityhome}/project/goals/goalmovepriority.html">
+	data-savepath="${apphome}/project/goals/goalmovepriority.html">
 #if( $hits )
 	#foreach( $goal in $hits )  
 		$context.putPageValue("goal",$goal)
-		$pages.include("${communityhome}/project/goals/search/goalrow.html",$context)
+		$pages.include("${apphome}/project/goals/search/goalrow.html",$context)
 	#end
 #end
 </ul>

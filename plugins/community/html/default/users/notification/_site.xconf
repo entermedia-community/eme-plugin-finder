@@ -2,6 +2,6 @@
 
 	<property name="virtual">true</property>
 	<property name="oisection">users</property>
-	<inner-layout>${communityhome}/users/application-collective.html</inner-layout>
+	<inner-layout>/${applicationid}/users/application-collective.html</inner-layout>
 
 </page>

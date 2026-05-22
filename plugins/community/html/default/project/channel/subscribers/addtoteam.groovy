@@ -81,8 +81,8 @@ public void init()
 	context.putPageValue("subscription",subscription);
 	
 //	Set template path with applicationid instead of just 'apphome'
-	String communityhome = context.getPageValue("communityhome");
-	String template = communityhome + "/theme/emails/collection-add-teammember.html";
+	String apphome = context.getPageValue("apphome");
+	String template = apphome + "/theme/emails/collection-add-teammember.html";
 	
 	Data librarycol = archive.getCachedData("librarycollection", collectionid);
 	Data community = archive.getCachedData("communitytagcategory", librarycol.get("communitytagcategory"));
@@ -107,7 +107,7 @@ public void init()
 	objects.put("apphome", context.getPageValue("apphome"));
 	objects.put("applink", context.getPageValue("applink"));
 	objects.put("siteroot", getSiteRoot());
-	objects.put("communityhome", communityhome);
+	objects.put("apphome", apphome);
 	objects.put("community",community);
 		
 	//log.info("Sending welcome email  " + teamuserid);

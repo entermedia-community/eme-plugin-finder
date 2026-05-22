@@ -19,7 +19,7 @@
 		#set( $rendertype = "videothumbnail" )
 	#end
 	
-	$pages.include("${communityhome}/components/results/thumbnails/${rendertype}.html", $context)
+	$pages.include("${apphome}/components/results/thumbnails/${rendertype}.html", $context)
 #else
 	#set( $userimageurl = "${communitylink}/theme/images/product-image.png" )
 	<img class="imagethumb img-fluid d-block w-100" src="$userimageurl" />

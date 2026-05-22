@@ -2,6 +2,6 @@
 	<inner-layout />
 	
 	 <page-action name="Script.run" alltypes="true" >
-		<script>${communityhome}/project/store/reservations/availability.groovy</script>
+		<script>/${applicationid}/project/store/reservations/availability.groovy</script>
 	</page-action>
 </page>

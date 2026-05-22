@@ -10,7 +10,7 @@
 	$context.putPageValue("searcher",$searcher)
 	<form name="saveproject" 
 			id="saveproject" 
-			action="$communityhome/project/services/income/addsave.html" 
+			action="$apphome/project/services/income/addsave.html" 
 			method="post"
 			class="ajaxform autocloseform"
 			data-targetdivinner="collectivesettingscontent"
@@ -34,7 +34,7 @@
 	$data.setValue("date",$now)
 	$context.putPageValue("data", $data)
 	 
-	$pages.include("$communityhome/components/xml/detaileditor4.html", $context)
+	$pages.include("$apphome/components/xml/detaileditor4.html", $context)
 </form>
 <script type="text/javascript">
 var form = document.getElementById('saveproject');

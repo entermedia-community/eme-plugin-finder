@@ -59,14 +59,14 @@
 					#ifnotnull($vals)
 						<div class="taskdetails-keywords">
 							#foreach( $val in $vals )
-								#set($link = "${communityhome}/project/goals/priorities/index.html?collectionid=$!collectionid&keyword=$val")
+								#set($link = "${apphome}/project/goals/priorities/index.html?collectionid=$!collectionid&keyword=$val")
 								<a	class="badge badge-tags tageditor-${type} tageditor-#esc($val)" href="$link" title="#esc($val)">#esc($val)</a> 
 							#end
 						</div>
 					#end
 
 					$context.putPageValue("task", $task)
-					$pages.include("${communityhome}/project/goals/task/rolelist.html?collectionid=$!collectionid", $context)
+					$pages.include("${apphome}/project/goals/task/rolelist.html?collectionid=$!collectionid", $context)
 
 					<div class="taskstatus">
 						#if($task.taskstatus == "7")
@@ -106,7 +106,7 @@
 				<div class="d-flex align-items-center py-2 justify-content-between goaltask-credit">
 					<div class="pe-2">
 						#if($user && $caneditgoal)
-							#set( $edittask = "${communityhome}/project/goals/task/taskedit.html?id=${task.id}&collectionid=$!collectionid&onlyopen=$!onlyopen&targetdiv=$target")
+							#set( $edittask = "${apphome}/project/goals/task/taskedit.html?id=${task.id}&collectionid=$!collectionid&onlyopen=$!onlyopen&targetdiv=$target")
 							<a href="$edittask"
 								id="task${task.id}"
 								title="[[Edit Task]]"
@@ -128,11 +128,11 @@
 								<div id="rolepicker${task.id}" class="pe-2">
 									<a class="btn btn-sm btn-accent ml-1 addroletolist ajax" data-targetdivinner="rolepicker${task.id}" 
 									data-collectionid = "$!collectionid"
-									data-taskid="$task.id" href="${communityhome}/project/goals/task/pickrole.html">
+									data-taskid="$task.id" href="${apphome}/project/goals/task/pickrole.html">
 									<i class="fa fa-user-plus me-1"></i> [[Assign Role]]</a>
 								</div>
 								<div>
-									<a href="${communityhome}/project/goals/task/tasksave.html?goalid=$goal.id" 
+									<a href="${apphome}/project/goals/task/tasksave.html?goalid=$goal.id" 
 										data-targetdiv="$target" 
 										data-oemaxlevel="1"
 										data-taskid="$task.id"
@@ -170,7 +170,7 @@
 					data-pickone="true"
 					data-goalid="$goal.id"
 					data-dialogid="picktask"
-					href="${communityhome}/project/goals/task/taskadd.html">
+					href="${apphome}/project/goals/task/taskadd.html">
 					<i class="fas fa-plus me-1"></i> [[Add Task]]
 					#if (!$onlyopen && $points>0)
 						<small class="badge text-bg-light">4</small>
@@ -178,7 +178,7 @@
 				</a>
 			#end
 
-			$pages.include("${communityhome}/users/tasks/resolvebutton.html",$context)
+			$pages.include("${apphome}/users/tasks/resolvebutton.html",$context)
 		</div>
 		#end
 		

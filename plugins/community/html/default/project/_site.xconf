@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <page>
-	<inner-layout>${communityhome}/project/layout/innerlayout.html</inner-layout>
+	<inner-layout>/${applicationid}/project/layout/innerlayout.html</inner-layout>
 	<property name="collectivesection">blog</property>
 	<path-action name="ProjectModule.loadCollection"></path-action>
 	<property name="module">librarycollection</property>

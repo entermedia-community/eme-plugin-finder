@@ -87,7 +87,7 @@
   <property name="searchhome">/${applicationid}/views/modules/asset/results/default</property>
   <property name="systemfromemailname">EnterMedia</property>
   <property name="shownav">true</property>
-  <inner-layout>/${applicationid}/theme/layouts/application.html</inner-layout>
+  <inner-layout>/${applicationid}/theme/layouts/maincontent.html</inner-layout>
   <permission name="quicksearch">
     <userprofile name="quicksearch" value="true"/>
   </permission>

@@ -11,7 +11,7 @@
 			#if( !$hits.isEmpty() ) 
 				#set($resultsLink = "${projectlink}/services/expenses/results.html?hitssessionid=$hits.sessionId&oemaxlevel=1&collectiveexpensesortby=$!sortedby&pageposition")
 				$context.putPageValue("resultsLink",$resultsLink)
-	            $pages.include("${communityhome}/components/table/pages.html", $context)
+	            $pages.include("${apphome}/components/table/pages.html", $context)
 			#end
                   
               <table class="table table-striped table-hover">

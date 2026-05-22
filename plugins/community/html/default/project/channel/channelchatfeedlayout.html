@@ -37,7 +37,7 @@ $mediaarchive.query("librarycollection").exact("id",$collectionid).searchOne() )
           data-searchtype="librarycollection"
         >
           #if($librarycol.htmlintro) $!librarycol.htmlintro #else
-          $pages.include("$communityhome/project/about/htmlintro.html")#end
+          $pages.include("$apphome/project/about/htmlintro.html")#end
         </div>
       </div>
       #end #if( $librarycol.collectivetype == "4") #set( $value =
@@ -62,7 +62,7 @@ $mediaarchive.query("librarycollection").exact("id",$collectionid).searchOne() )
       <div class="feed-topics">
         <span class="d-none d-md-block"><strong>[[Topics]]:</strong></span>
         <a
-          href="$communityhome/project/channel/${collectionid}/${librarycol.name}.html"
+          href="$apphome/project/channel/${collectionid}/${librarycol.name}.html"
           class="btn-toolbar #if (!$topic) topicselected #end"
           title="[[All Posts]]"
           >#[[All]]</a
@@ -70,7 +70,7 @@ $mediaarchive.query("librarycollection").exact("id",$collectionid).searchOne() )
 
         #foreach( $project in $allprojects )
         <a
-          href="$communityhome/project/channel/${collectionid}/topics.html?topic=${project.getId()}"
+          href="$apphome/project/channel/${collectionid}/topics.html?topic=${project.getId()}"
           class="btn-toolbar #if($topic == $project.getId()) topicselected #end"
           title="#esc($!{project.projectdescription})"
           >$project</a
@@ -104,7 +104,7 @@ $mediaarchive.query("librarycollection").exact("id",$collectionid).searchOne() )
       $pages.include("$apphome/components/results/positions.html",$context)
       #foreach( $event in $combinedevents) #if( $event.type == "chatterbox")
       $context.putPageValue("chat",$event.data)
-      $pages.include("$communityhome/project/community/chatterbox/message.html",
+      $pages.include("$apphome/project/community/chatterbox/message.html",
       $context) #else #set( $upload = $event.data )
       $context.putPageValue("upload",$upload)
       $pages.include("$apphome/project/channel/showpost.html",$context) #end

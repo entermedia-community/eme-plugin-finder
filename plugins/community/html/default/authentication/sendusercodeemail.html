@@ -3,7 +3,7 @@
 #end
 $context.putPageValue("community", $community)
 
-$pages.include("${communityhome}/theme/emails/layout-top.html", $context)
+$pages.include("${apphome}/theme/emails/layout-top.html", $context)
 
 <p>[[Hello]],</p>  
 <p>[[A login code was requested for]]: $mail</p>
@@ -19,4 +19,4 @@ $pages.include("${communityhome}/theme/emails/layout-top.html", $context)
 	<a href="#urlescape($link)" style="text-decoration:none;color:white;background:#3297d5;padding:8px 12px;border-radius:4px;display:inline-block;">[[Enter Login Code Here]]</a>
 </div>
 
-$pages.include("${communityhome}/theme/emails/layout-bottom.html", $context)
+$pages.include("${apphome}/theme/emails/layout-bottom.html", $context)

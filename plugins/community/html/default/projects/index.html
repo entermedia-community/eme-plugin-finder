@@ -13,7 +13,7 @@
         </div>
         
         <div id="homecreateproject" class="d-flex flex-column align-items-center">
-          $pages.include("$communityhome/projects/add/addprojectbutton.html")
+          $pages.include("$apphome/projects/add/addprojectbutton.html")
          </div>
   
     </div>
@@ -38,7 +38,7 @@
           #set($asset = $mediaarchive.getAsset($project.assetportrait))
           #set($logo = $mediaarchive.asLinkToPreview($asset, "image200x200"))
         #else
-          #set($logo = "$communityhome/theme/images/OI_flower.png")
+          #set($logo = "$apphome/theme/images/OI_flower.png")
         #end
         #set($description = $project.get("collectivedescription"))
   
@@ -46,7 +46,7 @@
           #set( $banner= $mediaarchive.getAsset($project.collectivebanner) )
           #set ($bannerurl = "/$mediaarchive.getMediaDbId()/services/module/asset/downloads/preset/$!{banner.sourcepath}/image1920x500cropped.jpg")
         #else
-          #set ($bannerurl = "$communityhome/theme/images/oi-background-2023.jpg")
+          #set ($bannerurl = "$apphome/theme/images/oi-background-2023.jpg")
         #end
   
         <div class="col-sm-12 col-md-6 col-lg-4 d-flex flex-column h-100" data-aos="fade-up">

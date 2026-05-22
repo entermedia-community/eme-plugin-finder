@@ -8,7 +8,7 @@
 	#if($caneditcollection)
 		<div class="d-flex align-items-center justify-content-between py-2 px-3 border-bottom gap-2">
 			<div class="flex-grow-1">
-				<a href="${communityhome}/project/goals/editgoalpanel.html?id=${goal.id}&collectionid=$goal.collectionid&goalfolder=agent&targetdiv=goalrow${goal.id}" 
+				<a href="${apphome}/project/goals/editgoalpanel.html?id=${goal.id}&collectionid=$goal.collectionid&goalfolder=agent&targetdiv=goalrow${goal.id}" 
 					title="[[Edit Goal]]" 
 					class="emdialog"
 					data-hidefooter="true"
@@ -22,14 +22,14 @@
 				</a>
 			</div>
 			<div class="d-flex align-items-center justify-content-between" style="min-width: 42px;">
-				<a href="${communityhome}/project/goals/editgoalpanel.html?id=${goal.id}&collectionid=$goal.collectionid&goalfolder=agent&targetdiv=goalrow${goal.id}" 
+				<a href="${apphome}/project/goals/editgoalpanel.html?id=${goal.id}&collectionid=$goal.collectionid&goalfolder=agent&targetdiv=goalrow${goal.id}" 
 					title="[[Edit Goal]]" 
 					class="emdialog text-primary me-2"
 					data-hidefooter="true"
 					data-width="900">
 					<i class="bi bi-pencil-square"></i>
 				</a>
-				<a href="${communityhome}/project/goals/goaldelete.html?id=$goal.id" 
+				<a href="${apphome}/project/goals/goaldelete.html?id=$goal.id" 
 					data-targetdiv="$target" 
 					data-confirm="Sure you want to delete?"
 					data-oemaxlevel="1"
@@ -55,7 +55,7 @@
 		</div>
 	#end
 
-	$pages.include("${communityhome}/project/goals/search/goaltasks.html?indialog=true",$context)
+	$pages.include("${apphome}/project/goals/search/goaltasks.html?indialog=true",$context)
 	
 	<div class="d-flex align-items-center justify-content-between px-3 pb-2">
 		<small class="d-flex flex-column text-muted">

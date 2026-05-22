@@ -2,7 +2,7 @@
 #set($target = $context.getRequestParameter("targetdiv"))
 
 <div id="taskrownew" class="taskgoaledit m-1 rounded shadow-sm">
-	<form id="taskeditform" class="ajaxform" data-targetdiv="$target" data-oemaxlevel="1" action="${communityhome}/project/goals/task/tasksave.html">
+	<form id="taskeditform" class="ajaxform" data-targetdiv="$target" data-oemaxlevel="1" action="${apphome}/project/goals/task/tasksave.html">
 		<input type="hidden" name="goalid" value="$selectedgoal.id" />
 		<input type="hidden" name="onlyopen" value="false" />
 		<input type="hidden" name="collectionid" value="$collectionid" />
@@ -32,7 +32,7 @@
 				name="submitbutton" 
 				class="btn btn-sm btn-primary me-2">
 	
-			#set( $cancellink = "${communityhome}/project/goals/search/goaltasks.html?collectionid=$collectionid&goalid=$selectedgoal.id")
+			#set( $cancellink = "${apphome}/project/goals/search/goaltasks.html?collectionid=$collectionid&goalid=$selectedgoal.id")
 			
 			<a href="$cancellink"
 				class="btn btn-sm btn-secondary ajax" 

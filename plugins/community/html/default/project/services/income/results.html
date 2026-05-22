@@ -12,7 +12,7 @@
 			#if( !$hits.isEmpty() ) 
 				#set($resultsLink = "${projectlink}/services/income/results.html?hitssessionid=$hits.sessionId&oemaxlevel=1&collectiveincomesortby=$!sortedby")
 				$context.putPageValue("resultsLink",$resultsLink)
-	            $pages.include("${communityhome}/components/table/pages.html", $context)
+	            $pages.include("${apphome}/components/table/pages.html", $context)
 			#end
          	
 			

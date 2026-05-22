@@ -4,7 +4,7 @@
 #end
 #set($thumbsize = $context.getRequestParameter("thumbsize"))
 #if(!$assetprofile)
-	#set( $userimageurl = "${communityhome}/theme/images/user.svg" )
+	#set( $userimageurl = "${apphome}/theme/images/user.svg" )
 #else
 	#if( $assetprofile.previewstatus && $assetprofile.previewstatus == "2") 
 		#set( $userimageurl = $mediaarchive.asLinkToPreview($assetprofile, null, $thumbsize) )
@@ -13,8 +13,8 @@
 			class="ajaxstatus  " 
 		    data-oemaxlevel="1"
 		    data-firstrun="500" 
-			ajaxpath="${communityhome}/users/userprofileimage.html?assetid=$!{assetprofile.id}&thumbsize=$!{thumbsize}">
-			<img src="${communityhome}/theme/images/ajax-loader.gif" alt="[[Loading]]..." />
+			ajaxpath="${apphome}/users/userprofileimage.html?assetid=$!{assetprofile.id}&thumbsize=$!{thumbsize}">
+			<img src="${apphome}/theme/images/ajax-loader.gif" alt="[[Loading]]..." />
 		</div>
 	#end
 #end

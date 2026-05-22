@@ -2,6 +2,6 @@
 
 <page>
 
-  	<property name="emaillayout">/${communityhome}/authentication/sendmagiclinkemail.html</property>
+  	<property name="emaillayout">//${applicationid}/authentication/sendmagiclinkemail.html</property>
   	
 </page>

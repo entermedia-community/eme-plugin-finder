@@ -64,8 +64,8 @@ public void init() {
 	senderinfo = senderinfo + " Ip: " + ipaddress;
 	context.putPageValue("senderinfo",   senderinfo);
 	
-	String communityhome = context.getPageValue("communityhome");
-	String templateSrc = communityhome+"/meetingschedule/notifyemailnewlibrary.html";
+	String apphome = context.getPageValue("apphome");
+	String templateSrc = apphome+"/meetingschedule/notifyemailnewlibrary.html";
 	sendEmail(context.getPageMap(), notifyemail, templateSrc);
 }
 

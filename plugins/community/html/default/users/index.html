@@ -17,7 +17,7 @@ $context.putPageValue("selecteduser", $selecteduser)
 			<div class="profile-imagecontainer">
 				#set($assetprofile = $mediaarchive.getUserProfileAssetPortrait($selecteduser))
 				#set($thumbsize = "image200x200")
-				$pages.include("${communityhome}/users/userprofileimage.html?assetid=$!{assetprofile.id}&thumbsize=$!{thumbsize}", $context)
+				$pages.include("${apphome}/users/userprofileimage.html?assetid=$!{assetprofile.id}&thumbsize=$!{thumbsize}", $context)
 			</div>
 		</div>
 			
@@ -27,7 +27,7 @@ $context.putPageValue("selecteduser", $selecteduser)
 					name="wizard" 
 					method="post" 
 					enctype="multipart/form-data"
-					action="${communityhome}/users/uploadsave.html" 
+					action="${apphome}/users/uploadsave.html" 
 				>
 					<input type="hidden" name="userid" value="$selecteduser.getId()" />
 					<input type="hidden" name="sourcepath" value="userprofiles/$selecteduser.getId()/" />
@@ -55,16 +55,16 @@ $context.putPageValue("selecteduser", $selecteduser)
 				</div>
 				
 				#if( $user  && $selecteduser.getId() != $user.getId())
-					$pages.include("${communityhome}/users/block/toggle.html")
+					$pages.include("${apphome}/users/block/toggle.html")
 				#end
 
 				<div class="d-flex align-items-center gap-2 my-2">
 					#if($canedituserinfo) 
-						<a href="${communityhome}/users/edit/edit.html?userid=$selecteduser.getId()" class="emdialog btn btn-xs btn-primary" title="[[Edit User Profile]]">
+						<a href="${apphome}/users/edit/edit.html?userid=$selecteduser.getId()" class="emdialog btn btn-xs btn-primary" title="[[Edit User Profile]]">
 							<i class="fas fa-user mr-1 me-1"></i> [[Edit Profile]]
 						</a>
 						#*
-							<a href="${communityhome}/users/preferences/delete.html?userid=$selecteduser.getId()" class="emdialog btn btn-xs btn-warning" title="[[Delete Account]]">
+							<a href="${apphome}/users/preferences/delete.html?userid=$selecteduser.getId()" class="emdialog btn btn-xs btn-warning" title="[[Delete Account]]">
 								<i class="fas fa-cog mr-1 me-1"></i> [[Delete Account]]
 							</a>
 						*#
@@ -79,7 +79,7 @@ $context.putPageValue("selecteduser", $selecteduser)
 		</div>
 	</div>
 	
-	$pages.include("${communityhome}/users/projects.html", $context)
+	$pages.include("${apphome}/users/projects.html", $context)
 #else
 	<p class="text-center text-muted my-4">[[User not found]]</p>
 #end	

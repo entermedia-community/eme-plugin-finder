@@ -23,7 +23,7 @@
 
 	<title>$!metatitle</title>
 
-	$pages.include("${communityhome}/theme/layouts/includes.html")
+	$pages.include("${apphome}/theme/layouts/includes.html")
 
 	#if(!$browser.inApp())
 		<link rel="Shortcut Icon" type="image/x-icon" href="$!{communitylink}/theme/images/favicon.ico" />
@@ -41,7 +41,7 @@
 		data-user="$!{user.id}" 
 		data-apphome="$!{apphome}"
 		data-finderhome="$!{finderhome}"
-		data-communityhome="$!{communityhome}"
+		data-apphome="$!{apphome}"
 		data-applink="$!{applink}" 
 		data-inapp="$!{browser.inApp()}" 
 		data-themeprefix="/$!{applicationid}/theme"
@@ -52,18 +52,18 @@
 		#if( $showupload) data-showuploadid="${showupload.id}" #end
 		>
 		
-		$pages.include("${communityhome}/navigation.html")
+		$pages.include("${apphome}/navigation.html")
 			
 		#if($user && !$browser.inApp() &&$canviewsettings)
-			$pages.include("${communityhome}/components/sidebars/user/index.html")
+			$pages.include("${apphome}/components/sidebars/user/index.html")
 		#end
 		
 		$pages.includeContent()
 		
-		$pages.include("${communityhome}/theme/layouts/footer.html")
+		$pages.include("${apphome}/theme/layouts/footer.html")
 
 		#if(!$browser.inApp())
-			$pages.include("${communityhome}/googleanalytics.html", $context)
+			$pages.include("${apphome}/googleanalytics.html", $context)
 		#end
 	</div> 
 </body>

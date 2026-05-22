@@ -6,7 +6,7 @@
 		#if($user)
 			<a class="btn btn-xs emdialog" data-cancelsubmit="true"
 				title="[[View Members]]"
-				href="$communityhome/project/channel/subscribers/teamlist.html?collectionid=$librarycol.getId()">
+				href="$apphome/project/channel/subscribers/teamlist.html?collectionid=$librarycol.getId()">
 				<i class="fas fa-list"></i>
 			</a>
 		#end
@@ -23,11 +23,11 @@
 				#set( $followeruser = $mediaarchive.getUser($hit.followeruser) )
 				
 				#if($followeruser && $followeruser.enabled == "true")
-					#set( $userlink = "$!communityhome/users/index.html?id=${followeruser.getId()}")
+					#set( $userlink = "$!apphome/users/index.html?id=${followeruser.getId()}")
 					#set( $userimageurl = $mediaarchive.asLinkToUserProfile($followeruser) )
 					
 					#if(!$userimageurl)
-						#set( $userimageurl = "$!communityhome/theme/images/user.svg" )
+						#set( $userimageurl = "$!apphome/theme/images/user.svg" )
 					#end 
 					<div class="d-flex flex-row teammember pretty-list">
 						<a href="#esc($userlink)" class="d-flex align-items-center flex-grow-1">
@@ -48,7 +48,7 @@
 						</a>
 						#if($canviewsettings)
 							<a class="btn btn-xs emdialog"
-								href="$communityhome/project/channel/subscribers/edit/edit.html?collectionid=$librarycol.getId()&id=$!hit.getId()"
+								href="$apphome/project/channel/subscribers/edit/edit.html?collectionid=$librarycol.getId()&id=$!hit.getId()"
 								title="[[Edit Entry]]">
 								<i class="fas fa-pen"></i>
 							</a>
@@ -62,11 +62,11 @@
 		
 		#if( $caneditcollection || $canviewsettings)
 		<div class="d-flex align-items-center justify-content-between w-100 flex-wrap mt-2">
-			<a href="${communityhome}/project/channel/subscribers/usersearch.html?collectionid=${collectionid}"
+			<a href="${apphome}/project/channel/subscribers/usersearch.html?collectionid=${collectionid}"
 				class="emdialog btn btn-light btn-xs me-1" title="[[Add Users to Team]]">
 				<i class="fas fa-search me-1"></i> [[Add to Team]]
 			</a>
-			<a href="${communityhome}/project/channel/subscribers/addnew.html?collectionid=${collectionid}"
+			<a href="${apphome}/project/channel/subscribers/addnew.html?collectionid=${collectionid}"
 				class="emdialog btn btn-light btn-xs" title="[[Add New User to Team]]">
 				<i class="fas fa-plus me-1"></i> [[New User]]
 			</a>
