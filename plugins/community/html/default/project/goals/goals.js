@@ -2,14 +2,13 @@ jQuery(document).ready(function (url, params) {
 	var applink =
 		$("#application").data("home") + $("#application").data("applink");
 
-	$(".taskcard").hover(
-		function () {
+	$(".taskcard")
+		.on("mouseenter", function () {
 			$(this).find(".dragicon").show();
-		},
-		function () {
+		})
+		.on("mouseleave", function () {
 			$(this).find(".dragicon").hide();
-		},
-	);
+		});
 
 	if (jQuery.fn.draggable) {
 		lQuery(".ui-draggable").livequery(function () {

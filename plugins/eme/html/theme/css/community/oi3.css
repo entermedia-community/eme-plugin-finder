@@ -1000,7 +1000,7 @@ img.cat-thumb {
 	color: #ffffff;
 }
 .emwidget-chatterbox {
-	height: calc(100vh - 262px) !important;
+	height: 100% !important;
 	min-height: 600px;
 }
 .donate {
@@ -1091,6 +1091,8 @@ img.cat-thumb {
 	font-size: 0.95rem;
 	margin-left: 0;
 	transition: margin-left 0.25s ease-in-out;
+	border-top-left-radius: 24px;
+	border-top-right-radius: 24px;
 }
 .community-layout .sidebar-left {
 	min-height: 100%;
@@ -1110,8 +1112,8 @@ img.cat-thumb {
 }
 .community-layout .main-content {
 	flex: 1;
-	padding: 0 1rem;
-	margin: 1rem auto;
+	padding: 1rem;
+	margin: 0 auto;
 	position: relative;
 }
 .community-layout.bg-light {
@@ -1161,7 +1163,7 @@ img.cat-thumb {
 	border-radius: 16px;
 	box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 	position: relative;
-	margin-bottom: 72px;
+	margin-bottom: 62px;
 	background: #252424f4;
 }
 .project-header .header-logo {
@@ -1277,7 +1279,7 @@ img.cat-thumb {
 }
 .project-list-container,
 .community-layout {
-	min-height: calc(100vh - 230px);
+	min-height: calc(100vh - 236px);
 }
 .chatterbox-write .btn.chatter-send {
 	padding: 0.375rem 0.75rem;
@@ -1298,9 +1300,6 @@ img.cat-thumb {
 	}
 	.community-layout .main-content {
 		margin: 1rem 0 0 0;
-	}
-	.emwidget-chatterbox {
-		height: calc(100vh - 128px) !important;
 	}
 }
 
@@ -1351,9 +1350,6 @@ img.cat-thumb {
 	.project-list-container,
 	.community-layout {
 		min-height: calc(100vh - 50px);
-	}
-	.emwidget-chatterbox {
-		height: calc(100vh - 180px) !important;
 	}
 	.chatterbox-write .chatterbox-text {
 		height: 40px;
