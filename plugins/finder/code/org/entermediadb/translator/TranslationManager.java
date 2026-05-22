@@ -81,27 +81,103 @@ public class TranslationManager extends BaseAiManager implements CatalogEnabled
 
 		JSONObject payload = new JSONObject();
 
-		JSONArray q = new JSONArray();
-		q.add(text);
-		payload.put("q", q);
+		JSONArray contents = new JSONArray();
+		contents.add(text);
 
-		payload.put("source", sourceLang);
+		Collection<Data> locales = getMediaArchive().query("locale").ids(targetLangs).cachedSearch();
 
+		Collection<String> googleTargets = new ArrayList();
+		Collection<String> eMediaTargets = new ArrayList();
+
+		for (Iterator iterator = locales.iterator(); iterator.hasNext();)
+		{
+			Data locale = (Data) iterator.next();
+			String translationservice = locale.get("translationservice");
+			if ("google".equals(translationservice))
+			{
+				googleTargets.add(locale.getId());
+			}
+			else
+			{
+				eMediaTargets.add(locale.getId());
+			}
+		}
+
+		JSONObject googleTranslations = new JSONObject();
+		JSONObject eMediaTranslations = new JSONObject();
+
+		if (googleTargets.size() > 0)
+		{
+			payload.put("contents", contents);
+			payload.put("sourceLanguageCode", sourceLang);
+
+			LlmConnection connection = getMediaArchive().getLlmConnection("googleTranslateFields");
+			log.info("Translating " + contents + " from " + sourceLang + " to " + googleTargets + " in server: " + connection.getServerRoot());
+
+			googleTranslations = googleTranslate(connection, payload, googleTargets);
+		}
+		else
+		{
+			payload.put("q", contents);
+			payload.put("source", sourceLang);
+
+			LlmConnection connection = getMediaArchive().getLlmConnection("eMediaTranslateFields");
+			log.info("Translating " + contents + " from " + sourceLang + " to " + eMediaTargets + " in server: " + connection.getServerRoot());
+
+			eMediaTranslations = eMediaTranslate(connection, payload, eMediaTargets);
+		}
+
+		JSONObject combined = new JSONObject();
+		combined.putAll(googleTranslations);
+		combined.putAll(eMediaTranslations);
+
+		return combined;
+
+	}
+
+	public JSONObject eMediaTranslate(LlmConnection connection, JSONObject payload, Collection<String> targetLangs)
+	{
 		JSONArray targets = new JSONArray();
 		targets.addAll(targetLangs);
 		payload.put("target", targets);
-
-		LlmConnection connection = getMediaArchive().getLlmConnection("translateFields");
-
-		log.info("Translating " + q + " from " + sourceLang + " to " + targetLangs + " in server: " + connection.getServerRoot());
-
-		log.debug(payload);
 
 		LlmResponse resp = connection.callJson("/translate", payload);
 
 		JSONObject translatedText = (JSONObject) resp.getRawResponse().get("translatedText");
 
 		return translatedText;
+
+	}
+
+	public JSONObject googleTranslate(LlmConnection connection, JSONObject payload, Collection<String> targetLangs)
+	{
+		JSONObject allTranslatedTexts = new JSONObject();
+		for (Iterator iterator = targetLangs.iterator(); iterator.hasNext();)
+		{
+			String targetLang = (String) iterator.next();
+
+			payload.put("targetLanguageCode", targetLang);
+
+			LlmResponse resp = connection.callJson(":translateText", payload);
+
+			JSONArray translations = (JSONArray) resp.getRawResponse().get("translations");
+			if (translations == null || translations.isEmpty())
+			{
+				continue;
+			}
+			JSONObject translation = (JSONObject) translations.get(0);
+			JSONObject translatedText = (JSONObject) translation.get("translatedText");
+
+			JSONArray existing = (JSONArray) allTranslatedTexts.get(targetLang);
+			if (existing == null)
+			{
+				existing = new JSONArray();
+				allTranslatedTexts.put(targetLang, existing);
+			}
+			existing.add(translatedText);
+		}
+
+		return allTranslatedTexts;
 
 	}
 
@@ -144,11 +220,11 @@ public class TranslationManager extends BaseAiManager implements CatalogEnabled
 
 	}
 
-	public void translateDataFields(Collection<MultiValued> inRecordsToTranslate)
+	public void translateDataFields(Collection<MultiValued> inRecordsToTranslate, Collection<PropertyDetail> inDetailsfields, String inSourceLang)
 	{
 		HitTracker locales = getMediaArchive().query("locale").exact("translatemetadata", true).cachedSearch();
 
-		if (locales.size() == 1 && "en".equals(locales.get(0).getId()))
+		if (locales.size() < 2)
 		{
 			return;
 		}
@@ -161,7 +237,11 @@ public class TranslationManager extends BaseAiManager implements CatalogEnabled
 		{
 			Data locale = (Data) iterator.next();
 			String code = locale.getId();
-			if (code == "en")
+			if (inSourceLang == null)
+			{
+				inSourceLang = "en";
+			}
+			if (code == inSourceLang)
 			{
 				continue;
 			}
@@ -196,13 +276,17 @@ public class TranslationManager extends BaseAiManager implements CatalogEnabled
 			// moduleid + ", " + data.getName());
 			count++;
 
-			long startTime = System.currentTimeMillis();
+			if (inDetailsfields == null)
+			{
+				log.info("Loading active details for module: " + moduleid);
+				inDetailsfields = loadActiveDetails(moduleid);
+			}
 
-			Collection<PropertyDetail> detailsfields = loadActiveDetails(moduleid);
+			long startTime = System.currentTimeMillis();
 
 			Map<String, LanguageMap> results = new HashMap();
 
-			for (Iterator iterator2 = detailsfields.iterator(); iterator2.hasNext();)
+			for (Iterator iterator2 = inDetailsfields.iterator(); iterator2.hasNext();)
 			{
 				PropertyDetail detail = (PropertyDetail) iterator2.next();
 				String inKey = detail.getId();
@@ -210,10 +294,10 @@ public class TranslationManager extends BaseAiManager implements CatalogEnabled
 				if (detail != null && detail.isMultiLanguage())
 				{
 					LanguageMap value = data.getLanguageMap(inKey);
-					if (value != null && value.getText("en") != null && !value.getText("en").isEmpty())
+					if (value != null && value.getText(inSourceLang) != null && !value.getText(inSourceLang).isEmpty())
 					{
 						// inLog.info("Translating field: " + inKey);
-						LanguageMap translated = translateField(inKey, value, "en", targetLangs);
+						LanguageMap translated = translateField(inKey, value, inSourceLang, targetLangs);
 						results.put(inKey, translated);
 					}
 				}
@@ -233,7 +317,8 @@ public class TranslationManager extends BaseAiManager implements CatalogEnabled
 					}
 				}
 				long duration = System.currentTimeMillis() - startTime;
-				// inLog.info("Total translation took: " + duration + "ms");
+
+				log.info("Total translation took: " + duration + "ms " + results);
 			}
 			catch (Exception e)
 			{
@@ -321,9 +406,8 @@ public class TranslationManager extends BaseAiManager implements CatalogEnabled
 	// "autotranslate");
 	// Collection<MultiValued> records = new ArrayList(assets);
 	//
-	//// InformaticsContext agentcontext = new InformaticsContext();
-	//// agentcontext.setScriptLogger(inLog);
-	//// agentcontext.setAssetsToProcess(records);
+	//// InformaticsContext agentcontext = new InformaticsContext(); /
+	/// agentcontext.setScriptLogger(inLog); / agentcontext.setAssetsToProcess(records);
 	//
 	// translateDataFields(inLog, config, records);
 	// }
