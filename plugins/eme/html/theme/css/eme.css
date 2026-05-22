@@ -13,6 +13,7 @@
 #chatSidebar {
 	width: 268px;
 	min-width: 268px;
+	margin-left: 32px;
 	display: flex;
 	flex-direction: column;
 	background: #ffffff;

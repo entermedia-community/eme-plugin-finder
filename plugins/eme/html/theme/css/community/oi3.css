@@ -1347,10 +1347,6 @@ img.cat-thumb {
 	.navigation .navbar-nav .nav-item .nav-link {
 		margin: 0 10px;
 	}
-	.project-list-container,
-	.community-layout {
-		min-height: calc(100vh - 50px);
-	}
 	.chatterbox-write .chatterbox-text {
 		height: 40px;
 	}
@@ -1360,6 +1356,10 @@ img.cat-thumb {
 }
 
 @media screen and (max-width: 1440px) {
+	.project-list-container,
+	.community-layout {
+		min-height: calc(100vh - 180px);
+	}
 	.project-navbar .navbar-collective .collapsed-menu {
 		display: block;
 	}
@@ -1371,7 +1371,7 @@ img.cat-thumb {
 		display: block;
 	}
 	.container .main-content {
-		padding: 0 0 1rem !important;
+		padding: 0 !important;
 	}
 	.community-layout .sidebar-left {
 		display: none;
