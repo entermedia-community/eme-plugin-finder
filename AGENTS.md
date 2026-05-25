@@ -95,7 +95,7 @@ public class MyCustomSkill extends BaseSkill
 
 #### 3) Register the Skill bean
 
-Add a bean entry in plugin.xml (example pattern from plugins/finder/html/src/plugin.xml):
+Add a bean entry in plugin.xml (example pattern from plugins/myplugin/html/src/plugin.xml):
 
 ```xml
 <bean id="myCustomSkill" class="org.entermediadb.ai.custom.agents.MyCustomSkill" scope="prototype">
