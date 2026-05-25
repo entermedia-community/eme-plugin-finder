@@ -24,14 +24,13 @@ public class AutoLoginWithCookie extends BaseAutoLogin implements AutoLoginProvi
 
 			if (cookies != null)
 			{
-				String id = getCookieEncryption().createMd5CookieName(inReq, ENTERMEDIAKEY, true);
-				String idold = getCookieEncryption().createMd5CookieName(inReq, ENTERMEDIAKEY, false);
+				String id = getCookieEncryption().createMd5CookieName(inReq);
 				for (int i = 0; i < cookies.length; i++)
 				{
 					Cookie cook = cookies[i];
 					if (cook.getName() != null)
 					{
-						if (id.equals(cook.getName()) || idold.equals(cook.getName()))
+						if (id.equals(cook.getName()))
 						{
 							User user = autoLoginFromMd5Value(inReq, cook.getValue());
 							if (user != null)

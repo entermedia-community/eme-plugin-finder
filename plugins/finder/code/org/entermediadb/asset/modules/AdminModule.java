@@ -981,6 +981,9 @@ public class AdminModule extends BaseMediaModule
 		inReq.removePageValue("user");
 		inReq.removePageValue("userprofile");
 		getCookieEncryption().removeCookie(inReq, AutoLoginProvider.ENTERMEDIAKEY);
+		String name = getCookieEncryption().createMd5CookieName(inReq);
+
+		getCookieEncryption().removeCookie(inReq, "eme");
 		getCookieEncryption().removeCookie(inReq, "entermedia.keyopenedit");
 		getCookieEncryption().removeCookie(inReq, "JSESSIONID"); // Added this to try and logout of all the sub-domains
 
