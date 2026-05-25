@@ -62,6 +62,8 @@
   <script src="/${applicationid}/components/javascript/emedia/brick.js" id="jquerybrick"/>
   <script src="/${applicationid}/components/javascript/emedia/brickvertical.js" id="jquerybrickvertical"/>
   <script defer="true" src="/${applicationid}/components/javascript/chart/Chart.bundle.js" id="chartjs"/>
+  <script id="jscuepoint" src="/${applicationid}/components/javascript/jquery.cuepoint.js"   />
+	<script id="jsclosedcaptions" src="/${applicationid}/views/modules/asset/editor/closedcaptions/closedcaptions.js"  />
   <property name="searchtypeFromRequest">true</property>
   <property name="profilemanagerid">${catalogid}</property>
   <property name="thumbsize">thumb</property>

@@ -26,7 +26,7 @@ The two most important folders are:
 - `plugins/finder/html/find` This is the app contains all the components needed to organize and media library and for data entry
 - `plugins/community/html/default` This is a community template to help render projects and goal tracking
 - `plugins/finder/code` Contains the bulk of the java code that controls the system
-
+- . If a user has a folder in WEbsite/plugins/* that will be used first before EME-LIB/plugins/* of the same name
 ### Web app conventions
 
 VSS has a launcher that will build the java source code automatically into MyServerName/bin folder that tomcat uses to launch. 
@@ -44,6 +44,8 @@ VSS has a launcher that will build the java source code automatically into MySer
 - plugins/manager folder that is used when users want to have more than one database. It is not needed for normal operation
 - plugin/components - This folder is used by web pages to find common javascript libraries. The eme app users a /eme/components -> /components fallback to add additional javascript it needs.  
 - plugin/mediadb Contains the JSON REST APi services. All available API calls can be found in eme-lib/plugins/catalog/html/data/lists/endpoint/*.xml files
+- plugins/catalog/html/data/lists/automationagentenabled/*.xml Contains various automation steps that are performed by Java classes fined in plugins/catalog/html/data/lists/automationagent/*.xml
+- plugins/finder/html/src/plugin.xml Contains Spring style bean definitions for finder Java classes
 - Each eme-lib can spawn multiple Websites using the eme.sh command. A website is where the user will customize his site. The website will contain his database
 - Website/data This is where any database and file uploads will be saved
 - Website/webapp This is where the plugins will be linked and used by tomcat to render the html of the website to the user directly
@@ -53,7 +55,67 @@ Placement decision tree:
 1. If the change is a existing html file then the browser will see the change on reload
 2. If the change is editing an xconf file then the page cache of the server needs to be cleared 
 3. If an html of xconf file is added or removed the page cache must be cleared or server restarted
+4. If a user has a folder in WEbsite/plugins/* that will be used first before EME-LIB/plugins/* of the same name
 
+### Java plugin and Skill structure
+
+Use this flow when creating a new plugin or custom AI automation skill.
+
+#### 1) Define a new plugin package
+
+- Place custom code in Website/plugins/<yourplugin>/code/org/... so it can override or extend eme-lib behavior.
+- Place plugin bean wiring in Website/plugins/<yourplugin>/html/src/plugin.xml.
+- Keep in mind fallback order: Website/plugins/* is used before EME-LIB/plugins/* when names match.
+
+#### 2) Create your own Skill class
+
+The core Skill contract is in plugins/finder/code/org/entermediadb/ai/Skill.java.
+
+- Required methods: processstart(AgentContext), process(AgentContext), processend(AgentContext).
+- Most implementations should extend BaseSkill (plugins/finder/code/org/entermediadb/ai/BaseSkill.java) instead of implementing Skill directly.
+
+Example:
+
+```java
+package org.entermediadb.ai.custom.agents;
+
+import org.entermediadb.ai.BaseSkill;
+import org.entermediadb.ai.llm.AgentContext;
+
+public class MyCustomSkill extends BaseSkill
+{
+	@Override
+	public void process(AgentContext inContext)
+	{
+		// your logic here
+		super.process(inContext); // optional: run child agents
+	}
+}
+```
+
+#### 3) Register the Skill bean
+
+Add a bean entry in plugin.xml (example pattern from plugins/finder/html/src/plugin.xml):
+
+```xml
+<bean id="myCustomSkill" class="org.entermediadb.ai.custom.agents.MyCustomSkill" scope="prototype">
+	<property name="moduleManager">
+		<ref bean="moduleManager" />
+	</property>
+</bean>
+```
+
+#### 4) Make it selectable and runnable
+
+- Add a skill definition in plugins/catalog/html/data/lists/automationagent/*.xml with a unique data id and bean="myCustomSkill".
+- Enable and order it in plugins/catalog/html/data/lists/automationagentenabled/*.xml using automationagent="<data id from automationagent>".
+- Use runafter and automationscenario to control sequence and where it runs.
+
+#### 5) Validate changes
+
+1. Rebuild/reload so Java classes and Spring bean definitions are loaded.
+2. Confirm your new id appears in automation agent lists.
+3. Trigger the target event/module and verify execution in logs.
 
 ### Database
 
