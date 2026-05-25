@@ -103,9 +103,9 @@ body {
 
 .mediacenterheader.personal-menu {
 	position: absolute;
-	width: calc(100% - 300px);
+	width: 100%;
 	height: 72px;
-	left: 300px;
+	left: 0;
 	transition:
 		left 0.3s ease,
 		width 0.3s ease;
@@ -9209,6 +9209,7 @@ h2 .module-icon {
 	box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
 	padding: 2rem;
 	margin: 2rem;
+	background: var(--light-bg);
 }
 
 @keyframes fadeSlideIn {
