@@ -47,52 +47,6 @@ body.offcanvas-open {
 		padding: 0 2%;
 	}
 }
-p {
-	line-height: 1.75;
-}
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-.resultsnav .nav-btn,
-.resultsnavright .nav-btn {
-	font-family: "Oswald", sans-serif;
-	font-weight: 400;
-	font-style: normal;
-}
-h1 {
-	margin: 25px 0 20px 0;
-	font-size: 2rem;
-}
-h2 {
-	margin: 20px 0 20px;
-	font-size: 1.6rem;
-}
-h3 {
-	margin: 10px 0 15px;
-	font-size: 1.2rem;
-}
-h4 {
-	margin: 5px 0 15px;
-	font-size: 1.2rem;
-	color: #888;
-}
-h4 .btn {
-	font-family: "Montserrat", "Helvetica Neue", Helvetica, Arial, sans-serif;
-}
-a.primary {
-	color: #218838;
-	text-decoration: none;
-}
-a.primary:hover {
-	color: #000;
-	text-decoration: underline;
-}
-a.primary:hover .fa-solid {
-	text-decoration: none;
-}
 .h-100-50 {
 	height: calc(100% - 50px);
 }
@@ -108,11 +62,6 @@ a.primary:hover .fa-solid {
 .bg-white,
 .bg-light {
 	color: #000;
-}
-.btn {
-	cursor: pointer;
-	padding: 0.5rem 0.95rem;
-	font-size: 0.95rem;
 }
 .btn-sm {
 	padding: 0.3rem 0.75rem;
@@ -492,15 +441,6 @@ table {
 }
 .sidebar-opentickets li:hover {
 	background-color: rgb(0, 0, 0, 0.1);
-}
-.sidebar-list a {
-	color: #333;
-	padding: 9px 10px 8px 20px;
-	display: block;
-}
-.sidebar-list a:hover {
-	color: #111;
-	background-color: #f5f5f5;
 }
 .sidebar-list .badge {
 	display: inline-block;

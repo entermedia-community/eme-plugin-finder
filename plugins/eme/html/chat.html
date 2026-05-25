@@ -1,9 +1,9 @@
 
 <div id="chatMainContent" class="chat-main-content #if($module.id != "modulesearch") floating-chat #end">
+  $module.id
   #if(!$module.id || $module.id == "modulesearch")
     $pages.include("./components/chat-dashboard/landing.html", $context)
   #end
-
   <div class="chat-input-container">
     $pages.include("./components/chat-dashboard/chat-input.html", $context)
   </div>
