@@ -11,18 +11,10 @@
 
 /* ── Sidebar ─────────────────────────────────────────────────────────────── */
 #chatSidebar {
-	width: 268px;
-	min-width: 268px;
+	width: 100%;
 	display: flex;
 	flex-direction: column;
 	background: #ffffff;
-	border-right: 1px solid #e5e7eb;
-	transition:
-		width 0.22s cubic-bezier(0.4, 0, 0.2, 1),
-		min-width 0.22s cubic-bezier(0.4, 0, 0.2, 1),
-		opacity 0.15s;
-	overflow: hidden;
-	z-index: 5;
 }
 #chatSidebar.sidebar-collapsed {
 	width: 0;

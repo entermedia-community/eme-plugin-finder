@@ -1,8 +1,15 @@
 #set ($moduleid = $module.getId())
 #set($title=$mediaarchive.getCatalogSettingValue("sitetitle")) 
 #set( $section=$context.getRequestParameter("sitetitle"))
+
+#set( $sidebarwidth = $userprofile.get("sidebarwidth"))
+#if(!$sidebarwidth || $sidebarwidth=='' || $sidebarwidth=='undefined')
+  #set($sidebarwidth = 280)
+#end
+
 <div id="col-sidebars" 
-	class="col-sidebars-sticky sidebarcontent setpagetitle mbl-hidden" 
+	class="col-sidebars-sticky sidebarcontent setpagetitle mbl-hidden"
+	data-sidebarwidth="$!sidebarwidth"
 	#ifnotnull( $section ) data-setpagetitle="#text($section) - $title" #end 
 	#ifnull( $section ) data-setpagetitle="$title" #end 
 	data-url="$applink/components/sidebars/index.html">

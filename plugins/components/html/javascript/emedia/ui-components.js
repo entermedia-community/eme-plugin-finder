@@ -570,6 +570,123 @@ jQuery(document).ready(function () {
 		toggleUserProperty("filtershowall");
 	});
 
+	lQuery(".col-resize").livequery(function () {
+		var slider = $(this);
+		var column = $(this).closest(".col-main");
+
+		var clickspot;
+		var startwidth;
+		var width;
+
+		slider.on("mousedown", function (event) {
+			if (!clickspot) {
+				clickspot = event;
+				startwidth = column.width();
+				return false;
+			}
+		});
+
+		$(window).on("mouseup", function (event) {
+			if (clickspot) {
+				clickspot = false;
+				if (width != "undefined") {
+					saveProfileProperty("sidebarwidth", width, function () {
+						$(window).trigger("resize");
+					});
+				}
+				return false;
+			}
+		});
+		$(window).on("mousemove", function (event) {
+			if (clickspot) {
+				width = 0;
+				var changeleft = event.pageX - clickspot.pageX;
+				width = startwidth + changeleft;
+				if (width < 200) {
+					width = 200;
+				}
+				if (width > 480) {
+					width = 480;
+				}
+				//console.log("W " , width);
+				column.width(width);
+				column.data("sidebarwidth", width);
+				column.find("#col-sidebars").data("sidebarwidth", width);
+				$(".pushcontent").css("margin-left", width + "px");
+				event.preventDefault();
+				$(window).trigger("resize");
+				return false;
+			}
+		});
+	});
+
+	//Sidebar Custom Width
+	lQuery(".sidebar-toggler-resize").livequery(function () {
+		var slider = $(this);
+		var column = $(this).closest(".col-main");
+
+		var clickspot;
+		var startwidth;
+		var width;
+
+		slider.on("mouseover", function () {
+			$(this).css("opacity", "0.6");
+		});
+		slider.on("mouseout", function () {
+			if (!clickspot) {
+				$(this).css("opacity", "0");
+			}
+		});
+		slider.on("mousedown", function (event) {
+			if (!clickspot) {
+				clickspot = event;
+				startwidth = column.width();
+				return false;
+			}
+		});
+
+		$(window).on("mouseup", function (event) {
+			if (clickspot) {
+				clickspot = false;
+				$(this).css("opacity", "0");
+				if (width != "undefined") {
+					saveProfileProperty("sidebarwidth", width, function () {
+						$(window).trigger("resize");
+					});
+				}
+				return false;
+			}
+		});
+		$(window).on("mousemove", function (event) {
+			if (clickspot) {
+				$(this).css("opacity", "0.6");
+				width = 0;
+				var changeleft = event.pageX - clickspot.pageX;
+				width = startwidth + changeleft;
+				width = width + 32;
+				if (width < 200) {
+					width = 200;
+				}
+				if (width > 380) {
+					//break sidebarfilter columns
+					column.addClass("sidebarwide");
+				} else {
+					column.removeClass("sidebarwide");
+				}
+				if (width > 500) {
+					width = 500;
+				}
+				column.width(width);
+				column.data("sidebarwidth", width);
+				column.find("#col-sidebars").data("sidebarwidth", width);
+				$(".pushcontent").css("margin-left", width + "px");
+				event.preventDefault();
+				$(window).trigger("resize");
+				return false;
+			}
+		});
+	});
+
 	lQuery(".sidetoggle").livequery("click", function () {
 		var div = $(this);
 		var target = $(this).data("target");
@@ -660,9 +777,13 @@ jQuery(document).ready(function () {
 					//data = $(data);
 					var cell = findClosest(toggler, "#" + targetdiv);
 					cell.replaceWith(data); //Cant get a valid dom element
-					$(".pushcontent").removeClass("pushcontent-" + sidebar);
-					$(".pushcontent").removeClass("pushcontent-open");
-					$(".pushcontent").addClass("pushcontent-fullwidth");
+					var sidebarwidth = toggler
+						.closest("#col-sidebars")
+						.data("sidebarwidth");
+					if (!sidebarwidth) {
+						sidebarwidth = 300;
+					}
+					$(".pushcontent").css("margin-left", sidebarwidth + "px");
 
 					$(window).trigger("setPageTitle", [cell]);
 
@@ -676,9 +797,7 @@ jQuery(document).ready(function () {
 				crossDomain: true,
 			});
 		} else if (toggler.data("action") == "hide") {
-			$(".pushcontent").removeClass("pushcontent-" + sidebar);
-			$(".pushcontent").removeClass("pushcontent-open");
-			$(".pushcontent").addClass("pushcontent-fullwidth");
+			$(".pushcontent").css("margin-left", "0px");
 			$(".col-mainsidebar").remove();
 			$(window).trigger("resize");
 
@@ -735,16 +854,15 @@ jQuery(document).ready(function () {
 			},
 			success: function (data) {
 				targetdiv.replaceWith(data); //Cant get a valid dom element
-				$(".pushcontent").removeClass("pushcontent-fullwidth");
-				$(".pushcontent").addClass("pushcontent-open");
-				$(".pushcontent").addClass("pushcontent-" + sidebar);
-				var mainsidebar = $(".col-mainsidebar");
-				if (mainsidebar.data("sidebarwidth")) {
-					var width = mainsidebar.data("sidebarwidth");
-					if (typeof width == "number") {
-						$(".pushcontent").css("margin-left", width + "px");
-					}
+
+				var sidebarwidth = toggler
+					.closest("#col-sidebars")
+					.data("sidebarwidth");
+				if (!sidebarwidth || typeof sidebarwidth != "number") {
+					sidebarwidth = 300;
 				}
+				$(".pushcontent").css("margin-left", sidebarwidth + "px");
+
 				$(window).trigger("setPageTitle", [targetdiv]);
 				$(window).trigger("resize");
 			},
