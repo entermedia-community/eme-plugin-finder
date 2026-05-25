@@ -71,7 +71,7 @@ public abstract class BaseAutoLogin implements AutoLoginProvider
 		HttpServletResponse res = inReq.getResponse();
 		if (res != null)
 		{
-			String name = getCookieEncryption().createMd5CookieName(inReq, ENTERMEDIAKEY, true);
+			String name = getCookieEncryption().createMd5CookieName(inReq);
 			try
 			{
 				String value = getCookieEncryption().getEnterMediaKey(inUser); /// TODO Change expiration to be 30 days

@@ -2,4 +2,6 @@
 
 <page>
   <property name="catalogid">catalog</property>
+  <property name="applicationid">catalog</property>
+  <property name="siteid">catalog</property>
 </page>
