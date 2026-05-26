@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-# set -x 
+#set -x 
 ##This is run from the /bin/eme location that is linked
 
 CMD="${1:-start}"
@@ -11,11 +11,31 @@ if [ "$CMD" = "version" ]; then
     exit 0
 fi
 
+
+TARGET="$2"
+
+if [ -z "$TARGET" ]; then
+    echo "No target path specified"
+    exit 1
+fi
+
+ mkdir -p "$TARGET"
+
 # Resolve EMELIB: prefer sibling eme-lib, then env var, then system default
 
+ISRELATIVE_EMELIB=false
+
 if [ -z "$EMELIB" ]; then
-    if [ -d "$SCRIPT_DIR/../../eme-lib" ]; then
-        export EMELIB="$(cd "$SCRIPT_DIR/../../eme-lib" && pwd)"
+
+    #Make the EMELIB folder be relative to the Target
+    if [ -d "$TARGET/../eme-lib" ]; then
+        cd "$TARGET/"
+        EMELIB="../eme-lib"
+        ISRELATIVE_EMELIB=true
+        pwd
+        echo Using EMELIB: $EMELIB
+    elif [ -d "$EMELIB" ]; then
+        export EMELIB
     elif [ -d "/usr/share/eme-lib" ]; then
         export EMELIB="/usr/share/eme-lib"
     elif [ -d "/usr/local/lib/eme-lib" ]; then
@@ -25,6 +45,7 @@ if [ -z "$EMELIB" ]; then
         exit 1
     fi
 fi
+
 
 ##JAVA_HOME is not set throw an error if JAVA_HOME is not set
 if [ -z "$JAVA_HOME" ]; then
@@ -73,14 +94,6 @@ case "$CMD" in
     else
         GROUPID="$USERID"
     fi
-
-    TARGET="$2"
-
-    if [ -z "$TARGET" ]; then
-        echo "No target path specified. Using current directory."
-        exit 1
-    fi
-
     echo "**** Starting server from: $TARGET"
 
     if [ ! -d "$TARGET" ]; then
@@ -107,9 +120,15 @@ case "$CMD" in
         #chmod 755 "$TARGET/tomcat/bin/*.sh"
     fi
 
+    EME_LIB_SUB="$EMELIB"
+    if [ "$ISRELATIVE_EMELIB" = true ]; then
+        EME_LIB_SUB="../$EMELIB"
+    fi  
+
+
     if [ ! -L "$TARGET/webapp/_site.xconf" ]; then
-         mkdir -p "$TARGET/webapp/WEB-INF/"
-         ln -s "$EMELIB/resources/webapp/_site.xconf" "$TARGET/webapp/_site.xconf"
+        mkdir -p "$TARGET/webapp/WEB-INF/"
+        ln -s "$EME_LIB_SUB/resources/webapp/_site.xconf" "$TARGET/webapp/_site.xconf"
         sudo chown -R $USERID:$GROUPID "$TARGET/webapp"
     fi
 
@@ -133,8 +152,8 @@ case "$CMD" in
          cp -rp "$EMELIB/plugins/system/defaultdata/." "$TARGET/webapp/WEB-INF/data/system/"
     fi
 
-    if [ ! -d "$TARGET/webapp/WEB-INF/data" ]; then
-        ln -s "$TARGET/data" "$TARGET/webapp/WEB-INF/data" 
+    if [ ! -L "$TARGET/data" ]; then
+        ln -s "./webapp/WEB-INF/data" "$TARGET/data" 
         sudo chown -R $USERID:$GROUPID "$TARGET/webapp/WEB-INF/data"
     fi
 
@@ -149,17 +168,21 @@ case "$CMD" in
     done
 
     # symbolically link built-in plugins from emelib to webapp, but only if they don't already exist in the target plugins directory (i.e. user overwrote them)
+    #only do this if the emelib is relative
     for plugin in "$EMELIB/plugins"/*/; do
         pluginname="$(basename "$plugin")"
+
         if [ -d "${plugin}html" ]; then
+            ##if its an invalid symbolic link then remove it and create a new one
+            if [ -L "$TARGET/webapp/$pluginname" ] && [ ! -e "$TARGET/webapp/$pluginname" ]; then
+                echo "Removing invalid symbolic link: $TARGET/webapp/$pluginname"
+                rm "$TARGET/webapp/$pluginname"
+            fi
             if [ ! -L "$TARGET/webapp/$pluginname" ]; then
-                ln -s "${plugin}html" "$TARGET/webapp/$pluginname"
+                ln -s "$EME_LIB_SUB/plugins/${pluginname}/html" "$TARGET/webapp/$pluginname"
             fi
         fi
     done
-
-   ## sudo chown $USERID:$GROUPID "$TARGET/html/WEB-INF/"
-
 
     export EMSERVER="${2:-$SCRIPT_DIR}"
     export EMSERVER="$(cd "$EMSERVER" && pwd)"
