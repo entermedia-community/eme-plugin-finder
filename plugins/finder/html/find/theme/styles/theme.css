@@ -103,7 +103,7 @@ body {
 
 .mediacenterheader.personal-menu {
 	position: absolute;
-	width: 100%;
+	width: stretch;
 	height: 72px;
 	left: 0;
 	transition:
@@ -119,10 +119,6 @@ body {
 	font-weight: bold;
 	font-size: 1.25rem;
 	color: #4a4a4a;
-}
-.mediacenterheader.personal-menu.sidebar-collapsed {
-	left: 0;
-	width: 100%;
 }
 #sidebarOpenBtn {
 	display: none;
@@ -5193,6 +5189,9 @@ label.error {
 	background: var(--themed-tab-bar);
 	z-index: 900;
 	height: var(--nav-btn-height);
+}
+.chat-main .settingssubtabnav {
+	top: 0px;
 }
 
 .settingslayout .settingssubtabnav {

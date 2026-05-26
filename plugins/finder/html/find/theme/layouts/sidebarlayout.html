@@ -18,7 +18,9 @@
 		 $pages.include("$componenthome/sidebars/index.html",$context)
 	#end
 	<div class="col-main col-content-main">
-		##Todo: add permission $cansidebar 
+		#set( $sidebarwidth = $userprofile.get("sidebarwidth"))
+  	#set( $sidebarcomponent = $userprofile.get("sidebarcomponent"))
+
 		<div class='pushcontent finderlayout col-main-inner #if($cantogglesidebar && $sidebarcomponent  && $sidebarcomponent != "none") pushcontent-open pushcontent-$sidebarcomponent #else pushcontent-fullwidth #end' 
 			  style="#if($sidebarcomponent && $sidebarwidth) margin-left:$!{sidebarwidth}px;#end"
 			  data-sidebarcomponent="$!sidebarcomponent">
