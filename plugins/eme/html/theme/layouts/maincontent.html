@@ -28,11 +28,11 @@
 	class="applicationmaincontent  applicationmaincontent$!section #if($hassubmenu) entitynavsubmenu #end"
 	data-setpagetitle="$!setpagetitle"
 	data-section="$!section ">
-  <div class="personal-dashboard">
+  <div class="pushcontent personal-dashboard">
     
     $pages.include("${apphome}/theme/layouts/header.html", $context)
 
-		<main class="pushcontent chat-main finderlayout" id="mainContent">
+		<main class="chat-main" id="mainContent">
 			$pages.streamContent()
 
 			#ifnull($librarycol)

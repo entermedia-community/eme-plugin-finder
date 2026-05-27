@@ -783,6 +783,11 @@ jQuery(document).ready(function () {
 					if (!sidebarwidth) {
 						sidebarwidth = 300;
 					}
+					sidebarwidth = Math.max(
+						sidebarwidth,
+						$("#col-settings").width() + 32,
+					);
+
 					$(".pushcontent").css("margin-left", sidebarwidth + "px");
 
 					$(window).trigger("setPageTitle", [cell]);

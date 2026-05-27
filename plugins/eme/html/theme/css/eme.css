@@ -245,7 +245,6 @@
 	flex: 1;
 	display: flex;
 	flex-direction: column;
-	padding-left: 32px;
 	min-width: 0;
 	background: #f9fafb;
 	position: relative;
