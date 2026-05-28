@@ -9,10 +9,14 @@ sudo docker stop $DOCKERNAME
 sudo docker rm $DOCKERNAME	
 
 
-	
 sudo docker image rm $DOCKERIMAGE
 #sudo docker system prune
 set -x
+
+##run ant from the root of the project
+export JAVA_HOME="/usr/lib/jvm/jdk"
+ant -f ../../build.xml
+
 
 cp '../../deploy/eme-lib.tar.gz' eme-lib.tar.gz
 sudo docker build -t $DOCKERIMAGE .
