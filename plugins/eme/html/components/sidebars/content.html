@@ -63,6 +63,11 @@
   #set($sidebarwidth = 280)
 #end
 
+#if($sidebarurl == "")
+  #set($sidebarurl = "/${applicationid}/components/chat-dashboard/sidebar.html")
+  #set($sidebarwidth = 258)
+#end
+
 
 
 
