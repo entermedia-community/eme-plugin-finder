@@ -11,7 +11,6 @@ if [ "$CMD" = "version" ]; then
     exit 0
 fi
 
-
 TARGET="$2"
 
 if [ -z "$TARGET" ]; then
@@ -23,27 +22,24 @@ fi
 
 # Resolve EMELIB: prefer sibling eme-lib, then env var, then system default
 
-ISRELATIVE_EMELIB=false
+#Make a function that I can pass in the number of levels to go up for the relative path and it return ../.. etc
+function get_relative_emelib {
+    local levels=$1
+    local relative_path=""      
+    for ((i=0; i<levels; i++)); do
+        relative_path="../$relative_path"
+    done
+    relative_path="${relative_path}eme-lib"
+    echo "$relative_path"
+}
 
-if [ -z "$EMELIB" ]; then
+EMELIB="$(get_relative_emelib 1)"
 
-    #Make the EMELIB folder be relative to the Target
-    if [ -d "$TARGET/../eme-lib" ]; then
-        cd "$TARGET/"
-        EMELIB="../eme-lib"
-        ISRELATIVE_EMELIB=true
-        pwd
-        echo Using EMELIB: $EMELIB
-    elif [ -d "$EMELIB" ]; then
-        export EMELIB
-    elif [ -d "/usr/share/eme-lib" ]; then
-        export EMELIB="/usr/share/eme-lib"
-    elif [ -d "/usr/local/lib/eme-lib" ]; then
-        export EMELIB="/usr/local/lib/eme-lib"
-    else
-        echo "ERROR: Cannot find eme-lib. Set EMELIB env" >&2
-        exit 1
-    fi
+if [ -d "$EMELIB" ]; then
+    export EMELIB
+else
+    echo "ERROR: Cannot find eme-lib. Set EMELIB env" >&2
+    exit 1
 fi
 
 
@@ -120,15 +116,10 @@ case "$CMD" in
         #chmod 755 "$TARGET/tomcat/bin/*.sh"
     fi
 
-    EME_LIB_SUB="$EMELIB"
-    if [ "$ISRELATIVE_EMELIB" = true ]; then
-        EME_LIB_SUB="../$EMELIB"
-    fi  
-
 
     if [ ! -L "$TARGET/webapp/_site.xconf" ]; then
         mkdir -p "$TARGET/webapp/WEB-INF/"
-        ln -s "$EME_LIB_SUB/resources/webapp/_site.xconf" "$TARGET/webapp/_site.xconf"
+        ln -s "$(get_relative_emelib 2)/resources/webapp/_site.xconf" "$TARGET/webapp/_site.xconf"
         sudo chown -R $USERID:$GROUPID "$TARGET/webapp"
     fi
 
@@ -142,7 +133,7 @@ case "$CMD" in
 
 
     if [ ! -L "$TARGET/webapp/WEB-INF/bin" ]; then
-        ln -s "$EMELIB/resources/webapp/WEB-INF/bin" "$TARGET/webapp/WEB-INF/bin"
+        ln -s "$(get_relative_emelib 3)/resources/webapp/WEB-INF/bin" "$TARGET/webapp/WEB-INF/bin"
     fi
 
  #   sudo chown ${USERID}:${GROUPID} "$TARGET/webapp/"
@@ -161,15 +152,15 @@ case "$CMD" in
     for plugin in "$TARGET/plugins"/*/; do
         pluginname="$(basename "$plugin")"
         if [ -d "${plugin}html" ]; then
-            if [ ! -L "$TARGET/webapp/$pluginname" ]; then
-                ln -s "${plugin}html" "$TARGET/webapp/$pluginname"
+            if [ ! -L "./webapp/$pluginname" ]; then
+                ln -s "./plugins/${pluginname}/html" "./webapp/$pluginname"
             fi
         fi
     done
 
     # symbolically link built-in plugins from emelib to webapp, but only if they don't already exist in the target plugins directory (i.e. user overwrote them)
     #only do this if the emelib is relative
-    for plugin in "$EMELIB/plugins"/*/; do
+    for plugin in "$(get_relative_emelib 1)/plugins"/*/; do
         pluginname="$(basename "$plugin")"
 
         if [ -d "${plugin}html" ]; then
@@ -179,7 +170,7 @@ case "$CMD" in
                 rm "$TARGET/webapp/$pluginname"
             fi
             if [ ! -L "$TARGET/webapp/$pluginname" ]; then
-                ln -s "$EME_LIB_SUB/plugins/${pluginname}/html" "$TARGET/webapp/$pluginname"
+                ln -s "$(get_relative_emelib 2)/plugins/${pluginname}/html" "$TARGET/webapp/$pluginname"
             fi
         fi
     done
