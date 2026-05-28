@@ -26,6 +26,10 @@ RUN rm -rf /tmp/* && \
     ln -s /usr/share/eme-lib/resources/bin/eme.sh /usr/bin/eme && \
     chmod +x /usr/bin/eme
 
+#remove user with id 1000 and group with id 1000 to avoid conflicts with host user when running with --user
+RUN userdel -f $(getent passwd 1000 | cut -d: -f1) 2>/dev/null || true && \
+    groupdel -f $(getent group 1000 | cut -d: -f1) 2>/dev/null || true
+
 CMD ["/usr/bin/bash"]
 
 #CMD ["/usr/bin/eme", "start", "/usr/share/eme-instance" ]
