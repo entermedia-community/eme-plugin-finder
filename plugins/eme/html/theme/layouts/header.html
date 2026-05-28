@@ -21,10 +21,11 @@
 			#end
 
 			#set($theme = $mediaarchive.getCachedData("theme", $themeid))
-
-			<a class="personal-brand text-decoration-none d-flex align-items-center" href="$homeurl" title="[[Personal Media Library]]" style="height: var(--themed-logo-height);">
-				[[Christopher Burkey]]
-			</a>
+			#ifnotnull($user)
+				<a class="personal-brand text-decoration-none d-flex align-items-center" href="$homeurl" title="$user.getScreenName()" style="height: var(--themed-logo-height);">
+					$user.getScreenName() 
+				</a>
+			#end
 			#if($module.id != "modulesearch")
 				<i class="bi bi-chevron-right text-muted mx-2" style="font-size:1rem;"></i>
 				<span class="top-breadcrumb">
