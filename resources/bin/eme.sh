@@ -64,7 +64,9 @@ case "$CMD" in
        echo "USERID not set"
        exit 1 
     fi
-    if [[ ! $(id -u entermedia 2>/dev/null) ]]; then
+    #make sure $USERID doees not already exist as a user, if not create entermedia user with $USERID and $GROUPID
+
+    if [[ ! $(id $USERID 2>/dev/null) ]]; then
         groupadd -g $GROUPID entermedia
         useradd -ms /bin/bash entermedia -g entermedia -u $USERID
         echo "entermedia ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/entermedia
