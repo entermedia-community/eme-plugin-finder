@@ -120,12 +120,14 @@ public class JavaScriptGenerator extends TempFileGenerator
 			{
 				oldtotal = -1L;
 			}
-			if (oldtotal != totalsize || mostrecentmod != inPage.getLastModified().getTime())
+			Page cachepage = getPageManager().getPage("/WEB-INF/temp/" + appid + "/" + inPage.getName(), false); // Not a real page
+			long lasmod = cachepage.lastModified();
+			if (lasmod == 0 || (oldtotal != totalsize || mostrecentmod != lasmod))
 			{
-				saveLocally(scripts, deferonly, inPage, inOut, mostrecentmod);
+				saveLocally(scripts, deferonly, inPage, cachepage, inOut, mostrecentmod);
 				cachedSizeCounts.put(inPage.getPath(), totalsize); // TODO check count change or size change
 			}
-			sendBack(inPage, deferonly, mostrecentmod, inOut, res);
+			sendBack(cachepage, deferonly, mostrecentmod, inOut, res);
 		}
 		catch (Throwable ex)
 		{
@@ -148,9 +150,9 @@ public class JavaScriptGenerator extends TempFileGenerator
 		return false;
 	}
 
-	protected void sendBack(Page inPage, boolean deferonly, long mostrecentmod, Output inOut, HttpServletResponse res) throws UnsupportedEncodingException, IOException
+	protected void sendBack(Page inCachePage, boolean deferonly, long mostrecentmod, Output inOut, HttpServletResponse res) throws UnsupportedEncodingException, IOException
 	{
-		long length = inPage.length();
+		long length = inCachePage.length();
 		if (length > -1)
 		{
 			res.setContentLength((int) length);
@@ -161,13 +163,13 @@ public class JavaScriptGenerator extends TempFileGenerator
 		InputStreamReader reader = null;
 		try
 		{
-			if (inPage.getCharacterEncoding() != null)
+			if (inCachePage.getCharacterEncoding() != null)
 			{
-				reader = new InputStreamReader(inPage.getInputStream(), inPage.getCharacterEncoding());
+				reader = new InputStreamReader(inCachePage.getInputStream(), inCachePage.getCharacterEncoding());
 			}
 			else
 			{
-				reader = new InputStreamReader(inPage.getInputStream());
+				reader = new InputStreamReader(inCachePage.getInputStream());
 			}
 			// If you get an error about content length then your character encoding is not
 			// correct. Use UTF-8
@@ -189,13 +191,13 @@ public class JavaScriptGenerator extends TempFileGenerator
 		// #end
 	}
 
-	protected void saveLocally(List<Script> scriptpaths, boolean deferonly, Page inPage, Output inOut, long mostrecentmod) throws FileNotFoundException, IOException
+	protected void saveLocally(List<Script> scriptpaths, boolean deferonly, Page inPage, Page inCachePage, Output inOut, long mostrecentmod) throws FileNotFoundException, IOException
 	{
-		synchronized (inPage)
+		synchronized (inCachePage)
 		{
-			Page tmpfile = getPageManager().getPage(inPage.getPath() + ".tmp.js");
+			Page tmpfile = getPageManager().getPage(inCachePage.getPath() + ".tmp.js");
 
-			Writer out = new OutputStreamWriter(tmpfile.getContentItem().getOutputStream(), inPage.getCharacterEncoding());
+			Writer out = new OutputStreamWriter(tmpfile.getContentItem().getOutputStream(), inCachePage.getCharacterEncoding());
 			Sizer sizer = new Sizer();
 
 			for (Iterator iterator = scriptpaths.iterator(); iterator.hasNext();)
@@ -241,12 +243,12 @@ public class JavaScriptGenerator extends TempFileGenerator
 			}
 			FileUtils.safeClose(out);
 			// rename
-			getPageManager().removePage(inPage);
+			getPageManager().removePage(inCachePage);
 			// tmpfile.getContent().set
-			getPageManager().movePage(tmpfile, inPage);
-			if (inPage.getContentItem() instanceof FileItem)
+			getPageManager().movePage(tmpfile, inCachePage);
+			if (inCachePage.getContentItem() instanceof FileItem)
 			{
-				FileItem savedata = (FileItem) inPage.getContentItem();
+				FileItem savedata = (FileItem) inCachePage.getContentItem();
 				savedata.getFile().setLastModified(mostrecentmod);
 			}
 		}
