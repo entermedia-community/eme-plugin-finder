@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-#set -x 
+set -x 
 ##This is run from the /bin/eme location that is linked
 
 CMD="${1:-start}"
@@ -18,8 +18,8 @@ if [ -z "$TARGET" ]; then
     exit 1
 fi
 
- mkdir -p "$TARGET"
-
+mkdir -p "$TARGET"
+cd  "$TARGET"
 # Resolve EMELIB: prefer sibling eme-lib, then env var, then system default
 
 #Make a function that I can pass in the number of levels to go up for the relative path and it return ../.. etc
@@ -38,7 +38,7 @@ EMELIB="$(get_relative_emelib 1)"
 if [ -d "$EMELIB" ]; then
     export EMELIB
 else
-    echo "ERROR: Cannot find eme-lib. Set EMELIB env" >&2
+    echo "ERROR: Cannot find eme-lib. $EMELIB" >&2
     exit 1
 fi
 
@@ -119,7 +119,7 @@ case "$CMD" in
 
     if [ ! -L "$TARGET/webapp/_site.xconf" ]; then
         mkdir -p "$TARGET/webapp/WEB-INF/"
-        ln -s "$(get_relative_emelib 2)/resources/webapp/_site.xconf" "$TARGET/webapp/_site.xconf"
+        ln -nsf "$(get_relative_emelib 1)/resources/webapp/_site.xconf" "$TARGET/webapp/_site.xconf"
         sudo chown -R $USERID:$GROUPID "$TARGET/webapp"
     fi
 
@@ -131,21 +131,22 @@ case "$CMD" in
           cp -rp "$EMELIB/resources/webapp/WEB-INF/node.xml" "$TARGET/webapp/WEB-INF/node.xml"
     fi
 
-
     if [ ! -L "$TARGET/webapp/WEB-INF/bin" ]; then
-        ln -s "$(get_relative_emelib 3)/resources/webapp/WEB-INF/bin" "$TARGET/webapp/WEB-INF/bin"
+        ln -nsf "$(get_relative_emelib 1)/resources/webapp/WEB-INF/bin" "$TARGET/webapp/WEB-INF/bin"
     fi
 
  #   sudo chown ${USERID}:${GROUPID} "$TARGET/webapp/"
 
+    if [ ! -d "$TARGET/data" ]; then
+        mkdir -p "$TARGET/webapp/WEB-INF/data"
+        ln -nsf "./webapp/WEB-INF/data" "$TARGET/data" 
+        sudo chown -R $USERID:$GROUPID "$TARGET/data"
+    fi
+
     if [ ! -d "$TARGET/data/system" ]; then
          mkdir -p "$TARGET/webapp/WEB-INF/data/system/"
          cp -rp "$EMELIB/plugins/system/defaultdata/." "$TARGET/webapp/WEB-INF/data/system/"
-    fi
-
-    if [ ! -L "$TARGET/data" ]; then
-        ln -s "./webapp/WEB-INF/data" "$TARGET/data" 
-        sudo chown -R $USERID:$GROUPID "$TARGET/webapp/WEB-INF/data"
+         sudo chown -R $USERID:$GROUPID "$TARGET/webapp/WEB-INF/data/system/"
     fi
 
     # symbolically link users plugins to webapp first!
@@ -153,7 +154,7 @@ case "$CMD" in
         pluginname="$(basename "$plugin")"
         if [ -d "${plugin}html" ]; then
             if [ ! -L "./webapp/$pluginname" ]; then
-                ln -s "./plugins/${pluginname}/html" "./webapp/$pluginname"
+                ln -nsf "./plugins/${pluginname}/html" "./webapp/$pluginname"
             fi
         fi
     done
@@ -165,13 +166,12 @@ case "$CMD" in
 
         if [ -d "${plugin}html" ]; then
             ##if its an invalid symbolic link then remove it and create a new one
-            if [ -L "$TARGET/webapp/$pluginname" ] && [ ! -e "$TARGET/webapp/$pluginname" ]; then
+            echo "Adding plugin: $TARGET/webapp/$pluginname"
+            if [ -L "$TARGET/webapp/$pluginname" ]; then
                 echo "Removing invalid symbolic link: $TARGET/webapp/$pluginname"
                 rm "$TARGET/webapp/$pluginname"
             fi
-            if [ ! -L "$TARGET/webapp/$pluginname" ]; then
-                ln -s "$(get_relative_emelib 2)/plugins/${pluginname}/html" "$TARGET/webapp/$pluginname"
-            fi
+            ln -nsf "$(get_relative_emelib 2)/plugins/${pluginname}/html"  "$TARGET/webapp/$pluginname"
         fi
     done
 
@@ -258,8 +258,10 @@ case "$CMD" in
     "$JAVA" "@$EXPANDED_ARGS" org.apache.catalina.startup.Bootstrap start 
     
     catalinapid=0
-    while [ "$catalinapid" -eq "0" ]; do
+    while [ $catalinapid -eq 0 ]; do
         catalinapid=$(pgrep -f "eme start")
+        ##make sure its an integer not a string
+        catalinapid=$(echo "$catalinapid" | awk '{print int($0)}')
         echo "Catalina PID: $catalinapid"
         sleep 1
     done
