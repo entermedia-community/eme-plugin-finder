@@ -13,4 +13,6 @@
 
   <path-action name="FinderModule.loadTopMenu" />
 
+  <property name="allowguestregistration">true</property>
+
 </page>

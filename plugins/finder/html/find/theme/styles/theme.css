@@ -1740,7 +1740,11 @@ a.categorypathlink:hover,
 }
 
 .nopermissions {
-	padding: 50px 20%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	min-height: var(--height-ex-hf);
 }
 
 a {

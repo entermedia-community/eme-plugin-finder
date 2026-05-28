@@ -76,7 +76,7 @@
   <property name="enableprofilefilters">true</property>
   <property name="collectionroot">/${applicationid}/views/modules/librarycollection/media</property>
   <property name="themeprefix">/${applicationid}/theme</property>
-  <property name="login-path">/${applicationid}/authentication/login.html</property>
+  <property name="login-path">/${applicationid}/authentication/nopermissions.html</property>
   <property name="applicationid">${siteid}/find</property>
   <property name="editable">false</property>
   <property name="errorpage">${themeprefix}/layouts/errorpage.html</property>

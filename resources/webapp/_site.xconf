@@ -31,7 +31,7 @@
 	<!-- property name="siteRoot">http://localhost:8080</property -->
 
 	<!-- Allows uses to create their own accounts in the guest group -->
-	<property name="allowguestregistration">false</property>
+	<property name="allowguestregistration">true</property>
 
 	<!-- Defines what languages can be selected for this site -->
 	<property name="languages">
