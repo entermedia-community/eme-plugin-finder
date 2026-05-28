@@ -1,10 +1,4 @@
-#set( $sidebarwidth = $userprofile.get("sidebarwidth"))
-#if( $sidebarwidth == "" || $sidebarwidth == "undefined" )
-	#set( $sidebarwidth = 300)
-#end
-#set( $sidebarcomponent = $userprofile.get("sidebarcomponent"))
-
-<div id="header" class="pushcontent mediacenterheader personal-menu d-flex justify-content-between py-2 pe-2" style="#if($sidebarcomponent && $sidebarwidth) margin-left:${sidebarwidth}px;#end">
+<div id="header" class="mediacenterheader personal-menu d-flex justify-content-between py-2 pe-2">
 	<div class="d-flex align-items-center" style="padding-left:40px">
 		<button class="btn btn-sm icon-btn py-0" id="sidebarOpenBtn" title="[[Collapse sidebar]]">
       <i class="bi bi-layout-sidebar" style="font-size:1.25rem;"></i>

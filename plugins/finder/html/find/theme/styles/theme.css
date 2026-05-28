@@ -102,9 +102,10 @@ body {
 }
 
 .mediacenterheader.personal-menu {
-	position: absolute;
+	position: sticky;
 	width: stretch;
 	height: 72px;
+	top: 0;
 	left: 0;
 	transition:
 		left 0.3s ease,
