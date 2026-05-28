@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-set -x 
+#set -x 
 ##This is run from the /bin/eme location that is linked
 
 CMD="${1:-start}"
@@ -119,7 +119,7 @@ case "$CMD" in
 
     if [ ! -L "$TARGET/webapp/_site.xconf" ]; then
         mkdir -p "$TARGET/webapp/WEB-INF/"
-        ln -nsf "$(get_relative_emelib 1)/resources/webapp/_site.xconf" "$TARGET/webapp/_site.xconf"
+        ln -nsf "$(get_relative_emelib 2)/resources/webapp/_site.xconf" "$TARGET/webapp/_site.xconf"
         sudo chown -R $USERID:$GROUPID "$TARGET/webapp"
     fi
 
@@ -132,14 +132,13 @@ case "$CMD" in
     fi
 
     if [ ! -L "$TARGET/webapp/WEB-INF/bin" ]; then
-        ln -nsf "$(get_relative_emelib 1)/resources/webapp/WEB-INF/bin" "$TARGET/webapp/WEB-INF/bin"
+        ln -nsf "$(get_relative_emelib 3)/resources/webapp/WEB-INF/bin" "$TARGET/webapp/WEB-INF/bin"
     fi
 
  #   sudo chown ${USERID}:${GROUPID} "$TARGET/webapp/"
-
-    if [ ! -d "$TARGET/data" ]; then
-        mkdir -p "$TARGET/webapp/WEB-INF/data"
-        ln -nsf "./webapp/WEB-INF/data" "$TARGET/data" 
+    if [ ! -L "$TARGET/data" ]; then
+        mkdir -p "./webapp/WEB-INF/data"
+        ln -nsf "./webapp/WEB-INF/data" "./data" 
         sudo chown -R $USERID:$GROUPID "$TARGET/data"
     fi
 
