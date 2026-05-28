@@ -79,13 +79,15 @@
 		<mkdir dir="${deploy}/builds" />
 
 		<tar destfile="${deploy}/builds/${versionedApp}.tar.gz" compression="gzip" longfile="gnu" >
-			<tarfileset dir="${basedir}/plugins" prefix="eme-lib/plugins" preservePermission="true"/>
-			<tarfileset dir="${basedir}/agents" prefix="eme-lib/agents" preservePermission="true"/>
-			<tarfileset dir="${basedir}/tomcat" prefix="eme-lib/tomcat" preservePermission="true"/>
-			<tarfileset dir="${basedir}/resources" prefix="eme-lib/resources" preservePermission="true">
+			<tarfileset dir="${basedir}/plugins" prefix="eme-lib/plugins"/>
+			<tarfileset dir="${basedir}/agents" prefix="eme-lib/agents" />
+			<tarfileset dir="${basedir}/tomcat" prefix="eme-lib/tomcat" />
+			<tarfileset dir="${basedir}/resources" prefix="eme-lib/resources" >
+				<exclude name="**/*.sh"/>
 				<exclude name="**/*.tar.gz"/>
 			</tarfileset>
-			<tarfileset dir="${basedir}/bin" prefix="eme-lib/bin" preservePermission="true"/>
+			<tarfileset dir="${basedir}/resources" prefix="eme-lib/resources" includes="**/*.sh"  filemode="755"/>							
+			<tarfileset dir="${basedir}/bin" prefix="eme-lib/bin"/>
 			<tarfileset file="${basedir}/version.txt" />
 		</tar>
 
