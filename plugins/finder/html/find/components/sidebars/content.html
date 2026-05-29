@@ -1,5 +1,3 @@
-#set($sidebarurl = "")
-
 #if($sidebarcomponent != "")
 
   #if($sidebarcomponent == "libraries" )
@@ -63,15 +61,11 @@
   #set($sidebarwidth = 280)
 #end
 
-
-
-
 #ifnotnull($sidebarurl)
   <div class="col-main col-mainsidebar #if($sidebarwidth && $sidebarwidth>320)sidebarwide #end"
     style="#if($sidebarwidth) width:${sidebarwidth}px;#end" data-sidebarwidth="$!sidebarwidth">
     <div id="col-$sidebarcomponent" class="col-left col-$sidebarcomponent">
       <div class="col-main-inner">
-        
         $pages.include($sidebarurl, $context)
         <div class="colslidercontainer">
           <a href="#" class="col-resize" title="[[Resize Sidebar]]"><i class="bi bi-arrows-expand-vertical"></i></a>

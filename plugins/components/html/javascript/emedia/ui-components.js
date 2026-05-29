@@ -753,6 +753,21 @@ jQuery(document).ready(function () {
 		resultsdiv.runAjax();
 	});
 
+	lQuery("#sidebarCollapseBtn").livequery("click", function (e) {
+		e.preventDefault();
+		e.stopImmediatePropagation();
+		var sidebar = $("#chatSidebar");
+		if (sidebar.hasClass("sidebar-collapsed")) {
+			sidebar.removeClass("sidebar-collapsed");
+			$(".pushcontent").css("margin-left", "258px");
+		} else {
+			sidebar.addClass("sidebar-collapsed");
+			$(".pushcontent").css("margin-left", "0px");
+			$(".col-mainsidebar").remove();
+		}
+		$(window).trigger("resize");
+	});
+
 	lQuery(".sidebar-toggler").livequery("click", function (e) {
 		e.preventDefault();
 		e.stopImmediatePropagation();
