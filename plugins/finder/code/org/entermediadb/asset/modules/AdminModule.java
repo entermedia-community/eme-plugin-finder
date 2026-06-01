@@ -960,8 +960,9 @@ public class AdminModule extends BaseMediaModule
 			return;
 		}
 		usermanager.logout(user);
-		inReq.removeSessionValue(catalogid + "user");
+		// inReq.removeSessionValue(catalogid + "user");
 
+		// Remove all
 		Enumeration enumeration = inReq.getSession().getAttributeNames();
 		List toremove = new ArrayList();
 		while (enumeration.hasMoreElements())
@@ -980,12 +981,13 @@ public class AdminModule extends BaseMediaModule
 
 		inReq.removePageValue("user");
 		inReq.removePageValue("userprofile");
-		getCookieEncryption().removeCookie(inReq, AutoLoginProvider.ENTERMEDIAKEY);
-		String name = getCookieEncryption().createMd5CookieName(inReq);
+		getCookieEncryption().removeAllCookies(inReq);
+		// String name = getCookieEncryption().createMd5CookieName(inReq);
 
-		getCookieEncryption().removeCookie(inReq, "eme");
-		getCookieEncryption().removeCookie(inReq, "entermedia.keyopenedit");
-		getCookieEncryption().removeCookie(inReq, "JSESSIONID"); // Added this to try and logout of all the sub-domains
+		// getCookieEncryption().removeCookie(inReq, "eme");
+		// getCookieEncryption().removeCookie(inReq, "entermedia.keyopenedit");
+		// getCookieEncryption().removeCookie(inReq, "JSESSIONID"); // Added this to try and logout of all
+		// the sub-domains
 
 		String referrer = inReq.getRequestParameter("editingPath");
 		if (referrer != null && !referrer.startsWith("http"))

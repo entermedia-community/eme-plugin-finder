@@ -16,6 +16,7 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.codec.binary.Base64;
@@ -373,6 +374,30 @@ public class StringEncryption
 		catch (Exception ex)
 		{
 			throw new OpenEditException(ex);
+		}
+	}
+
+	// Remove all cookies for the user. This is used when they log out. We want to make sure they are
+	// really logged out and not just lose the session cookie
+	public void removeAllCookies(WebPageRequest inReq)
+	{
+		HttpServletRequest req = inReq.getRequest();
+		if (req != null)
+		{
+			Cookie[] cookies = req.getCookies();
+			if (cookies != null)
+			{
+				HttpServletResponse res = inReq.getResponse();
+				if (res != null)
+				{
+					for (Cookie cookie : cookies)
+					{
+						cookie.setMaxAge(0);
+						cookie.setPath("/"); // http://www.unix.org.ua/orelly/java-ent/servlet/ch07_04.htm
+						res.addCookie(cookie);
+					}
+				}
+			}
 		}
 	}
 
