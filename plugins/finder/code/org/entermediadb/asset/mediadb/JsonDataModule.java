@@ -98,14 +98,14 @@ public class JsonDataModule extends BaseJsonModule
 			channel.setId(channelid);
 			channel.setValue("date", new Date());
 			channel.setValue("refreshdate", new Date());
-			String siteid = PathUtilities.extractDirectoryPath(catalogid);
-			channel.setValue("chatapplicationid", siteid + "/find");
+			String applicationid = inReq.findValue("applicationid");
+			channel.setValue("chatapplicationid", applicationid);
 			archive.saveData("channel", channel);
 		}
 
 		AssistantManager assistantManager = (AssistantManager) getMediaArchive(catalogid).getBean("assistantManager");
-
-		ChatMessageContext context = assistantManager.loadContext(channelid);
+		String applicationid = channel.get("chatapplicationid");
+		ChatMessageContext context = assistantManager.loadContext(applicationid, channelid);
 
 		String entitymoduleid = (String) request.get("entitymoduleid");
 		context.setValue("entitymoduleid", entitymoduleid);

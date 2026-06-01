@@ -152,7 +152,8 @@ public class AgentModule extends BaseMediaModule
 
 		// Get the contenxt and update it first
 		String channelid = inReq.getRequestParameter("channel");
-		ChatMessageContext agentContext = assistantManager.loadContext(channelid);
+		String applicationid = inReq.findValue("applicationid");
+		ChatMessageContext agentContext = assistantManager.loadContext(applicationid, channelid);
 		String toplevel = inReq.getRequestParameter("toplevelaifunctionid");
 		String previousTopLevel = agentContext.getTopLevelFunctionName();
 
@@ -210,7 +211,9 @@ public class AgentModule extends BaseMediaModule
 			}
 			channelid = currentchannel.getId();
 		}
-		AgentContext context = assistantManager.loadContext(channelid);
+		String applicationid = inReq.findValue("applicationid");
+
+		AgentContext context = assistantManager.loadContext(applicationid, channelid);
 
 		context.setLocale(inReq.getLocale()); // ----
 

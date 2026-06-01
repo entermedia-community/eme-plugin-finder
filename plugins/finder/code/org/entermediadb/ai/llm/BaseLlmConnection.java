@@ -287,7 +287,8 @@ public class BaseLlmConnection implements LlmConnection
 
 	public LlmResponse renderLocalAction(AgentContext agentcontext, String inTemplateName)
 	{
-		String apphome = "/" + PathUtilities.extractDirectoryPath(getMediaArchive().getMediaDbId()) + "/find";
+		String appid = agentcontext.getChannel().get("chatapplicationid");
+		String apphome = "/" + appid;
 		String templatepath = apphome + "/views/agentresponses/" + inTemplateName + ".html";
 
 		try

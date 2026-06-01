@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.entermediadb.ai.assistant.AiSearch;
-import org.entermediadb.ai.knn.RankedResult;
+import org.entermediadb.ai.assistant.knn.RankedResult;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 

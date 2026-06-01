@@ -1,8 +1,7 @@
 package org.entermediadb.ai.classify;
 
 import java.util.Set;
-
-import org.entermediadb.ai.knn.KMeansIndexer;
+import org.entermediadb.ai.assistant.knn.KMeansIndexer;
 import org.openedit.CatalogEnabled;
 import org.openedit.ModuleManager;
 import org.openedit.MultiValued;

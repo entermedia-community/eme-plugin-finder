@@ -159,7 +159,7 @@ public class AssistantManager extends BaseAiManager
 	// return manager;
 	// }
 	//
-	public ChatMessageContext loadContext(String inChannelId)
+	public ChatMessageContext loadContext(String applicationId, String inChannelId)
 	{
 		MediaArchive archive = getMediaArchive();
 		ChatMessageContext chatMessageContext = (ChatMessageContext) archive.getCacheManager().get("chatMessageContext", inChannelId);
@@ -183,8 +183,8 @@ public class AssistantManager extends BaseAiManager
 				channel.setId(inChannelId);
 				channel.setValue("date", new Date());
 				channel.setValue("refreshdate", new Date());
-				String siteid = PathUtilities.extractDirectoryPath(getMediaArchive().getCatalogId());
-				channel.setValue("chatapplicationid", siteid + "/find");
+				// String siteid = PathUtilities.extractDirectoryPath(getMediaArchive().getCatalogId());
+				channel.setValue("chatapplicationid", applicationId);
 				getMediaArchive().saveData("channel", channel);
 
 			}
@@ -211,7 +211,8 @@ public class AssistantManager extends BaseAiManager
 	{
 		MediaArchive archive = getMediaArchive();
 
-		ChatMessageContext chatMessageContext = loadContext(inChannel.getId());
+		String applicationid = inChannel.get("chatapplicationid");
+		ChatMessageContext chatMessageContext = loadContext(applicationid, inChannel.getId());
 
 		// LlmConnection llmconnection = archive.getLlmConnection("agentChat");
 		// chatMessageContext.addContext("model", llmconnection.getModelName() );
@@ -367,14 +368,14 @@ public class AssistantManager extends BaseAiManager
 		String bean = function.get("messagehandler");
 
 		LlmResponse response = null;
+		String messagePrefix = chatMessageContext.getMessagePrefix();
+		ChatMessageContext messageContext = new ChatMessageContext(chatMessageContext);// Needed?
+		messageContext.setAgentMessage(agentmessage);
+		messageContext.setUserMessage(usermessage);
+		messageContext.setAiFunction(function);
 		try
 		{
 			Skill handler = (Skill) getMediaArchive().getBean(bean);
-			String messagePrefix = chatMessageContext.getMessagePrefix();
-			ChatMessageContext messageContext = new ChatMessageContext(chatMessageContext);// Needed?
-			messageContext.setAgentMessage(agentmessage);
-			messageContext.setUserMessage(usermessage);
-			messageContext.setAiFunction(function);
 			handler.process(messageContext);
 			response = messageContext.getLastResponse();
 		}
