@@ -16,7 +16,7 @@
 		</property>
 	</bean>
 	
-		<bean id="projectLoader" class="org.openinstitute.community.ProjectLoader" scope="prototype">
+	<bean id="projectLoader" class="org.openinstitute.community.ProjectLoader" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>
@@ -24,7 +24,16 @@
 			<ref bean="pageManager" />
 		</property>
 	</bean>
-	
+
+	<bean id="profileLoader" class="org.openinstitute.community.ProfileLoader" scope="prototype">
+		<property name="moduleManager">
+			<ref bean="moduleManager" />
+		</property>
+		<property name="pageManager">
+			<ref bean="pageManager" />
+		</property>
+	</bean>
+
 	
 	<bean id="AutoFailoverModule" class="org.entermedia.autofailover.AutoFailoverModule">
 	</bean>

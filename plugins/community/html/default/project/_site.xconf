@@ -10,6 +10,8 @@
 	<property name="menu_files">true</property>
 	<property name="menu_store">false</property>
 
+	<page-loader loader="projectLoader" />
+	
 	<script id="stripe" src="https://js.stripe.com/basil/stripe.js" />
 	
 	<script id="dragdrop" src="${finderhome}/components/javascript/emedia/dragdrop.js" defer="true" />

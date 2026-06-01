@@ -18,10 +18,10 @@ import org.openedit.servlet.Site;
 import org.openedit.util.PathUtilities;
 import org.openedit.util.URLUtilities;
 
-public class ProjectLoader extends BaseManager implements PageLoader, CatalogEnabled
+public class ProfileLoader extends BaseManager implements PageLoader, CatalogEnabled
 {
 	protected PageManager fieldPageManager;
-	private static final Log log = LogFactory.getLog(ProjectLoader.class);
+	private static final Log log = LogFactory.getLog(ProfileLoader.class);
 
 	public PageManager getPageManager()
 	{
@@ -43,22 +43,7 @@ public class ProjectLoader extends BaseManager implements PageLoader, CatalogEna
 			return right;
 
 		}
-		// if( sitedata != null )
-		// {
-		// String realpath = sitedata.get("domainpath");
-		// //This just adds back the missing /site/..
-		// if( !inPage.getPath().startsWith(realpath))
-		// {
-		// //sitedata.fixRealPath(realpath)
-		// Page page = getPageManager().getPage(realpath + inPage.getPath());
-		// RightPage right = new RightPage();
-		// right.setRightPage(page);
-		// return right;
-		// }
-		// }
 		String requestedPath = util.getOriginalPath();
-		// Only works with domains being set. Otherwise use normal page actions to load
-		// project pages
 		String[] url = requestedPath.split("/");
 
 		// Check that we are actually going to the page /site/community/...
@@ -73,8 +58,6 @@ public class ProjectLoader extends BaseManager implements PageLoader, CatalogEna
 			return null;
 		}
 
-		// Check domain?
-		String domain = util.domain();
 		// String[] subdomain = domain.split("\\.");
 		// if(subdomain.length < 3)
 		// {
@@ -96,6 +79,7 @@ public class ProjectLoader extends BaseManager implements PageLoader, CatalogEna
 
 		if (secondpart == null)
 		{
+			String domain = util.domain(); // Not used
 			RightPage page = goHome(inPage, domain);
 			// if( page == null)
 			// {
@@ -155,33 +139,21 @@ public class ProjectLoader extends BaseManager implements PageLoader, CatalogEna
 				return right;
 			}
 		}
-		if (secondpart.equals("project"))
-		{
-			secondpart = url[2];
-			if (anythingelse != null)
-			{
-				anythingelse = requestedPath.substring(requestedPath.indexOf(secondpart) + secondpart.length());
-				if (anythingelse.length() == 0)
-				{
-					anythingelse = null;
-				}
 
-			}
-		}
 		// Must be a project with something on the end?
-		QueryBuilder query = getMediaArchive().query("librarycollection").exact("urlname", secondpart).hitsPerPage(1);
+		QueryBuilder query = getMediaArchive().query("emeprofile").exact("urlname", secondpart).hitsPerPage(1);
 		HitTracker hits = getMediaArchive().getCachedSearch(query);
-		Data librarycollection = (Data) hits.first();
-		if (librarycollection != null)
+		Data emeprofile = (Data) hits.first();
+		if (emeprofile != null)
 		{
 			String template = null;
 			if (anythingelse == null)
 			{
-				template = apphome + "/project/blog-list/index.html";
+				template = apphome + "/profile/blog-list/index.html";
 			}
 			else
 			{
-				template = apphome + "/project" + anythingelse;
+				template = apphome + "/profile" + anythingelse;
 			}
 			String justname = PathUtilities.extractFileName(template);
 			if (!justname.contains("."))
@@ -193,11 +165,11 @@ public class ProjectLoader extends BaseManager implements PageLoader, CatalogEna
 			// {
 			// //log.info("Cant find " + template);
 			// }
-			right.putParam("collectionid", librarycollection.getId());
-			librarycollection = getMediaArchive().getSearcher("librarycollection").loadData(librarycollection);
-			right.putPageValue("librarycol", librarycollection);
+			right.putParam("emeprofileid", emeprofile.getId());
+			emeprofile = getMediaArchive().getSearcher("emeprofile").loadData(emeprofile);
+			right.putPageValue("emeprofile", emeprofile);
 			// right.putPageValue("projectlink" , "/" + domain + "/" +
-			// librarycollection.get("urlname") );
+			// emeprofile.get("urlname") );
 			right.setRightPage(otherpage);
 			return right;
 		}

@@ -9,7 +9,7 @@
 
 	<property name="communityhome">/${siteid}/eme</property>
 	<property name="communitytagcategory">eme</property>
-  <page-loader loader="projectLoader" />
+  <page-loader loader="profileLoader" />
 
   <path-action name="FinderModule.loadTopMenu" />
 
