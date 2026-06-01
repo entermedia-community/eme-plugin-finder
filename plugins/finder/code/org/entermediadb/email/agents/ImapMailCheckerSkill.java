@@ -5,7 +5,7 @@ import java.util.Date;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.entermediadb.ai.automation.agents.ToolsCallingSkill;
-import org.entermediadb.ai.llm.AgentContext;
+import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.llm.AgentEnabled;
 import org.entermediadb.email.ImapMailbox;
 import org.entermediadb.email.ImapMessage;

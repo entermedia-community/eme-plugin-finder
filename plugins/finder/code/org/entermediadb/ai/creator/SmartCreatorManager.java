@@ -11,9 +11,10 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.entermediadb.ai.BaseAiManager;
-import org.entermediadb.ai.ChatMessageHandler;
+import org.entermediadb.ai.BaseSkill;
 import org.entermediadb.ai.assistant.AssistantManager;
-import org.entermediadb.ai.llm.AgentContext;
+import org.entermediadb.ai.AgentContext;
+import org.entermediadb.ai.llm.BaseAgentContext;
 import org.entermediadb.ai.llm.LlmConnection;
 import org.entermediadb.ai.llm.LlmResponse;
 import org.entermediadb.asset.Asset;
@@ -33,7 +34,7 @@ import org.openedit.repository.ContentItem;
 import org.openedit.repository.filesystem.StringItem;
 import org.openedit.users.User;
 
-public class SmartCreatorManager extends BaseAiManager implements ChatMessageHandler
+public class SmartCreatorManager extends BaseSkill
 {
 	private static final Log log = LogFactory.getLog(SmartCreatorManager.class);
 
@@ -955,7 +956,7 @@ public class SmartCreatorManager extends BaseAiManager implements ChatMessageHan
 
 	public String renderToHtml(String inCdnPrefix, String inAppHome, MultiValued inEntityModule, MultiValued inEntity)
 	{
-		AgentContext context = new AgentContext();
+		AgentContext context = new BaseAgentContext();
 		context.setCurrentEntityModule(inEntityModule);
 		context.setCurrentEntity(inEntity);
 		context.put("playbackentityid", inEntity.getId());
@@ -1056,7 +1057,7 @@ public class SmartCreatorManager extends BaseAiManager implements ChatMessageHan
 			return;
 		}
 
-		AgentContext agentcontext = new AgentContext();
+		AgentContext agentcontext = new BaseAgentContext();
 		agentcontext.put("paragraph", content);
 
 		LlmConnection llmconnection = getMediaArchive().getLlmConnection("startCreator");
@@ -1084,7 +1085,7 @@ public class SmartCreatorManager extends BaseAiManager implements ChatMessageHan
 			return;
 		}
 
-		AgentContext agentcontext = new AgentContext();
+		AgentContext agentcontext = new BaseAgentContext();
 		agentcontext.put("paragraph", content);
 
 		LlmConnection llmconnection = getMediaArchive().getLlmConnection("startCreator");
@@ -1111,7 +1112,7 @@ public class SmartCreatorManager extends BaseAiManager implements ChatMessageHan
 			return;
 		}
 
-		AgentContext agentcontext = new AgentContext();
+		AgentContext agentcontext = new BaseAgentContext();
 		agentcontext.put("prompt", inPrompt);
 
 		LlmConnection llmconnection = getMediaArchive().getLlmConnection("startCreator");

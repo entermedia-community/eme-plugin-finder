@@ -7,11 +7,11 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.entermediadb.ai.BaseSkill;
+import org.entermediadb.ai.ChatMessageContext;
 import org.entermediadb.ai.BaseAiManager;
-import org.entermediadb.ai.ChatMessageHandler;
 import org.entermediadb.ai.Schema;
 import org.entermediadb.ai.classify.EmbeddingManager;
-import org.entermediadb.ai.llm.AgentContext;
+import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.llm.LlmConnection;
 import org.entermediadb.ai.llm.LlmResponse;
 import org.entermediadb.asset.Asset;
@@ -23,68 +23,74 @@ import org.openedit.OpenEditException;
 import org.openedit.data.Searcher;
 import org.openedit.hittracker.HitTracker;
 
-public class QuestionsManager extends BaseAiManager implements ChatMessageHandler
+public class QuestionsManager extends BaseSkill
 {
 	private static final Log log = LogFactory.getLog(QuestionsManager.class);
 
 	@Override
-	public LlmResponse processMessage(AgentContext inAgentContext, MultiValued inAgentMessage, MultiValued inAiFunction)
+	public void process(AgentContext inAgentContext)
 	{
+		ChatMessageContext messageContext = (ChatMessageContext) inAgentContext;
+		///
+		MultiValued inAgentMessage = messageContext.getAgentMessage();
+		MultiValued inAiFunction = messageContext.getAiFunction();
+
 		MultiValued usermessage = (MultiValued) getMediaArchive().getCachedData("chatterbox", inAgentMessage.get("replytoid"));
 		String query = usermessage.get("message");
 
-		String agentFn = inAgentContext.getFunctionName();
+		String agentFn = messageContext.getFunctionName();
 		if ("question_welcome".equals(agentFn))
 		{
 			inAgentMessage.setValue("chatmessagestatus", "completed");
 
-			String entityid = inAgentContext.get("entityid");
-			String entitymoduleid = inAgentContext.get("entitymoduleid");
+			String entityid = messageContext.get("entityid");
+			String entitymoduleid = messageContext.get("entitymoduleid");
 
 			Data entity = getMediaArchive().getCachedData(entitymoduleid, entityid);
-			inAgentContext.addContext("entity", entity);
+			messageContext.addContext("entity", entity);
 
 			Data entitymodule = getMediaArchive().getCachedData("module", entitymoduleid);
-			inAgentContext.addContext("entitymodule", entitymodule);
+			messageContext.addContext("entitymodule", entitymodule);
 
 			Collection<GuideStatus> statuses = getAssistantManager().getGuideStatus(entitymodule, entity);
-			inAgentContext.addContext("statuses", statuses);
+			messageContext.addContext("statuses", statuses);
 
 			/*
-			 * for(GuideStatus stat : statuses) { if(!stat.isReady()) { inAgentContext.setValue("wait", 1000L);
-			 * inAgentContext.setNextFunctionName(inAgentContext.getFunctionName());
+			 * for(GuideStatus stat : statuses) { if(!stat.isReady()) { messageContext.setValue("wait", 1000L);
+			 * messageContext.setNextFunctionName(messageContext.getFunctionName());
 			 * 
 			 * return null; } }
 			 */
 
 			Collection aisuggestions = getMediaArchive().query("aisuggestion").exact("entityid", entity).search();
-			inAgentContext.addContext("suggestions", aisuggestions);
+			messageContext.addContext("suggestions", aisuggestions);
 
 			LlmConnection llmconnection = getMediaArchive().getLlmConnection(inAiFunction.getId()); // Should stay
 																									// search_start
-			LlmResponse response = llmconnection.renderLocalAction(inAgentContext);
+			LlmResponse response = llmconnection.renderLocalAction(messageContext);
 			if (aisuggestions.isEmpty())
 			{
-				inAgentContext.setNextFunctionName("question_create_suggestions");
+				messageContext.setNextFunctionName("question_create_suggestions");
 			}
 			else
 			{
-				inAgentContext.setFunctionName("question_ask");
-				inAgentContext.setWaitTime(null);
+				messageContext.setFunctionName("question_ask");
+				messageContext.setWaitTime(null);
 			}
-			return response;
+			messageContext.setLastResponse(response);
+			return;
 		}
 		else
 			if ("question_create_suggestions".equals(agentFn))
 			{
-				Data entity = (Data) inAgentContext.getContextValue("entity");
-				Data entitymodule = (Data) inAgentContext.getContextValue("entitymodule");
+				Data entity = (Data) messageContext.getContextValue("entity");
+				Data entitymodule = (Data) messageContext.getContextValue("entitymodule");
 
 				String text = findSampleOfEmbeddedData(entitymodule, entity);
 
-				inAgentContext.addContext("embeddedtext", text);
+				messageContext.addContext("embeddedtext", text);
 				LlmConnection llmconnection = getMediaArchive().getLlmConnection(agentFn);
-				LlmResponse response = llmconnection.callStructure(inAgentContext, agentFn);
+				LlmResponse response = llmconnection.callStructure(messageContext, agentFn);
 
 				Searcher searcher = getMediaArchive().getSearcher("aisuggestion");
 
@@ -103,20 +109,22 @@ public class QuestionsManager extends BaseAiManager implements ChatMessageHandle
 				}
 				if (suggestions.isEmpty())
 				{
-					LlmResponse response2 = llmconnection.renderLocalAction(inAgentContext, "question_nosuggestions");
-					return response2;
+					LlmResponse response2 = llmconnection.renderLocalAction(messageContext, "question_nosuggestions");
+					messageContext.setLastResponse(response2);
+					return;
 				}
 				else
 				{
-					inAgentContext.setNextFunctionName("question_welcome");
+					messageContext.setNextFunctionName("question_welcome");
 				}
-				return response;
+				messageContext.setLastResponse(response);
+				return;
 			}
 		if ("question_ask".equals(agentFn))
 		{
 			// Make sure they have already picked the documents
-			String entiyid = inAgentContext.get("entityid");
-			String moduleid = inAgentContext.get("entitymoduleid");
+			String entiyid = messageContext.get("entityid");
+			String moduleid = messageContext.get("entitymoduleid");
 
 			if (entiyid != null && moduleid != null)
 			{
@@ -126,11 +134,14 @@ public class QuestionsManager extends BaseAiManager implements ChatMessageHandle
 					AssistantManager assistant = (AssistantManager) getMediaArchive().getBean("assistantManager");
 					Collection<String> docids = assistant.findDocIdsForEntity(moduleid, entiyid);
 					EmbeddingManager embeddings = (EmbeddingManager) getMediaArchive().getBean("embeddingManager");
-					LlmResponse response = embeddings.findAnswer(inAgentContext, docids, query);
-					return response;
+					LlmResponse response = embeddings.findAnswer(messageContext, docids, query);
+					messageContext.setLastResponse(response);
+					return;
 				}
 			}
-			return searchSystemWide(inAgentContext, query);
+			LlmResponse response = searchSystemWide(messageContext, query);
+			messageContext.setLastResponse(response);
+			return;
 		}
 		else
 			if ("question_search".equals(agentFn)) // TODO: Get this working
@@ -138,13 +149,15 @@ public class QuestionsManager extends BaseAiManager implements ChatMessageHandle
 				// 1 Do the search from keyword,
 				// 2 grab the ids
 				// Do an embedding search
-				return searchSystemWide(inAgentContext, query);
+				LlmResponse response = searchSystemWide(messageContext, query);
+				messageContext.setLastResponse(response);
+				return;
 			}
 		throw new OpenEditException("Function not supported " + agentFn);
 
 	}
 
-	private LlmResponse searchSystemWide(AgentContext inAgentContext, String query)
+	private LlmResponse searchSystemWide(AgentContext messageContext, String query)
 	{
 		Schema schema = loadSchema();
 
@@ -162,7 +175,7 @@ public class QuestionsManager extends BaseAiManager implements ChatMessageHandle
 		}
 
 		EmbeddingManager embeddings = (EmbeddingManager) getMediaArchive().getBean("embeddingManager");
-		LlmResponse response = embeddings.findAnswer(inAgentContext, docids, query);
+		LlmResponse response = embeddings.findAnswer(messageContext, docids, query);
 		return response;
 	}
 
@@ -260,7 +273,7 @@ public class QuestionsManager extends BaseAiManager implements ChatMessageHandle
 	}
 
 	/*
-	 * protected void handleLlmResponse(AgentContext inAgentContext, LlmResponse response) { //TODO: Use
+	 * protected void handleLlmResponse(AgentContext messageContext, LlmResponse response) { //TODO: Use
 	 * IF statements to sort what parsing we need to do. parseSearchParams parseWorkflowParams etc
 	 * JSONObject content = response.getMessageStructured();
 	 * 
@@ -280,7 +293,7 @@ public class QuestionsManager extends BaseAiManager implements ChatMessageHandle
 	 * toolname.equals("question_search") ) { JSONObject structure = (JSONObject) details.get(toolname);
 	 * if(structure == null) { throw new OpenEditException("No structure found for type: " + toolname);
 	 * } String search_keyword = (String) structure.get("search_keyword");
-	 * inAgentContext.setValue("search_keyword", search_keyword); //Search system wise for keyword hits
+	 * messageContext.setValue("search_keyword", search_keyword); //Search system wise for keyword hits
 	 * that are embedded }
 	 * 
 	 * response.setFunctionName(toolname); }

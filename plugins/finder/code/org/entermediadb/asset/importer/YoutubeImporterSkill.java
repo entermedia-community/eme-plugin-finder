@@ -9,7 +9,7 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.entermediadb.ai.BaseSkill;
-import org.entermediadb.ai.llm.AgentContext;
+import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.llm.AgentEnabled;
 import org.entermediadb.asset.Asset;
 import org.entermediadb.asset.MediaArchive;

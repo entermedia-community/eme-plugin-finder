@@ -6,7 +6,8 @@ import java.util.Map;
 
 import org.entermediadb.ai.informatics.InformaticsProcessorSkill;
 import org.entermediadb.ai.informatics.InformaticsProcessorManager;
-import org.entermediadb.ai.llm.AgentContext;
+import org.entermediadb.ai.AgentContext;
+import org.entermediadb.ai.ChatMessageContext;
 import org.entermediadb.asset.MediaArchive;
 import org.entermediadb.asset.modules.BaseMediaModule;
 import org.entermediadb.scripts.ScriptLogger;
@@ -151,7 +152,7 @@ public class AgentModule extends BaseMediaModule
 
 		// Get the contenxt and update it first
 		String channelid = inReq.getRequestParameter("channel");
-		AgentContext agentContext = assistantManager.loadContext(channelid);
+		ChatMessageContext agentContext = assistantManager.loadContext(channelid);
 		String toplevel = inReq.getRequestParameter("toplevelaifunctionid");
 		String previousTopLevel = agentContext.getTopLevelFunctionName();
 

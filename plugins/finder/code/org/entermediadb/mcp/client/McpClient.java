@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.UUID;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
-import org.entermediadb.ai.llm.AgentContext;
+import org.entermediadb.ai.AgentContext;
 import org.entermediadb.jsonrpc.JsonRpcScanner;
 import org.entermediadb.mcp.server.McpRequest;
 import org.json.simple.JSONArray;

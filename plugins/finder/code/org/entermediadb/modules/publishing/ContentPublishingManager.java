@@ -18,10 +18,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.dom4j.Element;
-import org.entermediadb.ai.ChatMessageHandler;
 import org.entermediadb.ai.assistant.AiCreation;
 import org.entermediadb.ai.assistant.SemanticAction;
-import org.entermediadb.ai.llm.AgentContext;
+import org.entermediadb.ai.AgentContext;
+import org.entermediadb.ai.BaseSkill;
+import org.entermediadb.ai.ChatMessageContext;
 import org.entermediadb.ai.llm.LlmConnection;
 import org.entermediadb.ai.llm.LlmResponse;
 import org.entermediadb.asset.Asset;
@@ -47,13 +48,12 @@ import org.openedit.hittracker.HitTracker;
 import org.openedit.page.Page;
 import org.openedit.repository.ContentItem;
 import org.openedit.repository.InputStreamItem;
-import org.openedit.util.DateStorageUtil;
 import org.openedit.util.Exec;
 import org.openedit.util.JSONParser;
 import org.openedit.util.PathUtilities;
 import org.openedit.util.XmlUtil;
 
-public class ContentPublishingManager implements CatalogEnabled, ChatMessageHandler
+public class ContentPublishingManager extends BaseSkill implements CatalogEnabled
 {
 
 	private static final String INPUTDIR = "/DITA/"; // /Inputs/";
@@ -994,9 +994,12 @@ public class ContentPublishingManager implements CatalogEnabled, ChatMessageHand
 
 	}
 
-	@Override
-	public LlmResponse processMessage(AgentContext inAgentContext, MultiValued inAgentMessage, MultiValued inAiFunction)
+	public void processMessage(AgentContext inAgentContext)
 	{
+		ChatMessageContext chatMessageContext = (ChatMessageContext) inAgentContext;
+		MultiValued inAgentMessage = chatMessageContext.getAgentMessage();
+		MultiValued inAiFunction = chatMessageContext.getAiFunction();
+
 		/*
 		 * if("image_creation_welcome".equals(inAgentContext.getFunctionName())) { String entityid =
 		 * inAgentContext.get("entityid"); String entitymoduleid = (String)

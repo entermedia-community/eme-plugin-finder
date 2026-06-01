@@ -2,7 +2,7 @@ package org.entermediadb.translator.agents;
 
 import java.util.Map;
 import org.entermediadb.ai.BaseSkill;
-import org.entermediadb.ai.llm.AgentContext;
+import org.entermediadb.ai.AgentContext;
 import org.entermediadb.google.GoogleManager;
 
 public class GoogleGlossaryManagerSkill extends BaseSkill

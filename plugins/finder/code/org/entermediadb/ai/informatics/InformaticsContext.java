@@ -3,11 +3,12 @@ package org.entermediadb.ai.informatics;
 import java.util.Collection;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.entermediadb.ai.llm.AgentContext;
+import org.entermediadb.ai.AgentContext;
+import org.entermediadb.ai.llm.BaseAgentContext;
 import org.entermediadb.asset.Asset;
 import org.openedit.MultiValued;
 
-public class InformaticsContext extends AgentContext
+public class InformaticsContext extends BaseAgentContext
 {
 	private static final Log log = LogFactory.getLog(InformaticsContext.class);
 

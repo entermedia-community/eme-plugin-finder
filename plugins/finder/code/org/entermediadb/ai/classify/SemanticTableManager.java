@@ -13,7 +13,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.entermediadb.ai.BaseAiManager;
 import org.entermediadb.ai.knn.RankedResult;
-import org.entermediadb.ai.llm.AgentContext;
+import org.entermediadb.ai.AgentContext;
+import org.entermediadb.ai.llm.BaseAgentContext;
 import org.entermediadb.ai.llm.LlmConnection;
 import org.entermediadb.ai.llm.LlmResponse;
 import org.entermediadb.asset.MediaArchive;
@@ -472,7 +473,7 @@ public class SemanticTableManager extends BaseAiManager implements CatalogEnable
 			return null;
 		}
 
-		AgentContext agentcontext = new AgentContext();
+		AgentContext agentcontext = new BaseAgentContext();
 		agentcontext.put("fieldparams", inConfig);
 
 		Collection<PropertyDetail> exclude = new ArrayList();

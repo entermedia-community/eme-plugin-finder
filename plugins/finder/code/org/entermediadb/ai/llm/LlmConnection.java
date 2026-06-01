@@ -2,6 +2,7 @@ package org.entermediadb.ai.llm;
 
 import java.util.Map;
 
+import org.entermediadb.ai.AgentContext;
 import org.json.simple.JSONObject;
 import org.openedit.Data;
 

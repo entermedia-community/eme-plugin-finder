@@ -13,7 +13,7 @@ import org.entermediadb.ai.BaseAiManager;
 import org.entermediadb.ai.creator.SmartCreatorManager;
 import org.entermediadb.ai.creator.SmartCreatorSession;
 import org.entermediadb.ai.informatics.InformaticsContext;
-import org.entermediadb.ai.llm.AgentContext;
+import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.llm.LlmConnection;
 import org.entermediadb.ai.llm.LlmResponse;
 import org.entermediadb.asset.Asset;

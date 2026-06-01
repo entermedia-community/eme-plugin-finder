@@ -1,7 +1,7 @@
 package org.entermediadb.tasks;
 
 import org.entermediadb.ai.automation.agents.ToolsCallingSkill;
-import org.entermediadb.ai.llm.AgentContext;
+import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.llm.AgentEnabled;
 
 public class GoalManagerSkill extends ToolsCallingSkill

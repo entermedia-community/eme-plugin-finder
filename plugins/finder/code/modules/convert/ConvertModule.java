@@ -1,7 +1,7 @@
 package modules.convert;
 
 import java.util.Date;
-import org.entermediadb.ai.llm.AgentContext;
+import org.entermediadb.ai.AgentContext;
 import org.entermediadb.asset.Asset;
 import org.entermediadb.asset.MediaArchive;
 import org.entermediadb.asset.convert.QueueManager;

@@ -7,7 +7,8 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.entermediadb.ai.informatics.InformaticsContext;
-import org.entermediadb.ai.llm.AgentContext;
+import org.entermediadb.ai.AgentContext;
+import org.entermediadb.ai.llm.BaseAgentContext;
 import org.entermediadb.ai.llm.LlmConnection;
 import org.entermediadb.ai.llm.LlmResponse;
 import org.openedit.Data;
@@ -53,7 +54,7 @@ public class NamedEntityRecognitionManager extends ClassifyManager
 			return;
 		}
 
-		AgentContext agentcontext = new AgentContext();
+		AgentContext agentcontext = new BaseAgentContext();
 		agentcontext.put("data", inData);
 		agentcontext.put("fieldparams", inConfig);
 

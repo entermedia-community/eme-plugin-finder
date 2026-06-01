@@ -9,7 +9,8 @@ import java.util.UUID;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.entermediadb.ai.assistant.AssistantManager;
-import org.entermediadb.ai.llm.AgentContext;
+import org.entermediadb.ai.AgentContext;
+import org.entermediadb.ai.ChatMessageContext;
 import org.entermediadb.asset.Asset;
 import org.entermediadb.asset.MediaArchive;
 import org.entermediadb.asset.scanner.AssetImporter;
@@ -104,7 +105,7 @@ public class JsonDataModule extends BaseJsonModule
 
 		AssistantManager assistantManager = (AssistantManager) getMediaArchive(catalogid).getBean("assistantManager");
 
-		AgentContext context = assistantManager.loadContext(channelid);
+		ChatMessageContext context = assistantManager.loadContext(channelid);
 
 		String entitymoduleid = (String) request.get("entitymoduleid");
 		context.setValue("entitymoduleid", entitymoduleid);
@@ -128,7 +129,12 @@ public class JsonDataModule extends BaseJsonModule
 		archive.saveData("chatterbox", usermessage);
 		MultiValued agentmessage = assistantManager.newAgentMessage(usermessage, context);
 
-		assistantManager.execCurrentFunctionFromChat(usermessage, agentmessage, context);
+		context.setUserMessage(agentmessage);
+		context.setAgentMessage(agentmessage);
+		assistantManager.execCurrentFunctionFromChat(context);
+
+		// Why did I set this afterwards? I think I wanted to make sure it was in the context for the
+		// function execution, but it should be there before too.
 
 		context.addContext("agentmessage", agentmessage);
 		context.addContext("usermessage", usermessage);

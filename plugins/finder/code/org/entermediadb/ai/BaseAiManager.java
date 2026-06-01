@@ -16,7 +16,7 @@ import org.apache.commons.logging.LogFactory;
 import org.entermediadb.ai.assistant.SemanticAction;
 import org.entermediadb.ai.automation.AutomationManager;
 import org.entermediadb.ai.classify.SemanticTableManager;
-import org.entermediadb.ai.llm.AgentContext;
+import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.llm.LlmConnection;
 import org.entermediadb.ai.llm.LlmResponse;
 import org.entermediadb.asset.MediaArchive;

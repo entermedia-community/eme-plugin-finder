@@ -12,8 +12,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.entermediadb.ai.Skill;
 import org.entermediadb.ai.BaseAiManager;
-import org.entermediadb.ai.llm.AgentContext;
+import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.llm.AgentEnabled;
+import org.entermediadb.ai.llm.BaseAgentContext;
 import org.entermediadb.ai.llm.LlmConnection;
 import org.entermediadb.ai.llm.LlmResponse;
 import org.entermediadb.events.EventTrigger;
@@ -106,7 +107,7 @@ public class AutomationManager extends BaseAiManager implements WebEventListener
 
 	public void runScenario(String inId, ScriptLogger inLogger)
 	{
-		AgentContext context = new AgentContext();
+		AgentContext context = new BaseAgentContext();
 		context.setScriptLogger(inLogger);
 		runScenario(inId, context);
 	}
@@ -403,7 +404,7 @@ public class AutomationManager extends BaseAiManager implements WebEventListener
 			{
 				LlmConnection llmConnection = getMediaArchive().getLlmConnection("agentparamsfromskill");
 
-				AgentContext context = new AgentContext();
+				AgentContext context = new BaseAgentContext();
 				context.addContext("skilloverview", skilloverview);
 
 				LlmResponse res = llmConnection.callStructure(context, "agentparamsfromskill");
@@ -459,7 +460,7 @@ public class AutomationManager extends BaseAiManager implements WebEventListener
 				Collection<String> ids = findSceneriosForEvent(path);
 				if (!ids.isEmpty())
 				{
-					AgentContext context = new AgentContext();
+					AgentContext context = new BaseAgentContext();
 					context.setCatalogId(getCatalogId());
 					context.setScriptLogger(trigger.getLogger());
 					context.put("webpagerequest", trigger.getWebPageRequest());

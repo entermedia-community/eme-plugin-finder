@@ -12,7 +12,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.entermediadb.ai.BaseAiManager;
 import org.entermediadb.ai.informatics.InformaticsContext;
-import org.entermediadb.ai.llm.AgentContext;
+import org.entermediadb.ai.AgentContext;
+import org.entermediadb.ai.llm.BaseAgentContext;
 import org.entermediadb.ai.llm.LlmConnection;
 import org.entermediadb.ai.llm.LlmResponse;
 import org.entermediadb.asset.Asset;
@@ -99,7 +100,7 @@ public class DocumentSplitterManager extends BaseAiManager
 					// TODO: Create fulltext pulling from the PrimaryMedia description.
 					// Call a local ai function to render fields
 					fulltext = asset.get("longcaption");
-					AgentContext agentcontext = new AgentContext();
+					AgentContext agentcontext = new BaseAgentContext();
 					Collection detailsfields = getMediaArchive().getSearcher("asset").getDetailsForView("assetgeneral");
 
 					Collection<PropertyDetail> contextFields = new ArrayList<PropertyDetail>();
@@ -300,7 +301,7 @@ public class DocumentSplitterManager extends BaseAiManager
 			return;
 		}
 
-		LlmResponse result = (LlmResponse) llmconnection.callOCRFunction(new AgentContext(), base64Img, "generateMarkdown");
+		LlmResponse result = (LlmResponse) llmconnection.callOCRFunction(new BaseAgentContext(), base64Img, "generateMarkdown");
 		String markdown = result.getMessage();
 
 		pageEntity.setValue("markdowncontent", markdown);

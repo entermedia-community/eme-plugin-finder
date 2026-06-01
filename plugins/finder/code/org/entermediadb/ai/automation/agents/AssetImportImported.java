@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.entermediadb.ai.BaseSkill;
-import org.entermediadb.ai.llm.AgentContext;
+import org.entermediadb.ai.AgentContext;
 import org.entermediadb.asset.Asset;
 
 import model.assets.AssetTypeManager;

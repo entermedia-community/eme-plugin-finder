@@ -3,7 +3,7 @@ package org.entermediadb.ai.automation.agents;
 import java.util.Collection;
 import java.util.Iterator;
 import org.entermediadb.ai.BaseSkill;
-import org.entermediadb.ai.llm.AgentContext;
+import org.entermediadb.ai.AgentContext;
 import org.entermediadb.asset.Asset;
 import org.entermediadb.asset.convert.QueueManager;
 import org.openedit.Data;

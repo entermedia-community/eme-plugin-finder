@@ -10,12 +10,13 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.entermediadb.ai.BaseAiManager;
-import org.entermediadb.ai.ChatMessageHandler;
+import org.entermediadb.ai.BaseSkill;
+import org.entermediadb.ai.ChatMessageContext;
 import org.entermediadb.ai.Schema;
 import org.entermediadb.ai.classify.SemanticClassifierManager;
 import org.entermediadb.ai.classify.SemanticTableManager;
 import org.entermediadb.ai.knn.RankedResult;
-import org.entermediadb.ai.llm.AgentContext;
+import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.llm.BasicLlmResponse;
 import org.entermediadb.ai.llm.LlmConnection;
 import org.entermediadb.ai.llm.LlmResponse;
@@ -32,25 +33,30 @@ import org.openedit.data.Searcher;
 import org.openedit.hittracker.HitTracker;
 import org.openedit.profile.UserProfile;
 
-public class SearchingManager extends BaseAiManager implements ChatMessageHandler
+public class SearchingManager extends BaseSkill
 {
 	private static final Log log = LogFactory.getLog(SearchingManager.class);
 
 	@Override
-	public LlmResponse processMessage(AgentContext inAgentContext, MultiValued inAgentMessage, MultiValued inAiFunction)
+	public void process(AgentContext inAgentContext)
 	{
-		String agentFn = inAgentContext.getFunctionName();
+		ChatMessageContext messageContext = (ChatMessageContext) inAgentContext;
+
+		MultiValued inAgentMessage = messageContext.getAgentMessage();
+		MultiValued inAiFunction = messageContext.getAiFunction();
+		String agentFn = messageContext.getFunctionName();
 
 		if ("search_welcome".equals(agentFn))
 		{
 			inAgentMessage.setValue("chatmessagestatus", "completed");
 			Schema schema = loadSchema();
-			inAgentContext.addContext("schema", schema);
+			messageContext.addContext("schema", schema);
 			LlmConnection llmconnection = getMediaArchive().getLlmConnection(inAiFunction.getId()); // Should stay
 																									// search_start
-			LlmResponse response = llmconnection.renderLocalAction(inAgentContext);
-			inAgentContext.setFunctionName("search_parse");
-			return response;
+			LlmResponse response = llmconnection.renderLocalAction(messageContext);
+			messageContext.setFunctionName("search_parse");
+			messageContext.setLastResponse(response);
+			return;
 		}
 		/*
 		 * if ("search_start".equals(agentFn)) { MultiValued usermessage =
@@ -100,22 +106,24 @@ public class SearchingManager extends BaseAiManager implements ChatMessageHandle
 				{
 					inAgentContext.setNextFunctionName("search_tables");
 				}
-				return res;
+				messageContext.setLastResponse(res);
+				return;
 			}
 
 			else
 				if ("search_tables".equals(agentFn))
 				{
 					LlmConnection llmconnection = getMediaArchive().getLlmConnection("search_tables");
-					LlmResponse response = llmconnection.renderLocalAction(inAgentContext); // TOREVIEW: This is rendering
+					LlmResponse response = llmconnection.renderLocalAction(messageContext); // TOREVIEW: This is rendering
 																							// previous searches results first
 
 					String message = response.getMessage();
-					inAgentContext.setMessagePrefix(message);
+					messageContext.setMessagePrefix(message);
 
-					inAgentContext.setNextFunctionName("search_semantic");
+					messageContext.setNextFunctionName("search_semantic");
 
-					return response;
+					messageContext.setLastResponse(response);
+					return;
 				}
 				else
 					if ("search_semantic".equals(agentFn))
@@ -168,15 +176,17 @@ public class SearchingManager extends BaseAiManager implements ChatMessageHandle
 						inAgentContext.setMessagePrefix(null);
 						// Set next function to be able to search again
 						inAgentContext.setFunctionName("search_parse");
+						messageContext.setLastResponse(result);
+						return;
 
-						return result;
 					}
 					else
 						if (agentFn.startsWith("view_related_record"))
 						{
 							LlmConnection llmconnection = getMediaArchive().getLlmConnection(agentFn);
 							LlmResponse response = llmconnection.renderLocalAction(inAgentContext, agentFn);
-							return response;
+							messageContext.setLastResponse(response);
+							return;
 						}
 
 		throw new OpenEditException("Function not supported " + agentFn);

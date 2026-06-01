@@ -4,7 +4,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.entermediadb.ai.llm.AgentContext;
+import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.llm.LlmResponse;
 import org.entermediadb.ai.llm.openai.OpenAiResponse;
 import org.entermediadb.asset.MediaArchive;

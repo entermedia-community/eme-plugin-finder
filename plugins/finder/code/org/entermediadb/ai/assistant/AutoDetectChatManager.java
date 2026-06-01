@@ -4,9 +4,9 @@ import java.util.Collection;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.entermediadb.ai.BaseAiManager;
-import org.entermediadb.ai.ChatMessageHandler;
-import org.entermediadb.ai.llm.AgentContext;
+import org.entermediadb.ai.BaseSkill;
+import org.entermediadb.ai.ChatMessageContext;
+import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.llm.LlmConnection;
 import org.entermediadb.ai.llm.LlmResponse;
 import org.json.simple.JSONObject;
@@ -14,26 +14,30 @@ import org.openedit.Data;
 import org.openedit.MultiValued;
 import org.openedit.OpenEditException;
 
-public class AutoDetectChatManager extends BaseAiManager implements ChatMessageHandler
+public class AutoDetectChatManager extends BaseSkill
 {
 	private static final Log log = LogFactory.getLog(AutoDetectChatManager.class);
 
 	@Override
-	public LlmResponse processMessage(AgentContext inAgentContext, MultiValued inAgentMessage, MultiValued inAiFunction)
+	public void process(AgentContext inAgentContext)
 	{
-		MultiValued usermessage = (MultiValued) getMediaArchive().getCachedData("chatterbox", inAgentMessage.get("replytoid"));
+		ChatMessageContext messageContext = (ChatMessageContext) inAgentContext;
+		MultiValued agentmessage = messageContext.getAgentMessage();
+		MultiValued function = messageContext.getAiFunction();
+		MultiValued usermessage = (MultiValued) getMediaArchive().getCachedData("chatterbox", agentmessage.get("replytoid"));
 		String query = usermessage.get("message");
 
 		String agentFn = inAgentContext.getFunctionName();
 		if ("auto_detect_welcome".equals(agentFn))
 		{
-			inAgentMessage.setValue("chatmessagestatus", "completed");
+			agentmessage.setValue("chatmessagestatus", "completed");
 
-			LlmConnection llmconnection = getMediaArchive().getLlmConnection(inAiFunction.getId()); // Should stay
-																									// search_start
+			LlmConnection llmconnection = getMediaArchive().getLlmConnection(function.getId()); // Should stay
+																								// search_start
 			LlmResponse response = llmconnection.renderLocalAction(inAgentContext);
 			inAgentContext.setFunctionName("auto_detect_conversation");
-			return response;
+			messageContext.setLastResponse(response);
+			return;
 		}
 		if ("auto_detect_conversation".equals(agentFn)) // Todo: Rename to Parse
 		{
@@ -73,8 +77,8 @@ public class AutoDetectChatManager extends BaseAiManager implements ChatMessageH
 			 * inAgentContext.setNextFunctionName("welcomeQuestions"); } else {
 			 * inAgentContext.setFunctionName("auto_detect_conversation"); }
 			 */
-
-			return response;
+			messageContext.setLastResponse(response);
+			return;
 		}
 		else
 			if ("auto_detect_showresponse".equals(agentFn))
@@ -82,23 +86,25 @@ public class AutoDetectChatManager extends BaseAiManager implements ChatMessageH
 				LlmConnection llmconnection = getMediaArchive().getLlmConnection(agentFn); // Should stay search_start
 				LlmResponse response = llmconnection.renderLocalAction(inAgentContext, "auto_detect_showresponse");
 				inAgentContext.setFunctionName("auto_detect_conversation");
-				return response;
+				messageContext.setLastResponse(response);
+				return;
 			}
 			else
 				if ("auto_detect_sitewide_welcome".equals(agentFn))
 				{
-					inAgentMessage.setValue("chatmessagestatus", "completed");
+					agentmessage.setValue("chatmessagestatus", "completed");
 
 					LlmConnection llmconnection = getMediaArchive().getLlmConnection(agentFn); // Should stay search_start
 					LlmResponse response = llmconnection.renderLocalAction(inAgentContext);
 					inAgentContext.setFunctionName("auto_detect_sitewide_parse");
-					return response;
+					messageContext.setLastResponse(response);
+					return;
 				}
 				else
 					if ("auto_detect_sitewide_parse".equals(agentFn))
 					{
-						LlmConnection llmconnection = getMediaArchive().getLlmConnection(inAiFunction.getId()); // Should stay
-																												// search_start
+						LlmConnection llmconnection = getMediaArchive().getLlmConnection(function.getId()); // Should stay
+																											// search_start
 						LlmResponse response = llmconnection.callToolsFunction(inAgentContext, agentFn);
 
 						log.info(response.getRawResponse());

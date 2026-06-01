@@ -1,7 +1,7 @@
 package org.entermediadb.ai.automation.agents;
 
 import org.entermediadb.ai.BaseSkill;
-import org.entermediadb.ai.llm.AgentContext;
+import org.entermediadb.ai.AgentContext;
 
 public class ModuleFilterSkill extends BaseSkill
 {

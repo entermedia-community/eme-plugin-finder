@@ -15,11 +15,11 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.entermediadb.ai.BaseAiManager;
-import org.entermediadb.ai.ChatMessageHandler;
+import org.entermediadb.ai.ChatMessageContext;
+import org.entermediadb.ai.Skill;
 import org.entermediadb.ai.automation.AutomationManager;
 import org.entermediadb.ai.classify.EmbeddingManager;
 import org.entermediadb.ai.informatics.InformaticsContext;
-import org.entermediadb.ai.llm.AgentContext;
 import org.entermediadb.ai.llm.AgentEnabled;
 import org.entermediadb.ai.llm.LlmResponse;
 import org.entermediadb.asset.MediaArchive;
@@ -159,20 +159,22 @@ public class AssistantManager extends BaseAiManager
 	// return manager;
 	// }
 	//
-	public AgentContext loadContext(String inChannelId)
+	public ChatMessageContext loadContext(String inChannelId)
 	{
 		MediaArchive archive = getMediaArchive();
-		AgentContext agentContext = (AgentContext) archive.getCacheManager().get("agentcontext", inChannelId);
-		if (agentContext == null)
+		ChatMessageContext chatMessageContext = (ChatMessageContext) archive.getCacheManager().get("chatMessageContext", inChannelId);
+		if (chatMessageContext == null)
 		{
-			Searcher searcher = archive.getSearcher("agentcontext");
-			agentContext = (AgentContext) searcher.query().exact("channel", inChannelId).searchOne(); // TODO Look in DB
-																										// or cache from
-																										// hitory?
-			if (agentContext == null)
-			{
-				agentContext = (AgentContext) searcher.createNewData();
-			}
+			// Searcher searcher = archive.getSearcher("chatMessageContext");
+			// chatMessageContext = (ChatMessageContext) searcher.query().exact("channel",
+			// inChannelId).searchOne(); // TODO Look in DB
+			// hitory?
+			// if (chatMessageContext == null)
+			// {
+			// chatMessageContext = (chatMessageContext) searcher.createNewData();
+			// }
+			chatMessageContext = new ChatMessageContext();
+
 			Data channel = getMediaArchive().getCachedData("channel", inChannelId);
 			if (channel == null)
 			{
@@ -186,33 +188,33 @@ public class AssistantManager extends BaseAiManager
 				getMediaArchive().saveData("channel", channel);
 
 			}
-			agentContext.setChannel(channel);
-			agentContext.setValue("channel", inChannelId);
+			chatMessageContext.setChannel(channel);
+			chatMessageContext.setValue("channel", inChannelId);
 			String entitymoduleid = channel.get("searchtype");
 			if (channel.get("dataid") != null)
 			{
 				Data entity = archive.getCachedData(entitymoduleid, channel.get("dataid"));
 				Data entitymodule = archive.getCachedData("module", entitymoduleid);
-				agentContext.setValue("entityid", entity.getId());
-				agentContext.setValue("entitymoduleid", entitymoduleid);
-				agentContext.addContext("entity", entity);
-				agentContext.addContext("entitymodule", entitymodule);
+				chatMessageContext.setValue("entityid", entity.getId());
+				chatMessageContext.setValue("entitymoduleid", entitymoduleid);
+				chatMessageContext.addContext("entity", entity);
+				chatMessageContext.addContext("entitymodule", entitymodule);
 			}
-			searcher.saveData(agentContext);
+			// searcher.saveData(chatMessageContext);
 
-			archive.getCacheManager().put("agentcontext", inChannelId, agentContext);
+			archive.getCacheManager().put("chatMessageContext", inChannelId, chatMessageContext);
 		}
-		return agentContext;
+		return chatMessageContext;
 	}
 
 	public void respondToChannel(ScriptLogger inLog, Data inChannel, MultiValued usermessage)
 	{
 		MediaArchive archive = getMediaArchive();
 
-		AgentContext agentContext = loadContext(inChannel.getId());
+		ChatMessageContext chatMessageContext = loadContext(inChannel.getId());
 
 		// LlmConnection llmconnection = archive.getLlmConnection("agentChat");
-		// agentContext.addContext("model", llmconnection.getModelName() );
+		// chatMessageContext.addContext("model", llmconnection.getModelName() );
 
 		ChatServer server = (ChatServer) archive.getBean("chatServer");
 
@@ -232,10 +234,10 @@ public class AssistantManager extends BaseAiManager
 
 		String id = inChannel.get("user");
 		UserProfile profile = archive.getUserProfile(id);
-		agentContext.addContext("chatprofile", profile);
-		agentContext.setUserProfile(profile);
+		chatMessageContext.addContext("chatprofile", profile);
+		chatMessageContext.setUserProfile(profile);
 
-		agentContext.addContext("channel", inChannel);
+		chatMessageContext.addContext("channel", inChannel);
 
 		// String oldstatus = usermessage.get("chatmessagestatus");
 
@@ -243,15 +245,15 @@ public class AssistantManager extends BaseAiManager
 		usermessage.setValue("chatmessagestatus", "completed");
 		getMediaArchive().saveData("chatterbox", usermessage); // Update the user message again to finish it
 
-		agentContext.addContext("message", usermessage);
+		chatMessageContext.addContext("message", usermessage);
 
-		agentContext.addContext("assistant", this);
+		chatMessageContext.addContext("assistant", this);
 
-		agentContext.addContext("channelchathistory", loadChannelChatHistory(inChannel));
+		chatMessageContext.addContext("channelchathistory", loadChannelChatHistory(inChannel));
 
 		// Add new agentmessage
-		MultiValued agentmessage = newAgentMessage(usermessage, agentContext);
-
+		MultiValued agentmessage = newAgentMessage(usermessage, chatMessageContext);
+		chatMessageContext.setAgentMessage(agentmessage);
 		// ChatServer server = (ChatServer) getMediaArchive().getBean("chatServer");
 		// Determine what will need to be processed
 		try
@@ -265,24 +267,24 @@ public class AssistantManager extends BaseAiManager
 				Integer playbacksection = (Integer) inChannel.getValue("playbacksection");
 				if (playbacksection != null)
 				{
-					agentContext.addContext("playbacksection", playbacksection);
+					chatMessageContext.addContext("playbacksection", playbacksection);
 				}
 				else
 				{
-					agentContext.addContext("playbacksection", 0);
+					chatMessageContext.addContext("playbacksection", 0);
 				}
 			}
 			else
 			{
-				String toplevelaifunctionid = agentContext.getTopLevelFunctionName();
+				String toplevelaifunctionid = chatMessageContext.getTopLevelFunctionName();
 				if (toplevelaifunctionid == null)
 				{
 					log.error("This should never happen");
 					return;
 				}
 			}
-			// agentContext.setFunctionName(functionName);
-			execCurrentFunctionFromChat(usermessage, agentmessage, agentContext);
+			// chatMessageContext.setFunctionName(functionName);
+			execCurrentFunctionFromChat(chatMessageContext);
 		}
 		catch (Exception ex)
 		{
@@ -292,23 +294,27 @@ public class AssistantManager extends BaseAiManager
 		}
 	}
 
-	public MultiValued newAgentMessage(MultiValued usermessage, AgentContext agentContext)
+	public MultiValued newAgentMessage(MultiValued usermessage, ChatMessageContext chatMessageContext)
 	{
 		MultiValued agentmessage = (MultiValued) getMediaArchive().getSearcher("chatterbox").createNewData();
 		agentmessage.setValue("user", "agent");
 		agentmessage.setValue("replytoid", usermessage.getId());
-		agentmessage.setValue("channel", agentContext.getChannel().getId());
+		agentmessage.setValue("channel", chatMessageContext.getChannel().getId());
 		agentmessage.setValue("date", new Date());
 		agentmessage.setValue("chatmessagestatus", "processing");
 		return agentmessage;
 	}
 
-	public void execCurrentFunctionFromChat(MultiValued usermessage, MultiValued agentmessage, AgentContext agentContext)
+	// MultiValued usermessage, MultiValued agentmessage, chatMessageContext chatMessageContext
+	public void execCurrentFunctionFromChat(ChatMessageContext chatMessageContext)
 	{
-		String functionName = agentContext.getFunctionName();
+		MultiValued usermessage = chatMessageContext.getUserMessage();
+		MultiValued agentmessage = chatMessageContext.getAgentMessage();
+
+		String functionName = chatMessageContext.getFunctionName();
 		if (functionName == null)
 		{
-			functionName = agentContext.getNextFunctionName();
+			functionName = chatMessageContext.getNextFunctionName();
 		}
 		MultiValued function = (MultiValued) getMediaArchive().getCachedData("aifunction", functionName);
 
@@ -318,7 +324,7 @@ public class AssistantManager extends BaseAiManager
 			return;
 		}
 
-		agentContext.setNextFunctionName(null);
+		chatMessageContext.setNextFunctionName(null);
 
 		ChatServer server = (ChatServer) getMediaArchive().getBean("chatServer");
 
@@ -331,7 +337,7 @@ public class AssistantManager extends BaseAiManager
 			processingmessage = "Analyzing";
 		}
 
-		String processingtype = (String) agentContext.getContextValue("processingtype");
+		String processingtype = (String) chatMessageContext.getContextValue("processingtype");
 		if (processingtype != null)
 		{
 			processingmessage += " " + processingtype;
@@ -339,7 +345,7 @@ public class AssistantManager extends BaseAiManager
 
 		processingmessage = loader + processingmessage + "...";
 
-		String message = agentContext.getMessagePrefix() + processingmessage;
+		String message = chatMessageContext.getMessagePrefix() + processingmessage;
 		agentmessage.setValue("message", message); // setting status
 		getMediaArchive().saveData("chatterbox", agentmessage);
 		server.broadcastMessage(getMediaArchive().getCatalogId(), agentmessage);
@@ -347,35 +353,40 @@ public class AssistantManager extends BaseAiManager
 		MediaArchive archive = getMediaArchive();
 
 		Data channel = archive.getCachedData("channel", agentmessage.get("channel"));
-		agentContext.addContext("channel", channel);
+		chatMessageContext.addContext("channel", channel);
 
-		agentContext.addContext("usermessage", usermessage);
-		agentContext.addContext("agentmessage", agentmessage);
+		chatMessageContext.addContext("usermessage", usermessage);
+		chatMessageContext.addContext("agentmessage", agentmessage);
 
-		// agentContext.addContext("aisearchparams", agentContext.getAiSearchParams() );
+		// chatMessageContext.addContext("aisearchparams", chatMessageContext.getAiSearchParams() );
 		// // ??
 
 		String apphome = "/" + channel.get("chatapplicationid");
-		agentContext.addContext("apphome", apphome);
+		chatMessageContext.addContext("apphome", apphome);
 
 		String bean = function.get("messagehandler");
 
-		ChatMessageHandler handler = (ChatMessageHandler) getMediaArchive().getBean(bean);
 		LlmResponse response = null;
-		String messagePrefix = agentContext.getMessagePrefix();
 		try
 		{
-			response = handler.processMessage(agentContext, agentmessage, function);
+			Skill handler = (Skill) getMediaArchive().getBean(bean);
+			String messagePrefix = chatMessageContext.getMessagePrefix();
+			ChatMessageContext messageContext = new ChatMessageContext(chatMessageContext);// Needed?
+			messageContext.setAgentMessage(agentmessage);
+			messageContext.setUserMessage(usermessage);
+			messageContext.setAiFunction(function);
+			handler.process(messageContext);
+			response = messageContext.getLastResponse();
 		}
 		catch (HttpException e)
 		{
 			log.error("Error from " + bean + " running " + function.getId(), e);
-			response = handleError(agentContext, e.getMessage(), e.getErrorcode());
+			response = handleError(chatMessageContext, e.getMessage(), e.getErrorcode());
 		}
 		catch (Exception e)
 		{
 			log.error("Error from " + bean + " running " + function.getId(), e);
-			response = handleError(agentContext, e.getMessage());
+			response = handleError(chatMessageContext, e.getMessage());
 		}
 
 		try
@@ -429,33 +440,35 @@ public class AssistantManager extends BaseAiManager
 
 			Long waittime = 200l;
 
-			String agentNextFn = agentContext.getNextFunctionName();
+			String agentNextFn = chatMessageContext.getNextFunctionName();
 			if (agentNextFn != null)
 			{
-				Long wait = agentContext.getWaitTime();
+				Long wait = chatMessageContext.getWaitTime();
 				if (wait != null && wait instanceof Long)
 				{
-					agentContext.setWaitTime(null);
+					chatMessageContext.setWaitTime(null);
 					waittime = wait;
 					log.info("Previous function requested to wait " + waittime + " milliseconds");
 					Thread.sleep(wait);
 				}
-				agentContext.setFunctionName(agentNextFn);
-				agentContext.setNextFunctionName(null);
-				execCurrentFunctionFromChat(usermessage, agentmessage, agentContext);
+				chatMessageContext.setFunctionName(agentNextFn);
+				chatMessageContext.setNextFunctionName(null);
+				chatMessageContext.setAgentMessage(agentmessage);
+				chatMessageContext.setUserMessage(usermessage);
+				execCurrentFunctionFromChat(chatMessageContext);
 				// Save the current state
 			}
 		}
 		catch (Exception e)
 		{
-			log.error("Could not execute function: " + agentContext.getFunctionName(), e);
+			log.error("Could not execute function: " + chatMessageContext.getFunctionName(), e);
 			agentmessage.setValue("functionresponse", e.toString());
 			agentmessage.setValue("chatmessagestatus", "failed");
 			archive.saveData("chatterbox", agentmessage);
 		}
 		finally
 		{
-			getMediaArchive().saveData("agentcontext", agentContext);
+			getMediaArchive().saveData("chatMessageContext", chatMessageContext);
 		}
 	}
 
@@ -537,16 +550,17 @@ public class AssistantManager extends BaseAiManager
 	 * 
 	 * if(fullText.replaceAll("\\s|\\n", "").length() == 0) { return null; }
 	 * 
-	 * AgentContext agentcontext = new AgentContext(); agentcontext.addContext("fulltext", fullText);
+	 * chatMessageContext chatMessageContext = new chatMessageContext();
+	 * chatMessageContext.addContext("fulltext", fullText);
 	 * 
 	 * String model = archive.getCatalogSettingValue("llmmcpmodel"); if(model == null) { model =
-	 * "gpt-5-nano"; } agentcontext.addContext("model", model);
+	 * "gpt-5-nano"; } chatMessageContext.addContext("model", model);
 	 * 
 	 * LlmConnection llmconnection = (LlmConnection) archive.getBean("openaiConnection");
 	 * 
 	 * String chattemplate = "/" + archive.getMediaDbId() +
 	 * "/ai/openai/mcp/prompts/generate_report.json"; LlmResponse response =
-	 * llmconnection.runPageAsInput(agentcontext, chattemplate);
+	 * llmconnection.runPageAsInput(chatMessageContext, chattemplate);
 	 * 
 	 * String report = response.getMessage();
 	 * 
@@ -756,7 +770,7 @@ public class AssistantManager extends BaseAiManager
 		return manager;
 	}
 
-	public void sendSystemMessage(AgentContext inContext, String inUser, String message)
+	public void sendSystemMessage(ChatMessageContext inContext, String inUser, String message)
 	{
 		MediaArchive archive = getMediaArchive();
 

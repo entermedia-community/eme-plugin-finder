@@ -15,6 +15,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
+import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.llm.http.HttpResponse;
 import org.entermediadb.asset.MediaArchive;
 import org.entermediadb.net.HttpSharedConnection;

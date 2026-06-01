@@ -3,7 +3,7 @@ package org.entermediadb.ai.automation.agents;
 import java.util.Map;
 
 import org.entermediadb.ai.BaseSkill;
-import org.entermediadb.ai.llm.AgentContext;
+import org.entermediadb.ai.AgentContext;
 import org.openedit.MultiValued;
 import org.openedit.WebPageRequest;
 

@@ -1,6 +1,6 @@
 package org.entermediadb.ai;
 
-import org.entermediadb.ai.llm.AgentContext;
+import org.entermediadb.ai.AgentContext;
 import org.openedit.CatalogEnabled;
 
 public interface Skill

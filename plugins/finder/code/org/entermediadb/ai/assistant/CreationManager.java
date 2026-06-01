@@ -9,9 +9,9 @@ import java.util.Iterator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.entermediadb.ai.BaseSkill;
+import org.entermediadb.ai.ChatMessageContext;
 import org.entermediadb.ai.BaseAiManager;
-import org.entermediadb.ai.ChatMessageHandler;
-import org.entermediadb.ai.llm.AgentContext;
+import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.llm.LlmConnection;
 import org.entermediadb.ai.llm.LlmResponse;
 import org.entermediadb.asset.Asset;
@@ -25,13 +25,16 @@ import org.openedit.repository.InputStreamItem;
 import org.openedit.users.User;
 import org.openedit.util.DateStorageUtil;
 
-public class CreationManager extends BaseAiManager implements ChatMessageHandler
+public class CreationManager extends BaseSkill
 {
 	private static final Log log = LogFactory.getLog(CreationManager.class);
 
 	@Override
-	public LlmResponse processMessage(AgentContext inAgentContext, MultiValued inAgentMessage, MultiValued inAiFunction)
+	public void process(AgentContext inAgentContext)
 	{
+		ChatMessageContext messageContext = (ChatMessageContext) inAgentContext;
+		MultiValued agentmessage = messageContext.getAgentMessage();
+		MultiValued function = messageContext.getAiFunction();
 		String agentFn = inAgentContext.getFunctionName();
 		if ("creation_image_welcome".equals(inAgentContext.getFunctionName()))
 		{
@@ -45,7 +48,8 @@ public class CreationManager extends BaseAiManager implements ChatMessageHandler
 			LlmResponse response = llmconnection.renderLocalAction(inAgentContext, inAgentContext.getFunctionName());
 			// This is for the chat UI to pass it back
 			inAgentContext.setFunctionName("creation_image_parse");
-			return response;
+			messageContext.setLastResponse(response);
+			return;
 		}
 		else
 			if ("creation_image_parse".equals(inAgentContext.getFunctionName()))
@@ -61,14 +65,16 @@ public class CreationManager extends BaseAiManager implements ChatMessageHandler
 				creation.setCreationFields(content);
 				response.setMessage("");
 				inAgentContext.setNextFunctionName("creation_image_create");
-				return response;
+				messageContext.setLastResponse(response);
+				return;
 			}
 			else
 				if ("creation_image_create".equals(inAgentContext.getFunctionName()))
 				{
 					LlmResponse result = createImage(inAgentContext);
 					inAgentContext.setNextFunctionName("creation_image_render");
-					return result;
+					messageContext.setLastResponse(result);
+					return;
 				}
 				else
 					if ("creation_image_render".equals(inAgentContext.getFunctionName()))
@@ -86,7 +92,8 @@ public class CreationManager extends BaseAiManager implements ChatMessageHandler
 
 						log.info("Next function: " + inAgentContext.getNextFunctionName());
 
-						return result;
+						messageContext.setLastResponse(result);
+						return;
 
 					}
 					else

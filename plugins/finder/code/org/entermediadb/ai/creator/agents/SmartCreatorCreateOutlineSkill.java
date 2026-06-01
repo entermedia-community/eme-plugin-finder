@@ -5,7 +5,7 @@ import java.util.Collection;
 import org.entermediadb.ai.BaseSkill;
 import org.entermediadb.ai.assistant.AssistantManager;
 import org.entermediadb.ai.creator.SmartCreatorManager;
-import org.entermediadb.ai.llm.AgentContext;
+import org.entermediadb.ai.AgentContext;
 import org.openedit.Data;
 
 public class SmartCreatorCreateOutlineSkill extends BaseSkill

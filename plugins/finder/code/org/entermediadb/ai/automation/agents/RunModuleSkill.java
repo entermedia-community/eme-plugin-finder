@@ -1,6 +1,6 @@
 package org.entermediadb.ai.automation.agents;
 
-import org.entermediadb.ai.llm.AgentContext;
+import org.entermediadb.ai.AgentContext;
 import org.openedit.WebPageRequest;
 
 public class RunModuleSkill extends RunEventSkill

@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.assistant.AiCreation;
 import org.entermediadb.ai.assistant.AiSearch;
 import org.entermediadb.ai.creator.AiSmartCreatorSteps;
@@ -20,15 +21,15 @@ import org.openedit.data.BaseData;
 import org.openedit.profile.UserProfile;
 import org.openedit.users.User;
 
-public class AgentContext extends BaseData implements CatalogEnabled
+public class BaseAgentContext extends BaseData implements CatalogEnabled, AgentContext
 {
 	protected ScriptLogger fieldScriptLogger;
 
-	public AgentContext() {
+	public BaseAgentContext() {
 
 	}
 
-	public AgentContext(AgentContext inParent) {
+	public BaseAgentContext(AgentContext inParent) {
 		setParentContext(inParent);
 	}
 
@@ -318,12 +319,27 @@ public class AgentContext extends BaseData implements CatalogEnabled
 		context = inContext;
 	}
 
+	/**
+	 * @deprecated use putContextValue instead.
+	 * @param inKey
+	 * @param inValue
+	 */
 	public void put(String inKey, Object inValue)
 	{
-		addContext(inKey, inValue);
+		putContextValue(inKey, inValue);
 	}
 
+	/**
+	 * @deprecated use putContextValue instead.
+	 * @param inKey
+	 * @param inValue
+	 */
 	public void addContext(String inKey, Object inValue)
+	{
+		putContextValue(inKey, inValue);
+	}
+
+	public void putContextValue(String inKey, Object inValue)
 	{
 		getContext().put(inKey, inValue);
 	}

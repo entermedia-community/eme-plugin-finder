@@ -14,7 +14,8 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
-import org.entermediadb.ai.llm.AgentContext;
+import org.entermediadb.ai.AgentContext;
+import org.entermediadb.ai.llm.BaseAgentContext;
 import org.entermediadb.ai.llm.LlmConnection;
 import org.entermediadb.asset.Asset;
 import org.entermediadb.asset.BaseAsset;
@@ -81,7 +82,7 @@ public class ContentModule extends BaseMediaModule
 
 		HitTracker hits = archive.query("contentcreator").exact("status", "new").search();
 
-		AgentContext params = new AgentContext();
+		AgentContext params = new BaseAgentContext();
 		// params.addContext(inReq.getParameterMap()); //TODO: Not implemented
 
 		for (Iterator iterator = hits.iterator(); iterator.hasNext();)
@@ -288,7 +289,7 @@ public class ContentModule extends BaseMediaModule
 		}
 		LlmConnection llm = (LlmConnection) getMediaArchive(inReq).getBean(type);
 		String edithome = inReq.findPathValue("edithome");
-		String template = llm.loadInputFromTemplate(new AgentContext(), edithome + "/aitools/createnewasset.html");
+		String template = llm.loadInputFromTemplate(new BaseAgentContext(), edithome + "/aitools/createnewasset.html");
 
 		// manager.createAssetFromLLM(inReq, entitymodule.getId(), entity.getId(),
 		// template);

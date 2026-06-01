@@ -10,7 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.entermediadb.ai.BaseSkill;
 import org.entermediadb.ai.informatics.InformaticsContext;
-import org.entermediadb.ai.llm.AgentContext;
+import org.entermediadb.ai.AgentContext;
 import org.entermediadb.asset.Asset;
 import org.openedit.MultiValued;
 import org.openedit.modules.translations.LanguageMap;
