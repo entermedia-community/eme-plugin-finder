@@ -12,7 +12,7 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.entermediadb.ai.BaseAiManager;
-import org.entermediadb.ai.assistant.knn.RankedResult;
+import org.entermediadb.ai.knn.RankedResult;
 import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.llm.BaseAgentContext;
 import org.entermediadb.ai.llm.LlmConnection;

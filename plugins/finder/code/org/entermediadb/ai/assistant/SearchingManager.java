@@ -13,7 +13,7 @@ import org.entermediadb.ai.BaseAiManager;
 import org.entermediadb.ai.BaseSkill;
 import org.entermediadb.ai.ChatMessageContext;
 import org.entermediadb.ai.Schema;
-import org.entermediadb.ai.assistant.knn.RankedResult;
+import org.entermediadb.ai.knn.RankedResult;
 import org.entermediadb.ai.classify.SemanticClassifierManager;
 import org.entermediadb.ai.classify.SemanticTableManager;
 import org.entermediadb.ai.AgentContext;

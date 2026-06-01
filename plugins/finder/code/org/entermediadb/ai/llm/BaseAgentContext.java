@@ -9,7 +9,7 @@ import java.util.Map;
 import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.assistant.AiCreation;
 import org.entermediadb.ai.assistant.AiSearch;
-import org.entermediadb.ai.assistant.knn.RankedResult;
+import org.entermediadb.ai.knn.RankedResult;
 import org.entermediadb.ai.creator.AiSmartCreatorSteps;
 import org.entermediadb.scripts.ScriptLogger;
 import org.json.simple.JSONObject;
