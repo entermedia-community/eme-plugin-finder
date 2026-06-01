@@ -6,14 +6,13 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.entermediadb.ai.BaseAiManager;
 import org.entermediadb.ai.llm.LlmConnection;
 import org.entermediadb.ai.llm.LlmResponse;
 import org.entermediadb.asset.MediaArchive;
-import org.entermediadb.scripts.ScriptLogger;
+import org.entermediadb.google.GoogleManager;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.openedit.CatalogEnabled;
@@ -21,7 +20,6 @@ import org.openedit.Data;
 import org.openedit.ModuleManager;
 import org.openedit.MultiValued;
 import org.openedit.OpenEditException;
-import org.openedit.WebPageRequest;
 import org.openedit.data.PropertyDetail;
 import org.openedit.hittracker.HitTracker;
 import org.openedit.modules.translations.LanguageMap;
@@ -64,12 +62,26 @@ public class TranslationManager extends BaseAiManager implements CatalogEnabled
 		return fieldMediaArchive;
 	}
 
-	public JSONObject translate(String text, String sourceLang, Collection<String> targetLangs)
+	protected GoogleManager fieldGoogleManager;
+
+	public GoogleManager getGoogleManager()
+	{
+
+		if (fieldGoogleManager == null)
+		{
+			fieldGoogleManager = (GoogleManager) getMediaArchive().getModuleManager().getBean(getMediaArchive().getCatalogId(), "googleManager");
+		}
+		return fieldGoogleManager;
+
+	}
+
+	public JSONObject translate(Map<String, String> inConfig, String text, String sourceLang, Collection<String> targetLangs)
 	{
 		if (text == null || text.isEmpty())
 		{
 			throw new OpenEditException("Text to translate cannot be null or empty");
 		}
+
 		if (sourceLang == null || sourceLang.isEmpty())
 		{
 			throw new OpenEditException("Source language cannot be null or empty");
@@ -80,9 +92,6 @@ public class TranslationManager extends BaseAiManager implements CatalogEnabled
 		}
 
 		JSONObject payload = new JSONObject();
-
-		JSONArray contents = new JSONArray();
-		contents.add(text);
 
 		Collection<Data> locales = getMediaArchive().query("locale").ids(targetLangs).cachedSearch();
 
@@ -106,15 +115,17 @@ public class TranslationManager extends BaseAiManager implements CatalogEnabled
 		JSONObject googleTranslations = new JSONObject();
 		JSONObject eMediaTranslations = new JSONObject();
 
+		JSONArray contents = new JSONArray();
+		contents.add(text);
+
 		if (googleTargets.size() > 0)
 		{
-			payload.put("contents", contents);
-			payload.put("sourceLanguageCode", sourceLang);
-
+			// payload.put("contents", contents);
+			// payload.put("sourceLanguageCode", sourceLang);
 			LlmConnection connection = getMediaArchive().getLlmConnection("googleTranslateFields");
 			log.info("Translating " + contents + " from " + sourceLang + " to " + googleTargets + " in server: " + connection.getServerRoot());
 
-			googleTranslations = googleTranslate(connection, payload, googleTargets);
+			googleTranslations = googleTranslate(inConfig, connection, text, sourceLang, googleTargets);
 		}
 		else
 		{
@@ -137,6 +148,7 @@ public class TranslationManager extends BaseAiManager implements CatalogEnabled
 
 	public JSONObject eMediaTranslate(LlmConnection connection, JSONObject payload, Collection<String> targetLangs)
 	{
+
 		JSONArray targets = new JSONArray();
 		targets.addAll(targetLangs);
 		payload.put("target", targets);
@@ -149,41 +161,71 @@ public class TranslationManager extends BaseAiManager implements CatalogEnabled
 
 	}
 
-	public JSONObject googleTranslate(LlmConnection connection, JSONObject payload, Collection<String> targetLangs)
+	public JSONObject googleTranslate(Map<String, String> inConfig, LlmConnection connection, String inText, String inSourceLang, Collection<String> targetLangs)
 	{
 		JSONObject allTranslatedTexts = new JSONObject();
 		for (Iterator iterator = targetLangs.iterator(); iterator.hasNext();)
 		{
 			String targetLang = (String) iterator.next();
 
-			payload.put("targetLanguageCode", targetLang);
-
-			LlmResponse resp = connection.callJson(":translateText", payload);
-
-			JSONArray translations = (JSONArray) resp.getRawResponse().get("translations");
-			if (translations == null || translations.isEmpty())
+			try
 			{
-				continue;
-			}
-			JSONObject translation = (JSONObject) translations.get(0);
-			JSONObject translatedText = (JSONObject) translation.get("translatedText");
+				JSONObject translationsmap = getGoogleManager().translate(inConfig, connection, inText, inSourceLang, targetLang);
+				if (translationsmap == null || translationsmap.isEmpty())
+				{
+					log.info("No translation returned for " + targetLang);
+					continue;
+				}
 
-			JSONArray existing = (JSONArray) allTranslatedTexts.get(targetLang);
-			if (existing == null)
-			{
-				existing = new JSONArray();
-				allTranslatedTexts.put(targetLang, existing);
+				JSONArray translations = (JSONArray) translationsmap.get("translations");
+				JSONObject translation = null;
+				String translatedText = null;
+				JSONArray glossaryTranslations = (JSONArray) translationsmap.get("glossaryTranslations");
+				if (glossaryTranslations != null && !glossaryTranslations.isEmpty())
+				{
+					translation = (JSONObject) glossaryTranslations.get(0);
+					if (translation != null)
+					{
+						translatedText = (String) translation.get("translatedText");
+					}
+				}
+
+				if (translatedText == null)
+				{
+					if (translations != null && !translations.isEmpty())
+					{
+						translation = (JSONObject) translations.get(0);
+						translatedText = (String) translation.get("translatedText");
+					}
+				}
+
+				// decorde none UTF characters like "Photo de l&#39;ONU that come back from google
+				translatedText = org.apache.commons.lang3.StringEscapeUtils.unescapeHtml4(translatedText);
+
+				JSONArray existing = (JSONArray) allTranslatedTexts.get(targetLang);
+				if (existing == null)
+				{
+					existing = new JSONArray();
+					allTranslatedTexts.put(targetLang, existing);
+				}
+				existing.add(translatedText);
 			}
-			existing.add(translatedText);
+			catch (Exception e)
+			{
+				log.error("Google Translation failed", e);
+
+			}
+
 		}
 
 		return allTranslatedTexts;
 
 	}
 
-	public Map<String, String> translatePlainText(String sourceLang, Collection<String> targetLangs, String text)
+	/* */
+	public Map<String, String> translatePlainText(Map<String, String> inConfig, String sourceLang, Collection<String> targetLangs, String text)
 	{
-		JSONObject translations = translate(text, sourceLang, targetLangs);
+		JSONObject translations = translate(inConfig, text, sourceLang, targetLangs);
 
 		Map<String, String> results = new HashMap<String, String>();
 		for (Iterator iterator = targetLangs.iterator(); iterator.hasNext();)
@@ -220,7 +262,7 @@ public class TranslationManager extends BaseAiManager implements CatalogEnabled
 
 	}
 
-	public void translateDataFields(Collection<MultiValued> inRecordsToTranslate, Collection<PropertyDetail> inDetailsfields, String inSourceLang)
+	public void translateDataFields(Map<String, String> inConfig, Collection<MultiValued> inRecordsToTranslate, Collection<PropertyDetail> inDetailsfields, String inSourceLang, Collection<String> targetLangs)
 	{
 		HitTracker locales = getMediaArchive().query("locale").exact("translatemetadata", true).cachedSearch();
 
@@ -231,7 +273,10 @@ public class TranslationManager extends BaseAiManager implements CatalogEnabled
 
 		Collection<String> availableTargets = Arrays.asList("en,es,fr,de,ar,pt,bn,hi,ur,ru,zh,zht,sw".split(","));
 
-		Collection<String> targetLangs = new ArrayList();
+		if (targetLangs == null)
+		{
+			targetLangs = new ArrayList();
+		}
 
 		for (Iterator iterator = locales.iterator(); iterator.hasNext();)
 		{
@@ -297,7 +342,7 @@ public class TranslationManager extends BaseAiManager implements CatalogEnabled
 					if (value != null && value.getText(inSourceLang) != null && !value.getText(inSourceLang).isEmpty())
 					{
 						// inLog.info("Translating field: " + inKey);
-						LanguageMap translated = translateField(inKey, value, inSourceLang, targetLangs);
+						LanguageMap translated = translateField(inConfig, inKey, value, inSourceLang, targetLangs);
 						results.put(inKey, translated);
 					}
 				}
@@ -329,7 +374,7 @@ public class TranslationManager extends BaseAiManager implements CatalogEnabled
 
 	}
 
-	public LanguageMap translateField(String field, LanguageMap languageMap, String sourceLang, Collection<String> targetLangs)
+	public LanguageMap translateField(Map<String, String> inConfig, String field, LanguageMap languageMap, String sourceLang, Collection<String> targetLangs)
 	{
 		String sourceText = languageMap.getText(sourceLang);
 
@@ -343,8 +388,9 @@ public class TranslationManager extends BaseAiManager implements CatalogEnabled
 		for (Iterator iterator = targetLangs.iterator(); iterator.hasNext();)
 		{
 			String target = (String) iterator.next();
-
 			String value = languageMap.getText(target);
+
+			// Only translate if there is no existing value. We don't want to overwrite existing translations
 			if (value == null || value.equals(""))
 			{
 				validTargets.add(target);
@@ -356,7 +402,49 @@ public class TranslationManager extends BaseAiManager implements CatalogEnabled
 			return languageMap;
 		}
 
-		JSONObject translations = translate(sourceText, sourceLang, validTargets);
+		if (sourceText.contains("[") && sourceText.contains("]"))
+		{
+			boolean hasTextOutsideBrackets = false;
+			String[] tokens = sourceText.split("\\[.*?\\]");
+			String containsAlphaNumeric = ".*[a-zA-Z0-9].*";
+
+			// Clean up whitespace and print results
+			for (String token : tokens)
+			{
+				String cleanedToken = token.trim();
+
+				// Skip purely empty tokens (caused by adjacent brackets or boundaries)
+				if (!cleanedToken.isEmpty())
+				{
+					hasTextOutsideBrackets = true;
+				}
+
+				// Validate if it contains at least one alphanumeric character
+				if (cleanedToken.matches(containsAlphaNumeric))
+				{
+					hasTextOutsideBrackets = true;
+				}
+				else
+				{
+					hasTextOutsideBrackets = false;
+				}
+
+			}
+
+			if (!hasTextOutsideBrackets)
+			{
+				log.info("Skiping translation for: " + sourceText);
+				for (Iterator iterator = validTargets.iterator(); iterator.hasNext();)
+				{
+					String lang = (String) iterator.next();
+					languageMap.setText(lang, sourceText);
+
+				}
+				return languageMap;
+			}
+		}
+
+		JSONObject translations = translate(inConfig, sourceText, sourceLang, validTargets);
 		if (translations == null)
 		{
 			return languageMap;

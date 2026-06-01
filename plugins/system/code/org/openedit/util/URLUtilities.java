@@ -1,14 +1,14 @@
 /*
-Copyright (c) 2003 eInnovation Inc. All rights reserved
-
-This library is free software; you can redistribute it and/or modify it under the terms
-of the GNU Lesser General Public License as published by the Free Software Foundation;
-either version 2.1 of the License, or (at your option) any later version.
-
-This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-See the GNU Lesser General Public License for more details.
-*/
+ * Copyright (c) 2003 eInnovation Inc. All rights reserved
+ * 
+ * This library is free software; you can redistribute it and/or modify it under the terms of the
+ * GNU Lesser General Public License as published by the Free Software Foundation; either version
+ * 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ */
 
 /*--
 
@@ -88,8 +88,6 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
 import org.openedit.OpenEditException;
 
-
-
 /**
  * Utility class for building URLs.
  *
@@ -103,44 +101,44 @@ public class URLUtilities
 
 	protected static Pattern VALIDUTF8 = null;
 	/**
-	 * Construct a new URLUtilities class which can use the given request and response objects to
-	 * build URLs.
+	 * Construct a new URLUtilities class which can use the given request and response objects to build
+	 * URLs.
 	 */
 	private HttpServletRequest fieldRequest;
 	private HttpServletResponse fieldResponse;
 
-	public URLUtilities(
-		HttpServletRequest request, HttpServletResponse response)
-	{
+	public URLUtilities(HttpServletRequest request, HttpServletResponse response) {
 		this.fieldRequest = request;
 		this.fieldResponse = response;
 	}
-	
+
 	/**
-	 * The only non-buggy way to get a file name is to look at the full URL then chop off the
-	 * context to make it a relative URL
+	 * The only non-buggy way to get a file name is to look at the full URL then chop off the context to
+	 * make it a relative URL
 	 *
 	 * @return /index.html
 	 */
 	public static String getPathWithoutContext(String inContext, String fullpath, String inDefault)
 	{
-	    String nameOnly = fullpath;
-	    if (fullpath.startsWith(inContext)){
-	        nameOnly = fullpath.substring(inContext.length());
-	    }	    
+		String nameOnly = fullpath;
+		if (fullpath.startsWith(inContext))
+		{
+			nameOnly = fullpath.substring(inContext.length());
+		}
 
 		if (nameOnly.equals("/") || (nameOnly.length() == 0))
 		{
 			nameOnly += inDefault;
 		}
-		else if (nameOnly.indexOf('.') == -1)
-		{
-			if ( !nameOnly.endsWith("/"))
-			{			
-				nameOnly += '/';
+		else
+			if (nameOnly.indexOf('.') == -1)
+			{
+				if (!nameOnly.endsWith("/"))
+				{
+					nameOnly += '/';
+				}
+				nameOnly += inDefault;
 			}
-			nameOnly += inDefault;
-		}
 
 		return nameOnly;
 	}
@@ -152,12 +150,12 @@ public class URLUtilities
 	 */
 	public String buildBasePath(String path)
 	{
-		if( fieldRequest == null)
+		if (fieldRequest == null)
 		{
 			return null;
 		}
 		StringBuffer ctx = fieldRequest.getRequestURL();
-		String servername = ctx.substring(0, ctx.indexOf("/", 7)); //just the server name
+		String servername = ctx.substring(0, ctx.indexOf("/", 7)); // just the server name
 
 		if (path.lastIndexOf('/') > -1)
 		{
@@ -170,15 +168,15 @@ public class URLUtilities
 			return servername + "/";
 		}
 	}
-	
+
 	/**
-	 * This is the server name only 
+	 * This is the server name only
 	 *
 	 * returns http://www.acme.com/
 	 */
 	public String buildRoot()
 	{
-		if( fieldRequest == null)
+		if (fieldRequest == null)
 		{
 			return null;
 		}
@@ -188,29 +186,32 @@ public class URLUtilities
 
 		return servername + "/";
 	}
+
 	/**
-	 * This is the server name  and webapp  
+	 * This is the server name and webapp
 	 *
 	 * returns http://www.acme.com/webapp
 	 */
 	public String buildAppRoot()
 	{
-	
+
 		String server = buildRoot();
-		if(!server.endsWith("/")){
+		if (!server.endsWith("/"))
+		{
 			server = server + "/";
 		}
 		String app = relativeHomePrefix();
-		if(app.startsWith("/")){
+		if (app.startsWith("/"))
+		{
 			app = app.substring(1);
 		}
-		return server+ app;
-		
+		return server + app;
+
 	}
 
 	/**
-	 * Build an HTTPS (Secure Socket Layer) method relative to the application context  using the
-	 * given path.
+	 * Build an HTTPS (Secure Socket Layer) method relative to the application context using the given
+	 * path.
 	 *
 	 */
 	public String buildSecure(String path)
@@ -219,9 +220,9 @@ public class URLUtilities
 	}
 
 	/**
-	 * Build an HTTPS (Secure Socket Layer) method relative to the application context  using the
-	 * given path.  This version of the <code>buildSecure</code> method  allows you to specify the
-	 * port number.  A port number of 0 will cause the port  argument to be ignored.
+	 * Build an HTTPS (Secure Socket Layer) method relative to the application context using the given
+	 * path. This version of the <code>buildSecure</code> method allows you to specify the port number.
+	 * A port number of 0 will cause the port argument to be ignored.
 	 *
 	 * @param path The path
 	 * @param port The port
@@ -246,9 +247,9 @@ public class URLUtilities
 	}
 
 	/**
-	 * Build an HTTP URL relative to the application context using the given path.   This version
-	 * of the <code>buildStandard</code> method allows you to specify  the port number.  A port
-	 * number of 0 will cause the port argument to be ignored.
+	 * Build an HTTP URL relative to the application context using the given path. This version of the
+	 * <code>buildStandard</code> method allows you to specify the port number. A port number of 0 will
+	 * cause the port argument to be ignored.
 	 *
 	 * @param path The path
 	 * @param port The port
@@ -262,17 +263,17 @@ public class URLUtilities
 
 	public static String escapeUtf8(String inCode)
 	{
-		if( VALIDUTF8 == null )
+		if (VALIDUTF8 == null)
 		{
 			VALIDUTF8 = Pattern.compile("[^\\u0009\\u000a\\u000d\\u0020-\\uD7FF\\uE000-\\uFFFD]", Pattern.MULTILINE);
 		}
 		String clean = VALIDUTF8.matcher(inCode).replaceAll("");
 		return clean;
-		//s/.*?((?:[\t\n\r\x20-\x7E])+|(?:\xD0[\x90-\xBF])+|(?:\xD1[\x80-\x8F])+|(?:\xC3[\x80-\xBF])+|).*?/$1/sg;
+		// s/.*?((?:[\t\n\r\x20-\x7E])+|(?:\xD0[\x90-\xBF])+|(?:\xD1[\x80-\x8F])+|(?:\xC3[\x80-\xBF])+|).*?/$1/sg;
 	}
-	
+
 	/**
-	 * Percent-encode the given String.  This method delegates to the URLEncoder.encode() method.
+	 * Percent-encode the given String. This method delegates to the URLEncoder.encode() method.
 	 *
 	 * @param s The String to encode
 	 * @deprecated use urlEscape
@@ -292,8 +293,10 @@ public class URLUtilities
 		encoded = encoded.replace(" ", "%20");
 		return encoded;
 	}
-	public static String encodeParamVal(String value) {
-	    try
+
+	public static String encodeParamVal(String value)
+	{
+		try
 		{
 			String enc = URLEncoder.encode(value, "UTF-8");
 			return enc;
@@ -303,168 +306,179 @@ public class URLUtilities
 			throw new OpenEditException(e);
 		}
 	}
+
 	public static String urlEscape(String rawurl)
 	{
-//		gen-delims  = ":"  "/"  "?"  "#"  "["  "]" "@"
-//	
-//			     sub-delims  = "!" / "$" / "&" / "'" / "(" / ")"
-//			                 / "*" / "+" / "," / ";" / "="
-		if(rawurl  == null) {
+		// gen-delims = ":" "/" "?" "#" "[" "]" "@"
+		//
+		// sub-delims = "!" / "$" / "&" / "'" / "(" / ")"
+		// / "*" / "+" / "," / ";" / "="
+		if (rawurl == null)
+		{
 			return null;
 		}
-		
-//		URI uri = URI.create(rawurl);
-//		String returned = uri.toExternalForm();
-//		return returned;
+
+		// URI uri = URI.create(rawurl);
+		// String returned = uri.toExternalForm();
+		// return returned;
 		String host = null;
-			String path = null;
-			String query = null;
-			if( rawurl.startsWith("/") )
+		String path = null;
+		String query = null;
+		if (rawurl.startsWith("/"))
+		{
+			path = rawurl;
+		}
+		else
+		{
+			int slash = rawurl.indexOf("/", 8);
+			if (slash > -1)
 			{
-				path = rawurl;
+				host = rawurl.substring(0, slash);
+				path = rawurl.substring(slash);
 			}
 			else
 			{
-				int slash = rawurl.indexOf("/",8);
-				if( slash > -1)
+				path = rawurl;
+			}
+		}
+		int quest = path.indexOf("?");
+		if (quest > -1)
+		{
+			query = path.substring(quest + 1);
+			path = path.substring(0, quest);
+		}
+
+		path = fixPath(path);
+		StringBuffer finalurl = new StringBuffer();
+		if (host != null)
+		{
+			finalurl.append(host);
+		}
+		finalurl.append(path);
+		if (query != null)
+		{
+			String[] params = query.split("&");
+			StringBuffer out = new StringBuffer();
+			for (int i = 0; i < params.length; i++)
+			{
+				if (i > 0)
 				{
-					host = rawurl.substring(0,slash);
-					path = rawurl.substring(slash);
+					out.append("&");
 				}
-				else
+				String valuepair = params[i];
+				int cutoff = valuepair.indexOf("=");
+				if (cutoff > -1)
 				{
-					path = rawurl;
-				}
-			}
-			int quest = path.indexOf("?");
-			if( quest > -1)
-			{
-				query = path.substring(quest + 1);
-				path = path.substring(0,quest);
-			}
-						
-			path = fixPath(path);
-			StringBuffer finalurl = new StringBuffer();
-			if( host != null )
-			{
-				finalurl.append( host);
-			}
-			finalurl.append(path);
-			if( query != null)
-			{
-				String[] params = query.split("&");
-				StringBuffer out = new StringBuffer();
-				for (int i = 0; i < params.length; i++)
-				{
-					if( i > 0)
+					String key = valuepair.substring(0, cutoff);
+					out.append(key);
+					out.append("=");
+					if (cutoff >= 1)
 					{
-						out.append("&");
-					}
-					String valuepair =params[i]; 
-					int cutoff = valuepair.indexOf("=");
-					if( cutoff > -1)
-					{
-						String key = valuepair.substring(0,cutoff);
-						out.append(key);
-						out.append("=");
-						if( cutoff >= 1)
-						{
-							String value = valuepair.substring(cutoff + 1);
-							out.append(encodeParamVal(value));
-						}
+						String value = valuepair.substring(cutoff + 1);
+						out.append(encodeParamVal(value));
 					}
 				}
-				finalurl.append("?" + out.toString());
 			}
-			return finalurl.toString();
-	 }
-	
-	public static String removeAccents(String input) {
-	    if (input == null) {
-	        return null;
-	    }
-	    String normalized = Normalizer.normalize(input, Normalizer.Form.NFD);
-	    return normalized.replaceAll("\\p{M}", "");
+			finalurl.append("?" + out.toString());
+		}
+		return finalurl.toString();
 	}
-	
+
+	public static String removeAccents(String input)
+	{
+		if (input == null)
+		{
+			return null;
+		}
+		String normalized = Normalizer.normalize(input, Normalizer.Form.NFD);
+		return normalized.replaceAll("\\p{M}", "");
+	}
+
 	public static String fixPath(String inPath)
 	{
 		// path = UriUtils.encodePath(path, "UTF-8");
-		
-		//Ian says we need spaces in here
-		final String PATHVALUES = "';:?#[]@+ \"\\^{|}<>~`%()"; //:?@[] \"%-.<>\\^_`{|}~";
 
-		
-//		byte[] encoded = inPath.getBytes("UTF-8");
-//		Integer.toHexString(encoded);
-//		
-		//Escaper 
-		//String result = UrlEscapers.urlPathSegmentEscaper().escape(inPath);
-	    StringBuilder result = new StringBuilder(inPath.length() +1);
-	   
-	    for(int i=0; i<inPath.length();++i) 
-	    {
+		// Ian says we need spaces in here
+		final String PATHVALUES = "';:?#[]@+ \"\\^{|}<>~`%()"; // :?@[] \"%-.<>\\^_`{|}~";
+
+		// byte[] encoded = inPath.getBytes("UTF-8");
+		// Integer.toHexString(encoded);
+		//
+		// Escaper
+		// String result = UrlEscapers.urlPathSegmentEscaper().escape(inPath);
+		StringBuilder result = new StringBuilder(inPath.length() + 1);
+
+		for (int i = 0; i < inPath.length(); ++i)
+		{
 			char c = inPath.charAt(i);
-			
-	    	if(i < inPath.length()-1 && Character.isSurrogatePair(c, inPath.charAt(i+1))) 
-	    	{
+
+			if (i < inPath.length() - 1 && Character.isSurrogatePair(c, inPath.charAt(i + 1)))
+			{
 				// if so, the codepoint must be stored on a 32bit int as char is only 16bit
 				int codePoint = inPath.codePointAt(i);
 				// show the code point and the char
-				//System.out.println(String.format("%6d:%s", codePoint, new String(new int[]{codePoint}, 0, 1)));
-				byte[] allbytes = new String(new int[]{codePoint}, 0, 1).getBytes(StandardCharsets.UTF_8);
+				// System.out.println(String.format("%6d:%s", codePoint, new String(new int[]{codePoint}, 0, 1)));
+				byte[] allbytes = new String(new int[] {codePoint}, 0, 1).getBytes(StandardCharsets.UTF_8);
 				Formatter formatter = new Formatter();
-				for (byte b : allbytes) 
+				for (byte b : allbytes)
 				{
-	                formatter.format("%%%02X", b);
-	            }
+					formatter.format("%%%02X", b);
+				}
 				result.append(formatter.toString());
 				++i;
 			}
-	    	else if (PATHVALUES.indexOf(c) != -1 ) 
-	        { 
-	            result.append("%" + Integer.toHexString(c).toUpperCase());
-	        }
-	    	else if ( c > 128)
-	    	{
-				byte[] allbytes = new String(new int[]{c}, 0, 1).getBytes(StandardCharsets.UTF_8);
-				Formatter formatter = new Formatter();
-				for (byte b : allbytes) 
+			else
+				if (PATHVALUES.indexOf(c) != -1)
 				{
-	                formatter.format("%%%02X", b);
-	            }
-				result.append(formatter.toString());
-	    	}
-	    	else if ( c < 32)
-	        {
-	    		//ASCII 0 to 31 ()
-	    		result.append('%');
-	    		result.append(toHex(c / 16));
-	    		result.append(toHex(c % 16));
-	    	}
-	    	else {
-	    		result.append(c);
-	    	}
-	    }
+					result.append("%" + Integer.toHexString(c).toUpperCase());
+				}
+				else
+					if (c > 128)
+					{
+						byte[] allbytes = new String(new int[] {c}, 0, 1).getBytes(StandardCharsets.UTF_8);
+						Formatter formatter = new Formatter();
+						for (byte b : allbytes)
+						{
+							formatter.format("%%%02X", b);
+						}
+						result.append(formatter.toString());
+					}
+					else
+						if (c < 32)
+						{
+							// ASCII 0 to 31 ()
+							result.append('%');
+							result.append(toHex(c / 16));
+							result.append(toHex(c % 16));
+						}
+						else
+						{
+							result.append(c);
+						}
+		}
 		return result.toString();
 	}
+
 	private static char toHex(int ch)
 	{
-	    return (char)(ch < 10 ? '0' + ch : 'A' + ch - 10);
+		return (char) (ch < 10 ? '0' + ch : 'A' + ch - 10);
 	}
-   public static String utf8encode(int codepoint) 
-   {
-	   	String inChar = new String(new int[]{codepoint}, 0, 1);
-        byte[] bytes = inChar.getBytes(StandardCharsets.UTF_8);
-        
-        Formatter formatter = new Formatter();
-        for (byte b : bytes) {
-            formatter.format("%%02X", b);
-        }
-        String encodedHex = formatter.toString().toUpperCase();
-        return encodedHex;
-        
-    }
+
+	public static String utf8encode(int codepoint)
+	{
+		String inChar = new String(new int[] {codepoint}, 0, 1);
+		byte[] bytes = inChar.getBytes(StandardCharsets.UTF_8);
+
+		Formatter formatter = new Formatter();
+		for (byte b : bytes)
+		{
+			formatter.format("%%02X", b);
+		}
+		String encodedHex = formatter.toString().toUpperCase();
+		return encodedHex;
+
+	}
+
 	public static String decode(String s)
 	{
 		if (s == null)
@@ -474,6 +488,7 @@ public class URLUtilities
 
 		return URLDecoder.decode(s);
 	}
+
 	public static String decodePath(String s)
 	{
 		if (s == null)
@@ -483,20 +498,19 @@ public class URLUtilities
 
 		String decoded = URLDecoder.decode(s);
 		return decoded;
-				
+
 	}
 
-
 	/**
-	 * Build an HTTP URL relative to the application context using the given path. This is a path
-	 * such as /path/myfile.html but is encoded
-	 * If you want to unencoded path use $content.path or getOriginalPath()
+	 * Build an HTTP URL relative to the application context using the given path. This is a path such
+	 * as /path/myfile.html but is encoded If you want to unencoded path use $content.path or
+	 * getOriginalPath()
 	 *
 	 * @return /webapp/path/myfile.html
 	 */
 	public String getOriginalUrl()
 	{
-		if( fieldRequest == null)
+		if (fieldRequest == null)
 		{
 			return null;
 		}
@@ -504,16 +518,17 @@ public class URLUtilities
 		String path = fieldRequest.getRequestURI();
 		String home = relativeHomePrefix();
 		path = path.substring(home.length());
-		return encode( path );
+		return encode(path);
 	}
+
 	/**
-	 * This is the path that the browser is on.
-	 * /sub/index page.html
+	 * This is the path that the browser is on. /sub/index page.html
+	 * 
 	 * @return
 	 */
 	public String getOriginalPath()
 	{
-		if( fieldRequest == null)
+		if (fieldRequest == null)
 		{
 			return null;
 		}
@@ -522,73 +537,72 @@ public class URLUtilities
 		try
 		{
 			requestedPath = URLDecoder.decode(requestedPath, "UTF-8");
-			//getRequest().getQueryString()
+			// getRequest().getQueryString()
 		}
 		catch (UnsupportedEncodingException ex)
 		{
-			log.error( ex );
+			log.error(ex);
 		}
-	
+
 		String contextPath = getRequest().getContextPath();
-	    if ( requestedPath.startsWith( contextPath ) )
-	    {
-	        requestedPath = requestedPath.substring(contextPath.length());
-	    }
-	    return requestedPath;
+		if (requestedPath.startsWith(contextPath))
+		{
+			requestedPath = requestedPath.substring(contextPath.length());
+		}
+		return requestedPath;
 	}
 
-
 	/**
-	 * Build an HTTP URL relative to the application context using the given path. This is a path
-	 * such as http://servername/webapp/path/myfile.html
+	 * Build an HTTP URL relative to the application context using the given path. This is a path such
+	 * as http://servername/webapp/path/myfile.html
 	 *
 	 * @return /webapp/path/myfile.html
 	 */
 	public String requestPath()
 	{
-		if( fieldRequest == null)
+		if (fieldRequest == null)
 		{
 			return null;
 		}
 
 		StringBuffer ctx = fieldRequest.getRequestURL();
-		String requestPath = ctx.substring(ctx.indexOf("/", 7)); //just the path
+		String requestPath = ctx.substring(ctx.indexOf("/", 7)); // just the path
 
 		return requestPath;
 	}
+
 	/**
-	 * Is the full path with arguments included
-	 * /webappname/sub/index.html?test=1234
+	 * Is the full path with arguments included /webappname/sub/index.html?test=1234
 	 */
-	
+
 	public String requestPathWithArguments()
 	{
-		if( fieldRequest == null)
+		if (fieldRequest == null)
 		{
 			return null;
 		}
 
 		String path = fieldRequest.getRequestURI();
-		if ( fieldRequest.getQueryString() != null && fieldRequest.getQueryString().length() > 0)
+		if (fieldRequest.getQueryString() != null && fieldRequest.getQueryString().length() > 0)
 		{
 			path = path + "?" + fieldRequest.getQueryString();
 		}
 		return path;
 	}
+
 	/**
-	 * Is the full path with arguments included
-	 * /sub/index.html?test=1234
+	 * Is the full path with arguments included /sub/index.html?test=1234
 	 */
-	
+
 	public String requestPathWithArgumentsNoContext()
 	{
-		if( fieldRequest == null)
+		if (fieldRequest == null)
 		{
 			return null;
 		}
 
 		String path = fieldRequest.getRequestURI();
-		if ( fieldRequest.getQueryString() != null && fieldRequest.getQueryString().length() > 0)
+		if (fieldRequest.getQueryString() != null && fieldRequest.getQueryString().length() > 0)
 		{
 			path = path + "?" + fieldRequest.getQueryString();
 		}
@@ -596,6 +610,7 @@ public class URLUtilities
 		path = path.substring(home.length());
 		return path;
 	}
+
 	/**
 	 * Report the site name, e.g. http://www.openeditpro.com
 	 * 
@@ -603,140 +618,131 @@ public class URLUtilities
 	 */
 	public String siteRoot()
 	{
-		if( fieldRequest == null)
+		if (fieldRequest == null)
 		{
 			return null;
 		}
 		String siteroot = fieldRequest.getHeader("X-SiteRoot");
 
-		if( siteroot != null )
+		if (siteroot != null)
 		{
 			return siteroot;
 		}
-//		return null;
-//		String host = fieldRequest.getHeader("Host");
-//		if( host != null)
-//		{
-//			//Includes the port
-//			//https://serverfault.com/questions/363159/nginx-proxy-pass-redirects-ignore-port
-//			if( host.endsWith(":443") )
-//			{
-//				siteroot = "https://" + host;
-//			}
-//			else
-//			{
-//				siteroot = "http://" + host;
-//			}
-//			int colon = siteroot.indexOf(":");
-//			if( colon > -1 )
-//			{
-//				siteroot = siteroot.substring(0,colon);
-//			}
-//			return siteroot;
-//		}
-//		
-//		
+		// return null;
+		// String host = fieldRequest.getHeader("Host");
+		// if( host != null)
+		// {
+		// //Includes the port
+		// //https://serverfault.com/questions/363159/nginx-proxy-pass-redirects-ignore-port
+		// if( host.endsWith(":443") )
+		// {
+		// siteroot = "https://" + host;
+		// }
+		// else
+		// {
+		// siteroot = "http://" + host;
+		// }
+		// int colon = siteroot.indexOf(":");
+		// if( colon > -1 )
+		// {
+		// siteroot = siteroot.substring(0,colon);
+		// }
+		// return siteroot;
+		// }
+		//
+		//
 		StringBuffer ctx = fieldRequest.getRequestURL();
-		siteroot = ctx.substring( 0, ctx.indexOf("/", 8) ); //8 comes from https://
-		
+		siteroot = ctx.substring(0, ctx.indexOf("/", 8)); // 8 comes from https://
+
 		int colon = siteroot.indexOf(":", 8);
-		if( colon == -1 )
+		if (colon == -1)
 		{
-//			String port = siteroot.substring(colon,siteroot.length());
-//			if( port.length() < 2 )
-			//assume to https
-			siteroot = siteroot.replace("http:","https:");
+			// String port = siteroot.substring(colon,siteroot.length());
+			// if( port.length() < 2 )
+			// assume to https
+			siteroot = siteroot.replace("http:", "https:");
 		}
 
 		return siteroot;
 	}
-	
+
 	public String domain()
 	{
 		String site = siteRoot();
-		String domain = site.substring(site.indexOf("//") + 2,site.length());
-		if( domain.contains(":"))
+		String domain = site.substring(site.indexOf("//") + 2, site.length());
+		if (domain.contains(":"))
 		{
-			domain  = domain.substring(0,domain.indexOf(":"));
+			domain = domain.substring(0, domain.indexOf(":"));
 		}
 		return domain;
-		
-		
+
 		/**
 		 *
-		 		String basestring = base.substring(base.lastIndexOf("//") + 2,
-				base.length());
-		int port = basestring.indexOf(":");
-		if( port > -1)
-		{
-			basestring = basestring.substring(0,port);
-		}
-		
-		int nextslash = basestring.indexOf("/");
-		if( nextslash > -1)
-		{
-			basestring = basestring.substring(0,nextslash);
-		}
-		basestring = basestring.toLowerCase();
-		return basestring;
-
+		 * String basestring = base.substring(base.lastIndexOf("//") + 2, base.length()); int port =
+		 * basestring.indexOf(":"); if( port > -1) { basestring = basestring.substring(0,port); }
+		 * 
+		 * int nextslash = basestring.indexOf("/"); if( nextslash > -1) { basestring =
+		 * basestring.substring(0,nextslash); } basestring = basestring.toLowerCase(); return basestring;
 		 *
+		 * 
 		 */
 	}
-	
+
 	public static String xmlEscapeWithWrap(String inStr)
 	{
 		return xmlEscapeWithWrap(inStr, 100);
 	}
+
 	public static String xmlEscapeWithWrap(String inStr, int inWrap)
 	{
-			if( inStr == null)
+		if (inStr == null)
+		{
+			return null;
+		}
+		String inCode = xmlEscape(inStr);
+		int LINE_LENGTH = inWrap;
+		StringBuffer sb = new StringBuffer();
+		int linecount = 0;
+		boolean nextSpace = false;
+
+		for (int n = 0; n < inCode.length(); n++)
+		{
+			char c = inCode.charAt(n);
+			linecount++;
+			if (linecount > LINE_LENGTH)
 			{
-				return null;
+				nextSpace = true;
 			}
-			String inCode = xmlEscape(inStr);
-			int LINE_LENGTH = inWrap;
-			StringBuffer sb = new StringBuffer();
-			int linecount = 0;
-			boolean nextSpace = false;
-			
-			for ( int n = 0; n < inCode.length(); n++ )
+
+			switch (c)
 			{
-				char c = inCode.charAt( n );
-				linecount++;
-				if ( linecount > LINE_LENGTH)
+				case '\n':
 				{
-					nextSpace = true;
+					sb.append("\n");
+					linecount = 0;
+					nextSpace = false;
+					break;
 				}
-				
-				switch ( c )
+				case '\r':
 				{
-					case '\n':
-					{
-						sb.append( "\n" );
-						linecount = 0;
-						nextSpace = false;
-						break;
-					}
-					case '\r':
-					{
-						break;
-					}
+					break;
+				}
 				default:
-					if(  nextSpace && c == ' ' )	
+					if (nextSpace && c == ' ')
 					{
-						sb.append( "\n" );
+						sb.append("\n");
 						nextSpace = false;
 						linecount = 0;
 					}
-					sb.append( c );
-				}
+					sb.append(c);
 			}
-			return sb.toString();
+		}
+		return sb.toString();
 	}
+
 	public static String xmlEscapeArea(String inStr)
 	{
-		if ( inStr == null )
+		if (inStr == null)
 		{
 			return null;
 		}
@@ -746,49 +752,49 @@ public class URLUtilities
 			char c = inStr.charAt(i);
 			switch (c)
 			{
-			case '&':
-				//can you just blindly replace any & since it might be part of &apos;?
-				//IE seems to espace the & for some reason inStr = inStr.replaceAll("'", "&apos;");		
-				//inStr = inStr.replaceAll("&", "&amp;");
-				output.append("&amp;");
-				break;
-			case '<':
-				output.append("&lt;");
-				break;
-			case '>':
-				output.append("&gt;");
-				break;
-			case '\t':
-				output.append("&ensp;");
-				break;
-			case '\"':
-				output.append("&quot;");
-				break;
-			case '\'':
-				output.append("&apos;");
-				break;
-			case '\n':
-				output.append("<br>");
-				break;
-			default:
-				output.append(c);
-				break;
+				case '&':
+					// can you just blindly replace any & since it might be part of &apos;?
+					// IE seems to espace the & for some reason inStr = inStr.replaceAll("'", "&apos;");
+					// inStr = inStr.replaceAll("&", "&amp;");
+					output.append("&amp;");
+					break;
+				case '<':
+					output.append("&lt;");
+					break;
+				case '>':
+					output.append("&gt;");
+					break;
+				case '\t':
+					output.append("&ensp;");
+					break;
+				case '\"':
+					output.append("&quot;");
+					break;
+				case '\'':
+					output.append("&apos;");
+					break;
+				case '\n':
+					output.append("<br>");
+					break;
+				default:
+					output.append(c);
+					break;
 			}
 		}
 		return output.toString();
 	}
+
 	public static String xmlEscape(String inStr)
 	{
-		if ( inStr == null )
+		if (inStr == null)
 		{
 			return null;
 		}
-		//TODO: Deal with [ ] and 
+		// TODO: Deal with [ ] and
 		/*
-		 *  gen-delims  = ":" / "/" / "?" / "#" / "[" / "]" / "@"
-
-      sub-delims  = "!" / "$" / "&" / "'" / "(" / ")"
-                  / "*" / "+" / "," / ";" / "="
+		 * gen-delims = ":" / "/" / "?" / "#" / "[" / "]" / "@"
+		 * 
+		 * sub-delims = "!" / "$" / "&" / "'" / "(" / ")" / "*" / "+" / "," / ";" / "="
 		 */
 		StringBuffer output = new StringBuffer(inStr.length() + 50);
 		for (int i = 0; i < inStr.length(); i++)
@@ -796,47 +802,47 @@ public class URLUtilities
 			char c = inStr.charAt(i);
 			switch (c)
 			{
-			case '&':
-				//can you just blindly replace any & since it might be part of &apos;?
-				//IE seems to espace the & for some reason inStr = inStr.replaceAll("'", "&apos;");		
-				//inStr = inStr.replaceAll("&", "&amp;");
-				
-				//DON'T replace \t it's valid XML
-				output.append("&amp;");
-				break;
-			case '<':
-				output.append("&lt;");
-				break;
-			case '>':
-				output.append("&gt;");
-				break;			
-			case '"':
-				output.append("&quot;");
-				break;
-			case '\'':
-				output.append("&#39;");
-				break;
-			default:
-				output.append(c);
-				break;
+				case '&':
+					// can you just blindly replace any & since it might be part of &apos;?
+					// IE seems to espace the & for some reason inStr = inStr.replaceAll("'", "&apos;");
+					// inStr = inStr.replaceAll("&", "&amp;");
+
+					// DON'T replace \t it's valid XML
+					output.append("&amp;");
+					break;
+				case '<':
+					output.append("&lt;");
+					break;
+				case '>':
+					output.append("&gt;");
+					break;
+				case '"':
+					output.append("&quot;");
+					break;
+				case '\'':
+					output.append("&#39;");
+					break;
+				default:
+					output.append(c);
+					break;
 			}
 		}
 		return output.toString();
 	}
-	
+
 	public static String xmlPlainText(String inStr)
 	{
-		if ( inStr == null )
+		if (inStr == null)
 		{
 			return null;
 		}
-		
+
 		return inStr.replaceAll("<[^>]*>", "");
 	}
-	
+
 	public static String xmlPlainTextWithWrap(String inStr)
 	{
-		if ( inStr == null )
+		if (inStr == null)
 		{
 			return null;
 		}
@@ -849,54 +855,57 @@ public class URLUtilities
 		return output.toString();
 	}
 
-	public static String xmlPlainTextWithWrap(String inStr, int len) {
-		if ( inStr == null )
+	public static String xmlPlainTextWithWrap(String inStr, int len)
+	{
+		if (inStr == null)
 		{
 			return null;
 		}
-		
+
 		String output = xmlPlainTextWithWrap(inStr);
-		if(output.length() > len) {
+		if (output.length() > len)
+		{
 			output = output.substring(0, len);
 			output = output.trim() + "...";
 		}
 		return output;
 	}
-	
-	public static String xmlFirstParagraph(String inStr) {
-		if ( inStr == null )
+
+	public static String xmlFirstParagraph(String inStr)
+	{
+		if (inStr == null)
 		{
 			return null;
 		}
-		
+
 		String str = inStr.replaceAll("\\r|\\n", "");
 		str = inStr.replaceAll("<p>\\s*</p>", "");
-		
+
 		int start = str.indexOf("<p");
 		int end = str.indexOf("</p>");
-		
-		if( end < 200) //try and grab a longer paragraph
+
+		if (end < 200) // try and grab a longer paragraph
 		{
-			int nextend = str.indexOf("</p>",end + 1);
-			if( nextend > -1 )
+			int nextend = str.indexOf("</p>", end + 1);
+			if (nextend > -1)
 			{
-				end = nextend;	
+				end = nextend;
 			}
 		}
-		if(end - start <= 0) {
+		if (end - start <= 0)
+		{
 			return null;
 		}
-		
+
 		String paragraph = inStr.substring(start, end);
 		paragraph = paragraph.replaceAll("<[^>]*>", "");
-		
+
 		return paragraph;
 	}
-	
-	
+
 	public static String textEscape(String inStr)
 	{
-		if ( inStr == null )
+		if (inStr == null)
 		{
 			return null;
 		}
@@ -906,23 +915,23 @@ public class URLUtilities
 			char c = inStr.charAt(i);
 			switch (c)
 			{
-			case '\n':
-				//can you just blindly replace any & since it might be part of &apos;?
-				//IE seems to espace the & for some reason inStr = inStr.replaceAll("'", "&apos;");		
-				//inStr = inStr.replaceAll("&", "&amp;");
-				output.append(" ");
-				break;
-			case '\r':
-				output.append(" ");
-				break;
-			case '\'':
-				break;
-			case '\"':
-				output.append("&quot;");
-				break;
-			default:
-				output.append(c);
-				break;
+				case '\n':
+					// can you just blindly replace any & since it might be part of &apos;?
+					// IE seems to espace the & for some reason inStr = inStr.replaceAll("'", "&apos;");
+					// inStr = inStr.replaceAll("&", "&amp;");
+					output.append(" ");
+					break;
+				case '\r':
+					output.append(" ");
+					break;
+				case '\'':
+					break;
+				case '\"':
+					output.append("&quot;");
+					break;
+				default:
+					output.append(c);
+					break;
 			}
 		}
 		return output.toString();
@@ -930,18 +939,18 @@ public class URLUtilities
 
 	public static String xmlUnescape(String inStr)
 	{
-		if ( inStr == null )
+		if (inStr == null)
 		{
 			return null;
 		}
-		//can you just blindly replace any & since it might be part of &apos;?
-		inStr = inStr.replaceAll("&amp;","&");
+		// can you just blindly replace any & since it might be part of &apos;?
+		inStr = inStr.replaceAll("&amp;", "&");
 
 		inStr = inStr.replaceAll("&lt;", "<");
 		inStr = inStr.replaceAll("&gt;", ">");
 		inStr = inStr.replaceAll("&quot;", "\"");
 
-		//IE seems to espace the & for some reason inStr = inStr.replaceAll("'", "&apos;");		
+		// IE seems to espace the & for some reason inStr = inStr.replaceAll("'", "&apos;");
 		return inStr;
 	}
 
@@ -949,14 +958,14 @@ public class URLUtilities
 	 * If I am located in /webapp/demo/test.html my prefix would be /demo/ to get back to the base
 	 * /webapp level
 	 *
-	 * The rule is you can tack on $home  + "/somepage.html" without getting //somepage.html
+	 * The rule is you can tack on $home + "/somepage.html" without getting //somepage.html
 	 *
 	 *
 	 * @return Object
 	 */
 	public String relativeHomePrefix()
 	{
-		if( fieldRequest == null)
+		if (fieldRequest == null)
 		{
 			return null;
 		}
@@ -965,9 +974,9 @@ public class URLUtilities
 
 		if ((rootdir != null) && (rootdir.length() > 0))
 		{
-			if ( rootdir.endsWith("/"))
+			if (rootdir.endsWith("/"))
 			{
-				rootdir = rootdir.substring(0,rootdir.length() - 1);
+				rootdir = rootdir.substring(0, rootdir.length() - 1);
 			}
 			return rootdir;
 		}
@@ -979,8 +988,8 @@ public class URLUtilities
 	}
 
 	/**
-	 * Build a URL using the given path, protocol and port.  The path will be relative to the
-	 * current context.
+	 * Build a URL using the given path, protocol and port. The path will be relative to the current
+	 * context.
 	 *
 	 * @param path The path
 	 * @param protocol (i.e. http or https)
@@ -990,7 +999,7 @@ public class URLUtilities
 	 */
 	protected String build(String path, String protocol, int port)
 	{
-		if( fieldRequest == null)
+		if (fieldRequest == null)
 		{
 			return null;
 		}
@@ -998,8 +1007,8 @@ public class URLUtilities
 		String serverName = fieldRequest.getServerName();
 		String contextPath = fieldRequest.getContextPath();
 
-		//log.debug("Server name: " + serverName);
-		//log.debug("Context path: " + contextPath);
+		// log.debug("Server name: " + serverName);
+		// log.debug("Context path: " + contextPath);
 
 		if (!contextPath.endsWith(URL_PATH_SEPARATOR))
 		{
@@ -1012,7 +1021,7 @@ public class URLUtilities
 		}
 
 		String requestPath = contextPath + path;
-		//log.debug("Request path: " + requestPath);
+		// log.debug("Request path: " + requestPath);
 
 		StringBuffer buffer = new StringBuffer();
 		buffer.append(protocol);
@@ -1026,10 +1035,7 @@ public class URLUtilities
 			realPort = port;
 		}
 
-		if (
-			(realPort > 0) &&
-				!((protocol.equals("http") && (realPort == 80)) ||
-				(protocol.equals("https") && (realPort == 443))))
+		if ((realPort > 0) && !((protocol.equals("http") && (realPort == 80)) || (protocol.equals("https") && (realPort == 443))))
 		{
 			buffer.append(":");
 			buffer.append(realPort);
@@ -1042,10 +1048,11 @@ public class URLUtilities
 
 		buffer.append(requestPath);
 
-		//log.debug("URL: '" + buffer + "'");
+		// log.debug("URL: '" + buffer + "'");
 
 		return buffer.toString();
 	}
+
 	public PathUtilities getPathUtilities()
 	{
 		return new PathUtilities();
@@ -1070,73 +1077,81 @@ public class URLUtilities
 	{
 		fieldRequest = inRequest;
 	}
-	
-	public static HttpClientBuilder createTrustingHttpClient() {
+
+	public static HttpClientBuilder createTrustingHttpClient()
+	{
 
 		try
 		{
-			  HttpClientBuilder builder = HttpClientBuilder.create();
-		        SSLContext sc = SSLContext.getInstance("SSL");
-		        sc.init(null, getTrustingManager(), new java.security.SecureRandom());
-			    SSLConnectionSocketFactory sslConnectionFactory = new SSLConnectionSocketFactory(sc, SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
-			    builder.setSSLSocketFactory(sslConnectionFactory);
-	
-			    Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory>create()
-			            .register("https", sslConnectionFactory)
-			            .build();
-	
-			    HttpClientConnectionManager ccm = new BasicHttpClientConnectionManager(registry);
-	
-			    builder.setConnectionManager(ccm);
-	
-			    return builder;
+			HttpClientBuilder builder = HttpClientBuilder.create();
+			SSLContext sc = SSLContext.getInstance("SSL");
+			sc.init(null, getTrustingManager(), new java.security.SecureRandom());
+			SSLConnectionSocketFactory sslConnectionFactory = new SSLConnectionSocketFactory(sc, SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+			builder.setSSLSocketFactory(sslConnectionFactory);
+
+			Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory>create().register("https", sslConnectionFactory).build();
+
+			HttpClientConnectionManager ccm = new BasicHttpClientConnectionManager(registry);
+
+			builder.setConnectionManager(ccm);
+
+			return builder;
 		}
-		catch( Exception ex)
+		catch (Exception ex)
 		{
 			throw new OpenEditException(ex);
 		}
 
-	        
-//	        ClientConnectionManager manager = httpClient.getConnectionManager();
-//	        manager.getSchemeRegistry().register(new Scheme("https", 443, factory));
-//	        httpclient.getConnectionManager().getSchemeRegistry().register(sch);
-//	        return httpclient;
+		// ClientConnectionManager manager = httpClient.getConnectionManager();
+		// manager.getSchemeRegistry().register(new Scheme("https", 443, factory));
+		// httpclient.getConnectionManager().getSchemeRegistry().register(sch);
+		// return httpclient;
 
 	}
-	 private static TrustManager[] getTrustingManager() {
-	        TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
-	            @Override
-	            public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-	                return null;
-	            }
 
-	            @Override
-	            public void checkClientTrusted(X509Certificate[] certs, String authType) {
-	                // Do nothing
-	            }
+	private static TrustManager[] getTrustingManager()
+	{
+		TrustManager[] trustAllCerts = new TrustManager[] {new X509TrustManager() {
+			@Override
+			public java.security.cert.X509Certificate[] getAcceptedIssuers()
+			{
+				return null;
+			}
 
-	            @Override
-	            public void checkServerTrusted(X509Certificate[] certs, String authType) {
-	                // Do nothing
-	            }
+			@Override
+			public void checkClientTrusted(X509Certificate[] certs, String authType)
+			{
+				// Do nothing
+			}
 
-	        } };
-	        return trustAllCerts;
-	    }
-	 private static String urlRegex = "\\b(?:https?|ftp)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
-	 
-	 private static final Pattern urlPattern = Pattern.compile(urlRegex,
-		        Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
-	 
-	public static String escapeMessage(String inMessage) {
-		return escapeMessage(inMessage,-1);
+			@Override
+			public void checkServerTrusted(X509Certificate[] certs, String authType)
+			{
+				// Do nothing
+			}
+
+		}};
+		return trustAllCerts;
 	}
-	 
-	public static String escapeMessage(String inMessage, int maxchars) {
+
+	private static String urlRegex = "\\b(?:https?|ftp)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
+
+	private static final Pattern urlPattern = Pattern.compile(urlRegex, Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
+
+	public static String escapeMessage(String inMessage)
+	{
+		return escapeMessage(inMessage, -1);
+	}
+
+	public static String escapeMessage(String inMessage, int maxchars)
+	{
 		return escapeMessage(inMessage, maxchars, false);
 	}
-	public static String escapeMessage(String inMessage, int maxchars, boolean singleline) {
-		if (inMessage == null) {
+
+	public static String escapeMessage(String inMessage, int maxchars, boolean singleline)
+	{
+		if (inMessage == null)
+		{
 			return null;
 		}
 		String escaped = URLUtilities.xmlEscape(inMessage);
@@ -1144,8 +1159,8 @@ public class URLUtilities
 		escaped = escaped.replaceAll("&lt;/ir&gt;", "</i>");
 		escaped = escaped.replaceAll("&lt;b&gt;", "<b>");
 		escaped = escaped.replaceAll("&lt;/b&gt;", "</b>");
-		
-		if(singleline)
+
+		if (singleline)
 		{
 			escaped = escaped.replaceAll("\\n", " ");
 			escaped = escaped.replaceAll("&lt;br&gt;", " ");
@@ -1160,134 +1175,132 @@ public class URLUtilities
 			escaped = escaped.replaceAll("&lt;/p&gt;", "</p>");
 		}
 
-		  Matcher m = urlPattern.matcher(escaped);
-		  StringBuffer sb = new StringBuffer(escaped.length());
-		  while (m.find()) {
-		   // String text = m.group(1);
-		    String text = m.group(0).trim();
-		    text = text.replaceAll("\\$", "%24"); //prevent malformed variables on url
-		    if( maxchars > -1 && maxchars < escaped.length() )  //Not gonna fit
-		    {
-		    	m.appendReplacement(sb,text);
-		    	continue;
-		    }
-		    // ... possibly process 'text' ...
-		    
-		    StringBuffer link = new StringBuffer();
-		    
-		    link.append(" <a href=\"");
-		    link.append(text);
-		    link.append("\" target=\"_blank\" >");
-		    link.append(text);
-		    link.append("</a>");
-		    m.appendReplacement(sb, Matcher.quoteReplacement(link.toString()));
-		  }
-		  m.appendTail(sb);
-		  
-		  if( maxchars > -1 && maxchars < sb.length())
-		  {
-			  String cutoff = sb.toString().substring(0,maxchars);
-			  String[] types = new String[]{"div","b","i","span","a", "img"};
-			  for (int i = 0; i < types.length; i++)
-			  {
-				  cutoff = stripTags(cutoff, types[i]);
-			  }
-			  if( cutoff.contains("<"))
-			  {
-				for (int i = cutoff.length()-1; i >= 0; i--)
+		Matcher m = urlPattern.matcher(escaped);
+		StringBuffer sb = new StringBuffer(escaped.length());
+		while (m.find())
+		{
+			// String text = m.group(1);
+			String text = m.group(0).trim();
+			text = text.replaceAll("\\$", "%24"); // prevent malformed variables on url
+			if (maxchars > -1 && maxchars < escaped.length()) // Not gonna fit
+			{
+				m.appendReplacement(sb, text);
+				continue;
+			}
+			// ... possibly process 'text' ...
+
+			StringBuffer link = new StringBuffer();
+
+			link.append(" <a href=\"");
+			link.append(text);
+			link.append("\" target=\"_blank\" >");
+			link.append(text);
+			link.append("</a>");
+			m.appendReplacement(sb, Matcher.quoteReplacement(link.toString()));
+		}
+		m.appendTail(sb);
+
+		if (maxchars > -1 && maxchars < sb.length())
+		{
+			String cutoff = sb.toString().substring(0, maxchars);
+			String[] types = new String[] {"div", "b", "i", "span", "a", "img"};
+			for (int i = 0; i < types.length; i++)
+			{
+				cutoff = stripTags(cutoff, types[i]);
+			}
+			if (cutoff.contains("<"))
+			{
+				for (int i = cutoff.length() - 1; i >= 0; i--)
 				{
-					//Loop from the end make sure we have > before any <
-					if( cutoff.charAt(i)  == '>')
+					// Loop from the end make sure we have > before any <
+					if (cutoff.charAt(i) == '>')
 					{
 						break;
 					}
-					if( cutoff.charAt(i) == '<')
+					if (cutoff.charAt(i) == '<')
 					{
 						cutoff = cutoff + "/>";
 						break;
 					}
 				}
-			  }
-//			  if( cutoff.contains("<a ") && !cutoff.contains("</a>"))
-//			  {
-//				  cutoff = cutoff.replace("<a ", "") + " \"</span>";
-//			  }
-			  
-			  
-			  return cutoff + "...";
-		  }
-		  
-		  //Suppoort new lines and tabs and spaces?
-//		  String replaced = sb.toString().replace("\\n", "<br>");
-//		  //replaced = replaced.replace("/n", "<br>");
-//		  replaced = replaced.replace("	", "&nbsp;&nbsp;&nbsp;&nbsp;");
-//		  return replaced;
-		  return sb.toString();
-		
+			}
+			// if( cutoff.contains("<a ") && !cutoff.contains("</a>"))
+			// {
+			// cutoff = cutoff.replace("<a ", "") + " \"</span>";
+			// }
+
+			return cutoff + "...";
+		}
+
+		// Suppoort new lines and tabs and spaces?
+		// String replaced = sb.toString().replace("\\n", "<br>");
+		// //replaced = replaced.replace("/n", "<br>");
+		// replaced = replaced.replace(" ", "&nbsp;&nbsp;&nbsp;&nbsp;");
+		// return replaced;
+		return sb.toString();
+
 	}
 
-	public static String stripTags(String inHtml, String tag) 
+	public static String stripTags(String inHtml, String tag)
 	{
 		String[] opentag = inHtml.split("<" + tag);
 		String[] closetag = inHtml.split("</" + tag);
-		
+
 		for (int i = 0; i < closetag.length - closetag.length; i++)
 		{
 			inHtml = inHtml + "</" + tag;
 		}
 		return inHtml;
 	}
-	
-	private static final Set<String> ALLOWED_TAGS = new HashSet<>(Arrays.asList(
-            "div", "p", "b", "strong", "i", "em", "span", "a", "img", "blockquote",
-            "ul", "ol", "li", "hr", "br", "h1", "h2", "code"
-    ));
+
+	private static final Set<String> ALLOWED_TAGS =
+		new HashSet<>(Arrays.asList("div", "p", "b", "strong", "i", "em", "span", "a", "img", "blockquote", "ul", "ol", "li", "hr", "br", "h1", "h2", "code"));
 
 	private static final Pattern tagPattern = Pattern.compile("<(/?)([a-zA-Z][a-zA-Z0-9]*)(\\s[^>]*)?>", Pattern.CASE_INSENSITIVE);
-	
-	public static String escapeUnsafeHtml(String input) 
+
+	public static String escapeUnsafeHtml(String input)
 	{
-        if (input == null || input.isEmpty()) 
-        {
-            return input;
-        }
-        
-        StringBuilder result = new StringBuilder();
-        
-        Matcher matcher = tagPattern.matcher(input);
-        
-        int lastEnd = 0;
-        
-        while (matcher.find()) 
-        {
-            // Append text before the tag (escaped)
-	        result.append(xmlEscape(input.substring(lastEnd, matcher.start())));
-	        
-	        String fullTag = matcher.group(0);
-//	        String closingSlash = matcher.group(1);
-	        String tagName = matcher.group(2).toLowerCase();
-//	        String attributes = matcher.group(3);
-	        
-	        if (ALLOWED_TAGS.contains(tagName)) 
-	        {
-	            // Keep the allowed tag as-is
-	            result.append(fullTag);
-	        } 
-	        else 
-	        {
-	            // Escape the disallowed tag
-	            result.append(xmlEscape(fullTag));
-	        }
-	        
-	        lastEnd = matcher.end();
-	    }
-    
-	    // Append remaining text after last tag (escaped)
-	    result.append(xmlEscape(input.substring(lastEnd)));
-	    
-	    return result.toString();
+		if (input == null || input.isEmpty())
+		{
+			return input;
+		}
+
+		StringBuilder result = new StringBuilder();
+
+		Matcher matcher = tagPattern.matcher(input);
+
+		int lastEnd = 0;
+
+		while (matcher.find())
+		{
+			// Append text before the tag (escaped)
+			result.append(xmlEscape(input.substring(lastEnd, matcher.start())));
+
+			String fullTag = matcher.group(0);
+			// String closingSlash = matcher.group(1);
+			String tagName = matcher.group(2).toLowerCase();
+			// String attributes = matcher.group(3);
+
+			if (ALLOWED_TAGS.contains(tagName))
+			{
+				// Keep the allowed tag as-is
+				result.append(fullTag);
+			}
+			else
+			{
+				// Escape the disallowed tag
+				result.append(xmlEscape(fullTag));
+			}
+
+			lastEnd = matcher.end();
+		}
+
+		// Append remaining text after last tag (escaped)
+		result.append(xmlEscape(input.substring(lastEnd)));
+
+		return result.toString();
 	}
-	
+
 	public String getDomain()
 	{
 		return parseDomain(buildRoot());
@@ -1297,34 +1310,34 @@ public class URLUtilities
 	{
 		return parseSubDomain(buildRoot());
 	}
+
 	public static String parseSubDomain(String base)
 	{
-			// string off start
-			String basestring = parseDomain(base);
-			//total Domain
-			String[] parts  = basestring.split("\\.");
-			if( parts.length < 3)
-			{
-				return null;
-			}
-			return parts[0];
+		// string off start
+		String basestring = parseDomain(base);
+		// total Domain
+		String[] parts = basestring.split("\\.");
+		if (parts.length < 3)
+		{
+			return null;
+		}
+		return parts[0];
 
 	}
 
 	protected static String parseDomain(String base)
 	{
-		String basestring = base.substring(base.lastIndexOf("//") + 2,
-				base.length());
+		String basestring = base.substring(base.lastIndexOf("//") + 2, base.length());
 		int port = basestring.indexOf(":");
-		if( port > -1)
+		if (port > -1)
 		{
-			basestring = basestring.substring(0,port);
+			basestring = basestring.substring(0, port);
 		}
-		
+
 		int nextslash = basestring.indexOf("/");
-		if( nextslash > -1)
+		if (nextslash > -1)
 		{
-			basestring = basestring.substring(0,nextslash);
+			basestring = basestring.substring(0, nextslash);
 		}
 		basestring = basestring.toLowerCase();
 		return basestring;
@@ -1334,21 +1347,21 @@ public class URLUtilities
 	{
 		String text = removeAccents(inName);
 		text = urlEscape(text);
-		text = text.replaceAll(" ","-").replaceAll("&amp;","-");
+		text = text.replaceAll(" ", "-").replaceAll("&amp;", "-");
 		return text;
 	}
 
 	public String getRequestParameter(String inKey)
 	{
 		String value = null;
-		if( getRequest() != null )
+		if (getRequest() != null)
 		{
 			value = getRequest().getParameter(inKey);
 		}
-		if ( value != null && value.length() == 0)
+		if (value != null && value.length() == 0)
 		{
-			value = null; //null out blank strings
+			value = null; // null out blank strings
 		}
 		return value;
-	}	
+	}
 }

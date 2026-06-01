@@ -1,6 +1,8 @@
 package org.entermediadb.asset.importer;
 
 import java.io.Writer;
+import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 
 import org.apache.commons.logging.Log;
@@ -16,6 +18,7 @@ import org.openedit.data.SearcherManager;
 import org.openedit.data.ViewFieldList;
 import org.openedit.hittracker.HitTracker;
 import org.openedit.modules.translations.LanguageMap;
+import org.openedit.util.DateStorageUtil;
 
 public class BaseExporter
 {
@@ -164,6 +167,7 @@ public class BaseExporter
 					// }
 					// }
 
+					String value = null;
 					if (detail.isMultiLanguage())
 					{
 						Object vals = hit.getValue(detail.getId());
@@ -185,31 +189,34 @@ public class BaseExporter
 					}
 					else
 					{
-						Object value = null;
 						// do special logic here
-						if (detail.isList() && friendly)
+						if (detail.isMultiValue())
 						{
-							// detail.get
-							String val = hit.get(detail.getId());
-							Data remote = searcherManager.getData(detail.getListCatalogId(), detail.getListId(), val);
-							if (remote != null)
+							StringBuffer buf = new StringBuffer();
+							Collection values = hit.getValues(detail.getId());
+							if (values == null)
 							{
-								value = remote.getName();
+								nextrow[fieldcount] = "";
+								fieldcount++;
+								continue;
 							}
-						}
-						if (value == null && detail.get("rendermask") != null)
-						{
-							value = searcherManager.getValue(hit, detail, inReq.getLocale());
+							for (Iterator iterator2 = values.iterator(); iterator2.hasNext();)
+							{
+								Object obj = iterator2.next();
+								value = toString(searcherManager, obj, detail);
+								buf.append(value);
+								if (iterator2.hasNext())
+								{
+									buf.append("|");
+								}
+							}
+							value = buf.toString();
 						}
 						else
 						{
-							value = hit.get(detail.getId());
+							value = toString(searcherManager, hit.getValue(detail.getId()), detail);
 						}
-						if (value == null)
-						{
-							value = "";
-						}
-						nextrow[fieldcount] = value.toString();
+						nextrow[fieldcount] = value;
 						fieldcount++;
 					}
 				}
@@ -234,4 +241,31 @@ public class BaseExporter
 
 	}
 
+	public String toString(SearcherManager searcherManager, Object val, PropertyDetail detail)
+	{
+		if (val == null)
+		{
+			return "";
+		}
+		String value = null;
+		if (detail.isList())
+		{
+			// detail.get
+			Data remote = searcherManager.getCachedData(detail.getListCatalogId(), detail.getListId(), val.toString());
+			if (remote != null)
+			{
+				value = remote.getName();
+			}
+		}
+		else
+			if (detail.isDate())
+			{
+				value = DateStorageUtil.getStorageUtil().formatForStorage((Date) val);
+			}
+			else
+			{
+				value = val.toString();
+			}
+		return value;
+	}
 }
