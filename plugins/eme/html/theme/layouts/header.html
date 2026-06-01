@@ -15,9 +15,9 @@
 			#end
 
 			#set($theme = $mediaarchive.getCachedData("theme", $themeid))
-			#ifnotnull($user)
-				<a class="personal-brand text-decoration-none d-flex align-items-center" href="$homeurl" title="$user.getScreenName()" style="height: var(--themed-logo-height);">
-					$user.getScreenName() 
+			#ifnotnull($emeprofile)
+				<a class="personal-brand text-decoration-none d-flex align-items-center" href="$homeurl" title="$text($emeprofile)" style="height: var(--themed-logo-height);">
+					#text($emeprofile)
 				</a>
 			#end
 			#if($module.id != "modulesearch")

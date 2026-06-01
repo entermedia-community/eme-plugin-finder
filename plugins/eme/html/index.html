@@ -1,1 +1,10 @@
+#if( $user.getId() == $emeprofile.get("owner") )
+
+your dashboard
+
+
+#else
+
 $pages.include("/${applicationid}/chat.html", $context)
+
+#end

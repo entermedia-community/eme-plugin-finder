@@ -149,7 +149,8 @@ public class ProfileLoader extends BaseManager implements PageLoader, CatalogEna
 			String template = null;
 			if (anythingelse == null)
 			{
-				template = apphome + "/profile/blog-list/index.html";
+
+				template = apphome + "/index.html";
 			}
 			else
 			{

@@ -15,4 +15,8 @@
 
   <property name="allowguestregistration">true</property>
 
+  <permission name="view">
+    <boolean value="true"/>
+  </permission>
+
 </page>
