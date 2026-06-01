@@ -154,8 +154,8 @@ case "$CMD" in
     for plugin in "$TARGET/plugins"/*/; do
         pluginname="$(basename "$plugin")"
         if [ -d "${plugin}html" ]; then
-            if [ ! -L "./webapp/$pluginname" ]; then
-                ln -nsf "./plugins/${pluginname}/html" "./webapp/$pluginname"
+            if [ ! -L "../webapp/$pluginname" ]; then
+                ln -nsf "../plugins/${pluginname}/html" "./webapp/$pluginname"
             fi
         fi
     done

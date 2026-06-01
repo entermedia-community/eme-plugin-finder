@@ -1129,7 +1129,9 @@ public class PropertyDetailsArchive implements CatalogEnabled
 
 	public void clearCustomSettings(String inSearchType)
 	{
-		String path = findConfigurationFile("/fields/" + inSearchType + ".xml");
+		// String path = findConfigurationFile("/fields/" + inSearchType + ".xml");
+		String path = "/WEB-INF/data/" + getCatalogId() + "/fields/" + inSearchType + ".xml";
+
 		Page found = getPageManager().getPage(path);
 		getPageManager().removePage(found);
 
