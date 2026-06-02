@@ -1,10 +1,47 @@
 #if( $user.getId() == $emeprofile.get("owner") )
 
-your dashboard
+<style>
+  .owner-right-toolbar {
+    position: fixed;
+    top: 5rem;
+    right: 1rem;
+    width: min(16rem, calc(100vw - 2rem));
+    min-height: calc(100vh - 7rem);
+    z-index: 1020;
+  }
 
+  .has-owner-toolbar {
+    margin-right: 18rem;
+  }
 
-#else
+  @media (max-width: 991.98px) {
+    .owner-right-toolbar {
+      position: static;
+      width: auto;
+      margin: 0 0 1rem 0;
+    }
 
-$pages.include("/${applicationid}/chat.html", $context)
+    .has-owner-toolbar {
+      margin-right: 0;
+    }
+  }
+</style>
+
+<aside class="owner-right-toolbar">
+  <div class="p-3 bg-light rounded-3 shadow-sm border h-100 d-flex flex-column">
+    <h2 class="h4 fw-bold mb-2">Welcome Back $user</h2>
+    <p class="mb-3">Here's a quick overview of your recent activity and goals.</p>
+    <p class="mb-0">This week: 23 people visited. 35 Goals completed <br> Totals: 1234 people visited. 4567 Goals completed</p>
+  </div>
+</aside>
 
 #end
+
+
+<div id="chatMainContent" class="chat-main-content#if( $user.getId() == $emeprofile.get('owner') ) has-owner-toolbar#end">
+    $pages.include("./components/chat-dashboard/landing.html", $context)
+  <div class="chat-input-container">
+    $pages.include("./components/chat-dashboard/chat-input.html", $context)
+  </div>
+</div>
+

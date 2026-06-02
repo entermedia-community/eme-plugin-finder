@@ -4,4 +4,7 @@
 
   <inner-layout>/${applicationid}/theme/layouts/applicationcontent.html</inner-layout>
 
+  <property name="module">emeprofile</property>
+  <property name="searchtype">${module}</property>
+
 </page>

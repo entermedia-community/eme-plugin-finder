@@ -6,6 +6,8 @@
   <property name="applicationid">eme</property>
   <property name="fallbackdirectory">/finder/find</property>
   <property name="findroot">/site/blockfind</property>
+  <property name="sidebarcomponent">eme</property>
+  
 
 	<property name="communityhome">/${siteid}/eme</property>
 	<property name="communitytagcategory">eme</property>

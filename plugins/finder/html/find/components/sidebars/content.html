@@ -4,6 +4,10 @@
     #set($sidebarurl = "$apphome/components/sidebars/libraries/index.html")
   #end
 
+  #if($sidebarcomponent == "eme" )
+    #set($sidebarurl = "$apphome/components/sidebars/eme/index.html")
+  #end
+
   #if($sidebarcomponent == "guide" )
     #set($sidebarurl = "$apphome/components/sidebars/guide/index.html")
   #end

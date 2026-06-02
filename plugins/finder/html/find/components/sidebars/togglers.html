@@ -36,18 +36,17 @@
       #end
     #end
     
-    
-    
     $context.putPageValue("sidebarcomponent", $sidebarcomponent)
 
     #if($canviewhomelink)
-      <div class="sidebar-togglers" style="margin-bottom:15px;">
+      <div class="sidebar-togglers #if($sidebarcomponent == "eme") sidebar-selected contrast #end" style="margin-bottom:15px;">
         #set( $link="$!apphome/index.html")
         #ifnotnull($siteroot)
           #set( $link="$siteroot")
         #end
         
-        <a href="$link" title="[[Home]]" class="sidebar-toggler-show">
+        <a href="$link?sidebarcomponent=eme" title="[[Home]]" 
+        class="sidebar-toggler-show">
           <i class="bi bi-house-door-fill"></i>
         </a>
       </div>
