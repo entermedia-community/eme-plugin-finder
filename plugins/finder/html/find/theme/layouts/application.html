@@ -1,7 +1,7 @@
 <div id="application" 
 	class="emfinderapp setpagetitle #if($desktop) desktop #end"
 	data-user="$!user.getId()" 
-	data-siteroot="$siteroot"
+	data-siteroot="$!siteroot"
 	data-home="$!siteroot"
 	data-apphome="$!apphome" 
 	data-catalogid="$!catalogid" 
@@ -31,9 +31,7 @@
 	</div>
 	#end
 	
-	
-
-  $pages.includeContent()
+	$pages.includeContent()
 
 	<div id="footer" role="contentinfo" class="emfooter">
 		##$pages.include("${apphome}/components/autoopen/index.html", $context)

@@ -682,11 +682,10 @@ public class AdminModule extends BaseMediaModule
 		{
 			user = userManager.getUser(account);
 		}
-		else
-			if (email != null)
-			{
-				userManager.getUserByEmail(email);
-			}
+		else if (email != null)
+		{
+			userManager.getUserByEmail(email);
+		}
 		Boolean ok = false;
 		if (user != null)
 		{
@@ -959,6 +958,7 @@ public class AdminModule extends BaseMediaModule
 			// this user is already logged out
 			return;
 		}
+
 		usermanager.logout(user);
 		// inReq.removeSessionValue(catalogid + "user");
 
@@ -1136,11 +1136,10 @@ public class AdminModule extends BaseMediaModule
 			{
 				path = path.substring(0, path.length() - 1);
 			}
-			else
-				if (!inReq.getPath().equals(path))
-				{
-					inReq.redirect(path);
-				}
+			else if (!inReq.getPath().equals(path))
+			{
+				inReq.redirect(path);
+			}
 		}
 	}
 

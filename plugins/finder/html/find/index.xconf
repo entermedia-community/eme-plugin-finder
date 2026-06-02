@@ -6,7 +6,7 @@
 	<property name="modulesearchclearfilters">true</property>
 
 
-	<inner-layout>/${applicationid}/theme/layouts/maincontent.html</inner-layout>
+	<inner-layout>/${applicationid}/theme/layouts/applicationcontent.html</inner-layout>
 
 
 </page>

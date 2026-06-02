@@ -1,0 +1,181 @@
+#set($section = $content.section)
+
+#if($section == "files")
+	#set($setpagetitle = $category.getName())
+#elseif($section == "uploadmedia")
+	#set($setpagetitle = "[[Upload Media]]")
+#elseif($section == "favorites")
+	#set($setpagetitle = "[[Bookmarks]]")
+#elseif($section == "basket")
+	#set($setpagetitle = "[[Cart]]")
+#elseif($section == "settings")
+	#set($setpagetitle = "[[Settings]]")
+#end
+#if(!$moduleid)
+	##set($module = $context.findValue("module") )
+	#set($moduleid = $module.getId())
+#end
+
+
+
+
+
+
+
+		#set($section = $content.section)
+
+		#if($section == "myaccount")
+			#set($setpagetitle = "[[My Account]]")
+		#elseif($section == "dashboard")
+		#set($setpagetitle = "[[Dashboard Reports]]")
+		#else
+			#set($setpagetitle = "#text($category) #text($module)")
+		#end
+
+		#if( $user )
+				$pages.include("$componenthome/sidebars/index.html",$context)
+		#end
+
+		
+		<div id="applicationstructure" class="col-main col-content-main">
+			#set( $sidebarwidth = $userprofile.get("sidebarwidth"))  
+			#set( $sidebarcomponent = $userprofile.get("sidebarcomponent"))
+			<div  class="pushcontent finderlayout col-main-inner"
+					style="#if($sidebarcomponent && $sidebarwidth) margin-left:$!{sidebarwidth}px;#end"
+					data-sidebarcomponent="$!sidebarcomponent">
+
+					
+				<div >
+
+					$pages.include("${themeprefix}/layouts/header.html", $context)
+					
+					#set($tab = $content.tab)
+					
+					#if($canviewentitiestopmenu)
+						<div class="entityNavBarContainer autostickywidth overflow-x" id="entityNavBarContainer">
+							<ul class="entity-navbar">
+								
+								#set($sectionid = $context.getRequestParameter("section"))
+								#set($topmenuselected = $sectionid)
+										
+								#foreach( $link in $topmenu)
+									#set( $topmenuentity = $mediaarchive.getCachedData("module",$link.toplevelentity) )
+									#set($url = "$applink/views/modules/$topmenuentity.getId()/index.html")
+
+									#if($link.getValue("custompath"))
+											##sample: ${apphome}/views/modules/searchcategory/index.html?categoryid=AY82YpA9RucN_HGNkhB-
+											#set($url = $content.replaceProperty($link.getValue("custompath")))
+									#end
+									
+									#if($link.toplevelentity == $moduleid )
+										#set($topmenuselected = $link.getId() )
+									#end						
+									
+									#if($link.get("submenu"))
+										#foreach($s in $submenu)
+										$s.entity == $moduleid
+											#if($s.entity == $moduleid)
+												#set($topmenuselected = $s.parentsection)
+												#set($submenuselected = $s.entity )
+												#set($submenu = $link.getValue("submenu"))
+											#end
+										#end
+										
+									#end
+									
+
+									<li > 
+										<a href="$url" 
+											class="ajax activelistener #if( $topmenuselected == $link.getId()) active#end" 
+											data-targetdiv="applicationcontent" 
+											data-oemaxlevel="4" 
+											data-updateurl="true"
+											####data-$!{topmenuentity.getId()}page="1"
+											data-$!{topmenuentity.getId()}clearselection="true"
+											#ifnotnull($topmenuentity.getId())
+												data-profilepreference="defaultmodule" 
+												data-profilepreference.value="${topmenuentity.getId()}"
+											#end 
+											data-scrolltotop="true"
+											#if($topmenuentity.getId() == "asset")
+												data-sidebarcomponent="none"
+											#end
+											title="[[View]] #text($link)">
+											#set($moduleicon = "grid")
+											#if ($topmenuentity.moduleicon)
+												#set($moduleicon = $topmenuentity.moduleicon)
+											#end
+											<i class="bi bi-${moduleicon} module-icon"></i> #text($link)
+										</a>
+									</li>
+									#end
+							</ul>
+						</div>
+
+						#if($topmenuselected && $submenu)
+							<div class="entity-navbar-sub-container">
+								<ul class="entity-navbar-sub">
+								#foreach( $link in $submenu)
+									#set( $submenuentity = $mediaarchive.getCachedData("module",$link.entity) )
+									
+									#set($menuicon = "grid")
+									#if($submenuentity.moduleicon)
+										#set($menuicon = $submenuentity.moduleicon)
+									#end
+									<li >
+										<a href="$applink/views/modules/$submenuentity.getId()/index.html?$!{submenuentity.getId()}page=1" 
+											class="ajax activelistener #ifnotnull($submenuselected) #if( $submenuselected == $submenuentity.getId()) active#end #end" 
+											data-targetdiv="applicationcontent" 
+											data-oemaxlevel="4" 
+											data-updateurl="true"
+											data-profilepreference="defaultmodule" 
+											data-profilepreference.value="${submenuentity.getId()}" 
+											data-scrolltotop="true"
+											title="[[View]] #text($link)">
+												<i class="bi bi-$!{menuicon} module-icon"></i> #text($link)
+										</a>
+									</li>
+								#end
+								</ul>
+							</div>
+						#end
+					#else
+					<hr class="m-0">
+					#end
+
+					#if($canviewsettings)
+						$pages.includeContent()
+					#else
+						#if($topmenu.isEmpty())
+							$pages.include("$apphome/welcome.html")
+						#else
+							$pages.includeContent()
+						#end	
+					#end	
+				</div> 
+					
+			</div>
+		</div>
+
+		<div id="exitConfirmationModal" tabindex="-1" role="dialog" aria-hidden="true">
+			<div class="exit-modal-body" role="document">
+				<div class="d-flex flex-column bg-white rounded">
+					<div class="p-2 text-dark">
+						[[Looks like you have unsaved changes. Are you sure you want to discard them?]]
+					</div>
+					<div class="d-flex align-items-center justify-content-between p-2">
+						<button type="button" class="btn rounded btn-accent me-1" id="closeExit">[[Continue Editing]]</button>
+						<button type="button" class="btn rounded btn-danger ms-1" id="confirmExit">[[Discard]]</button>
+					</div>
+				</div>
+			</div>
+		</div>	
+
+
+
+
+
+
+
+
+

@@ -8,7 +8,7 @@
     <name><![CDATA[Administrators]]></name>
   </settingsgroup>  
   <settingsgroup id="users" sendcollectionnotifications="true" sendapprovalnotifications="true" multiedit="false" 
-  	permissions="view|savesearch|edittablecolumns|createnewrecord|convert|download|viewmyaccount|viewcategorynav|togglesidebar|viewupload|emaillink|viewvoting|shareasset|sharetosocialmedia|viewconversions|embedasset|editadvancedsearch|changeattachment|editassetcategories|viewcomments|comment|deletecomments|assetpermissions|converthistory|viewmap|viewassetedit|viewassets|showbadge|viewtimeline|showpendingassets|asseteditorpickanylibrary|viewopencollections|addnewcollection|api-search-data|mediaeditsave|mediaeditsaveas|viewaiagent|quickgallery|showpendingassets|downloadcategoryzip" profilesearchfilters="hideassettype">
+  	permissions="view|viewhomelink|savesearch|edittablecolumns|createnewrecord|convert|download|viewmyaccount|viewcategorynav|togglesidebar|viewupload|emaillink|viewvoting|shareasset|sharetosocialmedia|viewconversions|embedasset|editadvancedsearch|changeattachment|editassetcategories|viewcomments|comment|deletecomments|assetpermissions|converthistory|viewmap|viewassetedit|viewassets|showbadge|viewtimeline|showpendingassets|asseteditorpickanylibrary|viewopencollections|addnewcollection|api-search-data|mediaeditsave|mediaeditsaveas|viewaiagent|quickgallery|showpendingassets|downloadcategoryzip" profilesearchfilters="hideassettype">
     <name><![CDATA[Users]]></name>
   </settingsgroup>  
   <settingsgroup id="guest" sendcollectionnotifications="false" sendapprovalnotifications="false" multiedit="false" 
