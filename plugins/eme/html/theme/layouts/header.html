@@ -81,7 +81,7 @@
 					#if($user && $canaddtofavorites)
 						<li><a href="$siteroot$applink/views/modules/modulesearch/editors/modulesearchbookmarks/index.html" 
 								class='ajax activelistener btn-topnav #if($content.section == "favorites") btn-cta #end' 
-								data-targetdiv="applicationmaincontent" 
+								data-targetdiv="applicationcontent" 
 								data-oemaxlevel="3" 
 								data-clearselection="true"
 								data-clearfilters="true"
@@ -108,14 +108,14 @@
 						#if($canviewsettings && $pendingorders.size() > 0)
 							<li><a href="$apphome/views/modules/order/editors/orderlistpending/index.html" 
 								class="dropdown-item ajax" 
-								data-targetdiv="applicationmaincontent" 
+								data-targetdiv="applicationcontent" 
 								data-oemaxlevel="3" 
 								data-updateurl="true" 
 								title="[[Pending Orders]]">
 								[[Pending Orders]] ($pendingorders.size())
 							</a></li>
 						#end
-						## <a href="$!{siteroot}$apphome/views/dashboard/index.html" class="dropdown-item ajax" data-targetdivinner="application" data-updateurl="true" data-oemaxlevel="4" title="[[Dashboard]]">
+						## <a href="$!{siteroot}$apphome/views/dashboard/index.html" class="dropdown-item ajax" data-targetdivinner="application" data-updateurl="true" data-oemaxlevel="3" title="[[Dashboard]]">
 						## 	[[Dashboard]]
 						## </a>
 						
@@ -124,13 +124,13 @@
 								<li><a class="dropdown-item ajax" 
 									data-targetdivinner="application" 
 									data-updateurl="true" 
-									data-oemaxlevel="4" 
+									data-oemaxlevel="3" 
 									href="$!siteroot$apphome/views/myaccount/index.html"  
 									title="$user.getScreenName() [[Account Settings]]">
 									<i class="bi bi-person-circle me-1"></i>
 									[[My Account]] ($user)
 								</a></li>
-								<li><a class="dropdown-item ajax" data-targetdivinner="application" data-updateurl="true" data-oemaxlevel="4" href="$!siteroot$apphome/views/modules/order/editors/orderuserlist/index.html"  title="[[My Orders]]">
+								<li><a class="dropdown-item ajax" data-targetdivinner="application" data-updateurl="true" data-oemaxlevel="3" href="$!siteroot$apphome/views/modules/order/editors/orderuserlist/index.html"  title="[[My Orders]]">
 									<i class="bi bi-bag me-1"></i>
 									[[My Orders]]
 								</a></li>

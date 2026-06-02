@@ -4,7 +4,7 @@
 		
 		#set( $targetdiv = $context.getRequestParameter("targetdiv") )
 		#ifnull($targetdiv)
-		  #set($targetdiv = "applicationmaincontent")
+		  #set($targetdiv = "applicationcontent")
 		#end
 		#set($assetid = $context.getRequestParameter("assetid") )
 		<div class="categorypathpicker  overflow-y" style="min-height: 200px"  >
@@ -23,7 +23,7 @@
 					#else
 					<a class="categorypathlink ajax"
 						href="$applink/views/modules/asset/editors/viewfilescategory/$hit.getId()/#dash($hit.name).html" 
-						data-targetdiv="applicationmaincontent"
+						data-targetdiv="applicationcontent"
 						data-categoryid="$hit.getId()"
 						data-oemaxlevel="3"
 						data-updateurl="true"

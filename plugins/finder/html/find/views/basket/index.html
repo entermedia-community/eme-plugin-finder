@@ -19,7 +19,7 @@ $context.putPageValue("hidefilters",true)
 			#if( $pendingorders.size() > 0)
 				<a href="$apphome/views/modules/order/editors/orderlistpending/index.html?checkoutstatus=pending" 
 					class="btn btn-cta ajax" 
-					data-targetdiv="applicationmaincontent" 
+					data-targetdiv="applicationcontent" 
 					data-oemaxlevel="3" 
 					data-updateurl="true" 
 					title="[[Pending Orders]]">
@@ -28,7 +28,7 @@ $context.putPageValue("hidefilters",true)
 			#else
 				<a href="$apphome/views/modules/order/editors/orderlistpending/index.html" 
 					class="btn btn-accent ajax" 
-					data-targetdiv="applicationmaincontent" 
+					data-targetdiv="applicationcontent" 
 					data-oemaxlevel="3" 
 					data-updateurl="true" 
 					title="[[Checkout Orders]]">

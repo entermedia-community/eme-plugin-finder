@@ -6,8 +6,8 @@ $context.putPageValue("viewid", "presetparametergeneral")
 
 <form id="dataeditor-settings" 
 	class="ajaxform autocloseform"
-	data-targetdiv="applicationmaincontent"
-	data-oemaxlevel="4"
+	data-targetdiv="applicationcontent"
+	data-oemaxlevel="3"
 	name="dataeditor-settings" method="post" action="$!{apphome}/views/settings/modules/asset/presetconfig/presetparameter/save.html" >
 	<input name="save" type="hidden" value="true" />
 	#if($data.id)
@@ -25,8 +25,8 @@ $context.putPageValue("viewid", "presetparametergeneral")
 #if($data.id)
 <a class="btn btn-sm btn-danger ajax confirm closemodal" 
 	data-confirm="[[Are you sure?]]"
-	data-targetdiv="applicationmaincontent" 
-	data-oemaxlevel="4"
+	data-targetdiv="applicationcontent" 
+	data-oemaxlevel="3"
 	href='$home$content.searchhome/delete.html?id=$!data.id&parameterdata=${parameterdata}'>[[Delete]]</a>
 #end
 </div>

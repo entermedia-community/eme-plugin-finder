@@ -194,8 +194,8 @@
 				<li id="$pid" > 
 					#if( $canviewsettings )
 					<a class="sortableitem ajax" 
-						data-targetdivinner="applicationmaincontent" 
-						data-oemaxlevel="4" 
+						data-targetdivinner="applicationcontent" 
+						data-oemaxlevel="3" 
 						href="$siteroot$apphome/views/settings/lists/datamanager/properties/edit.html?id=$pid&searchtype=$searchtype">
 						<i class="bi bi-chevron-expand me-1"></i> ${element.searchType} / $element.getText($context)<span class="type-of-field">#if( $element.getDataType() ) $element.getDataType() #else textbox #end</span>
 					</a>

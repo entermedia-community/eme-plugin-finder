@@ -23,7 +23,7 @@
 	#end
 #end
 
-<div id="applicationmaincontent" 
+<div id="applicationcontent" 
 	class="applicationmaincontent  applicationmaincontent$!section #if($hassubmenu) entitynavsubmenu #end"
 	data-setpagetitle="$!setpagetitle"
 	data-section="$!section ">
