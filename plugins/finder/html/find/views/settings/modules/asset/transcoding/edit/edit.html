@@ -1,7 +1,5 @@
-<div class="ui-widget">
-<h3>[[Transcoder Settings]]</h3>
 
-<div id="editlayout" class="mt-4 me-4">
+<div id="editlayout">
 	#set( $origURL = $context.getRequestParameter("origURL" ) )
 	#set( $categoryid = $context.getRequestParameter("categoryid" ) )
 	
@@ -9,11 +7,13 @@
 	$context.putPageValue("viewid", $viewid)
 	
 	#if( $data.guid )
-	<a class="btn btn-sm btn-secondary ajax" style="margin:0 10px 10px 0" 
+	<a class="btn btn-sm btn-secondary emdialog" style="margin:0 10px 10px 0" 
 		href='$siteroot$apphome/views/settings/modules/asset/presetconfig/edit/edit.html?id=${data.guid}'
-		data-targetdiv="applicationcontent"
+		data-targetdiv="editlayout"
 		data-oemaxlevel="3"
-		data-updateurl="true">
+		data-updateurl="false"
+		data-hidefooter="true"
+		title="[[View Parameters]]">
 		[[View Parameters]]
 		</a>
 		
@@ -24,8 +24,8 @@
 			method="post" 
 			action="$siteroot$content.searchhome/edit/save.html"
 			class="ajaxform"
-			data-targetdiv="settingslayout"
-			data-oemaxlevel="3" >
+			data-targetdiv="editlayout"
+			data-oemaxlevel="1" >
 		<input name="save" type="hidden" value="true" />
 		<input name="id" type="hidden" value="$!data.id" />
 		<input name="categoryid" type="hidden" value="$!categoryid" />
@@ -37,10 +37,8 @@
 		
 	<div id="controlpanel" class="ui-widget-actions"  #if($data.systemdefinedpreset == "true" )style="display:none" #end>
 		<a class="btn btn-sm btn-primary submitform" href="#" ><span>[[Save]]</span></a>
-		<a class="btn btn-sm btn-secondary ajax"  
-				href='$siteroot$content.searchhome/index.html'
-				data-targetdivinner="settingslayout"
-				data-oemaxlayout="3"><span>[[Cancel]]</span></a>
+		<a class="btn btn-sm btn-secondary closedialog"  
+				><span>[[Cancel]]</span></a>
 		#ifnotnull($data.id)
 		<a class="btn btn-sm btn-danger ajax"  
 			href='$siteroot$content.searchhome/edit/delete.html?searchtype=$searcher.searchType&catalogid=$searcher.catalogId&id=$!data.id'
@@ -56,13 +54,10 @@
 	[[Cannot change system defined presets]] <a href="#" onclick='$("#controlpanel").toggle();return false;' style="text-decoration: underline; font-weight: bold;">edit anyways</a>
 	#end
 	
-	<br>
-	<div id="messagearea" style="padding:10px 0;">$!message</div>
+	##<br>
+	##<div id="messagearea" style="padding:10px 0;">$!message</div>
 	</form>
 	#if( $savedok && $origURL )
 		<a href="$origURL">[[Go Back]]</a>	
 	#end
 </div>
-
-</div>
-

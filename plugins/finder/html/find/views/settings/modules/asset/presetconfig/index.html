@@ -9,23 +9,29 @@ $query.addSortBy("name")
 #set( $details = $searcher.getDetailsForView("presetdataresults",$userprofile) )
 
 <div class="tab-actions mb-2">
-	<a class="btn btn-primary ajax" 
+	<a class="btn btn-primary emdialog" 
 		href="$!{apphome}/views/settings/modules/asset/presetconfig/edit/addnew.html"
-		data-targetdivinner="settingslayout"
-		data-oemaxlevel="3">[[Add New Configuration]]</a>
+		title="[[New Configuration]]"
+		data-hidefooter="true"
+		>[[Add New Configuration]]</a>
 </div>
 
-<div  class="emselectable" style="width: 600px">
+<div class="emselectablepicker" 
+	data-url="$!{apphome}/views/settings/modules/asset/presetconfig/edit/edit.html" 
+	data-dialogtitle="[[Edit Configuration]]"
+	data-hidefooter="true"
+	style="width: 600px">
 <table class="table table-striped table-hover emdata">
-	<thead><tr class="tableheader">
-	#foreach( $detail in $details)
-	<th>$detail.getText($context)</th>
-	#end
-	</tr>
+	<thead>
+		<tr class="tableheader">
+		#foreach( $detail in $details)
+		<th>$detail.getText($context)</th>
+		#end
+		</tr>
 	</thead>
 	<tbody>
 		#foreach($row in $searcher.search($query) )
-			<tr rowid="$row.id" >
+			<tr data-dataid="$row.id" class="emselectablerow" >
 				#foreach( $detail in $details)
 					$!context.putPageValue("detail",$detail)
 					<td>		
@@ -42,12 +48,5 @@ $query.addSortBy("name")
 	</tbody>
 </table>
 
-<form name="editview" 
-		class="ajaxform" 
-		action="$!{apphome}/views/settings/modules/asset/presetconfig/edit/edit.html"
-		data-targetdiv="settingslayout"
-		data-oemaxlevel="3"
-		data-updateurl="true"> 
-		<input type="hidden" name="id" id="emselectedrow">
-</form>
+
 </div>
