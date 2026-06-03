@@ -12,7 +12,7 @@ import org.openedit.WebPageRequest;
 import org.openedit.data.Searcher;
 import org.openedit.hittracker.HitTracker;
 
-public class AssetImportCreated extends BaseSkill
+public class AssetImportCreatedSkill extends BaseSkill
 {
 
 	public void process(AgentContext inContext)

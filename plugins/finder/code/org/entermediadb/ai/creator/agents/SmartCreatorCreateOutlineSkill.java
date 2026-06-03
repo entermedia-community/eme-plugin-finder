@@ -4,16 +4,16 @@ import java.util.Collection;
 
 import org.entermediadb.ai.BaseSkill;
 import org.entermediadb.ai.assistant.AssistantManager;
-import org.entermediadb.ai.creator.SmartCreatorManager;
+import org.entermediadb.ai.creator.SmartCreatorSkill;
 import org.entermediadb.ai.AgentContext;
 import org.openedit.Data;
 
 public class SmartCreatorCreateOutlineSkill extends BaseSkill
 {
 
-	public SmartCreatorManager getSmartCreatorManager()
+	public SmartCreatorSkill getSmartCreatorSkill()
 	{
-		SmartCreatorManager smartCreatorManager = (SmartCreatorManager) getMediaArchive().getBean("smartCreatorManager");
+		SmartCreatorSkill smartCreatorManager = (SmartCreatorSkill) getMediaArchive().getBean("smartCreatorSkill");
 		return smartCreatorManager;
 	}
 
@@ -24,8 +24,8 @@ public class SmartCreatorCreateOutlineSkill extends BaseSkill
 		Data entity = inContext.getCurrentEntity();
 
 		AssistantManager assistant = (AssistantManager) getMediaArchive().getBean("assistantManager");
-		getSmartCreatorManager().createOutLine(inContext, inContext.getAiSmartCreatorSteps());
-		getSmartCreatorManager().initConfirmedSections(inContext.getAiSmartCreatorSteps());
+		getSmartCreatorSkill().createOutLine(inContext, inContext.getAiSmartCreatorSteps());
+		getSmartCreatorSkill().initConfirmedSections(inContext.getAiSmartCreatorSteps());
 
 		super.process(inContext);
 

@@ -10,7 +10,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.entermediadb.ai.BaseAiManager;
-import org.entermediadb.ai.creator.SmartCreatorManager;
+import org.entermediadb.ai.creator.SmartCreatorSkill;
 import org.entermediadb.ai.creator.SmartCreatorSession;
 import org.entermediadb.ai.informatics.InformaticsContext;
 import org.entermediadb.ai.AgentContext;
@@ -47,9 +47,9 @@ public class EmbeddingManager extends BaseAiManager
 		return fieldPageManager;
 	}
 
-	public SmartCreatorManager getSmartCreatorManager()
+	public SmartCreatorSkill getSmartCreatorSkill()
 	{
-		return (SmartCreatorManager) getMediaArchive().getModuleManager().getBean(getCatalogId(), "smartCreatorManager", true);
+		return (SmartCreatorSkill) getMediaArchive().getModuleManager().getBean(getCatalogId(), "smartCreatorSkill", true);
 	}
 
 	protected OpenEditEngine fieldEngine;
@@ -215,7 +215,7 @@ public class EmbeddingManager extends BaseAiManager
 	 * JSONObject documentdata = new JSONObject(); documentdata.put("doc_id", searchtype + "_" +
 	 * inEntity.getId());
 	 * 
-	 * SmartCreatorSession smartcreatorsession = getSmartCreatorManager().loadSections(searchtype,
+	 * SmartCreatorSession smartcreatorsession = getSmartCreatorSkill().loadSections(searchtype,
 	 * inEntity.getId()); Collection allpages = new ArrayList();
 	 * 
 	 * 

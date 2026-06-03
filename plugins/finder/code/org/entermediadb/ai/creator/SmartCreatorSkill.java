@@ -34,9 +34,9 @@ import org.openedit.repository.ContentItem;
 import org.openedit.repository.filesystem.StringItem;
 import org.openedit.users.User;
 
-public class SmartCreatorManager extends BaseSkill
+public class SmartCreatorSkill extends BaseSkill
 {
-	private static final Log log = LogFactory.getLog(SmartCreatorManager.class);
+	private static final Log log = LogFactory.getLog(SmartCreatorSkill.class);
 
 	protected String findLocalActionName(AgentContext inAgentContext)
 	{
@@ -923,8 +923,8 @@ public class SmartCreatorManager extends BaseSkill
 			// exportAsAsset(inAgentContext, exportContent.toString());
 
 			/*
-			 * Improve speed // try semantically matching an asset to the section SearchingManager
-			 * searchingmanager = (SearchingManager) getMediaArchive().getBean("searchingManager"); String
+			 * Improve speed // try semantically matching an asset to the section SearchingSkill
+			 * searchingmanager = (SearchingSkill) getMediaArchive().getBean("searchingSkill"); String
 			 * playbackentityid = section.get("playbackentityid"); String playbackentitymoduleid =
 			 * section.get("playbackentitymoduleid"); Data playbackentity =
 			 * getMediaArchive().getCachedData(playbackentitymoduleid, playbackentityid); String creatorName =

@@ -298,7 +298,7 @@ public class BaseLlmConnection implements LlmConnection
 			User user = getMediaArchive().getUserManager().getUser("agent");
 
 			WebPageRequest inReq = getRequestUtils().createPageRequest(template, user);
-			inReq.putPageValues(agentcontext.getContext());
+			inReq.putPageValues(agentcontext.getAllContext());
 			inReq.putPageValue("agentcontext", agentcontext);
 			loadagentcontextParameters(agentcontext, inReq);
 

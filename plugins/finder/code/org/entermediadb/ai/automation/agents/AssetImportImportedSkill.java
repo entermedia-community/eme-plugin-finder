@@ -11,7 +11,7 @@ import org.entermediadb.asset.Asset;
 
 import model.assets.AssetTypeManager;
 
-public class AssetImportImported extends BaseSkill
+public class AssetImportImportedSkill extends BaseSkill
 {
 	public void process(AgentContext inContext)
 	{

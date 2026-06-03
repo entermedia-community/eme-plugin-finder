@@ -365,7 +365,7 @@ public class AssistantManager extends BaseAiManager
 		String apphome = "/" + channel.get("chatapplicationid");
 		chatMessageContext.addContext("apphome", apphome);
 
-		String bean = function.get("messagehandler");
+		String scenerioid = function.get("scenerioid");
 
 		LlmResponse response = null;
 		String messagePrefix = chatMessageContext.getMessagePrefix();
@@ -375,18 +375,18 @@ public class AssistantManager extends BaseAiManager
 		messageContext.setAiFunction(function);
 		try
 		{
-			Skill handler = (Skill) getMediaArchive().getBean(bean);
-			handler.process(messageContext);
+			// get the scenerio and run that. Each scenerio will have one or more skills
+			getAutomationManager().runScenario(scenerioid, messageContext);
 			response = messageContext.getLastResponse();
 		}
 		catch (HttpException e)
 		{
-			log.error("Error from " + bean + " running " + function.getId(), e);
+			log.error("Error from " + scenerioid + " running " + function.getId(), e);
 			response = handleError(chatMessageContext, e.getMessage(), e.getErrorcode());
 		}
 		catch (Exception e)
 		{
-			log.error("Error from " + bean + " running " + function.getId(), e);
+			log.error("Error from " + scenerioid + " running " + function.getId(), e);
 			response = handleError(chatMessageContext, e.getMessage());
 		}
 
@@ -914,13 +914,13 @@ public class AssistantManager extends BaseAiManager
 			if (method.equals("fieldsonly"))
 			{
 				id = "fieldsonly_welcome_" + module.getId();
-				messagehandler = "entityCreationManager";
+				messagehandler = "entityCreationSkill";
 			}
 			else
 				if (method.equals("smartcreator"))
 				{
 					id = "smartcreator_welcome_" + module.getId();
-					messagehandler = "smartCreatorManager";
+					messagehandler = "smartCreatorSkill";
 				}
 
 			Data exists = getMediaArchive().getData("aifunction", id);

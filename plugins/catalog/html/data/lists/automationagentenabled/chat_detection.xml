@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- using more descriptive ids for easier debugging -->
+
+<records>
+   <data id="chat_autodetect" automationagent="autoDetectChatSkill" automationscenario="chat_detection" enabled="true" agenttype="eventagent">
+      <name>
+         <![CDATA[Global Auto Detect Chat Type]]>
+      </name>
+   </data>
+
+   </records>

@@ -704,6 +704,7 @@ $(document).ready(function () {
 					!scenario.position.posy
 				) {
 					console.error("Positions not set!");
+					return;
 				}
 
 				let label = scenario.name;

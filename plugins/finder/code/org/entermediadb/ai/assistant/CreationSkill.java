@@ -25,9 +25,9 @@ import org.openedit.repository.InputStreamItem;
 import org.openedit.users.User;
 import org.openedit.util.DateStorageUtil;
 
-public class CreationManager extends BaseSkill
+public class CreationSkill extends BaseSkill
 {
-	private static final Log log = LogFactory.getLog(CreationManager.class);
+	private static final Log log = LogFactory.getLog(CreationSkill.class);
 
 	@Override
 	public void process(AgentContext inAgentContext)

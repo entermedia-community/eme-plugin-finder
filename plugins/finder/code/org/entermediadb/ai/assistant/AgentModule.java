@@ -26,24 +26,24 @@ public class AgentModule extends BaseMediaModule
 		return assistantManager;
 	}
 
-	public CreationManager getCreationManager(WebPageRequest inReq)
+	public CreationSkill getCreationSkill(WebPageRequest inReq)
 	{
 		String catalogid = inReq.findValue("catalogid");
-		CreationManager creationManager = (CreationManager) getMediaArchive(catalogid).getBean("creationManager");
+		CreationSkill creationManager = (CreationSkill) getMediaArchive(catalogid).getBean("creationSkill");
 		return creationManager;
 	}
 
-	public QuestionsManager getQuestionsManager(WebPageRequest inReq)
+	public QuestionsSkill getQuestionsSkill(WebPageRequest inReq)
 	{
 		String catalogid = inReq.findValue("catalogid");
-		QuestionsManager questionsManager = (QuestionsManager) getMediaArchive(catalogid).getBean("questionsManager");
+		QuestionsSkill questionsManager = (QuestionsSkill) getMediaArchive(catalogid).getBean("questionsSkill");
 		return questionsManager;
 	}
 
-	public SearchingManager getSearchingManager(WebPageRequest inReq)
+	public SearchingSkill getSearchingSkill(WebPageRequest inReq)
 	{
 		String catalogid = inReq.findValue("catalogid");
-		SearchingManager searchingManager = (SearchingManager) getMediaArchive(catalogid).getBean("searchingManager");
+		SearchingSkill searchingManager = (SearchingSkill) getMediaArchive(catalogid).getBean("searchingSkill");
 		return searchingManager;
 	}
 
@@ -51,7 +51,7 @@ public class AgentModule extends BaseMediaModule
 	{
 		AgentContext agentContext = (AgentContext) inReq.getPageValue("agentcontext");
 
-		getSearchingManager(inReq).searchTables(inReq, agentContext.getAiSearchParams());
+		getSearchingSkill(inReq).searchTables(inReq, agentContext.getAiSearchParams());
 	}
 
 	public void chatAgentSemanticSearch(WebPageRequest inReq) throws Exception
@@ -84,7 +84,7 @@ public class AgentModule extends BaseMediaModule
 
 		if (query != null && !"null".equals(query))
 		{
-			getSearchingManager(inReq).semanticSearch(inReq);
+			getSearchingSkill(inReq).semanticSearch(inReq);
 		}
 	}
 
@@ -99,7 +99,7 @@ public class AgentModule extends BaseMediaModule
 
 		if (query != null && !"null".equals(query))
 		{
-			getSearchingManager(inReq).semanticSearch(inReq);
+			getSearchingSkill(inReq).semanticSearch(inReq);
 		}
 	}
 
@@ -109,7 +109,7 @@ public class AgentModule extends BaseMediaModule
 		AssistantManager assistant = (AssistantManager) getMediaArchive(inReq).getBean("assistantManager");
 		assistant.addMissingFunctions(log);
 
-		SearchingManager searchingManager = getSearchingManager(inReq);
+		SearchingSkill searchingManager = getSearchingSkill(inReq);
 		searchingManager.createPossibleFunctionParameters(log);
 
 	}
@@ -123,7 +123,7 @@ public class AgentModule extends BaseMediaModule
 
 	public void loadSearchSuggestions(WebPageRequest inReq) throws Exception
 	{
-		SearchingManager searching = (SearchingManager) getMediaArchive(inReq).getBean("searchingManager");
+		SearchingSkill searching = (SearchingSkill) getMediaArchive(inReq).getBean("searchingSkill");
 		Collection<String> suggestions = searching.makeSearchSuggestions(inReq.getUserProfile());
 		inReq.putPageValue("suggestions", suggestions);
 	}
@@ -290,7 +290,7 @@ public class AgentModule extends BaseMediaModule
 		String entityid = inReq.findValue("entityid");
 		String entitymoduleid = inReq.findValue("entitymoduleid");
 
-		Collection<Map> related = getSearchingManager(inReq).getRelatedRecords(entitymoduleid, entityid);
+		Collection<Map> related = getSearchingSkill(inReq).getRelatedRecords(entitymoduleid, entityid);
 
 		inReq.putPageValue("relatedrecords", related);
 	}
@@ -304,7 +304,7 @@ public class AgentModule extends BaseMediaModule
 		Data recordmodule = getMediaArchive(inReq).getCachedData("module", listid);
 		inReq.putPageValue("recordmodule", recordmodule);
 
-		Collection<Data> recordlist = getSearchingManager(inReq).getRelatedRecordList(entitymoduleid, entityid, listid);
+		Collection<Data> recordlist = getSearchingSkill(inReq).getRelatedRecordList(entitymoduleid, entityid, listid);
 
 		inReq.putPageValue("recordlist", recordlist);
 	}
@@ -319,7 +319,7 @@ public class AgentModule extends BaseMediaModule
 		Data recordmodule = getMediaArchive(inReq).getCachedData("module", listid);
 		inReq.putPageValue("recordmodule", recordmodule);
 
-		Data record = getSearchingManager(inReq).getRecord(entitymoduleid, entityid, listid, recordid);
+		Data record = getSearchingSkill(inReq).getRecord(entitymoduleid, entityid, listid, recordid);
 
 		inReq.putPageValue("record", record);
 	}

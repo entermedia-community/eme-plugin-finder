@@ -6,16 +6,16 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.entermediadb.ai.BaseSkill;
-import org.entermediadb.ai.creator.SmartCreatorManager;
+import org.entermediadb.ai.creator.SmartCreatorSkill;
 import org.entermediadb.ai.informatics.InformaticsContext;
 import org.entermediadb.ai.AgentContext;
 import org.openedit.MultiValued;
 
 public class PostBlogSkill extends BaseSkill
 {
-	public SmartCreatorManager getSmartCreatorManager()
+	public SmartCreatorSkill getSmartCreatorSkill()
 	{
-		SmartCreatorManager manager = (SmartCreatorManager) getMediaArchive().getBean("smartCreatorManager");
+		SmartCreatorSkill manager = (SmartCreatorSkill) getMediaArchive().getBean("smartCreatorSkill");
 		return manager;
 	}
 
@@ -29,7 +29,7 @@ public class PostBlogSkill extends BaseSkill
 		//
 		// if(entity != null)
 		// {
-		// getSmartCreatorManager().processRecords(inContext.getScriptLogger(),inContext.getCurrentAgentEnable().getAgentConfig(),pageofhits);;
+		// getSmartCreatorSkill().processRecords(inContext.getScriptLogger(),inContext.getCurrentAgentEnable().getAgentConfig(),pageofhits);;
 		// for (Iterator iterator2 = pageofhits.iterator(); iterator2.hasNext();)
 		// {
 		// MultiValued data = (MultiValued) iterator2.next();

@@ -14,9 +14,9 @@ import org.openedit.Data;
 import org.openedit.MultiValued;
 import org.openedit.OpenEditException;
 
-public class AutoDetectChatManager extends BaseSkill
+public class AutoDetectChatSkill extends BaseSkill
 {
-	private static final Log log = LogFactory.getLog(AutoDetectChatManager.class);
+	private static final Log log = LogFactory.getLog(AutoDetectChatSkill.class);
 
 	@Override
 	public void process(AgentContext inAgentContext)
@@ -37,6 +37,7 @@ public class AutoDetectChatManager extends BaseSkill
 			LlmResponse response = llmconnection.renderLocalAction(inAgentContext);
 			inAgentContext.setFunctionName("auto_detect_conversation");
 			messageContext.setLastResponse(response);
+			messageContext.log("sent" + response.getRawResponse());
 			return;
 		}
 		if ("auto_detect_conversation".equals(agentFn)) // Todo: Rename to Parse

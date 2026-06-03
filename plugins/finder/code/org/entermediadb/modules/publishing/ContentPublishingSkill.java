@@ -53,12 +53,12 @@ import org.openedit.util.JSONParser;
 import org.openedit.util.PathUtilities;
 import org.openedit.util.XmlUtil;
 
-public class ContentPublishingManager extends BaseSkill implements CatalogEnabled
+public class ContentPublishingSkill extends BaseSkill implements CatalogEnabled
 {
 
 	private static final String INPUTDIR = "/DITA/"; // /Inputs/";
 	private static final String RENDERED = "/DITA/"; // Rendered/";
-	private static final Log log = LogFactory.getLog(ContentPublishingManager.class);
+	private static final Log log = LogFactory.getLog(ContentPublishingSkill.class);
 	protected XmlUtil fieldXmlUtil;
 	protected ModuleManager fieldModuleManager;
 

@@ -5,16 +5,16 @@ import java.util.Collection;
 import org.entermediadb.ai.BaseSkill;
 import org.entermediadb.ai.assistant.AssistantManager;
 import org.entermediadb.ai.creator.AiSmartCreatorSteps;
-import org.entermediadb.ai.creator.SmartCreatorManager;
+import org.entermediadb.ai.creator.SmartCreatorSkill;
 import org.entermediadb.ai.AgentContext;
 import org.openedit.Data;
 
 public class SmartCreatorMakeSectionsSkill extends BaseSkill
 {
 
-	public SmartCreatorManager getSmartCreatorManager()
+	public SmartCreatorSkill getSmartCreatorSkill()
 	{
-		SmartCreatorManager smartCreatorManager = (SmartCreatorManager) getMediaArchive().getBean("smartCreatorManager");
+		SmartCreatorSkill smartCreatorManager = (SmartCreatorSkill) getMediaArchive().getBean("smartCreatorSkill");
 		return smartCreatorManager;
 	}
 
@@ -23,9 +23,9 @@ public class SmartCreatorMakeSectionsSkill extends BaseSkill
 	{
 		Data module = inContext.getCurrentEntityModule();
 		Data entity = inContext.getCurrentEntity();
-		// getSmartCreatorManager().populateSectionsWithContents(inContext);
+		// getSmartCreatorSkill().populateSectionsWithContents(inContext);
 		AiSmartCreatorSteps instructions = inContext.getAiSmartCreatorSteps();
-		getSmartCreatorManager().createSections(inContext, instructions);
+		getSmartCreatorSkill().createSections(inContext, instructions);
 
 		super.process(inContext);
 

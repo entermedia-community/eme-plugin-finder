@@ -2534,7 +2534,7 @@
 	</bean>
 
 
-	<bean id="contentPublishingManager" class="org.entermediadb.modules.publishing.ContentPublishingManager" lazy-init="default" scope="prototype">
+	<bean id="contentPublishingSkill" class="org.entermediadb.modules.publishing.ContentPublishingSkill" lazy-init="default" scope="prototype">
 		<property name="xmlUtil">
 			<ref bean="xmlUtil" />
 		</property>
@@ -2663,19 +2663,19 @@
 		</property>
 	</bean>
 
-	<bean id="searchingManager" class="org.entermediadb.ai.assistant.SearchingManager" scope="prototype">
+	<bean id="searchingSkill" class="org.entermediadb.ai.assistant.SearchingSkill" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>
 	</bean>
 
-	<bean id="creationManager" class="org.entermediadb.ai.assistant.CreationManager" scope="prototype">
+	<bean id="creationSkill" class="org.entermediadb.ai.assistant.CreationSkill" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>
 	</bean>
 
-	<bean id="questionsManager" class="org.entermediadb.ai.assistant.QuestionsManager" scope="prototype">
+	<bean id="questionsSkill" class="org.entermediadb.ai.assistant.QuestionsSkill" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>
@@ -2687,7 +2687,7 @@
 		</property>
 	</bean>
 
-	<bean id="autoDetectChatManager" class="org.entermediadb.ai.assistant.AutoDetectChatManager" scope="prototype">
+	<bean id="autoDetectChatSkill" class="org.entermediadb.ai.assistant.AutoDetectChatSkill" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>
@@ -2702,12 +2702,12 @@
 		</property>
 	</bean>
 
-	<bean id="assetImportCreated" class="org.entermediadb.ai.automation.agents.AssetImportCreated" scope="prototype">
+	<bean id="assetImportCreated" class="org.entermediadb.ai.automation.agents.AssetImportCreatedSkill" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>
 	</bean>
-	<bean id="assetImportImported" class="org.entermediadb.ai.automation.agents.AssetImportImported" scope="prototype">
+	<bean id="assetImportImported" class="org.entermediadb.ai.automation.agents.AssetImportImportedSkill" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>
@@ -2745,7 +2745,7 @@
 		</property>
 	</bean>
 
-	<bean id="smartCreatorManager" class="org.entermediadb.ai.creator.SmartCreatorManager" scope="prototype">
+	<bean id="smartCreatorSkill" class="org.entermediadb.ai.creator.SmartCreatorSkill" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>

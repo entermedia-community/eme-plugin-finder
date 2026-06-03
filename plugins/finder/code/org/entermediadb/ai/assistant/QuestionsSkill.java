@@ -23,9 +23,9 @@ import org.openedit.OpenEditException;
 import org.openedit.data.Searcher;
 import org.openedit.hittracker.HitTracker;
 
-public class QuestionsManager extends BaseSkill
+public class QuestionsSkill extends BaseSkill
 {
-	private static final Log log = LogFactory.getLog(QuestionsManager.class);
+	private static final Log log = LogFactory.getLog(QuestionsSkill.class);
 
 	@Override
 	public void process(AgentContext inAgentContext)
@@ -157,7 +157,7 @@ public class QuestionsManager extends BaseSkill
 
 	}
 
-	private LlmResponse searchSystemWide(AgentContext messageContext, String query)
+	protected LlmResponse searchSystemWide(AgentContext messageContext, String query)
 	{
 		Schema schema = loadSchema();
 
