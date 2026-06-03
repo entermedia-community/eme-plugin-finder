@@ -7,4 +7,10 @@
   <property name="module">emeprofile</property>
   <property name="searchtype">${module}</property>
 
+	<!-- path-action name="EntityModule.getEntity"/ -->
+
+	<path-action name="ChatModule.loadChatChannel" />
+
+
+
 </page>
