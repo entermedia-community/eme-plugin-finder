@@ -1,7 +1,6 @@
 package org.entermediadb.ai;
 
 import java.util.Collection;
-import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.llm.AgentEnabled;
 import org.openedit.CatalogEnabled;
 

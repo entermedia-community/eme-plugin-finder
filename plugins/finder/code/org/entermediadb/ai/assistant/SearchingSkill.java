@@ -33,9 +33,9 @@ import org.openedit.data.Searcher;
 import org.openedit.hittracker.HitTracker;
 import org.openedit.profile.UserProfile;
 
-public class SearchingManager extends BaseSkill
+public class SearchingSkill extends BaseSkill
 {
-	private static final Log log = LogFactory.getLog(SearchingManager.class);
+	private static final Log log = LogFactory.getLog(SearchingSkill.class);
 
 	@Override
 	public void process(AgentContext inAgentContext)

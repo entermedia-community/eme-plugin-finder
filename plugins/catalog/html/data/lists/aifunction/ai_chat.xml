@@ -2,36 +2,30 @@
 
 <root>
 
-   <data id="auto_detect_welcome" toplevel="true" icon="chat" samplemesage="Create a summary" messagehandler="autoDetectChatManager" processingmessage="Welcome" ordering="-1">
+   <data id="auto_detect_welcome" toplevel="true" icon="chat" samplemesage="Create a summary" scenerioid="chat_detection" processingmessage="Welcome" ordering="-1">
       <name>
          <language id="en"><![CDATA[Chat]]></language>
       </name>
    </data>
 
-   <data id="auto_detect_conversation" messagehandler="autoDetectChatManager" samplemesage="Hello" processingmessage="Detecting">
+   <data id="auto_detect_conversation" scenerioid="chat_detection" samplemesage="Hello" processingmessage="Detecting">
       <name>
          <language id="en"><![CDATA[Auto Detect Conversation]]></language>
       </name>
    </data>
 
-   <!--data id="agentChat" messagehandler="assistantManager" processingmessage="Thinking">
-      <name>
-         <language id="en"><![CDATA[Agent Chat]]></language>
-      </name>
-   </data -->
-
-   <data id="auto_detect_showresponse" messagehandler="autoDetectChatManager" processingmessage="Thinking">
+   <data id="auto_detect_showresponse" scenerioid="chat_detection" processingmessage="Thinking">
       <name>
          <language id="en"><![CDATA[Handle Conversation]]></language>
       </name>
    </data>
    
-    <data id="auto_detect_sitewide_welcome" icon="chat" messagehandler="autoDetectChatManager" processingmessage="Welcome" >
+    <data id="auto_detect_sitewide_welcome" icon="chat" scenerioid="chat_detection" processingmessage="Welcome" >
       <name>
          <language id="en"><![CDATA[Sitewide Chat]]></language>
       </name>
    </data>
-   <data id="auto_detect_sitewide_parse" icon="chat" messagehandler="autoDetectChatManager" processingmessage="Parsing" >
+   <data id="auto_detect_sitewide_parse" icon="chat" scenerioid="chat_detection" processingmessage="Parsing" >
       <name>
          <language id="en"><![CDATA[Sitewide Parse]]></language>
       </name>

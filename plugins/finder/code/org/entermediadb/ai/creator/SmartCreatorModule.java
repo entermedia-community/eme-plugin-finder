@@ -7,8 +7,8 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.entermediadb.ai.assistant.AssistantManager;
-import org.entermediadb.ai.assistant.QuestionsManager;
-import org.entermediadb.ai.assistant.SearchingManager;
+import org.entermediadb.ai.assistant.QuestionsSkill;
+import org.entermediadb.ai.assistant.SearchingSkill;
 import org.entermediadb.asset.MediaArchive;
 import org.entermediadb.asset.modules.BaseMediaModule;
 import org.openedit.Data;
@@ -26,24 +26,24 @@ public class SmartCreatorModule extends BaseMediaModule
 		return assistantManager;
 	}
 
-	public SmartCreatorManager getSmartCreatorManager(WebPageRequest inReq)
+	public SmartCreatorSkill getSmartCreatorSkill(WebPageRequest inReq)
 	{
 		String catalogid = inReq.findValue("catalogid");
-		SmartCreatorManager smartCreatorManager = (SmartCreatorManager) getMediaArchive(catalogid).getBean("smartCreatorManager");
+		SmartCreatorSkill smartCreatorManager = (SmartCreatorSkill) getMediaArchive(catalogid).getBean("smartCreatorSkill");
 		return smartCreatorManager;
 	}
 
-	public QuestionsManager getQuestionsManager(WebPageRequest inReq)
+	public QuestionsSkill getQuestionsSkill(WebPageRequest inReq)
 	{
 		String catalogid = inReq.findValue("catalogid");
-		QuestionsManager questionsManager = (QuestionsManager) getMediaArchive(catalogid).getBean("questionsManager");
+		QuestionsSkill questionsManager = (QuestionsSkill) getMediaArchive(catalogid).getBean("questionsSkill");
 		return questionsManager;
 	}
 
-	public SearchingManager getSearchingManager(WebPageRequest inReq)
+	public SearchingSkill getSearchingSkill(WebPageRequest inReq)
 	{
 		String catalogid = inReq.findValue("catalogid");
-		SearchingManager searchingManager = (SearchingManager) getMediaArchive(catalogid).getBean("searchingManager");
+		SearchingSkill searchingManager = (SearchingSkill) getMediaArchive(catalogid).getBean("searchingSkill");
 		return searchingManager;
 	}
 
@@ -57,20 +57,20 @@ public class SmartCreatorModule extends BaseMediaModule
 
 	public void populateSection(WebPageRequest inReq) throws Exception
 	{
-		SmartCreatorManager creatorManager = getSmartCreatorManager(inReq);
+		SmartCreatorSkill creatorManager = getSmartCreatorSkill(inReq);
 		// creatorManager.createCreatorAndPopulateSection(inReq);
 	}
 
 	public void loadCreator(WebPageRequest inReq) throws Exception
 	{
-		SmartCreatorManager creatorManager = getSmartCreatorManager(inReq);
+		SmartCreatorSkill creatorManager = getSmartCreatorSkill(inReq);
 		creatorManager.getCreator(inReq);
 	}
 
 	public void createCreatorSection(WebPageRequest inReq) throws Exception
 	{
 
-		SmartCreatorManager creatorManager = getSmartCreatorManager(inReq);
+		SmartCreatorSkill creatorManager = getSmartCreatorSkill(inReq);
 
 		Data playbackentity = (Data) inReq.getPageValue("currententity");
 		Data playbackentitymodule = (Data) inReq.getPageValue("currententitymodule");
@@ -121,13 +121,13 @@ public class SmartCreatorModule extends BaseMediaModule
 		String searchtype = inReq.getRequestParameter("searchtype");
 		String dataid = inReq.getRequestParameter("id");
 
-		SmartCreatorManager creatorManager = getSmartCreatorManager(inReq);
+		SmartCreatorSkill creatorManager = getSmartCreatorSkill(inReq);
 		creatorManager.deleteCreatorSection(searchtype, dataid);
 	}
 
 	public void saveComponentContent(WebPageRequest inReq) throws Exception
 	{
-		SmartCreatorManager creatorManager = getSmartCreatorManager(inReq);
+		SmartCreatorSkill creatorManager = getSmartCreatorSkill(inReq);
 		String sectionid = inReq.getRequestParameter("sectionid");
 
 		Map componentfields = new HashMap();
@@ -229,13 +229,13 @@ public class SmartCreatorModule extends BaseMediaModule
 
 	public void populateComponentContent(WebPageRequest inReq) throws Exception
 	{
-		SmartCreatorManager creatorManager = getSmartCreatorManager(inReq);
+		SmartCreatorSkill creatorManager = getSmartCreatorSkill(inReq);
 		// creatorManager.autoPopulateComponentContent();
 	}
 
 	public void orderCreatorSection(WebPageRequest inReq)
 	{
-		SmartCreatorManager creatorManager = getSmartCreatorManager(inReq);
+		SmartCreatorSkill creatorManager = getSmartCreatorSkill(inReq);
 		creatorManager.orderCreatorSection(inReq);
 	}
 
@@ -244,7 +244,7 @@ public class SmartCreatorModule extends BaseMediaModule
 		String searchtype = inReq.getRequestParameter("searchtype");
 		String dataid = inReq.getRequestParameter("id");
 
-		SmartCreatorManager creatorManager = getSmartCreatorManager(inReq);
+		SmartCreatorSkill creatorManager = getSmartCreatorSkill(inReq);
 		Data duplicate = creatorManager.duplicateCreatorSection(searchtype, dataid);
 
 		inReq.putPageValue("searchtype", searchtype);
@@ -265,7 +265,7 @@ public class SmartCreatorModule extends BaseMediaModule
 		String aiaction = inReq.getRequestParameter("aiaction");
 		String componentcontentid = inReq.getRequestParameter("componentcontentid");
 
-		SmartCreatorManager creatorManager = (SmartCreatorManager) getMediaArchive(inReq).getBean("smartCreatorManager");
+		SmartCreatorSkill creatorManager = (SmartCreatorSkill) getMediaArchive(inReq).getBean("smartCreatorSkill");
 
 		if ("grammar".equals(aiaction))
 		{

@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.entermediadb.ai.BaseSkill;
-import org.entermediadb.ai.creator.SmartCreatorManager;
+import org.entermediadb.ai.creator.SmartCreatorSkill;
 import org.entermediadb.ai.informatics.InformaticsContext;
 import org.entermediadb.ai.AgentContext;
 import org.openedit.Data;
@@ -17,9 +17,9 @@ import org.openedit.hittracker.HitTracker;
 
 public class SmartCreatorRenderAssetSkill extends BaseSkill
 {
-	public SmartCreatorManager getSmartCreatorManager()
+	public SmartCreatorSkill getSmartCreatorSkill()
 	{
-		SmartCreatorManager manager = (SmartCreatorManager) getMediaArchive().getBean("smartCreatorManager");
+		SmartCreatorSkill manager = (SmartCreatorSkill) getMediaArchive().getBean("smartCreatorSkill");
 		return manager;
 	}
 
@@ -37,8 +37,8 @@ public class SmartCreatorRenderAssetSkill extends BaseSkill
 			MultiValued entitymodule = inContext.getCurrentEntityModule();
 			String applicationid = (String) inContext.getContextValue("triggerapplicationid");
 			String cdnprefix = (String) inContext.getContextValue("triggersiteroot");
-			String html = getSmartCreatorManager().renderToHtml(cdnprefix, applicationid, entitymodule, entity);
-			getSmartCreatorManager().exportAsAsset(inContext, entitymodule, entity, html);
+			String html = getSmartCreatorSkill().renderToHtml(cdnprefix, applicationid, entitymodule, entity);
+			getSmartCreatorSkill().exportAsAsset(inContext, entitymodule, entity, html);
 		}
 		super.process(inContext);
 	}

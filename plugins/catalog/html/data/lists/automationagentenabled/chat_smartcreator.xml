@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- using more descriptive ids for easier debugging -->
+
+<records>
+   <data id="chat_smartcreator" automationagent="smartCreatorChatSkill" automationscenario="chat_smartcreator" enabled="true" agenttype="eventagent">
+      <name>
+         <![CDATA[Handle Smart Creator in Chat]]>
+      </name>
+   </data>
+
+   </records>

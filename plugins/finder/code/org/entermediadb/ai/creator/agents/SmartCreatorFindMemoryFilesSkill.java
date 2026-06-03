@@ -6,8 +6,8 @@ import java.util.Iterator;
 import java.util.Set;
 import org.entermediadb.ai.BaseSkill;
 import org.entermediadb.ai.assistant.AssistantManager;
-import org.entermediadb.ai.assistant.SearchingManager;
-import org.entermediadb.ai.creator.SmartCreatorManager;
+import org.entermediadb.ai.assistant.SearchingSkill;
+import org.entermediadb.ai.creator.SmartCreatorSkill;
 import org.entermediadb.ai.AgentContext;
 import org.json.simple.JSONArray;
 import org.openedit.Data;
@@ -16,15 +16,15 @@ import org.openedit.hittracker.HitTracker;
 public class SmartCreatorFindMemoryFilesSkill extends BaseSkill
 {
 
-	public SearchingManager getSearchingManager()
+	public SearchingSkill getSearchingSkill()
 	{
-		SearchingManager searchingManager = (SearchingManager) getMediaArchive().getBean("searchingManager");
+		SearchingSkill searchingManager = (SearchingSkill) getMediaArchive().getBean("searchingSkill");
 		return searchingManager;
 	}
 
-	public SmartCreatorManager getSmartCreatorManager()
+	public SmartCreatorSkill getSmartCreatorSkill()
 	{
-		SmartCreatorManager smartCreatorManager = (SmartCreatorManager) getMediaArchive().getBean("smartCreatorManager");
+		SmartCreatorSkill smartCreatorManager = (SmartCreatorSkill) getMediaArchive().getBean("smartCreatorSkill");
 		return smartCreatorManager;
 	}
 

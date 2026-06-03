@@ -5,7 +5,7 @@ import java.util.Iterator;
 
 import org.entermediadb.ai.BaseSkill;
 import org.entermediadb.ai.creator.AiSmartCreatorSteps;
-import org.entermediadb.ai.creator.SmartCreatorManager;
+import org.entermediadb.ai.creator.SmartCreatorSkill;
 import org.entermediadb.ai.AgentContext;
 import org.openedit.Data;
 import org.openedit.MultiValued;
@@ -14,9 +14,9 @@ import org.openedit.WebPageRequest;
 public class SmartCreatorProcessPendingSkill extends BaseSkill
 {
 
-	public SmartCreatorManager getSmartCreatorManager()
+	public SmartCreatorSkill getSmartCreatorSkill()
 	{
-		SmartCreatorManager smartCreatorManager = (SmartCreatorManager) getMediaArchive().getBean("smartCreatorManager");
+		SmartCreatorSkill smartCreatorManager = (SmartCreatorSkill) getMediaArchive().getBean("smartCreatorSkill");
 		return smartCreatorManager;
 	}
 
@@ -68,7 +68,7 @@ public class SmartCreatorProcessPendingSkill extends BaseSkill
 
 				inContext.setAiSmartCreatorSteps(instructions);
 
-				getSmartCreatorManager().parseCreationPrompt(inContext, llmprompt);
+				getSmartCreatorSkill().parseCreationPrompt(inContext, llmprompt);
 
 				super.process(inContext); // To Create outline
 

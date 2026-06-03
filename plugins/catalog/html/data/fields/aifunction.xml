@@ -61,9 +61,9 @@
     </name>
   </property>
 
-  <property id="messagehandler" editable="true" index="true" stored="true">
+  <property id="scenerioid" editable="true" index="true" stored="true">
     <name>
-      <language id="en"><![CDATA[Message Handler Bean]]></language>
+      <language id="en"><![CDATA[Scenario ID]]></language>
     </name>
   </property>
   <property id="cratesuggestions" editable="true" index="true" stored="true" type="boolean">

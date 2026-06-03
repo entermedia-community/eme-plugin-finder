@@ -78,7 +78,7 @@ public class ContentModule extends BaseMediaModule
 		// Add as child
 		MediaArchive archive = getMediaArchive(inReq);
 
-		ContentPublishingManager manager = getContentManager(inReq);
+		ContentPublishingSkill manager = getContentManager(inReq);
 
 		HitTracker hits = archive.query("contentcreator").exact("status", "new").search();
 
@@ -110,7 +110,7 @@ public class ContentModule extends BaseMediaModule
 		// Add as child
 		MediaArchive archive = getMediaArchive(inReq);
 
-		ContentPublishingManager manager = getContentManager(inReq);
+		ContentPublishingSkill manager = getContentManager(inReq);
 
 		HitTracker hits = archive.query("contentcreator").exact("status", "newimage").search();
 		hits.enableBulkOperations();
@@ -277,7 +277,7 @@ public class ContentModule extends BaseMediaModule
 		String lastprompt = inReq.getRequestParameter("llmprompt.value");
 		entity.setValue("llmprompt", lastprompt);
 		getMediaArchive(inReq).saveData(entitymodule.getId(), entity);
-		ContentPublishingManager manager = getContentManager(inReq);
+		ContentPublishingSkill manager = getContentManager(inReq);
 		String type = inReq.findValue("llmtype.value");
 		if (type == null)
 		{
@@ -304,7 +304,7 @@ public class ContentModule extends BaseMediaModule
 		String assetid = inReq.getRequestParameter("assetid");
 		String renderformat = inReq.findValue("renderformat");
 		Asset asset = getMediaArchive(inReq).getAsset(assetid);
-		ContentPublishingManager manager = getContentManager(inReq);
+		ContentPublishingSkill manager = getContentManager(inReq);
 
 		// Make sure file is still here?
 		ContentItem item = getMediaArchive(inReq).getOriginalContent(asset);
@@ -331,7 +331,7 @@ public class ContentModule extends BaseMediaModule
 		String assetid = inReq.getRequestParameter("assetid");
 		String renderformat = inReq.findValue("renderformat");
 		Asset asset = mediaArchive.getAsset(assetid);
-		ContentPublishingManager manager = getContentManager(inReq);
+		ContentPublishingSkill manager = getContentManager(inReq);
 
 		// Make sure file is still here?
 		ContentItem item = mediaArchive.getOriginalContent(asset);
@@ -362,15 +362,15 @@ public class ContentModule extends BaseMediaModule
 		Data entity = getMediaArchive(inReq).getData(moduleid, entityid);
 		String assetid = inReq.getRequestParameter("assetid");
 		Asset asset = getMediaArchive(inReq).getAsset(assetid);
-		ContentPublishingManager manager = getContentManager(inReq);
+		ContentPublishingSkill manager = getContentManager(inReq);
 		manager.loadTree(moduleid, entity, asset);
 		// inReq.putPageValue("components",components);
 	}
 
-	protected ContentPublishingManager getContentManager(WebPageRequest inReq)
+	protected ContentPublishingSkill getContentManager(WebPageRequest inReq)
 	{
 		MediaArchive archive = getMediaArchive(inReq);
-		ContentPublishingManager manager = (ContentPublishingManager) archive.getBean("contentPublishingManager");
+		ContentPublishingSkill manager = (ContentPublishingSkill) archive.getBean("contentPublishingSkill");
 		if (manager.getMediaArchive() == null)
 		{
 			manager.setMediaArchive(archive);
@@ -387,7 +387,7 @@ public class ContentModule extends BaseMediaModule
 		MediaArchive mediaArchive = getMediaArchive(inReq);
 
 		Data entity = mediaArchive.getCachedData(entitymoduleid, entityid);
-		ContentPublishingManager manager = getContentManager(inReq);
+		ContentPublishingSkill manager = getContentManager(inReq);
 		manager.renderDita(inReq, entitymoduleid, entity, targetmodule);
 
 	}
@@ -396,7 +396,7 @@ public class ContentModule extends BaseMediaModule
 	{
 		Data entity = (Data) inReq.getPageValue("entity");
 		Data asset = (Data) inReq.getPageValue("asset");
-		ContentPublishingManager manager = getContentManager(inReq);
+		ContentPublishingSkill manager = getContentManager(inReq);
 		Collection menu = (Collection) manager.findDitaAssets(entity);
 		if (menu == null)
 		{

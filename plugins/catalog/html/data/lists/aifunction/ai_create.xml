@@ -2,25 +2,25 @@
 
 <root>
 
-   <data id="creation_image_welcome" toplevel="true" icon="lightning-charge" samplemesage="Make an image of a dog" messagehandler="creationManager" processingmessage="Welcome">
+   <data id="creation_image_welcome" toplevel="true" icon="lightning-charge" samplemesage="Make an image of a dog" scenerioid="creationSkill" processingmessage="Welcome">
       <name>
          <language id="en"><![CDATA[Create a New Image]]></language>
       </name>
    </data>
 
-   <data id="creation_image_parse" messagehandler="creationManager" processingmessage="Parsing request">
+   <data id="creation_image_parse" scenerioid="creationSkill" processingmessage="Parsing request">
       <name>
          <language id="en"><![CDATA[Parse Image Creation]]></language>
       </name>
    </data>
 
-   <data id="creation_image_create" messagehandler="creationManager" processingmessage="Creating Image">
+   <data id="creation_image_create" scenerioid="creationSkill" processingmessage="Creating Image">
       <name>
          <language id="en"><![CDATA[Create a New Image]]></language>
       </name>
    </data>
 
-   <data id="creation_image_render" messagehandler="creationManager" processingmessage="Rendering Image">
+   <data id="creation_image_render" scenerioid="creationSkill" processingmessage="Rendering Image">
       <name>
          <language id="en"><![CDATA[Render Image]]></language>
       </name>

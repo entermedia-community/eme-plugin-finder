@@ -71,13 +71,13 @@
       </name>
    </data>
 
-   <data id="documentEmbedding" messagehandler="assistantManager">
+   <data id="documentEmbedding" scenerioid="assistantManager">
       <name>
          <language id="en"><![CDATA[Document Embedding]]></language>
       </name>
    </data>
 
-   <data id="documentsplitasset" messagehandler="assistantManager">
+   <data id="documentsplitasset" scenerioid="assistantManager">
       <name>
          <language id="en"><![CDATA[Document Split Asset]]></language>
       </name>
