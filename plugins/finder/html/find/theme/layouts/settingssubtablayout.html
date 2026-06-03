@@ -10,7 +10,6 @@
 			#set( $null = $query.addExact("parentid", $parentid ))
 			$!query.addSortBy("ordering")
 			#set($tabs = $searcher.cachedSearch($context,$query))		 
-			
 		<ul>
 		
 			#if($tabs)

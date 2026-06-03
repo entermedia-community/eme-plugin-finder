@@ -1,8 +1,8 @@
 <div id="listselector" class="datamanagerworkarea">
 	#set($currentsearch = $context.getRequestParameter("searchtype"))
 	#set( $action = "$siteroot$content.dataroot/list/index.html" )
-	<div class="d-flex align-items-center justify-content-between my-2 ms-1">
-		<h3 class="settings-title">[[Database]]</h3>
+	<div class="d-flex align-items-center justify-content-between my-2 ">
+		<h2 class="mt-1 mb-2">[[Database]]</h2>
 		<form action="$action" class="ajaxform autosubmitform d-flex align-items-center" data-targetdiv="listselector" method="get">
 			<input type="hidden" name="catalogid" value="$catalogid" style="display: none;" />
 			<input type="hidden" name="oemaxlevel" value="2" style="display: none;" />
@@ -31,7 +31,8 @@
 
 	#if($currentsearch)
 		<h4 class=" m-0">
-			[[Table]]: <strong style="font-family: 'Courier New', Courier, monospace;">$!currentsearch</strong>
+			[[Table]]: 
+			<strong style="font-family: 'Courier New', Courier, monospace;">$!currentsearch</strong>
 		</h4>
 
 		#set( $datatab = $content.datatab )

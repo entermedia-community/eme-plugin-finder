@@ -5,10 +5,7 @@
   <path-action name="PermissionModule.loadPageProperties"/>
   <path-action name="PermissionModule.loadPermission"/>
   <path-action bean="searcherManager" name="PageValue.loadPageVariable"/>
-  <property name="title">
-    <value>Permissions - OpenEdit</value>
-    <value locale="es">Permisos - OpenEdit</value>
-  </property>
+
   <property name="editable">false</property>
   <property name="permissionrootpath">/system/tools/permissions</property>
   <property name="encoding">UTF-8</property>

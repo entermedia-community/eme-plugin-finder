@@ -2,4 +2,5 @@
 <page>
 
 	<page-action name="User.loadUserProperties" />
+	<inner-layout>/${applicationid}/theme/layouts/dialoglayout.html</inner-layout>
 </page>

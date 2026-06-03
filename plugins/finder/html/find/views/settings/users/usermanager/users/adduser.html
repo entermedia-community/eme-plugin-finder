@@ -1,14 +1,8 @@
 #set( $memberSearcher = $searcherManager.getSearcher($catalogid,"member"))
-
-
-
-<div style="padding: 20px;">
-<h3>[[Create New User]]</h3>
-<div style="max-width:600px;"> 
-
+<div class="mb-4">
 <form action="$siteroot$usermanagerhome/users/adduser-finish.html"
- 	name="adduser"
- 	method="post" 
+	name="adduser"
+	method="post" 
 	id="adduser"
 	class="ajaxform"
 	data-targetdivinner="settingssubtab"
@@ -26,19 +20,14 @@
 	##$context.putPageValue("data", $userprofile)
 	$pages.include("${apphome}/components/xml/detaileditorcss.html", $context)
 
-<div class="hr" style="margin: 20px 0; padding: 0;"></div>
-<input class="btn btn-primary btn-sm" type="submit" value="[[Create]]" >
-<a href="$siteroot$usermanagerhome/users/index.html" 
-	class="btn btn-secondary btn-sm ajax"
-	data-targetdivinner="settingssubtab"
-	data-updateurl="true" 
-	style="margin-left:10px;">[[Cancel]]</a>
+	<div class="hr" style="margin: 20px 0; padding: 0;"></div>
+	<input class="btn btn-primary btn-sm" type="submit" value="[[Create]]" >
+
+	<a 	class="btn btn-secondary btn-sm closedialog"
+		style="margin-left:10px;">[[Cancel]]</a>
 </form>
-<div class="clearfix"></div>
-</div>
-</div>
 
-
+</div>
 
 <script language="JavaScript" type="text/javascript">
 //email.value
