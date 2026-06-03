@@ -2738,6 +2738,7 @@ select + .select2-container {
 	transition: 0.2s;
 	margin: 0 0 0 32px;
 	height: 100%;
+	padding-bottom:32px;
 }
 
 .mediaappcontent .col-content-main {
