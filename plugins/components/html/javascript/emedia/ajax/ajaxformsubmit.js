@@ -197,8 +197,8 @@
 						dataname,
 					]);
 				}
-
 				var targetdivinner = form.data("targetdivinner");
+
 				if (targetdivinner) {
 					$("#" + $.escapeSelector(targetdivinner)).html(result);
 				} else {

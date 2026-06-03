@@ -176,7 +176,7 @@
 					var id = $("form", modaldialog).attr("id");
 					$("#submitbutton", modaldialog).attr("form", id);
 				}
-
+				
 				var hidetitle = initiatorData["hideheader"];
 				if (!hidetitle) {
 					var title = initiator.data("dialogtitle");
@@ -474,7 +474,7 @@ $(document).ready(function () {
 		$(this).emDialog();
 	});
 
-	lQuery(".closemodal").livequery("click", function (e) {
+	lQuery(".closemodal, .closedialog").livequery("click", function (e) {
 		if (e.target != this) return;
 		closeemdialog($(this).closest(".modal"));
 	});

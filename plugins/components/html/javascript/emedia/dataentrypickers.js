@@ -573,6 +573,24 @@ $(document).ready(function () {
 			row.css("pointer-events", "auto");
 		});
 	});
+	
+	lQuery(".emselectablepicker .emselectablerow").livequery("click", function (e) {
+		if (!isValidTarget(e)) {
+			return true;
+		}
+		var row = $(this);
+		row.css("pointer-events", "none");
+
+		var clickableresultlist = row.closest(".emselectablepicker");
+
+		var rowid = row.data("dataid");
+		clickableresultlist.data("id", rowid);
+		clickableresultlist.data("entityid", rowid);
+		clickableresultlist.emDialog(null, function () {
+			row.css("pointer-events", "auto");
+		});
+	});
+
 
 	//Assets or Categories and you import into a entity
 	lQuery(".pickerresultscopy .resultsdivdata").livequery("click", function (e) {
