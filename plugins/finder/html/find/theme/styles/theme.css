@@ -5188,37 +5188,6 @@ label.error {
 	color: #666;
 }
 
-.settingssubtabnav {
-	margin: 0;
-	position: sticky;
-	top: 142px;
-	background: var(--themed-tab-bar);
-	z-index: 900;
-	height: var(--nav-btn-height);
-}
-.chat-main .settingssubtabnav {
-	top: 0px;
-}
-
-.settingslayout .settingssubtabnav {
-	height: var(--nav-btn-height);
-	border-bottom: var(--1px-light);
-}
-
-.lighttheme .settingssubtabnav {
-	background-color: var(--secondary-bg);
-	border-color: var(--light-border);
-}
-
-.settingssubtabnav ul,
-.tree-header {
-	display: flex;
-	position: relative;
-	height: calc(var(--nav-btn-height) + 1px);
-	width: 100%;
-	margin: 0;
-	padding: 0;
-}
 
 table.greytxt {
 	width: 100%;
