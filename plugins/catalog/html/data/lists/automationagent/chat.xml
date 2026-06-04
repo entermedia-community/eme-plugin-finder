@@ -8,7 +8,7 @@
 
    <data id="questionsSkill" bean="questionsSkill" agenttype="remoteagent" ordering="10">
       <name>
-         <![CDATA[Questions Skill]]>
+         <![CDATA[Questions Chat]]>
       </name>
    </data>
 

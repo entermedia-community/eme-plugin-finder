@@ -37,11 +37,14 @@
 
 #end
 
+$context.getContentPage().getPath()
+
+XXX = $currentchannel
 
 <div id="chatMainContent" class="chat-main-content#if( $user.getId() == $emeprofile.get('owner') ) has-owner-toolbar#end">
-    $pages.include("./components/chat-dashboard/landing.html", $context)
+    ##$pages.include("./components/chat-dashboard/landing.html", $context)
   <div class="chat-input-container">
-    $pages.include("./components/chat-dashboard/chat-input.html", $context)
+    $pages.include("./components/chat-dashboard/chat-input.html?entityid=$emeprofile.getId()", $context)
   </div>
 </div>
 

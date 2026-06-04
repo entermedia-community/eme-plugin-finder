@@ -38,9 +38,9 @@ public interface AgentContext extends Data
 
 	void setWaitTime(Long inWaitTime);
 
-	MultiValued getCurrentScenerio();
+	MultiValued getCurrentScenario();
 
-	void setCurrentScenerio(MultiValued inCurrentScenerio);
+	void setCurrentScenario(MultiValued inCurrentScenario);
 
 	AgentEnabled getCurrentAgentEnable();
 

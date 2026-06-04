@@ -33,27 +33,26 @@
 		<div class="d-flex">
 			<div class="d-flex flex-column me-2 flex-grow-1">
 				<h5 class="my-2">[[Here are some things I can help you with]]:</h5>
-				#set($aifunctions = $mediaarchive.query("aifunction").exact("toplevel",true).sort("ordering").search())
-				#ifnotnull($aifunctions)
+				#set($scenarios = $mediaarchive.query("automationscenario").exact("connectedtop","chatlabel").sort("ordering").cachedSearch())
+				#ifnotnull($scenarios)
 				<ul>
-					#foreach( $function in $aifunctions )
-						#if($function.id != "auto_detect_welcome")
+					#foreach( $scenario in $scenarios )
+						#if($scenario.id != "auto_detect_welcome")
 						<li>
 							<a class="ajax"
 								href="$applink/views/modules/${agentcontext.entitymoduleid}/editors/entitychat/toplevelfunctionsave.html"
 								data-targetdiv="aichatsearch"
 								data-channel="$!{channel.getId()}"
-								data-toplevelaifunctionid="$function.id"
-								data-functionname="$function.id"
+								data-currentscenario="$scenario.id"
 								data-oemaxlevel="1">
-								<span>#text( $function )</span>
+								<span>#text( $scenario )</span>
 							</a>
 						</li>
 						#end
 					#end
 				</ul>
 				#end
-				#ifnull($aifunctions)
+				#ifnull($scenarios)
 					<p>[[I can help you create tutorials, answer your questions, generate images, and more.]]</p>
 				#end
 			</div>
@@ -65,8 +64,7 @@
 							href="$applink/views/modules/${agentcontext.entitymoduleid}/editors/entitychat/toplevelfunctionsave.html"
 							data-targetdiv="aichatsearch"
 							data-channel="$!{channel.getId()}"
-							data-toplevelaifunctionid="search_welcome"
-							data-functionname="view_related_records"
+							data-currentscenario="chat_searching"
 							data-oemaxlevel="1">
 							<span>View Related Records</span>
 						</a>

@@ -61,11 +61,6 @@
     </name>
   </property>
 
-  <property id="scenerioid" editable="true" index="true" stored="true">
-    <name>
-      <language id="en"><![CDATA[Scenario ID]]></language>
-    </name>
-  </property>
   <property id="cratesuggestions" editable="true" index="true" stored="true" type="boolean">
     <name>
       <language id="en"><![CDATA[Create Suggestion]]></language>
@@ -75,12 +70,6 @@
   <property id="samplemesage" editable="true" index="true" stored="true">
     <name>
       <language id="en"><![CDATA[Sample Message]]></language>
-    </name>
-  </property>
-
-  <property id="toplevel" editable="true" index="true" stored="true" type="boolean">
-    <name>
-      <language id="en"><![CDATA[Top Level]]></language>
     </name>
   </property>
 

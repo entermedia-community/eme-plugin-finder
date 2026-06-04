@@ -100,20 +100,20 @@ public class BaseAgentContext extends BaseData implements CatalogEnabled, AgentC
 
 	protected String fieldCatalogId;
 
-	protected MultiValued fieldCurrentScenerio;
+	protected MultiValued fieldCurrentScenario;
 
-	public MultiValued getCurrentScenerio()
+	public MultiValued getCurrentScenario()
 	{
-		if (fieldCurrentScenerio == null && getParentContext() != null)
+		if (fieldCurrentScenario == null && getParentContext() != null)
 		{
-			return getParentContext().getCurrentScenerio();
+			return getParentContext().getCurrentScenario();
 		}
-		return fieldCurrentScenerio;
+		return fieldCurrentScenario;
 	}
 
-	public void setCurrentScenerio(MultiValued inCurrentScenerio)
+	public void setCurrentScenario(MultiValued inCurrentScenario)
 	{
-		fieldCurrentScenerio = inCurrentScenerio;
+		fieldCurrentScenario = inCurrentScenario;
 	}
 
 	protected AgentEnabled fieldCurrentAgentEnable;
@@ -247,16 +247,6 @@ public class BaseAgentContext extends BaseData implements CatalogEnabled, AgentC
 	public void setNextFunctionName(String inNextFunctionName)
 	{
 		setValue("nextfunctionname", inNextFunctionName);
-	}
-
-	public String getTopLevelFunctionName()
-	{
-		return get("toplevelaifunctionid");
-	}
-
-	public void setTopLevelFunctionName(String inNextFunctionName)
-	{
-		setValue("toplevelaifunctionid", inNextFunctionName);
 	}
 
 	public Map<String, Object> getContext()

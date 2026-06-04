@@ -32,9 +32,9 @@
     </name>
   </property>
 
-  <property id="toplevelaifunctionid" index="true" editable="true" stored="true" indextype="not_analyzed">
+  <property id="currentscenario" index="true" editable="true" stored="true" type="list" listid="automationscenario" indextype="not_analyzed">
     <name>
-      <language id="en"><![CDATA[Top Level Function Name]]></language>
+      <language id="en"><![CDATA[Current Scenario]]></language>
     </name>
   </property>
 

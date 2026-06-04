@@ -146,7 +146,7 @@ public class AgentModule extends BaseMediaModule
 		inReq.putPageValue("tutorials", hits);
 	}
 
-	public void startFunction(WebPageRequest inReq) throws Exception
+	public void startScenario(WebPageRequest inReq) throws Exception
 	{
 		AssistantManager assistantManager = (AssistantManager) getMediaArchive(inReq).getBean("assistantManager");
 
@@ -154,8 +154,18 @@ public class AgentModule extends BaseMediaModule
 		String channelid = inReq.getRequestParameter("channel");
 		String applicationid = inReq.findValue("applicationid");
 		ChatMessageContext agentContext = assistantManager.loadContext(applicationid, channelid);
-		String toplevel = inReq.getRequestParameter("toplevelaifunctionid");
-		String previousTopLevel = agentContext.getTopLevelFunctionName();
+
+		String currentscenario = inReq.getRequestParameter("currentscenario");
+
+		if (currentscenario != null)
+		{
+			getMediaArchive(inReq).getCachedData("automationscenario", applicationid);
+		}
+
+		if (currentscenario == null && agentContext.getCurrentScenario() == null)
+		{
+			currentscenario = "chat_autodetect";
+		}
 
 		boolean changed = false;
 		if (toplevel != null && !toplevel.equals(previousTopLevel))
@@ -219,17 +229,10 @@ public class AgentModule extends BaseMediaModule
 
 		inReq.putPageValue("agentcontext", context);
 
-		String toplevel = inReq.getRequestParameter("toplevelaifunctionid");
-
-		if (toplevel == null && context.getTopLevelFunctionName() == null)
-		{
-			inReq.setRequestParameter("channel", channelid);
-			inReq.setRequestParameter("toplevelaifunctionid", "auto_detect_welcome");
-			inReq.setRequestParameter("functionname", "auto_detect_welcome");
-			startFunction(inReq);
-			return context;
-		}
-
+		inReq.setRequestParameter("channel", channelid);
+		// inReq.setRequestParameter("toplevelaifunctionid", "auto_detect_welcome");
+		// inReq.setRequestParameter("functionname", "auto_detect_welcome");
+		startScenario(inReq);
 		// if( toplevel != null )
 		// {
 		// context.setTopLevelFunctionName(toplevel);

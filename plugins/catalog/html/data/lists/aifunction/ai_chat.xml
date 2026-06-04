@@ -2,30 +2,30 @@
 
 <root>
 
-   <data id="auto_detect_welcome" toplevel="true" icon="chat" samplemesage="Create a summary" scenerioid="chat_detection" processingmessage="Welcome" ordering="-1">
+   <data id="auto_detect_welcome" toplevel="true" icon="chat" samplemesage="Create a summary" processingmessage="Welcome" ordering="-1">
       <name>
          <language id="en"><![CDATA[Chat]]></language>
       </name>
    </data>
 
-   <data id="auto_detect_conversation" scenerioid="chat_detection" samplemesage="Hello" processingmessage="Detecting">
+   <data id="auto_detect_conversation" samplemesage="Hello" processingmessage="Detecting">
       <name>
          <language id="en"><![CDATA[Auto Detect Conversation]]></language>
       </name>
    </data>
 
-   <data id="auto_detect_showresponse" scenerioid="chat_detection" processingmessage="Thinking">
+   <data id="auto_detect_showresponse" processingmessage="Thinking">
       <name>
          <language id="en"><![CDATA[Handle Conversation]]></language>
       </name>
    </data>
    
-    <data id="auto_detect_sitewide_welcome" icon="chat" scenerioid="chat_detection" processingmessage="Welcome" >
+    <data id="auto_detect_sitewide_welcome" icon="chat" processingmessage="Welcome" >
       <name>
          <language id="en"><![CDATA[Sitewide Chat]]></language>
       </name>
    </data>
-   <data id="auto_detect_sitewide_parse" icon="chat" scenerioid="chat_detection" processingmessage="Parsing" >
+   <data id="auto_detect_sitewide_parse" icon="chat" processingmessage="Parsing" >
       <name>
          <language id="en"><![CDATA[Sitewide Parse]]></language>
       </name>

@@ -127,7 +127,7 @@ public class AutomationManager extends BaseAiManager implements WebEventListener
 			inContext.setId(inCrementId());
 		}
 		addContext(inId, inContext);
-		inContext.setCurrentScenerio(scenerio);
+		inContext.setCurrentScenario(scenerio);
 
 		// Lock it
 		inContext.setValue("lastrunstart", new Date());
