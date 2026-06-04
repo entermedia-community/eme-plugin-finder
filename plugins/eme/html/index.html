@@ -1,5 +1,5 @@
 <div class="d-flex">
-  <div class="flex-grow-1 p-2 ">
+  <div class="flex-grow-1 p-3 ">
     <div id="chatMainContent" 
         class="chat-main-content#if( $user.getId() == $emeprofile.get('owner') ) has-owner-toolbar#end rounded-3 shadow-sm border h-100">
         ##$pages.include("./components/chat-dashboard/landing.html", $context)
@@ -9,7 +9,7 @@
     </div>
   </div>
   #if( $user.getId() == $emeprofile.get("owner") )
-  <div class="owner-right-toolbar p-2">
+  <div class="owner-right-toolbar p-3">
     <div class="p-3 bg-light rounded-3 shadow-sm border h-100 d-flex flex-column">
       <h2 class="h4 fw-bold mb-2">Welcome Back $user</h2>
       <p class="mb-3">Here's a quick overview of your recent activity and goals.</p>

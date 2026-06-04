@@ -177,8 +177,8 @@ public class AgentModule extends BaseMediaModule
 			}
 
 			// Do not set the welcome function if the channel already has messages.
-			Collection messages = assistantManager.loadChannelChatHistory(channelid);
-			if (messages == null || messages.isEmpty())
+			int messagecount = assistantManager.channelMessageCount(channelid);
+			if (messagecount == 0)
 			{
 				functionname = "auto_detect_welcome";
 			}

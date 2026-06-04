@@ -7,7 +7,7 @@
 
 <div class="py-2" id="sbHistoryBody">
   #if( $user.getId() == $emeprofile.owner )
-    <p class="px-2 py-2" style="font-size:0.81rem; color:#9ca3af;">[[All recent sessions]]</p>
+    ##<p class="px-2 py-2" style="font-size:0.81rem; color:#9ca3af;">[[All recent sessions]]</p>
 
     #set($chatsessions = $mediaarchive.query("channel").exact("dataid",$emeprofile.id).exact("searchtype","emeprofile").sort("refreshdateDown").search($context))
 

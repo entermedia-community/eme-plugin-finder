@@ -470,6 +470,13 @@ public class AssistantManager extends BaseAiManager
 		}
 	}
 
+	protected int channelMessageCount(String inChannelId)
+	{
+		HitTracker messages = getMediaArchive().query("chatterbox").exact("channel", inChannelId).sort("dateUp").search();
+		int total = (int) messages.size();
+		return total;
+	}
+
 	protected Collection<Data> loadChannelChatHistory(String inChannelId)
 	{
 		Data channel = getMediaArchive().getCachedData("channel", inChannelId);
