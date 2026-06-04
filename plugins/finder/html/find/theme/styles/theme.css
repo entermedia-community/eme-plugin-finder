@@ -1489,7 +1489,7 @@ a.categorypathlink:hover,
 }
 
 .lighttheme .emsubnav {
-	background: var(--light-bg);
+	background: var(--secondary-bg);
 }
 
 .modulesearchtopcontainer {

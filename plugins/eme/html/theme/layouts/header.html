@@ -122,15 +122,19 @@
 						#if( $user )
 							#if( $canviewmyaccount ) 
 								<li><a class="dropdown-item ajax" 
-									data-targetdivinner="application" 
+									data-targetdiv="applicationcontent" 
 									data-updateurl="true" 
-									data-oemaxlevel="3" 
+									data-oemaxlevel="2" 
 									href="$!siteroot$apphome/views/myaccount/index.html"  
 									title="$user.getScreenName() [[Account Settings]]">
 									<i class="bi bi-person-circle me-1"></i>
 									[[My Account]] ($user)
 								</a></li>
-								<li><a class="dropdown-item ajax" data-targetdivinner="application" data-updateurl="true" data-oemaxlevel="3" href="$!siteroot$apphome/views/modules/order/editors/orderuserlist/index.html"  title="[[My Orders]]">
+								<li><a class="dropdown-item ajax" 
+										data-targetdiv="applicationcontent" 
+										data-updateurl="true" 
+										data-oemaxlevel="3"
+										href="$!siteroot$apphome/views/modules/order/editors/orderuserlist/index.html"  title="[[My Orders]]">
 									<i class="bi bi-bag me-1"></i>
 									[[My Orders]]
 								</a></li>
