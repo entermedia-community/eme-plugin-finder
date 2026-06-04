@@ -9,6 +9,8 @@
 
 	<!-- path-action name="EntityModule.getEntity"/ -->
 
+  <property name="channeltype">agententitychat</property>
+
 	<path-action name="ChatModule.loadChatChannel" />
 
 

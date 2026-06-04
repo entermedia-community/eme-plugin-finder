@@ -9,13 +9,15 @@
           data-targetdiv="aichatsearch"
           data-channel="$!{channel.getId()}"
           #if($recordmodule.aicreationmethod == "smartcreator")
-            data-toplevelaifunctionid="smartcreator_welcome_${recordmodule.id}"
+
+            data-currentscenario="chat_smartcreator"
             data-functionname="smartcreator_play"
+            data-context_relatedmoduleid="$recordmodule.id"
             data-context_playbackentityid="${record.id}"
             data-context_playbackentitymoduleid="${recordmodule.id}"
             data-context_playbacksection="0"
           #else
-            data-toplevelaifunctionid="search_welcome"
+            data-currentscenario="chat_searching"
             data-functionname="view_related_record_details"
           #end
           data-context_relatedmoduleid="$recordmodule.id"
@@ -39,7 +41,7 @@
       href="$edithome/entitychat/toplevelfunctionsave.html"
       data-targetdiv="aichatsearch"
       data-channel="$!{channel.getId()}"
-      data-toplevelaifunctionid="search_welcome"
+      data-currentscenario="chat_searching"
       data-functionname="view_related_records"
       data-context_relatedmoduleid="$recordmodule.id"
       data-oemaxlevel="1">

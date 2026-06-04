@@ -2,44 +2,44 @@
 
 <root>
 
-   <data id="search_welcome" showuser="1" toplevel="true" icon="patch-question" scenerioid="chat_searching" processingmessage="Welcome to search">
+   <data id="search_welcome" showuser="1" toplevel="true" icon="patch-question" processingmessage="Welcome to search">
       <name>
          <language id="en"><![CDATA[Searching]]></language>
       </name>
    </data>
 
-   <data id="search_parse" cratesuggestions="true" scenerioid="chat_searching" processingmessage="Parsing Search">
+   <data id="search_parse" cratesuggestions="true" processingmessage="Parsing Search">
       <name>
          <language id="en"><![CDATA[Parse Search]]></language>
       </name>
    </data>
 
 
-   <data id="search_tables" cratesuggestions="true" scenerioid="chat_searching" processingmessage="Searching">
+   <data id="search_tables" cratesuggestions="true" processingmessage="Searching">
       <name>
          <language id="en"><![CDATA[Search Tables]]></language>
       </name>
    </data>
 
-   <data id="search_semantic" scenerioid="chat_searching" processingmessage="Searching similar results">
+   <data id="search_semantic" processingmessage="Searching similar results">
       <name>
          <language id="en"><![CDATA[Search Semantic]]></language>
       </name>
    </data>
 
-   <data id="view_related_records" scenerioid="chat_searching" processingmessage="Searching related records">
+   <data id="view_related_records" processingmessage="Searching related records">
       <name>
          <language id="en"><![CDATA[View Related Records]]></language>
       </name>
    </data>
 
-   <data id="view_related_record_list" scenerioid="chat_searching" processingmessage="Loading records">
+   <data id="view_related_record_list" processingmessage="Loading records">
       <name>
          <language id="en"><![CDATA[Record List]]></language>
       </name>
    </data>
 
-   <data id="view_related_record_details" scenerioid="chat_searching" processingmessage="Loading record details">
+   <data id="view_related_record_details" processingmessage="Loading record details">
       <name>
          <language id="en"><![CDATA[Record Details]]></language>
       </name>

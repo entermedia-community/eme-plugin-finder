@@ -620,6 +620,20 @@ public class ChatModule extends BaseMediaModule
 		{
 			entityid = inReq.findValue("dataid");
 		}
+
+		if (entityid == null && "agententitychat".equals(channeltype))
+		{
+			Data entity = (Data) inReq.getPageValue("entity");
+			if (entity != null)
+			{
+				entityid = entity.getId();
+			}
+			else
+			{
+				throw new IllegalArgumentException("entityid is required for agententitychat");
+			}
+
+		}
 		String channelname = null;
 		// MultiValued entity = (MultiValued) inReq.getPageValue("entity");
 		// switch(channeltype) //TODO Remove this

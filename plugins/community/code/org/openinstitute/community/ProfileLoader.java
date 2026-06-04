@@ -169,6 +169,10 @@ public class ProfileLoader extends BaseManager implements PageLoader, CatalogEna
 			right.putParam("emeprofileid", emeprofile.getId());
 			emeprofile = getMediaArchive().getSearcher("emeprofile").loadData(emeprofile);
 			right.putPageValue("emeprofile", emeprofile);
+			right.putPageValue("entity", emeprofile);
+			Data module = getMediaArchive().getCachedData("module", "emeprofile");
+			right.putPageValue("entitymodule", module);
+
 			// right.putPageValue("projectlink" , "/" + domain + "/" +
 			// emeprofile.get("urlname") );
 			right.setRightPage(otherpage);

@@ -69,7 +69,7 @@ public class InformaticsProcessorSkill extends BaseSkill
 		}
 		InformaticsContext informatic = (InformaticsContext) inContext;
 
-		log.info(inContext.getCatalogId() + " Processing Informatics Agent: " + inContext.getCurrentAgentEnable() + " in Scenario: " + inContext.getCurrentScenerio());
+		log.info(inContext.getCatalogId() + " Processing Informatics Agent: " + inContext.getCurrentAgentEnable() + " in Scenario: " + inContext.getCurrentScenario());
 
 		if (informatic.getAssetsToProcess() == null && informatic.getRecordsToProcess() == null)
 		{

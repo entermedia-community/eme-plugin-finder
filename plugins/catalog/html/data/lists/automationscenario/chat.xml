@@ -2,19 +2,19 @@
 
   <data id="chat_detection" ordering="50" scenarioicon="broadcast" enabled="true" isvisible="true" connectedtop="chatlabel">
     <name>
-      <language id="en"><![CDATA[Auto Detect Skill]]></language>
+      <language id="en"><![CDATA[Auto Detect Chat]]></language>
     </name>
   </data>
 
   <data id="chat_questions" ordering="50" scenarioicon="broadcast" enabled="true" isvisible="true" connectedtop="chatlabel">
     <name>
-      <language id="en"><![CDATA[Question Skill]]></language>
+      <language id="en"><![CDATA[Question Chat]]></language>
     </name>
   </data>
 
 <data id="chat_searching" ordering="50" scenarioicon="broadcast" enabled="true" isvisible="true" connectedtop="chatlabel">
     <name>
-      <language id="en"><![CDATA[Search Skill]]></language>
+      <language id="en"><![CDATA[Search Chat]]></language>
     </name>
   </data>
 

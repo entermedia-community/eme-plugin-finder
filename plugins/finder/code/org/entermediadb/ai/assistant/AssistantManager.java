@@ -365,8 +365,6 @@ public class AssistantManager extends BaseAiManager
 		String apphome = "/" + channel.get("chatapplicationid");
 		chatMessageContext.addContext("apphome", apphome);
 
-		String scenerioid = function.get("scenerioid");
-
 		LlmResponse response = null;
 		String messagePrefix = chatMessageContext.getMessagePrefix();
 		ChatMessageContext messageContext = new ChatMessageContext(chatMessageContext);// Needed?
@@ -376,17 +374,18 @@ public class AssistantManager extends BaseAiManager
 		try
 		{
 			// get the scenerio and run that. Each scenerio will have one or more skills
-			getAutomationManager().runScenario(scenerioid, messageContext);
+			MultiValued scenerio = messageContext.getCurrentScenario();
+			getAutomationManager().runScenario(scenerio.getId(), messageContext);
 			response = messageContext.getLastResponse();
 		}
 		catch (HttpException e)
 		{
-			log.error("Error from " + scenerioid + " running " + function.getId(), e);
+			log.error("Error from " + messageContext.getCurrentScenario() + " running " + function.getId(), e);
 			response = handleError(chatMessageContext, e.getMessage(), e.getErrorcode());
 		}
 		catch (Exception e)
 		{
-			log.error("Error from " + scenerioid + " running " + function.getId(), e);
+			log.error("Error from " + messageContext.getCurrentScenario() + " running " + function.getId(), e);
 			response = handleError(chatMessageContext, e.getMessage());
 		}
 
