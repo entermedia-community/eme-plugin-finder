@@ -159,6 +159,7 @@ public class AgentModule extends BaseMediaModule
 		boolean firesystemmessage = false;
 
 		String currentscenario = inReq.getRequestParameter("currentscenario");
+
 		if (currentscenario != null)
 		{
 			firesystemmessage = true;
@@ -173,9 +174,15 @@ public class AgentModule extends BaseMediaModule
 			if (currentscenario == null)
 			{
 				currentscenario = "chat_detection";
-				functionname = "auto_detect_welcome";
-				firesystemmessage = true;
 			}
+
+			// Do not set the welcome function if the channel already has messages.
+			Collection messages = assistantManager.loadChannelChatHistory(channelid);
+			if (messages == null || messages.isEmpty())
+			{
+				functionname = "auto_detect_welcome";
+			}
+
 			if (functionname != null)
 			{
 				firesystemmessage = true;
@@ -196,7 +203,7 @@ public class AgentModule extends BaseMediaModule
 			automationscenario = (MultiValued) getMediaArchive(inReq).getCachedData("automationscenario", currentscenario);
 		}
 
-		if (currentscenario != null)
+		if (automationscenario != null)
 		{
 			agentContext.setCurrentScenario(automationscenario);
 		}

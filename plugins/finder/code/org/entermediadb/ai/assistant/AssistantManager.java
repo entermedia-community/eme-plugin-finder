@@ -450,8 +450,8 @@ public class AssistantManager extends BaseAiManager
 				chatMessageContext.setNextFunctionName(null);
 				chatMessageContext.setAgentMessage(agentmessage);
 				chatMessageContext.setUserMessage(usermessage);
-				if( agentNextFn != null)
-				{ 
+				if (agentNextFn != null)
+				{
 					execCurrentFunctionFromChat(chatMessageContext);
 				}
 				// Save the current state
@@ -468,6 +468,16 @@ public class AssistantManager extends BaseAiManager
 		{
 			getMediaArchive().saveData("chatMessageContext", chatMessageContext);
 		}
+	}
+
+	protected Collection<Data> loadChannelChatHistory(String inChannelId)
+	{
+		Data channel = getMediaArchive().getCachedData("channel", inChannelId);
+		if (channel == null)
+		{
+			return Collections.emptyList();
+		}
+		return loadChannelChatHistory(channel);
 	}
 
 	protected Collection<Data> loadChannelChatHistory(Data inChannel)
@@ -913,12 +923,11 @@ public class AssistantManager extends BaseAiManager
 				id = "fieldsonly_welcome_" + module.getId();
 				messagehandler = "entityCreationSkill";
 			}
-			else
-				if (method.equals("smartcreator"))
-				{
-					id = "smartcreator_welcome_" + module.getId();
-					messagehandler = "smartCreatorSkill";
-				}
+			else if (method.equals("smartcreator"))
+			{
+				id = "smartcreator_welcome_" + module.getId();
+				messagehandler = "smartCreatorSkill";
+			}
 
 			Data exists = getMediaArchive().getData("aifunction", id);
 			if (exists != null)
