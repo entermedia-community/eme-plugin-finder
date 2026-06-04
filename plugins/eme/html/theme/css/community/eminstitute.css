@@ -8,8 +8,6 @@ body {
 }
 body {
 	overflow-x: hidden;
-	max-width: 100%;
-	font-size: 0.9rem;
 	background-color: #e9ecef;
 }
 body.offcanvas-open {
