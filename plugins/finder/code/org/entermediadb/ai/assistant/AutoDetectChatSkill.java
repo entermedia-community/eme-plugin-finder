@@ -28,8 +28,14 @@ public class AutoDetectChatSkill extends BaseSkill
 		String query = usermessage.get("message");
 
 		String agentFn = inAgentContext.getFunctionName();
-		if ("auto_detect_welcome".equals(agentFn))
+		if ("auto_detect_welcome".equals(agentFn) || agentFn == null)
 		{
+			if (messageContext.getContextValue("sentwelcome") != null)
+			{
+				return;
+			}
+
+			messageContext.putContextValue("sentwelcome", true);
 			agentmessage.setValue("chatmessagestatus", "completed");
 
 			LlmConnection llmconnection = getMediaArchive().getLlmConnection(function.getId()); // Should stay

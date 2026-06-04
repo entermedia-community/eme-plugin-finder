@@ -70,10 +70,6 @@ public interface AgentContext extends Data
 
 	void setNextFunctionName(String inNextFunctionName);
 
-	String getTopLevelFunctionName();
-
-	void setTopLevelFunctionName(String inTopLevelFunctionName);
-
 	Map<String, Object> getContext();
 
 	Map<String, Object> getAllContext();

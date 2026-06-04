@@ -34,10 +34,8 @@
 			<div class="d-flex flex-column me-2 flex-grow-1">
 				<h5 class="my-2">[[Here are some things I can help you with]]:</h5>
 				#set($scenarios = $mediaarchive.query("automationscenario").exact("connectedtop","chatlabel").sort("ordering").cachedSearch())
-				#ifnotnull($scenarios)
 				<ul>
 					#foreach( $scenario in $scenarios )
-						#if($scenario.id != "auto_detect_welcome")
 						<li>
 							<a class="ajax"
 								href="$applink/views/modules/${agentcontext.entitymoduleid}/editors/entitychat/toplevelfunctionsave.html"
@@ -48,10 +46,8 @@
 								<span>#text( $scenario )</span>
 							</a>
 						</li>
-						#end
 					#end
 				</ul>
-				#end
 				#ifnull($scenarios)
 					<p>[[I can help you create tutorials, answer your questions, generate images, and more.]]</p>
 				#end

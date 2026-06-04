@@ -277,8 +277,7 @@ public class AssistantManager extends BaseAiManager
 			}
 			else
 			{
-				String toplevelaifunctionid = chatMessageContext.getTopLevelFunctionName();
-				if (toplevelaifunctionid == null)
+				if (chatMessageContext.getCurrentScenario() == null)
 				{
 					log.error("This should never happen");
 					return;
@@ -309,6 +308,8 @@ public class AssistantManager extends BaseAiManager
 	// MultiValued usermessage, MultiValued agentmessage, chatMessageContext chatMessageContext
 	public void execCurrentFunctionFromChat(ChatMessageContext chatMessageContext)
 	{
+		ChatServer server = (ChatServer) getMediaArchive().getBean("chatServer");
+
 		MultiValued usermessage = chatMessageContext.getUserMessage();
 		MultiValued agentmessage = chatMessageContext.getAgentMessage();
 
@@ -318,21 +319,14 @@ public class AssistantManager extends BaseAiManager
 			functionName = chatMessageContext.getNextFunctionName();
 		}
 		MultiValued function = (MultiValued) getMediaArchive().getCachedData("aifunction", functionName);
-
-		if (function == null)
-		{
-			log.info("No Ai function defined: " + functionName);
-			return;
-		}
-
 		chatMessageContext.setNextFunctionName(null);
 
-		ChatServer server = (ChatServer) getMediaArchive().getBean("chatServer");
-
 		String loader = "<i class=\"fas fa-spinner fa-spin mr-2\"></i> ";
-
-		String processingmessage = function.get("processingmessage");
-
+		String processingmessage = null;
+		if (function != null)
+		{
+			processingmessage = function.get("processingmessage");
+		}
 		if (processingmessage == null)
 		{
 			processingmessage = "Analyzing";
@@ -440,8 +434,8 @@ public class AssistantManager extends BaseAiManager
 
 			Long waittime = 200l;
 
-			String agentNextFn = chatMessageContext.getNextFunctionName();
-			if (agentNextFn != null)
+			MultiValued currentscenario = chatMessageContext.getCurrentScenario();
+			if (currentscenario != null)
 			{
 				Long wait = chatMessageContext.getWaitTime();
 				if (wait != null && wait instanceof Long)
@@ -451,11 +445,15 @@ public class AssistantManager extends BaseAiManager
 					log.info("Previous function requested to wait " + waittime + " milliseconds");
 					Thread.sleep(wait);
 				}
+				String agentNextFn = chatMessageContext.getNextFunctionName();
 				chatMessageContext.setFunctionName(agentNextFn);
 				chatMessageContext.setNextFunctionName(null);
 				chatMessageContext.setAgentMessage(agentmessage);
 				chatMessageContext.setUserMessage(usermessage);
-				execCurrentFunctionFromChat(chatMessageContext);
+				if( agentNextFn != null)
+				{ 
+					execCurrentFunctionFromChat(chatMessageContext);
+				}
 				// Save the current state
 			}
 		}
