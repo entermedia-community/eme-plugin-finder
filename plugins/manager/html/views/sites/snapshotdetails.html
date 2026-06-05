@@ -32,7 +32,7 @@
 			##$pages.include("/${applicationid}/components/xml/detaileditor.html", $context)
 			
 			<div style="margin-top: 20px;">
-				<button class="btn btn-primary me-1"  href="#" >[[Save]]</button>
+				##<button class="btn btn-primary me-1"  href="#" >[[Save]]</button>
 				<a class="btn btn-secondary" href="/openedit/views/filemanager/tab.html?path=/WEB-INF/data/exports/${site.catalogid}/${folder}">[[Preview Files]]</a>
 				<a class="btn btn-secondary emdialog me-1" href="$home$apphome/views/sites/snapshots/restore.html?snapid=$snapshot.id">[[Restore]]</a>
 				<a class="btn btn-secondary emdialog me-1" href="$home$apphome/views/sites/snapshots/restore.html?snapid=$snapshot.id&configonly=true">[[Restore Config]]</a>
