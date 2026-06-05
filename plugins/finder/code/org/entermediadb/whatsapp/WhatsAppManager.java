@@ -87,11 +87,7 @@ public class WhatsAppManager extends BaseAiManager
 
 			JSONObject replyBody = null;
 
-			if ("request_clarification".equals(functionName))
-			{
-				replyBody = WhatsAppResponse.buildTextReply(message, "Sorry, I didn't understand your request. Could you please clarify?");
-			}
-			else
+			if (!"request_clarification".equals(functionName))
 			{
 				if ("book_ride".equals(functionName))
 				{
@@ -100,6 +96,14 @@ public class WhatsAppManager extends BaseAiManager
 				else if ("check_status".equals(functionName))
 				{
 					// TODO: implement check status
+				}
+			}
+			else
+			{
+				String reply = (String) functionArgs.get("clarification_question");
+				if (reply != null)
+				{
+					replyBody = WhatsAppResponse.buildTextReply(message, reply);
 				}
 			}
 

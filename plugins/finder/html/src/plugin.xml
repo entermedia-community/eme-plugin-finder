@@ -2791,6 +2791,12 @@
 		</property>
 	</bean>
 
+	<bean id="whatsappManager" class="org.entermediadb.whatsapp.WhatsAppManager" scope="prototype">
+		<property name="moduleManager">
+			<ref bean="moduleManager" />
+		</property>
+	</bean>
+
 	<bean id="WhatsAppModule" class="org.entermediadb.whatsapp.WhatsAppModule">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />

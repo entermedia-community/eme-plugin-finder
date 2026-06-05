@@ -7,10 +7,27 @@
 		},
 		{
 			"role": "user",
-			"content": "$userquery"
+			"content": #jesc("$userquery")
 		}
 	],
 	"tools": [
+		{
+			"type": "function",
+			"function": {
+				"name": "request_clarification",
+				"description": "Use this function when the user's input is unclear to ask for clarification or additional details needed to complete the ride request.",
+				"parameters": {
+					"type": "object",
+					"properties": {
+						"clarification_question": {
+							"type": "string",
+							"description": "The question to ask the user for clarification."
+						}
+					},
+					"required": ["clarification_question"]
+				}
+			}
+		},
 		{
 			"type": "function",
 			"function": {
@@ -57,7 +74,7 @@
 			"type": "function",
 			"function": {
 				"name": "cancel_ride",
-				"description": "Use this function to cancel an existing ride request. Provide the user's name and the scheduled pickup time to identify the ride to be canceled.",
+				"description": "Use this function when the user wants to cancel an existing ride request. Provide the ride ID to identify the ride to be canceled.",
 				"parameters": {
 					"type": "object",
 					"properties": {
@@ -67,23 +84,6 @@
 						}
 					},
 					"required": ["ride_id"]
-				}
-			}
-		},
-		{
-			"type": "function",
-			"function": {
-				"name": "request_clarification",
-				"description": "Use this function to ask the user for clarification or additional details needed to complete the ride request when the user's input is unclear.",
-				"parameters": {
-					"type": "object",
-					"properties": {
-						"clarification_question": {
-							"type": "string",
-							"description": "The question to ask the user for clarification."
-						}
-					},
-					"required": ["clarification_question"]
 				}
 			}
 		}
