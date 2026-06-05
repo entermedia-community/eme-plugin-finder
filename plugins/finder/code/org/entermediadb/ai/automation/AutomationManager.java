@@ -114,12 +114,12 @@ public class AutomationManager extends BaseAiManager implements WebEventListener
 
 	public void runScenario(String inId, AgentContext inContext)
 	{
-		MultiValued scenerio = (MultiValued) getMediaArchive().getCachedData("automationscenario", inId);
+		MultiValued scenario = (MultiValued) getMediaArchive().getCachedData("automationscenario", inId);
 		// query("automationscenerio").exact("enabled", true).sort("ordering").search();
 
-		if (scenerio == null)
+		if (scenario == null)
 		{
-			log.error("Could not find scenerio " + inId);
+			log.error("Could not find scenario " + inId);
 			return;
 		}
 		if (inContext.getId() == null)
@@ -127,18 +127,18 @@ public class AutomationManager extends BaseAiManager implements WebEventListener
 			inContext.setId(inCrementId());
 		}
 		addContext(inId, inContext);
-		inContext.setCurrentScenario(scenerio);
+		inContext.setCurrentScenario(scenario);
 
 		// Lock it
 		inContext.setValue("lastrunstart", new Date());
-		scenerio.setValue("lastrunstart", new Date());
-		scenerio.setValue("isrunning", true);
+		scenario.setValue("lastrunstart", new Date());
+		scenario.setValue("isrunning", true);
 
 		Collection<AgentEnabled> enabled = getEnabledAgents(inId);
 
 		if (enabled == null || enabled.isEmpty())
 		{
-			log.info("No enabled agents for scenerio " + inId);
+			log.info("No enabled agents for scenario " + inId);
 			return;
 		}
 
@@ -149,8 +149,8 @@ public class AutomationManager extends BaseAiManager implements WebEventListener
 			inContext.setCurrentAgentEnable(agentEnabled);
 			agentEnabled.getAgent().process(inContext);
 		}
-		scenerio.setValue("isrunning", false);
-		getMediaArchive().saveData("automationscenario", scenerio);
+		scenario.setValue("isrunning", false);
+		getMediaArchive().saveData("automationscenario", scenario);
 	}
 
 	private void addContextValues(AgentEnabled inAgentEnabled)

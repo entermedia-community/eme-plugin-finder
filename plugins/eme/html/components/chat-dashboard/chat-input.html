@@ -1,9 +1,8 @@
-#set($edithome = "$apphome/views/modules/${module.id}/editors/entitychat/edit")
+#set($edithome = "$apphome/views/modules/${module.id}/editors/entitychat")
 $context.putPageValue("edithome", $edithome)
 
 #set( $chatterboxhome = "$apphome/views/modules/${module.id}/editors/entitychat/chatterbox" )
 $context.putPageValue("chatterboxhome", $chatterboxhome)
-##<property name="chatterboxhome">/${applicationid}/views/modules/${moduleid}/editors/entitychat/chatterbox</property>
 
 #set($channeltype = "agententitychat")
 $context.putPageValue("channeltype", $channeltype)
@@ -20,5 +19,6 @@ $context.putPageValue("channeltype", $channeltype)
 	data-url=""
 	data-channeltype="$!{channeltype}"
 >
-$pages.include("$chatterboxhome/index.html", $context)
+
+$pages.include("${chatterboxhome}/index.html", $context)
 </div>

@@ -12,6 +12,7 @@ import org.entermediadb.asset.MediaArchive;
 import org.entermediadb.asset.modules.BaseMediaModule;
 import org.entermediadb.scripts.ScriptLogger;
 import org.openedit.Data;
+import org.openedit.MultiValued;
 import org.openedit.WebPageRequest;
 import org.openedit.data.Searcher;
 import org.openedit.hittracker.HitTracker;
@@ -155,55 +156,76 @@ public class AgentModule extends BaseMediaModule
 		String applicationid = inReq.findValue("applicationid");
 		ChatMessageContext agentContext = assistantManager.loadContext(applicationid, channelid);
 
+		boolean firesystemmessage = false;
+
 		String currentscenario = inReq.getRequestParameter("currentscenario");
 
 		if (currentscenario != null)
 		{
-			getMediaArchive(inReq).getCachedData("automationscenario", applicationid);
+			firesystemmessage = true;
 		}
-
-		if (currentscenario == null && agentContext.getCurrentScenario() == null)
-		{
-			currentscenario = "chat_autodetect";
-		}
-
-		boolean changed = false;
-		if (toplevel != null && !toplevel.equals(previousTopLevel))
-		{
-			agentContext.setTopLevelFunctionName(toplevel);
-			changed = true;
-		}
-
 		String functionname = inReq.getRequestParameter("functionname");
 		if (functionname != null)
 		{
-			agentContext.setFunctionName(functionname);
-			changed = true;
-
-			Collection<String> params = inReq.getParameterMap().keySet();
-			for (Iterator iterator = params.iterator(); iterator.hasNext();)
+			firesystemmessage = true;
+		}
+		if (!firesystemmessage && (agentContext.getFunctionName() == null || agentContext.getCurrentScenario() == null))
+		{
+			if (currentscenario == null)
 			{
-				String key = (String) iterator.next();
-				if (key.startsWith("context_"))
+				currentscenario = "chat_detection";
+			}
+
+			// Do not set the welcome function if the channel already has messages.
+			int messagecount = assistantManager.channelMessageCount(channelid);
+			if (messagecount == 0)
+			{
+				functionname = "auto_detect_welcome";
+			}
+
+			if (functionname != null)
+			{
+				firesystemmessage = true;
+			}
+		}
+		// Refresh drop down area?
+		inReq.putPageValue("agentcontext", agentContext);
+
+		// Just reloading page
+		if (!firesystemmessage)
+		{
+			return;
+		}
+
+		MultiValued automationscenario = null;
+		if (currentscenario != null)
+		{
+			automationscenario = (MultiValued) getMediaArchive(inReq).getCachedData("automationscenario", currentscenario);
+		}
+
+		if (automationscenario != null)
+		{
+			agentContext.setCurrentScenario(automationscenario);
+		}
+		agentContext.setFunctionName(functionname);
+
+		Collection<String> params = inReq.getParameterMap().keySet();
+		for (Iterator iterator = params.iterator(); iterator.hasNext();)
+		{
+			String key = (String) iterator.next();
+			if (key.startsWith("context_"))
+			{
+				String value = inReq.getRequestParameter(key);
+				if (value != null)
 				{
-					String value = inReq.getRequestParameter(key);
-					if (value != null)
-					{
-						agentContext.addContext(key.substring("context_".length()), value);
-					}
+					agentContext.addContext(key.substring("context_".length()), value);
 				}
 			}
 		}
+		getMediaArchive(inReq).saveData("agentcontext", agentContext);
+		// Now that Context is set. Let the chat respond
 
-		if (changed)
-		{
-			getMediaArchive(inReq).saveData("agentcontext", agentContext);
-
-			// Now that Context is set. Let the chat respond
-
-			assistantManager.sendSystemMessage(agentContext, inReq.getUserName(), null);
-		}
-		// Refresh drop down area?
+		assistantManager.sendSystemMessage(agentContext, inReq.getUserName(), null);
 	}
 
 	public AgentContext loadAgentContext(WebPageRequest inReq) throws Exception

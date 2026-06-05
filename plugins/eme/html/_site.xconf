@@ -21,4 +21,7 @@
     <boolean value="true"/>
   </permission>
 
+	<path-action name="PathEventModule.runSharedEvent" runpath="/${catalogid}/events/llm/monitorchats.html" allowduplicates="true"/>
+
+
 </page>

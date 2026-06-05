@@ -114,6 +114,7 @@ public class BaseAgentContext extends BaseData implements CatalogEnabled, AgentC
 	public void setCurrentScenario(MultiValued inCurrentScenario)
 	{
 		fieldCurrentScenario = inCurrentScenario;
+		setValue("currentscenario", inCurrentScenario.getId());
 	}
 
 	protected AgentEnabled fieldCurrentAgentEnable;

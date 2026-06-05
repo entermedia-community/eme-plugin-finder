@@ -541,12 +541,6 @@
 }
 
 /* ── AJAX-loaded chatterbox area ─────────────────────────────────────────── */
-#chatMainContent .aichatsearch,
-#chatMainContent .chatterbox {
-	height: 100%;
-	display: flex;
-	flex-direction: column;
-}
 #chatMainContent .chatterbox-messages {
 	flex: 1;
 	overflow-y: auto;

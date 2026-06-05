@@ -7,9 +7,10 @@
 
 <div class="py-2" id="sbHistoryBody">
   #if( $user.getId() == $emeprofile.owner )
-    <p class="px-2 py-2" style="font-size:0.81rem; color:#9ca3af;">[[All recent sessions]]</p>
+    ##<p class="px-2 py-2" style="font-size:0.81rem; color:#9ca3af;">[[All recent sessions]]</p>
 
     #set($chatsessions = $mediaarchive.query("channel").exact("dataid",$emeprofile.id).exact("searchtype","emeprofile").sort("refreshdateDown").search($context))
+
   #else
     <p class="px-2 py-2" style="font-size:0.81rem; color:#9ca3af;">[[Your chats with]] ${emeprofile.getName()}.</p>
     #set($chatsessions = $mediaarchive.query("channel").exact("dataid",$emeprofile.id).exact("user",$user.getId()).exact("searchtype","user").sort("refreshdateDown").search($context))
@@ -18,7 +19,7 @@
   #if($chatsessions && $chatsessions.size() > 0)
     #foreach($sess in $chatsessions.getPageOfHits())
       <div class="session-row">
-        $currentchannel.id == $sess.id
+        
         <a class="session-link ajax #if($currentchannel && $currentchannel.id == $sess.id)active#end"
           href="$edithome/sessionrestore.html"
           data-targetdiv="chatMainContent"
@@ -30,7 +31,13 @@
             #ifnotnull($sess.name)#esc($sess.name)#end
             #ifnull($sess.name)[[Chat]] #${foreach.count}#end
           </span>
-          <span class="s-date">#shortdate($sess.refreshdate)</span>
+          
+          <span class="s-date">
+            #set($since = $context.getAge($message.getDate("date")))
+							#ifnotnull($since) $since [[ago]]#end
+							#ifnull($since)[[now]]#end
+          </span>
+          ##<span class="s-date">#shortdate($sess.refreshdate)</span>
         </a>
         <a class="session-del-btn ajax"
           href="$edithome/sessiondelete.html"
