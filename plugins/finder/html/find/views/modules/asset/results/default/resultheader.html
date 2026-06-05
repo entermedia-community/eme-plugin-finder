@@ -12,10 +12,10 @@
 	$context.putPageValue("hits", $hits)
 #end
 
-#if(!$searchtype)
+#ifnull($searchtype)
 	#set ( $searchtype = $context.getRequestParameter("searchtype") )
 #end
-#if(!$searchtype)
+#ifnull($searchtype)
 	#set ( $searchtype = "asset" )
 #end
 
@@ -100,6 +100,19 @@
 	$context.putPageValue("maintargetdiv",$maintargetdiv)
 #end
 
+#ifnull($resultview)
+	#set($resultview = $userprofile.get("${searchtype}resultview"))
+
+	#ifnull($resultview)
+		#set($resultview = $content.get("resultview"))
+	#end
+	#ifnull($resultview)
+		#set($resultview = "stackedgallery")
+	#end
+#end
+	
+$context.putPageValue("resultview", $resultview)
+
 	
 <div id="resultsheader" class="resultsheader #if($hits && $hits.getSelectionSize() > 0)hasselections#end #if(!$dialogresults) autostickywidth #end" >
 	<div id="sub-nav" class="emsubnav sub-nav-${module.id}">
@@ -156,15 +169,20 @@
 			
 				#ifnotnull($entitymodule)
 				
-					#if(!$hideupload && $entitymodule.getBoolean("enableuploading") && $canviewupload && $entitymodule.id != "searchcategory" && $entitymodule.id != "favorites" && $permissions.canModule($entitymodule, "upload_files"))				
+					#if(!$hideupload && $entitymodule.getBoolean("enableuploading") && $canviewupload && $entitymodule.id != "searchcategory" && $entitymodule.id != "favorites" && $permissions.canModule($entitymodule, "upload_files"))			
+
+						#set($uploadeditor = "${edithome}/upload/uploadtoentity.html")
+
+						#if($lightboxtype && $lightboxtype == "emedialightbox" && $lightboxid != "files")
+							#set($uploadeditor = "${edithome}/upload/uploadtocategory.html")
+						#end
+							
 						<li class="mbl-except">
-							<a href="$siteroot$apphome/views/modules/asset/editors/assetupload/index.html"
+							<a href="${uploadeditor}"
 							class="ajax px-3 btn-navbar btn-cta webUploadButton"
-							data-targetdiv="resultsarea"
+							data-targetdiv="resultsarea" 
 							data-oemaxlevel="1"
-							data-edithome=""
-							data-categoryid="$!categoryid"
-							data-categorypath="$categorypath"
+							data-includeeditcontext="true"
 							data-tabsection="upload"
 							title="[[Upload]]"><i class="bi bi-upload"></i></a>
 						</li>
@@ -324,17 +342,6 @@
 		</ul>
 
 		<ul class="resultsnavright mbl-hideexcept">
-			#if(!$resultview)
-				#set($resultview = $userprofile.get("$!{searchtype}resultview"))
-				#if (!$resultview)
-					#set($resultview = $content.get("resultview"))
-				#end
-				#if (!$resultview)
-					#set($resultview = "stackedgallery")
-				#end
-			#end
-				
-			$context.putPageValue("resultview", $resultview)
 				
 			#if(!$currenthitsperpage)
 				#set( $currenthitsperpage = $hits.getHitsPerPage())
@@ -369,6 +376,7 @@
 	
 				##-RESULTS TYPE
 				##ifnull($lightboxassetsresults)
+				
 				<li class="resultsnavitem" style="min-width: 75px;">
 					#set( $types = $mediaarchive.getList("resulttype"))
 					<select class="select2  form-select" 
@@ -390,7 +398,7 @@
 				
 			#end
 				
-			#if(!$resultview || $resultview == 'table')
+			#if($resultview == 'table')
 				#if( $canedittablecolumns )
 					#if( $edit )
 						
