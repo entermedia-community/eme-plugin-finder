@@ -3,7 +3,7 @@ package org.entermediadb.whatsapp;
 import java.util.List;
 import java.util.Map;
 
-public class WhatsAppMessage
+public final class WhatsAppMessage
 {
 	private String fieldSenderPhone;
 	private String fieldMessageId;
@@ -98,6 +98,28 @@ public class WhatsAppMessage
 			Map textObj = (Map) messageData.get("text");
 			String messageText = textObj != null ? (String) textObj.get("body") : null;
 			setMessageText(messageText);
+		}
+		else if ("interactive".equals(messageType))
+		{
+			Map interactiveObj = (Map) messageData.get("interactive");
+			if (interactiveObj != null)
+			{
+				String interactiveType = (String) interactiveObj.get("type");
+				if ("button_reply".equals(interactiveType))
+				{
+					Map buttonReply = (Map) interactiveObj.get("button_reply");
+					String messageText = buttonReply != null ? (String) buttonReply.get("title") : null;
+					setMessageText(messageText);
+				}
+			}
+			else
+			{
+				setMessageText(null);
+			}
+		}
+		else
+		{
+			setMessageText(null);
 		}
 	}
 }
