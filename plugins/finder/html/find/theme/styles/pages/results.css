@@ -40,9 +40,7 @@
 .emsubnav ul.resultsnav li a.resultsnavlink {
 	text-decoration: none;
 	padding: 0 1em;
-	display: flex;
-	align-items: center;
-	justify-content: center;
+	display: inline-block;
 	line-height: var(--nav-btn-height);
 	height: var(--nav-btn-height);
 	background: var(--themed-navbar-secondary);
@@ -231,7 +229,7 @@ ul.summary-secondary-nav
 	b {
 	border-color: var(--themed-navbar-secondary-text) transparent transparent
 		transparent;
-	border-width: 5px 4px 0 4px;
+	border-width: 6px 4px 0px 5px;
 }
 .lighttheme
 	ul.resultsnavright
@@ -1499,7 +1497,7 @@ span.glyphicon-triangle-left.overlay-nav {
 .embadge {
 	display: block;
 	float: right;
-	width: 22px;
+	width: 24px;
 	font-size: 1rem;
 	text-align: center;
 	margin-left: 8px;
@@ -1509,7 +1507,7 @@ span.glyphicon-triangle-left.overlay-nav {
 	border-radius: 4px;
 	background: #333;
 	color: #fff;
-	line-height: 1.3 !important;
+	line-height: 1.5 !important;
 }
 .embadge i:hover {
 	background: #eee;
@@ -1535,6 +1533,16 @@ span.glyphicon-triangle-left.overlay-nav {
 	background: #77dd77;
 	color: #000;
 }
+
+i[class*="badge_rightsusageterms_"]  {
+	background-color:#ff0000;
+	color:#fff;
+}
+i[class*="badge_rightsusageterms_"]:hover {
+	background-color:#ff0000;
+	color:#fff;
+}
+
 .badge-tags,
 .badge-categories,
 .btn-green {
@@ -3593,7 +3601,7 @@ td .emgridcell a i.module-icon {
 }
 .languagesaddform .languageselector .select2-selection__clear,
 .hideremoveselection .select2-selection__clear {
-	display: none;
+	display: none!important;
 }
 .languagesaddform .languageinput {
 	min-height: 30px;
@@ -3822,13 +3830,6 @@ ul.inlinelist li {
 }
 .btn-navbar {
 	display: inline-block;
-}
-.resultsdiv .btn-navbar {
-	display: block;
-	height: 100%;
-	display: flex;
-	align-items: center;
-	justify-content: center;
 }
 .expandedmodule .emresultscontainer {
 	z-index: 200;
@@ -4061,7 +4062,9 @@ ul.inlinelist li {
 .breadCrumbContainer.entityHidden {
 	top: 90px;
 }
-
+.entityHidden .settingssubtabnav {
+	top: 0px;
+}
 .table.emresultstable,
 .tablecontainer .table {
 	width: 100%;
@@ -4504,8 +4507,6 @@ input#makeEntityPublic:checked + label {
 	background: #f1f2f4;
 }
 .details-header {
-	background: var(--themed-navbar-secondary);
-	color: #fff;
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
@@ -4516,8 +4517,7 @@ input#makeEntityPublic:checked + label {
 }
 .lighttheme .details-header {
 	color: var(--default-text);
-	background: var(--light-bg);
-	border: var(--1px-light);
+	
 }
 .pickerHolder {
 	display: flex;
