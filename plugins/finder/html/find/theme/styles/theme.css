@@ -6854,6 +6854,10 @@ a.collectionbox.favorite {
 	padding: 15px 10px;
 }
 
+.editlayoutdialog {
+	padding: 1rem;
+}
+
 .activitydetails h3 {
 	padding: 10px 0;
 	margin: 0;
