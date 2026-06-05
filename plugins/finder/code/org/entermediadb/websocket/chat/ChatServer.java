@@ -21,6 +21,7 @@ import java.awt.Toolkit;
 import java.awt.TrayIcon;
 import java.awt.TrayIcon.MessageType;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -61,6 +62,12 @@ public class ChatServer
 	protected ModuleManager fieldModuleManager;
 	protected SearcherManager fieldSearcherManager;
 	protected JSONParser fieldJSONParser;
+	protected Collection<ChatBroadcastListener> fieldChatBroadcastListeners = new HashSet<>();
+
+	public void addChatBroadcastListener(ChatBroadcastListener inListener)
+	{
+		fieldChatBroadcastListeners.add(inListener);
+	}
 
 	public JSONParser getJSONParser()
 	{
@@ -231,9 +238,9 @@ public class ChatServer
 			}
 
 			MultiValued channel = (MultiValued) archive.getCachedData("channel", channelid);
-			if( channel == null)
+			if (channel == null)
 			{
-				log.error("Channel not found trying to broadcast message: " + channelid + " Message: " + inMap.toJSONString()); //should not happen
+				log.error("Channel not found trying to broadcast message: " + channelid + " Message: " + inMap.toJSONString()); // should not happen
 				return;
 			}
 			Data module = null;
@@ -347,6 +354,11 @@ public class ChatServer
 				{
 					String channelid = (String) inMap.get("channel");
 
+					for (ChatBroadcastListener listener : fieldChatBroadcastListeners)
+					{
+						listener.onBroadcast(channel, inData);
+					}
+
 					for (Iterator iterator = connections.iterator(); iterator.hasNext();)
 					{
 						ChatConnection chatConnection = (ChatConnection) iterator.next();
@@ -408,7 +420,7 @@ public class ChatServer
 		chats.saveData(chat);
 
 		channel.setValue("refreshdate", new Date());
-		archive.saveData("channel",channel);
+		archive.saveData("channel", channel);
 
 		User user = archive.getUser(userid);
 

@@ -9,10 +9,21 @@ public final class WhatsAppMessage
 	private String fieldMessageId;
 	private String fieldMessageText;
 	private String fieldMessageType;
+	private String fieldDisplayPhoneNumber;
 
 	public String getSenderPhone()
 	{
 		return fieldSenderPhone;
+	}
+
+	public String getDisplayPhoneNumber()
+	{
+		return fieldDisplayPhoneNumber;
+	}
+
+	public void setDisplayPhoneNumber(String displayPhoneNumber)
+	{
+		fieldDisplayPhoneNumber = displayPhoneNumber;
 	}
 
 	public void setSenderPhone(String senderPhone)
@@ -74,6 +85,13 @@ public final class WhatsAppMessage
 		if (value == null)
 		{
 			return;
+		}
+
+		Map metadata = (Map) value.get("metadata");
+		if (metadata != null && !metadata.isEmpty())
+		{
+			String displayPhoneNumber = (String) metadata.get("display_phone_number");
+			setDisplayPhoneNumber(displayPhoneNumber);
 		}
 
 		List messages = (List) value.get("messages");

@@ -46,7 +46,7 @@ public class AutoDetectChatSkill extends BaseSkill
 			messageContext.log("sent" + response.getRawResponse());
 			return;
 		}
-		if ("auto_detect_conversation".equals(agentFn)) // Todo: Rename to Parse
+		else if ("auto_detect_conversation".equals(agentFn)) // Todo: Rename to Parse
 		{
 
 			inAgentContext.put("userquery", query);
@@ -87,40 +87,37 @@ public class AutoDetectChatSkill extends BaseSkill
 			messageContext.setLastResponse(response);
 			return;
 		}
-		else
-			if ("auto_detect_showresponse".equals(agentFn))
-			{
-				LlmConnection llmconnection = getMediaArchive().getLlmConnection(agentFn); // Should stay search_start
-				LlmResponse response = llmconnection.renderLocalAction(inAgentContext, "auto_detect_showresponse");
-				inAgentContext.setFunctionName("auto_detect_conversation");
-				messageContext.setLastResponse(response);
-				return;
-			}
-			else
-				if ("auto_detect_sitewide_welcome".equals(agentFn))
-				{
-					agentmessage.setValue("chatmessagestatus", "completed");
+		else if ("auto_detect_showresponse".equals(agentFn))
+		{
+			LlmConnection llmconnection = getMediaArchive().getLlmConnection(agentFn); // Should stay search_start
+			LlmResponse response = llmconnection.renderLocalAction(inAgentContext, "auto_detect_showresponse");
+			inAgentContext.setFunctionName("auto_detect_conversation");
+			messageContext.setLastResponse(response);
+			return;
+		}
+		else if ("auto_detect_sitewide_welcome".equals(agentFn))
+		{
+			agentmessage.setValue("chatmessagestatus", "completed");
 
-					LlmConnection llmconnection = getMediaArchive().getLlmConnection(agentFn); // Should stay search_start
-					LlmResponse response = llmconnection.renderLocalAction(inAgentContext);
-					inAgentContext.setFunctionName("auto_detect_sitewide_parse");
-					messageContext.setLastResponse(response);
-					return;
-				}
-				else
-					if ("auto_detect_sitewide_parse".equals(agentFn))
-					{
-						LlmConnection llmconnection = getMediaArchive().getLlmConnection(function.getId()); // Should stay
-																											// search_start
-						LlmResponse response = llmconnection.callToolsFunction(inAgentContext, agentFn);
+			LlmConnection llmconnection = getMediaArchive().getLlmConnection(agentFn); // Should stay search_start
+			LlmResponse response = llmconnection.renderLocalAction(inAgentContext);
+			inAgentContext.setFunctionName("auto_detect_sitewide_parse");
+			messageContext.setLastResponse(response);
+			return;
+		}
+		else if ("auto_detect_sitewide_parse".equals(agentFn))
+		{
+			LlmConnection llmconnection = getMediaArchive().getLlmConnection(function.getId()); // Should stay
+																								// search_start
+			LlmResponse response = llmconnection.callToolsFunction(inAgentContext, agentFn);
 
-						log.info(response.getRawResponse());
+			log.info(response.getRawResponse());
 
-						String functionName = response.getFunctionName();
-						JSONObject functionArgs = response.getFunctionArguments();
-						inAgentContext.addContext("arguments", functionArgs);
-						inAgentContext.setNextFunctionName(functionName);
-					}
+			String functionName = response.getFunctionName();
+			JSONObject functionArgs = response.getFunctionArguments();
+			inAgentContext.addContext("arguments", functionArgs);
+			inAgentContext.setNextFunctionName(functionName);
+		}
 
 		throw new OpenEditException("Function not supported " + agentFn);
 

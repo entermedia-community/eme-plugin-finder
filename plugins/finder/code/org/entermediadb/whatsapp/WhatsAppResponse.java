@@ -1,23 +1,30 @@
 package org.entermediadb.whatsapp;
 
 import java.util.Arrays;
-
+import java.util.Map;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 public class WhatsAppResponse
 {
+
 	public static JSONObject buildTextReply(WhatsAppMessage inMessage, String inReplyText)
 	{
+		return buildTextReply(inMessage.getSenderPhone(), inReplyText);
+	}
+
+	public static JSONObject buildTextReply(String phoneNumber, String messageReply)
+	{
 		JSONObject context = new JSONObject();
-		context.put("message_id", inMessage.getMessageId());
+		// context.put("message_id", inMessage.getMessageId());
 
 		JSONObject text = new JSONObject();
-		text.put("body", inReplyText);
+		text.put("body", messageReply);
 
 		JSONObject body = new JSONObject();
 		body.put("messaging_product", "whatsapp");
 		body.put("recipient_type", "individual");
-		body.put("to", inMessage.getSenderPhone());
+		body.put("to", phoneNumber);
 		body.put("context", context);
 		body.put("type", "text");
 		body.put("text", text);
