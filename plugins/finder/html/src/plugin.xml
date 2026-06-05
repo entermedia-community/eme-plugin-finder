@@ -2606,6 +2606,7 @@
 			<ref bean="requestUtils" />
 		</property>
 	</bean>
+
 	<bean id="classifySkill" class="org.entermediadb.ai.classify.agents.ClassifySkill" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
@@ -2785,6 +2786,12 @@
 	</bean>
 
 	<bean id="AgentModule" class="org.entermediadb.ai.assistant.AgentModule">
+		<property name="moduleManager">
+			<ref bean="moduleManager" />
+		</property>
+	</bean>
+
+	<bean id="WhatsAppModule" class="org.entermediadb.whatsapp.WhatsAppModule">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>
