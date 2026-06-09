@@ -498,6 +498,14 @@ button[type="submit"] {
 	margin: 0 0 1px 2px;
 	padding: 8px;
 	width: calc(100% - 2px);
+	overflow-x: hidden;
+}
+#mediaviewer .form-submit-btns {
+	bottom: 0;
+	width: 100%;
+	margin: 0;
+	padding: 0 12px;
+	background-color: rgba(37, 37, 37, 0.75);
 }
 
 #themeeditor .form-submit-btns {
@@ -4879,10 +4887,11 @@ label.error {
 
 #main-media-container {
 	height: 100%;
+	overflow: hidden;
 }
 
 #main-media-viewer {
-	height: calc(100% - 67px);
+	height: calc(100% - 66px);
 	background: var(--themed-navbar-primary);
 }
 
