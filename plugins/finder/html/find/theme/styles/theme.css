@@ -89,7 +89,7 @@ body {
 }
 
 #application:has(.entityNavBarContainer) {
-	--height-ex-hf: calc(var(--vertical-height) - 175px);
+	--height-ex-hf: calc(var(--vertical-height) - 208px);
 }
 
 .mediacenterheader {
@@ -468,7 +468,7 @@ button[type="submit"] {
 }
 
 #applicationcontent {
-	min-height: calc(var(--vertical-height) - 32px);
+	min-height: var(--height-ex-hf);
 }
 
 .popupdetails {
@@ -492,7 +492,7 @@ button[type="submit"] {
 .form-submit-btns.sticky {
 	backdrop-filter: blur(2px);
 	position: sticky;
-	bottom: 0px;
+	bottom: 32px;
 	left: 0px;
 	z-index: 30000;
 	margin: 0 0 1px 2px;
