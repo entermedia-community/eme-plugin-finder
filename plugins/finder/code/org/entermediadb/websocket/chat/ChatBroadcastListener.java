@@ -1,3 +1,5 @@
+package org.entermediadb.websocket.chat;
+
 import org.openedit.Data;
 
 public interface ChatBroadcastListener

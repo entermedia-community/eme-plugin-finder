@@ -356,7 +356,7 @@ public class ChatServer
 
 					for (ChatBroadcastListener listener : fieldChatBroadcastListeners)
 					{
-						listener.onBroadcast(channel, inData);
+						// listener.onBroadcast(channel, inData);
 					}
 
 					for (Iterator iterator = connections.iterator(); iterator.hasNext();)

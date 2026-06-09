@@ -49,12 +49,13 @@ public class WhatsAppResponse
 			JSONObject components = new JSONObject();
 			components.put("type", "body");
 			JSONArray parameters = new JSONArray();
-			for (Map.Entry<String, Object> entry : inTemplateParameters.entrySet())
+			for (Object key : inTemplateParameters.keySet())
 			{
+				String value = inTemplateParameters.get(key).toString();
 				JSONObject param = new JSONObject();
 				param.put("type", "text");
-				param.put("text", entry.getValue().toString());
-				param.put("parameter_name", entry.getKey());
+				param.put("text", value);
+				param.put("parameter_name", key.toString());
 				parameters.add(param);
 			}
 			components.put("parameters", parameters);
