@@ -20,7 +20,7 @@ public class BaseSkill extends BaseAiManager implements Skill, CatalogEnabled
 
 		if (contextbeanname == null)
 		{
-			contextbeanname = "agentContext";
+			contextbeanname = "baseAgentContext";
 		}
 		AgentContext childContext = (AgentContext) getMediaArchive().getBean(contextbeanname, false);
 		childContext.setCurrentAgentEnable(inEnabled);
