@@ -7,9 +7,7 @@ ENV INSTANCE_PORT=8080
 ENV LANG=en_US.UTF-8
 ENV LANGUAGE=en_US:en
 ENV LC_ALL=en_US.UTF-8
-RUN ln -s /usr/lib/jvm/java-18-openjdk-amd64 /usr/lib/jvm/jre
-ENV JAVA_HOME=/usr/lib/jvm/jre
-
+ENV JAVA_HOME=/usr/lib/jvm/default-java
 
 ARG CACHE_BREAKER=1
 #RUN mkdir -p /usr/share/ && wget --output-document=/usr/share/eme-lib.tar.gz --no-cache -q http://192.229.4.120:8080/eme-lib.tar.gz && \
@@ -32,4 +30,4 @@ RUN userdel -f $(getent passwd 1000 | cut -d: -f1) 2>/dev/null || true && \
 
 CMD ["/usr/bin/bash"]
 
-#CMD ["/usr/bin/eme", "start", "/usr/share/eme-instance" ]
+#CMD ["/usr/bin/eme", "start", "/usr/share/eme-instance" ] 

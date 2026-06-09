@@ -7,8 +7,7 @@ ENV INSTANCE_PORT=8080
 ENV LANG=en_US.UTF-8
 ENV LANGUAGE=en_US:en
 ENV LC_ALL=en_US.UTF-8
-RUN ln -s /usr/lib/jvm/java-18-openjdk-amd64 /usr/lib/jvm/jre
-ENV JAVA_HOME=/usr/lib/jvm/jre
+ENV JAVA_HOME=/usr/lib/jvm/default-java
 
 ARG CACHE_BREAKER=1
 ##Make sure: ln -s deploy/builds/eme-lib-12.\$\{env.BUILD_NUMBER\}.tar.gz resources/docker/local/eme-lib.tar.gz
