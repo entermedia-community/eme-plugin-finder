@@ -1,6 +1,6 @@
 <div id="sidebarreload" 
 	class="ajaxsocketautoreload"  
-	data-ajaxpath="$apphome/html/components/chat-dashboard/sidebar-team.html?oemaxlevel=1">
+	data-ajaxpath="$apphome/html/components/chat-dashboard/sidebar-services.html?oemaxlevel=1">
 
 	<div class="sidebar-section-btn mb-2" style="background-color: #f2f2f2;">
 		<span class="d-flex align-items-center gap-2">
@@ -27,5 +27,11 @@
 			$hit.getName()
 		</a> 
 	#end
+
+
+	<a href="$siteroot/project/${hit.urlname}" class="file-row">
+		<img class="team-logo me-1" src="$logourl" alt="$hit.getName()">
+		Rentals
+	</a> 
 
 </div> 
