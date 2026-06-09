@@ -565,3 +565,33 @@
 .floating-chat .chat-input-wrap {
 	padding: 8px;
 }
+
+
+.avatar-xl {
+    height: 3rem;
+    width: 3rem 48px;
+}
+
+.avatar {
+    display: inline-flex
+;
+    height: 2rem;
+    width: 2rem;
+    border-radius: 50%;
+    position: relative;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.avatar-xl .avatar-img {
+    height: 3rem;
+}
+
+.avatar .avatar-img {
+    border-radius: 100%;
+    -o-object-fit: cover;
+    object-fit: cover;
+    height: 2rem;
+    width: auto;
+}

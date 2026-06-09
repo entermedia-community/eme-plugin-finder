@@ -21,7 +21,7 @@
       <div class="session-row">
         
         <a class="session-link ajax #if($currentchannel && $currentchannel.id == $sess.id)active#end"
-          href="$edithome/sessionrestore.html"
+          href="$apphome/components/chat-dashboard/sessionrestore.html"
           data-targetdiv="chatMainContent"
           data-channel="$sess.id"
           data-oemaxlevel="1"
@@ -40,7 +40,7 @@
           ##<span class="s-date">#shortdate($sess.refreshdate)</span>
         </a>
         <a class="session-del-btn ajax"
-          href="$edithome/sessiondelete.html"
+          href="$apphome/components/chat-dashboard/sessiondelete.html"
           data-targetdiv="chatMainContent"
           data-oemaxlevel="1"
           data-id="$sess.id"
