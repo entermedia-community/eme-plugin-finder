@@ -15,7 +15,7 @@ ARG CACHE_BREAKER=1
 COPY eme-lib.tar.gz /usr/share/eme-lib.tar.gz
 RUN  cd /usr/share/ && tar -xzf eme-lib.tar.gz && rm -rf eme-lib.tar.gz 
 
-RUN cp /usr/share/eme-lib/resources/docker/delegates.xml /usr/local/share/ImageMagick-7/delegates.xml && \
+RUN cp /usr/share/eme-lib/resources/docker/delegates.xml /opt/imei/share/ImageMagick-7/delegates.xml && \
     cp /usr/share/eme-lib/resources/docker/sysctl.conf /etc/sysctl.conf && \
     cp /usr/share/eme-lib/resources/docker/limits.conf /etc/security/limits.conf && \
     cp /usr/share/eme-lib/resources/docker/nproc.conf /etc/security/limits.d/20-nproc.conf
