@@ -12,8 +12,10 @@
     #set($chatsessions = $mediaarchive.query("channel").exact("dataid",$emeprofile.id).exact("searchtype","emeprofile").sort("refreshdateDown").search($context))
 
   #else
-    <p class="px-2 py-2" style="font-size:0.81rem; color:#9ca3af;">[[Your chats with]] ${emeprofile.getName()}.</p>
-    #set($chatsessions = $mediaarchive.query("channel").exact("dataid",$emeprofile.id).exact("user",$user.getId()).exact("searchtype","user").sort("refreshdateDown").search($context))
+    #ifnotnull($emeprofile)
+      <p class="px-2 py-2" style="font-size:0.81rem; color:#9ca3af;">[[Your chats with]] ${emeprofile.getName()}.</p>
+      #set($chatsessions = $mediaarchive.query("channel").exact("dataid",$emeprofile.id).exact("user",$user.getId()).exact("searchtype","user").sort("refreshdateDown").search($context))
+    #end
   #end
 
   #if($chatsessions && $chatsessions.size() > 0)

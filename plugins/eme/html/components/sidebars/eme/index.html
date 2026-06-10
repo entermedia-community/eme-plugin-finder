@@ -8,28 +8,16 @@
     <button class="btn btn-sm icon-btn" id="sidebarCollapseBtn" title="[[Collapse sidebar]]">
       <i class="bi bi-layout-sidebar-reverse" style="font-size:1.25rem;"></i>
     </button>
-  </div>
+  </div>  
 
-  <a class="btn btn-accent ajax m-3"
-    href="$apphome/components/chat-dashboard/sessionadd.html"
-    data-targetdiv="application"
-    data-entityid="$!entity.id"
-    data-module="$!module.getId()"
-    data-oemaxlevel="3"
-    data-createnew="true">
-    <i class="bi bi-plus-lg"></i> [[New Chat]]
-  </a>
-
-  <div class="sidebar-divider"></div>
-
-  <div class="sidebar-scroll">
+  <div class="sidebar-scroll mt-1">
 
     <div class="pb-2">
       $pages.include("./sidebar-history.html", $context)
     </div>
-
+    
     <div class="pb-2">
-      $pages.include("./sidebar-menu.html", $context)
+      $pages.include("./sidebar-assets.html", $context)
     </div>
 
     <div class="pb-2">

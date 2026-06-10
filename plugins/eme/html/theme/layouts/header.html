@@ -1,5 +1,5 @@
 <div id="header" class="mediacenterheader personal-menu d-flex justify-content-between py-2 pe-2">
-	<div class="d-flex align-items-center" style="padding-left:40px">
+	<div class="d-flex align-items-center ps-2">
 		<button class="btn btn-sm icon-btn py-0" id="sidebarOpenBtn" title="[[Collapse sidebar]]">
       <i class="bi bi-layout-sidebar" style="font-size:1.25rem;"></i>
     </button>
@@ -20,7 +20,12 @@
 					#text($emeprofile)
 				</a>
 			#end
-			#if($module.id != "modulesearch")
+			#ifnull($emeprofile)
+				<a class="personal-brand text-decoration-none d-flex align-items-center" href="$homeurl" title="[[EME]]" style="height: var(--themed-logo-height);">
+					[[Tierra Sagrada]] ## load from catalog settings
+				</a>
+			#end
+			#if($module.id != "emeprofile")
 				<i class="bi bi-chevron-right text-muted mx-2" style="font-size:1rem;"></i>
 				<span class="top-breadcrumb">
 					#text($module)
