@@ -1,5 +1,6 @@
 <records>
 
+
   <data id="chat_detection" ordering="50" scenarioicon="broadcast" enabled="true" isvisible="true" connectedtop="chatlabel">
     <name>
       <language id="en"><![CDATA[Auto Detect Chat]]></language>

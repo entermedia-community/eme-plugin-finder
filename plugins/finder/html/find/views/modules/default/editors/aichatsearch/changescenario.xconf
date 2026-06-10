@@ -1,4 +1,4 @@
 <page>
 	<path-action name="ChatModule.loadChatChannel"/>
-	<path-action name="AgentModule.startFunction"/>
+	<path-action name="AgentModule.startScenario"/>
 </page>
