@@ -35,16 +35,6 @@ public class ChatMessageContext extends BaseAgentContext
 		putContextValue("usermessage", inMessage);
 	}
 
-	public MultiValued getAiFunction()
-	{
-		return (MultiValued) getContextValue("aiFunction");
-	}
-
-	public void setAiFunction(MultiValued inAiFunction)
-	{
-		putContextValue("aiFunction", inAiFunction);
-	}
-
 	public LlmResponse getLastResponse()
 	{
 		return (LlmResponse) getContextValue("lastResponse");

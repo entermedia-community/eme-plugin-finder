@@ -321,7 +321,7 @@ public class AutomationManager extends BaseAiManager implements WebEventListener
 	public Collection<AgentEnabled> getEnabledAgents(String inId)
 	{
 		Collection<AgentEnabled> cached = (Collection<AgentEnabled>) getMediaArchive().getCacheManager().get("agentsenabled", inId);
-		if (cached == null)
+		if (cached == null || cached.isEmpty())
 		{
 			Collection found = getMediaArchive().query("automationagentenabled").exact("automationscenario", inId).exact("enabled", true).search();
 			Map<String, AgentEnabled> allparents = new HashMap();

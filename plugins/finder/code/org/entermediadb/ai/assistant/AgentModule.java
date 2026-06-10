@@ -180,7 +180,7 @@ public class AgentModule extends BaseMediaModule
 			int messagecount = assistantManager.channelMessageCount(channelid);
 			if (messagecount == 0)
 			{
-				functionname = "auto_detect_welcome";
+				functionname = "chat_detection_welcome"; // Question when is needed.
 			}
 
 			if (functionname != null)

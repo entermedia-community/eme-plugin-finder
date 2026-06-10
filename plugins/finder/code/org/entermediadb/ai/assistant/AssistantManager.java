@@ -259,12 +259,10 @@ public class AssistantManager extends BaseAiManager
 		// Determine what will need to be processed
 		try
 		{
-			String functionName = null;
 
 			String playbackentitymoduleid = inChannel.get("playbackentitymoduleid");
 			if (playbackentitymoduleid != null)
 			{
-				functionName = "startCreator_" + playbackentitymoduleid;
 				Integer playbacksection = (Integer) inChannel.getValue("playbacksection");
 				if (playbacksection != null)
 				{
@@ -314,10 +312,17 @@ public class AssistantManager extends BaseAiManager
 		MultiValued agentmessage = chatMessageContext.getAgentMessage();
 
 		String functionName = chatMessageContext.getFunctionName();
+
 		if (functionName == null)
 		{
 			functionName = chatMessageContext.getNextFunctionName();
 		}
+
+		if (functionName == null)
+		{
+			functionName = chatMessageContext.getCurrentScenario().getId() + "_welcome";
+		}
+
 		MultiValued function = (MultiValued) getMediaArchive().getCachedData("aifunction", functionName);
 		chatMessageContext.setNextFunctionName(null);
 
@@ -930,11 +935,12 @@ public class AssistantManager extends BaseAiManager
 				id = "fieldsonly_welcome_" + module.getId();
 				messagehandler = "entityCreationSkill";
 			}
-			else if (method.equals("smartcreator"))
-			{
-				id = "smartcreator_welcome_" + module.getId();
-				messagehandler = "smartCreatorSkill";
-			}
+			else
+				if (method.equals("smartcreator"))
+				{
+					id = "smartcreator_welcome_" + module.getId();
+					messagehandler = "smartCreatorSkill";
+				}
 
 			Data exists = getMediaArchive().getData("aifunction", id);
 			if (exists != null)
