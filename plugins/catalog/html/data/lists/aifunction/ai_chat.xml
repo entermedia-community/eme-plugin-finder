@@ -2,7 +2,7 @@
 
 <root>
 
-   <data id="auto_detect_welcome" toplevel="true" icon="chat" samplemesage="Create a summary" processingmessage="Welcome" ordering="-1">
+   <data id="chat_detection_welcome" toplevel="true" icon="chat" samplemesage="Create a summary" processingmessage="Welcome" ordering="-1">
       <name>
          <language id="en"><![CDATA[Chat]]></language>
       </name>

@@ -38,8 +38,9 @@ public class QuestionsSkill extends BaseSkill
 		MultiValued usermessage = (MultiValued) getMediaArchive().getCachedData("chatterbox", inAgentMessage.get("replytoid"));
 		String query = usermessage.get("message");
 
-		String agentFn = messageContext.getFunctionName();
-		if ("question_welcome".equals(agentFn))
+		String agentFn = inAiFunction.getId();
+
+		if ("chat_questions_welcome".equals(agentFn))
 		{
 			inAgentMessage.setValue("chatmessagestatus", "completed");
 
@@ -100,7 +101,7 @@ public class QuestionsSkill extends BaseSkill
 				{
 					Map airesponse = (Map) iterator.next();
 					Data suggestiondata = searcher.createNewData();
-					suggestiondata.setValue("aifunction", "question_welcome");
+					suggestiondata.setValue("aifunction", "chat_questions_welcome");
 					suggestiondata.setValue("entityid", entity.getId());
 					suggestiondata.setValue("entitymoduleid", entitymodule.getId());
 					suggestiondata.setName((String) airesponse.get("title"));
@@ -115,7 +116,7 @@ public class QuestionsSkill extends BaseSkill
 				}
 				else
 				{
-					messageContext.setNextFunctionName("question_welcome");
+					messageContext.setNextFunctionName("chat_questions_welcome");
 				}
 				messageContext.setLastResponse(response);
 				return;

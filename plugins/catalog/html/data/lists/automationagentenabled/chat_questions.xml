@@ -3,7 +3,7 @@
 <!-- using more descriptive ids for easier debugging -->
 
 <records>
-   <data id="chat_questions" automationagent="questionsChatSkill" automationscenario="chat_questions" enabled="true" agenttype="eventagent">
+   <data id="chat_questions" automationagent="questionsSkill" automationscenario="chat_questions" enabled="true" agenttype="eventagent">
       <name>
          <![CDATA[Handle Questions in Chat]]>
       </name>

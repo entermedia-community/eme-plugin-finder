@@ -30,7 +30,7 @@ public class ImagemagickTranscoder extends BaseTranscoder
 
 		if (fieldPathToProfile == null)
 		{
-			Page profile = getPageManager().getPage("/system/commonbase/components/conversions/tinysRGB.icc");
+			Page profile = getPageManager().getPage("/components/conversions/tinysRGB.icc");
 			fieldPathToProfile = profile.getContentItem().getAbsolutePath();
 		}
 		return fieldPathToProfile;
@@ -40,7 +40,7 @@ public class ImagemagickTranscoder extends BaseTranscoder
 	{
 		if (fieldPathToCMYKProfile == null)
 		{
-			Page profile = getPageManager().getPage("/system/commonbase/components/conversions/USWebCoatedSWOP.icc");
+			Page profile = getPageManager().getPage("/components/conversions/USWebCoatedSWOP.icc");
 			fieldPathToCMYKProfile = profile.getContentItem().getAbsolutePath();
 		}
 		return fieldPathToCMYKProfile;
@@ -469,8 +469,6 @@ public class ImagemagickTranscoder extends BaseTranscoder
 
 	protected List<String> createCommand(ConvertInstructions inStructions)
 	{
-
-		String tmpinput = PathUtilities.extractPageType(inStructions.getInputFile().getPath());
 
 		// ext = tmpinput;
 

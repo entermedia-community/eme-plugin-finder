@@ -1,6 +1,6 @@
 <properties>
 	
-	<property id="assetmultipleuploadcollection" moduleid="asset" systemdefined="true" byassettype="false">Multiple Upload (OI)</property>
+	<property id="assetmultipleupload" moduleid="asset" systemdefined="true" byassettype="false">Multiple Upload</property>
 	
 	
 	

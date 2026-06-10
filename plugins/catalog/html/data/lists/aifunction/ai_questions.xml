@@ -2,7 +2,7 @@
 
 <root>
 
-   <data id="question_welcome" toplevel="true" icon="patch-question" samplemesage="summarize this" cratesuggestions="true" processingmessage="Parsing question">
+   <data id="chat_questions_welcome" toplevel="true" icon="patch-question" samplemesage="summarize this" cratesuggestions="true" processingmessage="Parsing question">
       <name>
          <language id="en"><![CDATA[Ask Questions]]></language>
       </name>

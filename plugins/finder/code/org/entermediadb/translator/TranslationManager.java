@@ -132,7 +132,7 @@ public class TranslationManager extends BaseAiManager implements CatalogEnabled
 			payload.put("q", contents);
 			payload.put("source", sourceLang);
 
-			LlmConnection connection = getMediaArchive().getLlmConnection("eMediaTranslateFields");
+			LlmConnection connection = getMediaArchive().getLlmConnection("translateFields");
 			log.info("Translating " + contents + " from " + sourceLang + " to " + eMediaTargets + " in server: " + connection.getServerRoot());
 
 			eMediaTranslations = eMediaTranslate(connection, payload, eMediaTargets);
