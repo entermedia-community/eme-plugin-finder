@@ -149,4 +149,8 @@ public interface AgentContext extends Data
 	MultiValued getCurrentEntity();
 
 	Collection<LogEntry> getLogs();
+
+	public MultiValued getAiFunction();
+
+	public void setAiFunction(MultiValued inAiFunction);
 }
