@@ -147,7 +147,7 @@ public class AgentModule extends BaseMediaModule
 		inReq.putPageValue("tutorials", hits);
 	}
 
-	public void startScenario(WebPageRequest inReq) throws Exception
+	public void sendWelcomeIfNeeded(WebPageRequest inReq) throws Exception
 	{
 		AssistantManager assistantManager = (AssistantManager) getMediaArchive(inReq).getBean("assistantManager");
 
@@ -155,59 +155,50 @@ public class AgentModule extends BaseMediaModule
 		String channelid = inReq.getRequestParameter("channel");
 		String applicationid = inReq.findValue("applicationid");
 		ChatMessageContext agentContext = assistantManager.loadContext(applicationid, channelid);
+		// Refresh drop down area?
+		inReq.putPageValue("agentcontext", agentContext);
 
 		boolean firesystemmessage = false;
+		MultiValued automationscenario = null;
 
 		String currentscenario = inReq.getRequestParameter("currentscenario");
-
-		if (currentscenario != null)
+		if (currentscenario == null)
 		{
+			if (agentContext.getCurrentScenario() != null)
+			{
+				currentscenario = agentContext.getCurrentScenario().getId();
+			}
+			else
+			{
+				currentscenario = "chat_detection";
+			}
+		}
+		if (agentContext.getCurrentScenario() == null || !currentscenario.equals(agentContext.getCurrentScenario().getId()))
+		{
+			// Scenario changed. Clear the context and start over.
+			agentContext.setFunctionName(null);
+			agentContext.setNextFunctionName(null);
+			automationscenario = (MultiValued) getMediaArchive(inReq).getCachedData("automationscenario", currentscenario);
+			agentContext.setCurrentScenario(automationscenario);
 			firesystemmessage = true;
 		}
 		String functionname = inReq.getRequestParameter("functionname");
 		if (functionname != null)
 		{
 			firesystemmessage = true;
+			agentContext.setFunctionName(functionname);
 		}
-		if (!firesystemmessage && (agentContext.getFunctionName() == null || agentContext.getCurrentScenario() == null))
+		if (agentContext.getFunctionName() == null)
 		{
-			if (currentscenario == null)
-			{
-				currentscenario = "chat_detection";
-			}
-
-			// Do not set the welcome function if the channel already has messages.
-			int messagecount = assistantManager.channelMessageCount(channelid);
-			if (messagecount == 0)
-			{
-				functionname = "chat_detection_welcome"; // Question when is needed.
-			}
-
-			if (functionname != null)
-			{
-				firesystemmessage = true;
-			}
+			// int messagecount = assistantManager.channelMessageCount(channelid);
+			functionname = agentContext.getCurrentScenario().getId() + "_welcome";
+			firesystemmessage = true;
+			agentContext.setFunctionName(functionname);
 		}
-		// Refresh drop down area?
-		inReq.putPageValue("agentcontext", agentContext);
-
-		// Just reloading page
-		if (!firesystemmessage)
+		else
 		{
 			return;
 		}
-
-		MultiValued automationscenario = null;
-		if (currentscenario != null)
-		{
-			automationscenario = (MultiValued) getMediaArchive(inReq).getCachedData("automationscenario", currentscenario);
-		}
-
-		if (automationscenario != null)
-		{
-			agentContext.setCurrentScenario(automationscenario);
-		}
-		agentContext.setFunctionName(functionname);
 
 		Collection<String> params = inReq.getParameterMap().keySet();
 		for (Iterator iterator = params.iterator(); iterator.hasNext();)
@@ -254,7 +245,7 @@ public class AgentModule extends BaseMediaModule
 		inReq.setRequestParameter("channel", channelid);
 		// inReq.setRequestParameter("toplevelaifunctionid", "auto_detect_welcome");
 		// inReq.setRequestParameter("functionname", "auto_detect_welcome");
-		startScenario(inReq);
+
 		// if( toplevel != null )
 		// {
 		// context.setTopLevelFunctionName(toplevel);

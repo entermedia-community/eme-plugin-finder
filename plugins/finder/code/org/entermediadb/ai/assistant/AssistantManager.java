@@ -456,7 +456,10 @@ public class AssistantManager extends BaseAiManager
 				}
 
 				String agentNextFn = chatMessageContext.getNextFunctionName();
-				chatMessageContext.setFunctionName(agentNextFn);
+				if (agentNextFn != null)
+				{
+					chatMessageContext.setFunctionName(agentNextFn);
+				}
 				chatMessageContext.setNextFunctionName(null);
 
 				chatMessageContext.setAgentMessage(agentmessage);
@@ -943,12 +946,11 @@ public class AssistantManager extends BaseAiManager
 				id = "fieldsonly_welcome_" + module.getId();
 				messagehandler = "entityCreationSkill";
 			}
-			else
-				if (method.equals("smartcreator"))
-				{
-					id = "smartcreator_welcome_" + module.getId();
-					messagehandler = "smartCreatorSkill";
-				}
+			else if (method.equals("smartcreator"))
+			{
+				id = "smartcreator_welcome_" + module.getId();
+				messagehandler = "smartCreatorSkill";
+			}
 
 			Data exists = getMediaArchive().getData("aifunction", id);
 			if (exists != null)
