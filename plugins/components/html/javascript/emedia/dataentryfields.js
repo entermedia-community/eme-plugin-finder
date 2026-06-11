@@ -364,6 +364,7 @@ $(document).ready(function () {
 				}
 				if (elementparent.length != 0) {
 					//elementparent = $("#" + $.escapeSelector(elementid));
+					$("#" + $.escapeSelector(error.attr("id"))).remove();
 					error.insertAfter(elementparent);
 				}
 				if (

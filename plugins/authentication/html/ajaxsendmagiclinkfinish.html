@@ -3,15 +3,17 @@
 #ifnull($loginroot)
 	#set($loginroot = $content.loginroot)
 #end
+
 $context.putPageValue("loginroot", $loginroot)
+
 #ifnull( $selecteduser )
 	#if( $userapproveremail)
 		##Uses and admin to create the user
 		$pages.include("${loginroot}/sendmagicklinkdisableduser.html")  ##to try again or register
 	#else
 	    #if( $allowguestregistration == "false" )
-	    	[[No user found]]
-	    	$pages.include("${loginroot}/ajaxloginform.html")  ##to try again or register
+				$context.putSessionValue("oe-exception", "No user found with that email")
+	    	$pages.include("${loginroot}/ajaxloginform.html", $context)
 	    #else
 		    ##asks for the first and last name then sends a code
 			$pages.include("${loginroot}/ajaxsendnewusercode.html")
@@ -19,7 +21,5 @@ $context.putPageValue("loginroot", $loginroot)
 	#end	
 #end
 #ifnotnull( $selecteduser )
-	##Sends a code right away and asks for the numbers
-	
 	$pages.include("${loginroot}/ajaxsendusercode.html")  ##to try again or register
 #end

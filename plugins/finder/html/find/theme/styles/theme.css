@@ -9202,16 +9202,28 @@ h2 .module-icon {
 	max-width: 128px;
 	display: inline-block;
 }
-
-.login-area .loginbox {
-	width: 550px;
-	border: 1px solid var(--light-border);
-	box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-	padding: 2rem;
-	margin: 2rem;
-	background: var(--light-bg);
+.loginoptions,
+.login-area a:hover {
+	text-decoration: underline;
 }
-
+.ajaxloginbox .row > * {
+	margin-top: 0;
+}
+.ajaxloginbox input[type="submit"] {
+	height: 32px;
+	width: 80px;
+	font-size: 1rem;
+}
+.ajaxloginbox .text-contrast {
+	color: #444444;
+}
+.ajaxloginbox .text-error {
+	background-color: var(--bs-danger);
+	color: #fff;
+}
+.ajaxloginbox .text-info {
+	background-color: #fff;
+}
 @keyframes fadeSlideIn {
 	0% {
 		opacity: 0;
