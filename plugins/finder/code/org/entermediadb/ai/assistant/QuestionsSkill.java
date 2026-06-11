@@ -79,6 +79,7 @@ public class QuestionsSkill extends BaseSkill
 				messageContext.setWaitTime(null);
 			}
 			messageContext.setLastResponse(response);
+
 			return;
 		}
 		else

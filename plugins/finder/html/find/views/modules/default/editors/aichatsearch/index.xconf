@@ -1,4 +1,5 @@
 <page>
-	<path-action name="PathEventModule.runSharedEvent" runpath="/${catalogid}/events/llm/monitorchats.html" allowduplicates="true"/>
+	<page-action name="AgentModule.sendWelcomeIfNeeded" />
+
 	<inner-layout>/${applicationid}/theme/layouts/dialoglayout.html</inner-layout>
 </page>

@@ -5,7 +5,7 @@
     #foreach($record in $recordlist)
       <li>
         <a class="ajax"
-          href="$edithome/entitychat/toplevelfunctionsave.html"
+          href="$edithome/entitychat/changescenario.html"
           data-targetdiv="aichatsearch"
           data-channel="$!{channel.getId()}"
           #if($recordmodule.aicreationmethod == "smartcreator")
@@ -38,7 +38,7 @@
       <span><i class="bi bi-eye me-1"></i> [[View All]]</span>
     </a>
     <a class="ajax btn btn-light align-self-end"
-      href="$edithome/entitychat/toplevelfunctionsave.html"
+      href="$edithome/entitychat/changescenario.html"
       data-targetdiv="aichatsearch"
       data-channel="$!{channel.getId()}"
       data-currentscenario="chat_searching"
