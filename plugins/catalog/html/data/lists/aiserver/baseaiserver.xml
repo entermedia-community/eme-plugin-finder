@@ -24,6 +24,7 @@
 |parseRagPrompt
 |search_parse
 |searchSemantic
+|chat_smartcreator_welcome
 |smartcreator_parse
 |smartcreator_confirmoutline
 |smartcreator_parsecontent

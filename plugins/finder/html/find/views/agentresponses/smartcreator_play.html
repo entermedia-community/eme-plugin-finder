@@ -23,7 +23,8 @@
   <div class="creator-nav mt-2 msg-body-actions">
     #ifnotnull($prevsection)
     <a class="prev ajax"
-      href="$applink/views/modules/${agentcontext.entitymoduleid}/editors/entitychat/toplevelfunctionsave.html"
+      href="$applink/views/modules/${agentcontext.entitymoduleid}/editors/entitychat/changescenario.html"
+       d
       ata-targetdiv="aichatsearch"
       data-channel="$!{channel.getId()}"
       data-currentscenario="chat_smartcreator"
@@ -37,7 +38,7 @@
     #end
     #ifnotnull($nextsection)
     <a class="next ajax"
-      href="$applink/views/modules/${agentcontext.entitymoduleid}/editors/entitychat/toplevelfunctionsave.html"
+      href="$applink/views/modules/${agentcontext.entitymoduleid}/editors/entitychat/changescenario.html"
       ata-targetdiv="aichatsearch"
       data-channel="$!{channel.getId()}"
       data-currentscenario="chat_smartcreator"
