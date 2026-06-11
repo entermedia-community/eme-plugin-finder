@@ -70,6 +70,8 @@ public class AssistantManager extends BaseAiManager
 			archive.getUserProfileManager().setRoleOnUser(archive.getCatalogId(), agent, "guest");
 		}
 
+		log.info("Function monitorChannels call");
+
 		Searcher channels = archive.getSearcher("channel");
 
 		// TODO: How Do I know if this is still active?
@@ -366,25 +368,27 @@ public class AssistantManager extends BaseAiManager
 
 		LlmResponse response = null;
 		String messagePrefix = chatMessageContext.getMessagePrefix();
-		ChatMessageContext messageContext = new ChatMessageContext(chatMessageContext);// Needed?
-		messageContext.setAgentMessage(agentmessage);
-		messageContext.setUserMessage(usermessage);
-		messageContext.setAiFunction(function);
+
+		// ChatMessageContext messageContext = new ChatMessageContext(chatMessageContext);// Needed?
+		chatMessageContext.setAgentMessage(agentmessage);
+		chatMessageContext.setUserMessage(usermessage);
+		chatMessageContext.setAiFunction(function);
+
 		try
 		{
 			// get the scenerio and run that. Each scenerio will have one or more skills
-			MultiValued scenerio = messageContext.getCurrentScenario();
-			getAutomationManager().runScenario(scenerio.getId(), messageContext);
-			response = messageContext.getLastResponse();
+			MultiValued scenerio = chatMessageContext.getCurrentScenario();
+			getAutomationManager().runScenario(scenerio.getId(), chatMessageContext);
+			response = chatMessageContext.getLastResponse();
 		}
 		catch (HttpException e)
 		{
-			log.error("Error from " + messageContext.getCurrentScenario() + " running " + function.getId(), e);
+			log.error("Error from " + chatMessageContext.getCurrentScenario() + " running " + function.getId(), e);
 			response = handleError(chatMessageContext, e.getMessage(), e.getErrorcode());
 		}
 		catch (Exception e)
 		{
-			log.error("Error from " + messageContext.getCurrentScenario() + " running " + function.getId(), e);
+			log.error("Error from " + chatMessageContext.getCurrentScenario() + " running " + function.getId(), e);
 			response = handleError(chatMessageContext, e.getMessage());
 		}
 
@@ -450,13 +454,17 @@ public class AssistantManager extends BaseAiManager
 					log.info("Previous function requested to wait " + waittime + " milliseconds");
 					Thread.sleep(wait);
 				}
+
 				String agentNextFn = chatMessageContext.getNextFunctionName();
 				chatMessageContext.setFunctionName(agentNextFn);
 				chatMessageContext.setNextFunctionName(null);
+
 				chatMessageContext.setAgentMessage(agentmessage);
 				chatMessageContext.setUserMessage(usermessage);
 				if (agentNextFn != null)
 				{
+					MultiValued nextFunction = (MultiValued) archive.getCachedData("aifunction", agentNextFn);
+					chatMessageContext.setAiFunction(nextFunction);
 					execCurrentFunctionFromChat(chatMessageContext);
 				}
 				// Save the current state
