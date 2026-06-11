@@ -628,10 +628,10 @@ public class ChatModule extends BaseMediaModule
 			{
 				entityid = entity.getId();
 			}
-			else
-			{
-				throw new IllegalArgumentException("entityid is required for agententitychat");
-			}
+			// else
+			// {
+			// throw new IllegalArgumentException("entityid is required for agententitychat");
+			// }
 
 		}
 		String channelname = null;
