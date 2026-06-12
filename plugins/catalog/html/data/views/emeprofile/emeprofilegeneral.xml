@@ -2,9 +2,10 @@
 
 <root>
 
+  <property id="name"/>
   <property id="primarymedia"/>
 
-  <property id="displayname"/>
+  <property id="urlname"/>
 
   <property id="jobtitle" />
   <property id="entitycompany" />

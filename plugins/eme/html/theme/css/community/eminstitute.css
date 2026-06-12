@@ -1809,76 +1809,6 @@ textarea.form-control {
 #primary-search-results .oilogo {
 	max-width: 70px;
 }
-.login-area {
-	min-height: calc(100vh - 148px);
-	display: flex;
-	flex-direction: column;
-	width: 100%;
-}
-.login-area .container {
-	height: 100%;
-	flex: 1;
-	flex-grow: 1;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-}
-.login-area .page-title {
-	font-size: 24px;
-	font-weight: 700;
-}
-.login-area form {
-	max-width: 100%;
-	margin: 0 auto;
-}
-.login-area form label {
-	font-size: 14px;
-	font-weight: 500;
-}
-.login-area form input[type="submit"] {
-	min-width: 80px;
-	height: 100%;
-	min-height: 40px;
-	font-size: 1rem;
-}
-.login-area form .form-control {
-	margin-bottom: 0;
-	padding: 18px 12px;
-}
-.login-area .oauthproviderbtn img {
-	width: 160px;
-	height: auto;
-	object-fit: contain;
-	filter: brightness(0.8);
-	border-radius: 16px;
-	overflow: hidden;
-}
-.login-area .oauthproviderbtn:hover img {
-	filter: brightness(1);
-}
-.login-area .row > * {
-	margin-top: 0;
-}
-.loginbox {
-	margin-bottom: 2rem;
-	min-height: 360px;
-}
-.loginoptions,
-.login-area a:hover {
-	text-decoration: underline;
-}
-.ajaxloginbox .row > * {
-	margin-top: 0;
-}
-.ajaxloginbox input[type="submit"] {
-	height: 32px;
-	width: 80px;
-	font-size: 1rem;
-}
-.ajaxloginbox .text-contrast {
-	color: #444444;
-}
 .chatterbox-messages:has(.resultspositions) {
 	padding-top: 40px;
 }
@@ -1904,9 +1834,6 @@ table.table-striped tr.table-row-totals td {
 @media (min-width: 768px) {
 	.w-md-80 {
 		width: 80% !important;
-	}
-	.loginbox {
-		width: 600px;
 	}
 }
 .form-group {

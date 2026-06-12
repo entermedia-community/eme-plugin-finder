@@ -1,4 +1,4 @@
-<form name="dialogform" class="ajaxform autocloseform" action="/${applicationid}/components/chat-dashboard/intro-save.html" method="post">
+<form name="emeprofileform" id="emeprofileform" class="ajaxform autocloseform" action="/${applicationid}/components/chat-dashboard/intro-save.html" method="post">
 
 	<input type="hidden" name="save" value="true" />
   <input type="hidden" name="id" value="$emeprofile.id" />
@@ -11,7 +11,7 @@
 
   #set( $searcher = $mediaarchive.getSearcher("emeprofile") )
   $context.putPageValue("searcher", $searcher)
-	$context.putPageValue("viewid", "emeprofileedit")
+	$context.putPageValue("viewid", "emeprofilegeneral")
   $context.putPageValue("data", $emeprofile)
 	$pages.include("/$applicationid/components/xml/detaileditorcss.html", $context)
 </form>
