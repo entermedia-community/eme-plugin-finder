@@ -11,6 +11,7 @@ import org.entermediadb.ai.ChatMessageContext;
 import org.entermediadb.asset.MediaArchive;
 import org.entermediadb.asset.modules.BaseMediaModule;
 import org.entermediadb.scripts.ScriptLogger;
+import org.entermediadb.workspace.WorkspaceManager;
 import org.openedit.Data;
 import org.openedit.MultiValued;
 import org.openedit.WebPageRequest;
@@ -108,10 +109,14 @@ public class AgentModule extends BaseMediaModule
 	{
 		ScriptLogger log = (ScriptLogger) inReq.getPageValue("log");
 		AssistantManager assistant = (AssistantManager) getMediaArchive(inReq).getBean("assistantManager");
-		assistant.addMissingFunctions(log);
+		assistant.addSmartCreatorTypes(log);
 
 		SearchingSkill searchingManager = getSearchingSkill(inReq);
 		searchingManager.createPossibleFunctionParameters(log);
+
+		// Add AI functions to mediadb
+		WorkspaceManager workspaceManager = (WorkspaceManager) getMediaArchive(inReq).getBean("workspaceManager");
+		workspaceManager.createMediaDbAiFunctionEndPoints(getMediaArchive(inReq).getCatalogId());
 
 	}
 

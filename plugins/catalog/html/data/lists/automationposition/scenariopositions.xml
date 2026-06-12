@@ -34,10 +34,10 @@
   <data id="informatics" posx="1252.4844814519054" posy="1895.293630390418"> 
     <name/> 
   </data>  
-  <data id="smartcreator_processtutorials" posx="2259.7368085286" posy="1577.263524318323"> 
+  <data id="smartcreator_auto_entitytutorial" posx="2259.7368085286" posy="1577.263524318323"> 
     <name/> 
   </data>  
-  <data id="smartcreator_processarticles" posx="2495.6315541298345" posy="1866.3158186707824"> 
+  <data id="smartcreator_auto_entityarticle" posx="2495.6315541298345" posy="1866.3158186707824"> 
     <name/> 
   </data>  
   <data id="customerservicelabel" posx="1202.3163734156547" posy="2209.894190856363">

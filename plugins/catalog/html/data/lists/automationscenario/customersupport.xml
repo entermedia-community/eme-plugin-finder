@@ -1,6 +1,6 @@
 <records>
 
-  <data id="email" ordering="50" scenarioicon="envelope-fill" enabled="true" isvisible="true" connectedtop="customerservicelabel">
+  <data id="email" ordering="50" scenarioicon="envelope-fill" enabled="true" isvisible="true" connectedtop="customerservicelabel" chatenabled="false">
     <name>
       <language id="en"><![CDATA[Email Responder]]></language>
     </name>
