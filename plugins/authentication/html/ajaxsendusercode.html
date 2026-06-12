@@ -1,65 +1,119 @@
 #ifnull($loginroot)
 	#set($loginroot = $content.loginroot)
 #end
-    
-<div id ="ajaxloginformdiv">
+
 #set( $email = $context.getRequestParameter("email") )
-<div class="my-3 w-100">
-	
-	#set( $error = $context.getPageValue("oe-exception") )
-	#if ( $error ) 
-		<div class="alert alert-danger my-2" role="alert" style="min-width: 450px;">
-			<i class="bi bi-exclamation-triangle-fill me-1 ns"></i>
-			$error
-		</div>
-		$context.removeSessionValue("oe-exception")
-	#else		
-		<div class="mb-3 text-center text-contrast"><strong>[[Please check your email]]</strong></div>
-	
-		<form name="login" 
-			id="login"
-			class="ajaxform w-100" 
-			data-targetdiv="ajaxlogincontainer"
-			action="$!{home}$!{loginroot}/ajaxlogin.html" 
-			method="POST" >
-					
-				<div class="d-flex">	
-					#if( $email )
-						<input  type="hidden" name="email" value="$email" />
-					#else
-						<div class="flex-grow-1">
-						<input class="form-control required grabfocus" type="text" name="email" size="50" placeholder="[[Enter your Email Address]]" required />
-						</div>
-					#end
-					
-					<div class="flex-grow-1">
-						<input class="form-control grabfocus required" id="entermediakey" name="templogincode" placeholder="[[Enter six digit login code]]" required />
-					</div>
-			
-					<div class="" style="width:100px">
-						<div class="d-flex justify-content-center">
-							<input class="btn themed-btn" name="submit" type="submit" id="login-submit" value="[[Login]]" />
-						</div>
-					</div>
+
+<div id="ajaxlogincontainer">
+	<div class="loginbox card">
+		<div id="ajaxloginstep2" class="step">
+			<div class="step-dots">
+				<div class="dot" id="d1"></div>
+				<div class="dot active" id="d2"></div>
+			</div>
+
+			<button class="back-link" onclick="goBack()">
+				<i class="fas fa-chevron-left me-1"></i>
+				Back
+			</button>
+
+			#set( $error = $context.getPageValue("oe-exception") )
+			#if ( $error ) 
+				<div class="alert alert-danger w-100 mt-3 mb-0 p-2" role="alert">
+					<i class="fas fa-exclamation-triangle me-1"></i>
+					$error
 				</div>
+				$context.removeSessionValue("oe-exception")
+			#end
+
+			<h1>Check your inbox</h1>
+			<p class="subtitle">We sent a 6-digit code to</p>
+
+			#if( $email )
+			<div class="email-chip">
+				<i class="fas fa-envelope me-1"></i>
+				<span id="emailDisplay">$email</span>
+			</div>
+			#end
+	
+			<form name="login" 
+				id="loginCodeForm" 
+				data-targetdiv="ajaxlogincontainer"
+				action="$!{home}$!{loginroot}/ajaxlogin.html" 
+				method="POST" >
+
+				<label>Verification code</label>
+				<div class="otp-row">
+					<input
+						class="form-control otp"
+						type="text"
+						inputmode="numeric"
+						maxlength="1"
+					/>
+					<input
+						class="form-control otp"
+						type="text"
+						inputmode="numeric"
+						maxlength="1"
+					/>
+					<input
+						class="form-control otp"
+						type="text"
+						inputmode="numeric"
+						maxlength="1"
+					/>
+					<input
+						class="form-control otp"
+						type="text"
+						inputmode="numeric"
+						maxlength="1"
+					/>
+					<input
+						class="form-control otp"
+						type="text"
+						inputmode="numeric"
+						maxlength="1"
+					/>
+					<input
+						class="form-control otp"
+						type="text"
+						inputmode="numeric"
+						maxlength="1"
+					/>
+				</div>
+				
+				#if( $email )
+					<input type="hidden" name="email" value="$email" />
+				#else
+					<label for="loginemail">Email</label>
+					<input
+						id="loginemail"
+						type="email"
+						name="email"
+						placeholder="[[Enter your email address]]"
+						class="form-control required grabfocus"
+						autocomplete="email"
+					/>
+				#end
+
+				<input type="hidden" name="templogincode" id="loginCode" />
+				
 				#ifnull($loginok)
 					#set($loginok = $content.loginok)
 				#end
-				
+					
 				#ifnotnull($loginok)
 					#set( $loginok = "$context.siteRoot" + "$loginok")
 					<input type="hidden" name="loginokpage" value="#esc($!loginok)"/>
 				#end
-			
-		
-			#ifnotnull( $userCategory)
+
+				#ifnotnull( $userCategory)
 					<input type="hidden" name="categoryid" value="$!userCategory.id" />
-			#end
+				#end
+
+				<button class="btn-primary" id="loginBtn" type="submit">Login</button>
 			
-		</form>   
-	#end
-	<div class="my-4 text-center"><a href="$!{home}${content.loginroot}/login.html" class="loginoptions" title="[[Try other login options]]">[[Other login options]]</a></div>
+			</form>   
+		</div>
 	</div>
-
-
 </div>
