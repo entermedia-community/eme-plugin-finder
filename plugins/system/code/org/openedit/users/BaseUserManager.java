@@ -32,17 +32,19 @@ public class BaseUserManager implements UserManager
 	protected Authenticator fieldAuthenticator;
 	protected Authenticator fieldTwoFactorAuthenticator;
 
-	public Authenticator getTwoFactorAuthenticator() {
+	public Authenticator getTwoFactorAuthenticator()
+	{
 		if (fieldTwoFactorAuthenticator == null)
 		{
 			fieldTwoFactorAuthenticator = (Authenticator) getSearcherManager().getModuleManager().getBean(getCatalogId(), "twofactorAuthenticator");
-			
+
 		}
 
 		return fieldTwoFactorAuthenticator;
 	}
 
-	public void setTwoFactorAuthenticator(Authenticator fieldTwoFactorAuthenticator) {
+	public void setTwoFactorAuthenticator(Authenticator fieldTwoFactorAuthenticator)
+	{
 		this.fieldTwoFactorAuthenticator = fieldTwoFactorAuthenticator;
 	}
 
@@ -51,7 +53,7 @@ public class BaseUserManager implements UserManager
 		fieldAuthenticator = inAuthenticator;
 	}
 
-	protected EventManager getEventManager() 
+	protected EventManager getEventManager()
 	{
 		return fieldEventManager;
 	}
@@ -78,16 +80,13 @@ public class BaseUserManager implements UserManager
 
 	public GroupSearcher getGroupSearcher()
 	{
-		return (GroupSearcher)getSearcherManager().getSearcher(getCatalogId(), "group");
+		return (GroupSearcher) getSearcherManager().getSearcher(getCatalogId(), "group");
 	}
 
-	
 	public UserSearcher getUserSearcher()
 	{
-		return (UserSearcher)getSearcherManager().getSearcher(getCatalogId(), "user");
+		return (UserSearcher) getSearcherManager().getSearcher(getCatalogId(), "user");
 	}
-	
-	
 
 	@Override
 	public Group getGroup(String inGroupId) throws UserManagerException
@@ -106,63 +105,66 @@ public class BaseUserManager implements UserManager
 	{
 		return getUserSearcher().getUser(inUserName);
 	}
-	
+
 	@Override
 	public User getUser(String inUserName, boolean inFromCache)
 	{
-		if( inUserName == null)
+		if (inUserName == null)
 		{
 			return null;
 		}
-		return getUserSearcher().getUser(inUserName,inFromCache);
+		return getUserSearcher().getUser(inUserName, inFromCache);
 	}
+
 	@Override
 	public HitTracker getUsers()
 	{
 
 		return getUserSearcher().getAllHits();
 	}
-	public boolean authenticate(User inUser, String inPassword)
-			throws UserManagerException {
+
+	public boolean authenticate(User inUser, String inPassword) throws UserManagerException
+	{
 		AuthenticationRequest req = new AuthenticationRequest();
 		req.setUser(inUser);
 		req.setPassword(inPassword);
 		req.setCatalogId(getCatalogId());
 		return authenticate(req);
 	}
-	public boolean authenticate(AuthenticationRequest inReq)
-			throws UserManagerException {
+
+	public boolean authenticate(AuthenticationRequest inReq) throws UserManagerException
+	{
 		User inUser = inReq.getUser();
 
-		if (!inUser.isEnabled()) {
+		if (!inUser.isEnabled())
+		{
 			return false;
 		}
 
 		boolean success = getAuthenticator().authenticate(inReq);
-		if (success && Boolean.parseBoolean(inReq.get("twofactorauthentication")) ) 
+		if (success && Boolean.parseBoolean(inReq.get("twofactorauthentication")))
 		{
-			success  = getTwoFactorAuthenticator().authenticate(inReq);
+			success = getTwoFactorAuthenticator().authenticate(inReq);
 		}
-		if (success) 
+		if (success)
 		{
 			fireUserEvent(inUser, "login");
 		}
-		else 
+		else
 		{
 			fireUserEvent(inUser, "invalidpassword");
 		}
 		return success;
 	}
 
-
 	private boolean isTwoFactorEnabled(WebPageRequest inReq)
 	{
-		//Check app first
+		// Check app first
 		String value = inReq.findPathValue("twofactorauthentication");
-		if( value == null)
+		if (value == null)
 		{
 			Data data = getSearcherManager().getCachedData(getCatalogId(), "catalogsettings", "twofactorauthentication");
-			if(data != null) 
+			if (data != null)
 			{
 				return Boolean.parseBoolean(data.get("value"));
 			}
@@ -170,7 +172,8 @@ public class BaseUserManager implements UserManager
 		return Boolean.parseBoolean(value);
 	}
 
-	public Collection getGroupsSorted() {
+	public Collection getGroupsSorted()
+	{
 
 		TreeSet treeSet = new java.util.TreeSet(new GroupComparator());
 
@@ -179,25 +182,27 @@ public class BaseUserManager implements UserManager
 		return treeSet;
 	}
 
-
-	public String getScreenName(String inUserName) {
-		if (inUserName == null) {
+	public String getScreenName(String inUserName)
+	{
+		if (inUserName == null)
+		{
 			return null;
 		}
 		User user = getUser(inUserName);
-		if (user != null) {
+		if (user != null)
+		{
 			return user.getScreenName();
 		}
 		return inUserName;
 	}
 
-	public HitTracker getUsersInGroup(String inGroupId) 
+	public HitTracker getUsersInGroup(String inGroupId)
 	{
 		return getUserSearcher().query().match("groups", inGroupId).search();
 	}
 
 	// TODO: Replace with smart UserHitTracker that lazy loads
-	public HitTracker getUsersInGroup(Group inGroup) 
+	public HitTracker getUsersInGroup(Group inGroup)
 	{
 		return getUsersInGroup(inGroup.getId());
 	}
@@ -207,36 +212,36 @@ public class BaseUserManager implements UserManager
 	 * 
 	 * @see org.openedit.users.UserManager#getUserByEmail(java.lang.String)
 	 */
-	public User getUserByEmail(String inEmail) throws UserManagerException {
+	public User getUserByEmail(String inEmail) throws UserManagerException
+	{
 		// check the cache first
 		return getUserSearcher().getUserByEmail(inEmail);
 	}
+
 	/**
 	 * @see org.openedit.users.UserManager#createGroup(String)
 	 */
-	public Group createGroup(String inGroupId, String inGroupName)
-			throws UserManagerException {
-			Group group = (Group)getGroupSearcher().createNewData();
-			group.setId(inGroupId);
-			group.setName(inGroupName);
-			saveGroup(group);
-			return group;
-		}
+	public Group createGroup(String inGroupId, String inGroupName) throws UserManagerException
+	{
+		Group group = (Group) getGroupSearcher().createNewData();
+		group.setId(inGroupId);
+		group.setName(inGroupName);
+		saveGroup(group);
+		return group;
+	}
 
 	@Override
 	public Group createGroup() throws UserManagerException
 	{
-	
-		return (Group)getGroupSearcher().createNewData();
+
+		return (Group) getGroupSearcher().createNewData();
 	}
-
-
 
 	@Override
 	public User createUser(String inUserName, String inPassword) throws UserManagerException
 	{
-		User user = (User)getUserSearcher().createNewData();
-		if( inUserName != null)
+		User user = (User) getUserSearcher().createNewData();
+		if (inUserName != null)
 		{
 			user.setUserName(cleanUsername(inUserName));
 		}
@@ -244,29 +249,29 @@ public class BaseUserManager implements UserManager
 		saveUser(user);
 		return user;
 	}
-	
-	
-	public String cleanUsername(String inUserName) {
+
+	public String cleanUsername(String inUserName)
+	{
 		String cleanName = inUserName;
 		cleanName = cleanName.trim();
 		cleanName = cleanName.toLowerCase();
-		
+
 		cleanName = cleanName.replaceAll("[^A-Za-z0-9\\@\\-\\_\\.]", "");
-		cleanName = cleanName.replace(' ','_');
-	
+		cleanName = cleanName.replace(' ', '_');
+
 		return cleanName;
 	}
-	
+
 	@Override
 	public void deleteGroup(Group inGroup) throws UserManagerException
 	{
-//		for (Iterator iter = listUserNames().iterator(); iter.hasNext();) {
-//			String username = (String) iter.next();
-//			User user = getUser(username);
-//			user.removeGroup(inGroup);
-//		}
-//
-		getGroupSearcher().delete(inGroup,null);
+		// for (Iterator iter = listUserNames().iterator(); iter.hasNext();) {
+		// String username = (String) iter.next();
+		// User user = getUser(username);
+		// user.removeGroup(inGroup);
+		// }
+		//
+		getGroupSearcher().delete(inGroup, null);
 	}
 
 	@Override
@@ -276,41 +281,47 @@ public class BaseUserManager implements UserManager
 		getUserSearcher().delete(inUser, null);
 	}
 
-	public void deleteGroups(List inGroups) throws UserManagerException {
-		if (inGroups != null) {
-			for (Iterator iter = inGroups.iterator(); iter.hasNext();) {
+	public void deleteGroups(List inGroups) throws UserManagerException
+	{
+		if (inGroups != null)
+		{
+			for (Iterator iter = inGroups.iterator(); iter.hasNext();)
+			{
 				Group group = (Group) iter.next();
 				deleteGroup(group);
 			}
 		}
 	}
 
-	public void deleteUsers(List inUsers) throws UserManagerException {
-		if (inUsers != null) {
-			for (Iterator iter = inUsers.iterator(); iter.hasNext();) {
+	public void deleteUsers(List inUsers) throws UserManagerException
+	{
+		if (inUsers != null)
+		{
+			for (Iterator iter = inUsers.iterator(); iter.hasNext();)
+			{
 				User user = (User) iter.next();
 				deleteUser(user);
 			}
 		}
 	}
-	
+
 	@Override
 	public void saveUser(User inUser)
 	{
-		if( inUser.isVirtual())
+		if (inUser.isVirtual())
 		{
 			throw new OpenEditException("Cannot save a virtual user " + inUser.getId());
 		}
-		getUserSearcher().saveData(inUser,null);
+		getUserSearcher().saveData(inUser, null);
 	}
 
 	@Override
 	public void saveGroup(Group inGroup)
 	{
-		getGroupSearcher().saveData(inGroup,null);
+		getGroupSearcher().saveData(inGroup, null);
 	}
 
-	///TODO: Refactor all the authentication to here
+	/// TODO: Refactor all the authentication to here
 	@Override
 	public Authenticator getAuthenticator()
 	{
@@ -353,27 +364,29 @@ public class BaseUserManager implements UserManager
 	@Override
 	public User createGuestUser(String inAccount, String inPassword, String inGroupId)
 	{
-			User user = (User)getUserSearcher().createNewData();
-			user.setId(inAccount);
-			user.setUserName(inAccount);
-			user.setPassword(inPassword);
-			//Virtual user causing issues with paypal
-			user.setVirtual(true);
-			user.setEnabled(false);
+		User user = (User) getUserSearcher().createNewData();
+		user.setId(inAccount);
+		user.setUserName(inAccount);
+		user.setPassword(inPassword);
+		// Virtual user causing issues with paypal
+		user.setVirtual(true);
+		user.setEnabled(false);
 
-			Group group = getGroup(inGroupId);
-			if (group == null) {
-				log.error("No such auto login group " + inGroupId);
-			} else {
-				user.addGroup(group);
-			}
-			return user;
+		Group group = getGroup(inGroupId);
+		if (group == null)
+		{
+			log.error("No such auto login group " + inGroupId);
 		}
+		else
+		{
+			user.addGroup(group);
+		}
+		return user;
+	}
 
 	@Override
 	public void flush()
-	{
-	}
+	{}
 
 	@Override
 	public AuthenticationRequest createAuthenticationRequest(WebPageRequest inReq, String password, User user)
@@ -388,25 +401,30 @@ public class BaseUserManager implements UserManager
 		{
 			domain = inReq.getContentPage().get("authenticationdomain");
 		}
-		String []fields = inReq.getRequestParameters("field");
-		if(fields != null) {
-		for (int i = 0; i < fields.length; i++) {
-			String key = fields[i];
-			String value = inReq.getRequestParameter(key + ".value");
-			if(value != null) {
-				aReq.setValue(key, value);
+		String[] fields = inReq.getRequestParameters("field");
+		if (fields != null)
+		{
+			for (int i = 0; i < fields.length; i++)
+			{
+				String key = fields[i];
+				String value = inReq.getRequestParameter(key + ".value");
+				if (value != null)
+				{
+					aReq.setValue(key, value);
+				}
 			}
 		}
-		}
 		aReq.putProperty("authenticationdomain", domain);
-		aReq.putProperty("twofactorauthentication",String.valueOf(isTwoFactorEnabled(inReq)));
+		aReq.putProperty("twofactorauthentication", String.valueOf(isTwoFactorEnabled(inReq)));
 		String server = inReq.getPage().get("authenticationserver");
 		aReq.putProperty("authenticationserver", server);
 		return aReq;
 	}
 
-	public void fireUserEvent(User inUser, String inOperation) {
-		if (fieldEventManager != null) {
+	public void fireUserEvent(User inUser, String inOperation)
+	{
+		if (fieldEventManager != null)
+		{
 			WebEvent event = new WebEvent();
 			event.setOperation("authentication");
 			event.setSearchType("user");
@@ -415,14 +433,14 @@ public class BaseUserManager implements UserManager
 			event.setCatalogId(getCatalogId());
 			event.setUser(inUser);
 			event.setProperty("userid", inUser.getId());
-			//event.setProperty("user", inUser.getId());
+			// event.setProperty("user", inUser.getId());
 
 			getEventManager().fireEvent(event);
 		}
 	}
 
 	@Override
-	public String getEnterMediaKey(User user) 
+	public String getEnterMediaKey(User user)
 	{
 		String tempkey = getStringEncryption().getTempEnterMediaKey(user);
 		return tempkey;
@@ -433,49 +451,46 @@ public class BaseUserManager implements UserManager
 	{
 		String md5 = getStringEncryption().getPasswordMd5(inUser.getPassword());
 		String value = inUser.getUserName() + "md542" + md5;
-		inReq.putPageValue("entermediakey", value); //TODO: Remove this, its slow
+		inReq.putPageValue("entermediakey", value); // TODO: Remove this, its slow
 		String catalogid = inReq.findPathValue("catalogid");
 		inReq.putSessionValue(catalogid + "user", inUser);
 		inReq.putPageValue("user", inUser);
-		
+
 	}
 
-	
-	
-	
-	@Override	
-	public String createNewTempLoginKey(String userid, String email, String first,String last, boolean force)
+	@Override
+	public String createNewTempLoginKey(String userid, String email, String first, String last, String screenName, boolean force)
 	{
-		//Create a new one for this user
+		// Create a new one for this user
 		Searcher searcher = getSearcherManager().getSearcher("system", "templogincode");
-		if( userid == null && (first == null || last == null))
+		if (userid == null && (first == null || last == null))
 		{
 			throw new OpenEditException("First or last name is required");
 		}
-		
-		Calendar cal  = Calendar.getInstance();
-		cal.add(Calendar.HOUR, -1); //24 hours
+
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.HOUR, -1); // 24 hours
 		Date newerthan = cal.getTime();
-		Data found = searcher.query().match("email",email.toLowerCase()).after("date",newerthan).searchOne();
-		if(found != null && !force) {   //force is mostly set to true so we will skip this and make a new one
+		Data found = searcher.query().match("email", email.toLowerCase()).after("date", newerthan).searchOne();
+		if (found != null && !force)
+		{ // force is mostly set to true so we will skip this and make a new one
 			return found.get("securitycode");
 		}
 
-	
-		
-		Data data  = searcher.createNewData();
-		data.setValue("user",userid);
-		data.setValue("firstName",first);
-		data.setValue("lastName",last);
-		data.setValue("email",email.toLowerCase());
-		data.setValue("date",new Date());
-		
+		Data data = searcher.createNewData();
+		data.setValue("user", userid);
+		data.setValue("firstName", first);
+		data.setValue("lastName", last);
+		data.setValue("screenName", screenName);
+		data.setValue("email", email.toLowerCase());
+		data.setValue("date", new Date());
+
 		Random random = new Random();
-	    String key = String.format("%06d", random.nextInt(999999));
-		data.setValue("securitycode",key);
+		String key = String.format("%06d", random.nextInt(999999));
+		data.setValue("securitycode", key);
 
 		searcher.saveData(data);
-		
+
 		return key;
 	}
 
@@ -483,26 +498,26 @@ public class BaseUserManager implements UserManager
 	public User checkForNewUser(String inEmail, String inTemplogincode, String groupid)
 	{
 		Searcher searcher = getSearcherManager().getSearcher("system", "templogincode");
-		
-		Calendar cal  = Calendar.getInstance();
-		cal.add(Calendar.DAY_OF_YEAR, -5); //5 days
+
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.DAY_OF_YEAR, -5); // 5 days
 		Date newerthan = cal.getTime();
-		Data found = searcher.query().exact("securitycode",inTemplogincode).after("date",newerthan).sort("date").searchOne();
-		if( found != null)
+		Data found = searcher.query().exact("securitycode", inTemplogincode).after("date", newerthan).sort("date").searchOne();
+		if (found != null)
 		{
 			String email = found.get("email");
-			if( inEmail.equalsIgnoreCase(email))
+			if (inEmail.equalsIgnoreCase(email))
 			{
-				//Must be valid user
+				// Must be valid user
 				String tmppassword = new PasswordGenerator().generate();
 				User user = createGuestUser(null, tmppassword, groupid);
 				user.setVirtual(false);
 				user.setEnabled(true);
-				user.setValue("firstName",found.get("firstName"));
-				user.setValue("lastName",found.get("lastName"));
+				user.setValue("firstName", found.get("firstName"));
+				user.setValue("lastName", found.get("lastName"));
 				user.setEmail(found.get("email"));
 				saveUser(user);
-				found.setValue("user",user.getId());
+				found.setValue("user", user.getId());
 				searcher.saveData(found);
 				log.info("Temporary user made for " + inEmail);
 				return user;
@@ -519,21 +534,21 @@ public class BaseUserManager implements UserManager
 		return null;
 	}
 
-	
 	public User createTempUserFromEmail(String email)
 	{
-		
-		if (email != null) {
+
+		if (email != null)
+		{
 			User user = getUserSearcher().getUserByEmail(email);
-			if (user == null )
+			if (user == null)
 			{
 				Group guest = getGroupSearcher().getGroup("guest");
 				if (guest == null)
 				{
 					createGroup("guest", "Guest");
 				}
-				user = (User)getUserSearcher().createNewData();
-				//user = getUserManager(inReq).createGuestUser(null, null, "guest");
+				user = (User) getUserSearcher().createNewData();
+				// user = getUserManager(inReq).createGuestUser(null, null, "guest");
 				user.setEmail(email);
 				user.addGroup(guest);
 				String catalogid = getUserSearcher().getCatalogId();
@@ -545,6 +560,5 @@ public class BaseUserManager implements UserManager
 		return null;
 
 	}
-
 
 }

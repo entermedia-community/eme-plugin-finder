@@ -12,10 +12,10 @@
 				<div class="dot active" id="d2"></div>
 			</div>
 
-			<button class="back-link" onclick="goBack()">
+			<a class="ajax" href="$!{home}${content.loginroot}/ajaxlogin.html" data-targetdiv="ajaxlogincontainer">
 				<i class="fas fa-chevron-left me-1"></i>
 				Back
-			</button>
+			</a>
 
 			#set( $error = $context.getPageValue("oe-exception") )
 			#if ( $error ) 
@@ -38,9 +38,8 @@
 	
 			<form name="login" 
 				id="loginCodeForm" 
-				data-targetdiv="ajaxlogincontainer"
-				action="$!{home}$!{loginroot}/ajaxlogin.html" 
-				method="POST" >
+				action="$!{home}$!{loginroot}/login.html" 
+				method="POST">
 
 				<label>Verification code</label>
 				<div class="otp-row">

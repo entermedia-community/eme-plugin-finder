@@ -1,18 +1,4 @@
 $(document).ready(function () {
-	lQuery("#loginCodeForm").livequery("submit", function (e) {
-		e.preventDefault();
-		e.stopImmediatePropagation();
-		e.stopPropagation();
-
-		var codes = "";
-		$(".otp").each(function () {
-			codes += $(this).val();
-		});
-		$("#loginCode").val(codes);
-
-		$(this).ajaxFormSubmit();
-	});
-
 	const otpInputs = () => $(".otp");
 
 	lQuery(".otp").livequery("input", function () {
@@ -50,5 +36,11 @@ $(document).ready(function () {
 		const $inputs = otpInputs();
 		const filled = $inputs.toArray().every((i) => $(i).val().length === 1);
 		$("#loginBtn").prop("disabled", !filled);
+
+		var codes = "";
+		$(".otp").each(function () {
+			codes += $(this).val();
+		});
+		$("#loginCode").val(codes);
 	}
 });

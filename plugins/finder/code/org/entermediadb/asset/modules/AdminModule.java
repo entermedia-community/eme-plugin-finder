@@ -163,6 +163,7 @@ public class AdminModule extends BaseMediaModule
 		String username = null;
 		String firstName = "";
 		String lastName = "";
+		String screenName = "";
 
 		Category userCategory = (Category) inReq.getPageValue("userCategory");
 
@@ -177,11 +178,12 @@ public class AdminModule extends BaseMediaModule
 			emailaddress = foundUser.getEmail();
 			firstName = foundUser.getFirstName();
 			lastName = foundUser.getLastName();
+			screenName = foundUser.getScreenName();
 			username = foundUser.getId();
 
 			if (foundUser.isEnabled())
 			{
-				String userCode = getUserManager(inReq).createNewTempLoginKey(username, emailaddress, firstName, lastName, false);
+				String userCode = getUserManager(inReq).createNewTempLoginKey(username, emailaddress, firstName, lastName, screenName, false);
 
 				if (userCategory != null)
 				{
@@ -210,7 +212,8 @@ public class AdminModule extends BaseMediaModule
 			{
 				firstName = inReq.getRequestParameter("firstName");
 				lastName = inReq.getRequestParameter("lastName");
-				String userCode = getUserManager(inReq).createNewTempLoginKey(null, emailaddress, firstName, lastName, false);
+				screenName = inReq.getRequestParameter("screenName");
+				String userCode = getUserManager(inReq).createNewTempLoginKey(null, emailaddress, firstName, lastName, screenName, false);
 				String subject = inReq.getRequestParameter("subject");
 				inReq.putPageValue("subject", subject);
 				passwordHelper.emailPasswordReminder(inReq, getPageManager(), userCode, emailaddress);
@@ -248,6 +251,7 @@ public class AdminModule extends BaseMediaModule
 		String username = null;
 		String firstName = "";
 		String lastName = "";
+		String screenName = "";
 		// if the user provided an email instead of a username, lookup username
 		if (emailaddress != null && emailaddress.length() > 0)
 		{
@@ -267,6 +271,7 @@ public class AdminModule extends BaseMediaModule
 			emailaddress = foundUser.getEmail();
 			firstName = foundUser.getFirstName();
 			lastName = foundUser.getLastName();
+			screenName = foundUser.getScreenName();
 			username = foundUser.getId();
 		}
 
@@ -291,7 +296,7 @@ public class AdminModule extends BaseMediaModule
 				return;
 			}
 
-			String tempsecuritykey = getUserManager(inReq).createNewTempLoginKey(username, emailaddress, firstName, lastName, false);
+			String tempsecuritykey = getUserManager(inReq).createNewTempLoginKey(username, emailaddress, firstName, lastName, screenName, false);
 
 			PasswordHelper passwordHelper = getPasswordHelper(inReq);
 			String key = null;
@@ -682,10 +687,11 @@ public class AdminModule extends BaseMediaModule
 		{
 			user = userManager.getUser(account);
 		}
-		else if (email != null)
-		{
-			userManager.getUserByEmail(email);
-		}
+		else
+			if (email != null)
+			{
+				userManager.getUserByEmail(email);
+			}
 		Boolean ok = false;
 		if (user != null)
 		{
@@ -1136,10 +1142,11 @@ public class AdminModule extends BaseMediaModule
 			{
 				path = path.substring(0, path.length() - 1);
 			}
-			else if (!inReq.getPath().equals(path))
-			{
-				inReq.redirect(path);
-			}
+			else
+				if (!inReq.getPath().equals(path))
+				{
+					inReq.redirect(path);
+				}
 		}
 	}
 
