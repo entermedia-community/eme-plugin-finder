@@ -92,6 +92,20 @@ body {
 	--height-ex-hf: calc(var(--vertical-height) - 208px);
 }
 
+#application .loginbox {
+	--auth-bg: transparent;
+	--auth-card: #fefefe;
+	--auth-border: #cfcfcf;
+	--auth-text: #121920;
+	--auth-muted: #8f8f8f;
+	--auth-accent: var(--themed-btn-acc);
+	--auth-accent-text: #ffffff;
+	--auth-accent-h: #3884fd;
+	--auth-input-bg: #ffffff;
+	--auth-radius: 14px;
+	margin: 24px auto;
+}
+
 .mediacenterheader {
 	position: sticky;
 	top: 0;
