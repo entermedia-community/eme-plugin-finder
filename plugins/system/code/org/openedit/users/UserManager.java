@@ -1,14 +1,14 @@
 /*
-Copyright (c) 2003 eInnovation Inc. All rights reserved
-
-This library is free software; you can redistribute it and/or modify it under the terms
-of the GNU Lesser General Public License as published by the Free Software Foundation;
-either version 2.1 of the License, or (at your option) any later version.
-
-This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-See the GNU Lesser General Public License for more details.
-*/
+ * Copyright (c) 2003 eInnovation Inc. All rights reserved
+ * 
+ * This library is free software; you can redistribute it and/or modify it under the terms of the
+ * GNU Lesser General Public License as published by the Free Software Foundation; either version
+ * 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ */
 
 package org.openedit.users;
 
@@ -22,7 +22,6 @@ import org.openedit.hittracker.HitTracker;
 import org.openedit.users.authenticate.AuthenticationRequest;
 import org.openedit.util.StringEncryption;
 
-
 /**
  * This interface allows the caller to retrieve users.
  *
@@ -30,7 +29,7 @@ import org.openedit.util.StringEncryption;
  */
 public interface UserManager extends CatalogEnabled
 {
-	
+
 	/**
 	 * Retrieve the group with the given name.
 	 *
@@ -78,8 +77,7 @@ public interface UserManager extends CatalogEnabled
 	 *
 	 * @param inUser The user to authenticate
 	 *
-	 * @return <code>true</code> if the user was authenticated successfully, <code>false</code> if
-	 * 		   not
+	 * @return <code>true</code> if the user was authenticated successfully, <code>false</code> if not
 	 *
 	 * @throws UserManagerException If something went wrong trying to authenticate the user
 	 */
@@ -98,6 +96,7 @@ public interface UserManager extends CatalogEnabled
 	 * @throws UserManagerException If the group could not be created for some reason
 	 */
 	Group createGroup() throws UserManagerException;
+
 	Group createGroup(String inGroupId, String inGroupName) throws UserManagerException;
 
 	/**
@@ -111,8 +110,7 @@ public interface UserManager extends CatalogEnabled
 	 * @throws DuplicateUserException If there is already a user with the given username
 	 * @throws UserManagerException If the user could not be created for some reason
 	 */
-	User createUser(String inUserName, String inPassword)
-		throws UserManagerException;
+	User createUser(String inUserName, String inPassword) throws UserManagerException;
 
 	/**
 	 * Delete the given group.
@@ -149,66 +147,65 @@ public interface UserManager extends CatalogEnabled
 	 * @throws UserManagerException If the users could not be deleted
 	 */
 	public void deleteUsers(List inUsers) throws UserManagerException;
-	
 
 	/**
 	 * @param emailaddress
 	 * @return
 	 */
 	public User getUserByEmail(String emailaddress) throws UserManagerException;
-	
-	
+
 	/**
 	 * Saves the given user to persistent storage.
 	 * 
-	 * @param inUser  The user to save
+	 * @param inUser The user to save
 	 */
-	void saveUser( User inUser );
+	void saveUser(User inUser);
 
 	/**
 	 * Saves the given group to persistent storage.
 	 * 
-	 * @param inGroup  The group to save
+	 * @param inGroup The group to save
 	 */
-	void saveGroup( Group inGroup );
+	void saveGroup(Group inGroup);
 
 	HitTracker getUsersInGroup(Group inGroup);
 
 	HitTracker getUsersInGroup(String inString);
-	
+
 	Authenticator getAuthenticator();
-	
+
 	StringEncryption getStringEncryption();
 
-	public String encryptPassword( User inUser ) throws OpenEditException;
+	public String encryptPassword(User inUser) throws OpenEditException;
 
-	public String decryptPassword( User inUser ) throws OpenEditException;
-	
-	public void setEventManager( EventManager inHandler);
-	
+	public String decryptPassword(User inUser) throws OpenEditException;
+
+	public void setEventManager(EventManager inHandler);
+
 	public void logout(User inUser);
 
 	User createGuestUser(String inAccount, String inPassword, String inGroupname);
-	
+
 	public User createTempUserFromEmail(String email);
-	
+
 	public String getScreenName(String userName);
+
 	void flush();
 
-
 	UserSearcher getUserSearcher();
+
 	GroupSearcher getGroupSearcher();
 
 	AuthenticationRequest createAuthenticationRequest(WebPageRequest inReq, String inPassword, User inUser);
 
-	public void fireUserEvent(User inUser, String inOperation) ;
+	public void fireUserEvent(User inUser, String inOperation);
 
 	String getEnterMediaKey(User user);
 
-	void logIntoApp(WebPageRequest inReq,User inUser);
+	void logIntoApp(WebPageRequest inReq, User inUser);
 
-	String createNewTempLoginKey(String userid, String email, String first,String last, boolean force);
+	String createNewTempLoginKey(String userid, String email, String first, String last, String screenName, boolean force);
 
 	User checkForNewUser(String inEmail, String inTemplogincode, String groupid);
-	
+
 }

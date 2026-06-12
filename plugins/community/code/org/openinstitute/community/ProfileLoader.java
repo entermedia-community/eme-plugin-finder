@@ -150,7 +150,7 @@ public class ProfileLoader extends BaseManager implements PageLoader, CatalogEna
 			if (anythingelse == null)
 			{
 
-				template = apphome + "/index.html";
+				template = apphome + "/components/chat-dashboard/intro.html";
 			}
 			else
 			{

@@ -10,7 +10,9 @@
         <p class="text-uppercase fw-semibold mb-1" style="color:#3884fd;letter-spacing:.12em;font-size:.8rem;">
           EME Portfolio
         </p>
-        <h1 class="display-5 fw-bold mb-1">Shakil A.</h1>
+        <h1 class="display-5 fw-bold mb-1">
+          ${emeprofile.name}
+        </h1>
         <p class="fs-5 mb-0">
           Fullstack Web &amp; Mobile Developer
           <span class="mx-2 opacity-50">@</span>
@@ -34,9 +36,22 @@
         </div>
 
         <div class="d-flex gap-3 flex-wrap mt-3">
-          <a href="#" class="btn btn-lg btn-accent py-2 px-3">
+          #ifnotnull($user)
+            #if($user.id == $emeprofile.owner)
+              <a href="$apphome/components/chat-dashboard/intro-edit.html" data-id="$emeprofile.id" class="emdialog btn btn-lg btn-accent py-2 px-3">
+                <i class="bi bi-pencil-square me-1"></i> Edit Profile
+              </a>
+            #else
+              <a href="#" class="btn btn-lg btn-accent py-2 px-3">
+                <i class="bi bi-chat me-1"></i> Say Hello
+              </a>
+            #end
+          #end
+          #ifnull($user)
+          <a href="$apphome/authentication/ajaxlogin.html" class="btn btn-lg btn-accent py-2 px-3">
             <i class="bi bi-chat me-1"></i> Say Hello
           </a>
+          #end
         </div>
       </div>
 

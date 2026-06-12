@@ -2,42 +2,79 @@
 	#set($loginroot = $content.loginroot)
 #end
 
-<div id="ajaxloginformdiv">
-	#set( $to = $context.getRequestParameter("email") )	
-	#set( $username = $context.getRequestParameter("username") )
-	
-	<form class="ajaxform d-flex flex-column align-items-center g-3" 
-			action="${loginroot}/ajaxsendusercode.html"
-			id="password-reminder" 
-			name="passwordReminder"  
-			method="post"
-			data-targetdiv="ajaxloginformdiv">
+#set( $email = $context.getRequestParameter("email") )	
+#set( $username = $context.getRequestParameter("username") )
 
-		<div class="mb-4 text-center text-contrast"><strong>[[Email was not found. Enter first and last name to register]]</strong></div>
+<div id="ajaxlogincontainer">
+	<div class="loginbox card">
+		<div id="ajaxloginstep3" class="step">
+			<div class="step-dots">
+				<div class="dot"></div>
+				<div class="dot active"></div>
+				<div class="dot"></div>
+			</div>
 
-		<div class="col-lg-12 col-md-6 mb-3">
-			<input class="form-control required grabfocus" type="text" name="firstName"  size="50"
-				placeholder="[[First Name]]" required />
-		</div>
+			<a class="ajax" href="$!{home}${content.loginroot}/ajaxlogin.html" data-targetdiv="ajaxlogincontainer">
+				<i class="fas fa-chevron-left me-1"></i>
+				Back
+			</a>
+
+			#set( $error = $context.getPageValue("oe-exception") )
+			#if ( $error ) 
+				<div class="alert alert-danger w-100 mt-3 mb-0 p-2" role="alert">
+					<i class="fas fa-exclamation-triangle me-1"></i>
+					$error
+				</div>
+				$context.removeSessionValue("oe-exception")
+			#end
+
+			<p class="subtitle mt-3">[[Email was not found. Create a new account.]]</p>
+
+			<form class="ajaxform" 
+				name="signup" 
+				id="signupForm" 
+				data-targetdiv="ajaxlogincontainer"
+				action="${loginroot}/ajaxsendusercode.html"
+				method="POST">
+
+				#ifnotnull( $userCategory)
+					<input type="hidden" name="categoryid" value="$userCategory.id" />
+				#end
+				<input type="hidden" name="subject" value="[[Your Login Info]]"/>
+
+				<label for="firstName" class="mt-3">[[First Name]]</label>
+				<input
+					id="firstName"
+					type="text"
+					name="firstName"
+					placeholder="[[Enter your first name]]"
+					class="form-control required grabfocus"
+					autocomplete="given-name"
+				/>
+
+				<label for="lastName" class="mt-3">[[Last Name]]</label>
+				<input
+					id="lastName"
+					type="text"
+					name="lastName"
+					placeholder="[[Enter your last name]]"
+					class="form-control required"
+					autocomplete="family-name"
+				/>
 				
-		<div class="col-lg-12 col-md-6 mb-3"><input class="form-control required " type="text" name="lastName"   
-				placeholder="[[Last Name]]" required />
+				<label for="loginemail" class="mt-3">Email</label>
+				<input
+					id="loginemail"
+					type="email"
+					name="email"
+					placeholder="[[Enter your email address]]"
+					class="form-control required grabfocus"
+					autocomplete="email"
+				/>
+						
+				<button class="btn-primary mt-4" id="nextBtn" type="submit">Next</button>
+			</form> 
 		</div>
-		
-		<div class="col-lg-12 col-md-6 mb-3">
-			<input class="form-control  required" type="email" name="email" size="50" value="$!to" 
-				placeholder="[[Enter your Email Address]]" required /> 		
-		</div>
-				
-		<div class="mx-auto">
-			<input class="btn themed-btn" style="width: 100%" name="submit" type="submit" value="[[Send New User Code]]" />
-		</div>	
-			
-		#ifnotnull( $userCategory)
-			<input type="hidden" name="categoryid" value="$userCategory.id" />
-		#end
-		<input type="hidden" name="subject" value="[[Login Code]]" />
-	</form> 
-	<div class="my-4 text-center"><a href="$!{home}${content.loginroot}/login.html" class="loginoptions"  title="[[Try other login options]]">[[Other login options]]</a></div>
+	</div>
 </div>
 

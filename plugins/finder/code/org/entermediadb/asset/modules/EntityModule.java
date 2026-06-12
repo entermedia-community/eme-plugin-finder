@@ -10,7 +10,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.entermediadb.asset.Asset;
@@ -42,6 +41,7 @@ import org.openedit.data.ValuesMap;
 import org.openedit.hittracker.HitTracker;
 import org.openedit.page.Page;
 import org.openedit.repository.ContentItem;
+import org.openedit.users.User;
 import org.openedit.util.PathUtilities;
 
 public class EntityModule extends BaseMediaModule
@@ -1904,6 +1904,33 @@ public class EntityModule extends BaseMediaModule
 		saved.setValue("owner", inReq.getUserName());
 
 		librarysearcher.saveData(saved, null); // this fires event ProjectManager.configureCollection
+
+	}
+
+	public void createEME(WebPageRequest inReq) throws Exception
+	{
+		MediaArchive mediaArchive = getMediaArchive(inReq);
+		User user = inReq.getUser();
+
+		if (user == null)
+		{
+			log.error("No user found for EME creation");
+			return;
+		}
+
+		Searcher emesearcher = mediaArchive.getSearcher("emeprofile");
+
+		Data emeprofile = emesearcher.query().exact("urlname", user.getScreenName()).searchOne();
+
+		if (emeprofile == null)
+		{
+			emeprofile = emesearcher.createNewData();
+			emeprofile.setValue("urlname", user.getScreenName());
+			emeprofile.setValue("name", user.getName());
+			emesearcher.saveData(emeprofile);
+		}
+
+		inReq.redirect('/' + user.getScreenName());
 
 	}
 

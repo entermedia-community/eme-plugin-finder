@@ -19,6 +19,10 @@
 	text-align: left;
 }
 
+.loginbox hr {
+	border-color: var(--auth-border);
+}
+
 .loginbox.card {
 	background: var(--auth-card);
 	border: 1px solid var(--auth-border);
@@ -42,6 +46,9 @@
 	color: var(--auth-muted);
 	margin-bottom: 0.35rem !important;
 	line-height: 1.5;
+}
+.loginbox a:hover {
+	color: var(--auth-text);
 }
 .loginbox form {
 	margin-top: 1.75rem;
