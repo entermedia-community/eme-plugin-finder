@@ -124,14 +124,15 @@ public class JsonDataModule extends BaseJsonModule
 		usermessage.setValue("user", "agent");
 		usermessage.setValue("channel", channelid);
 		usermessage.setValue("date", new Date());
+		usermessage.setValue("functionname", pagename);
 		String message = (String) request.get("message");
 		usermessage.setValue("message", message);
 		archive.saveData("chatterbox", usermessage);
 		MultiValued agentmessage = assistantManager.newAgentMessage(usermessage, context);
 
-		context.setUserMessage(agentmessage);
+		context.setUserMessage(usermessage);
 		context.setAgentMessage(agentmessage);
-		assistantManager.execCurrentFunctionFromChat(context);
+		assistantManager.execCurrentFunctionFromChat(context, usermessage);
 
 		// Why did I set this afterwards? I think I wanted to make sure it was in the context for the
 		// function execution, but it should be there before too.

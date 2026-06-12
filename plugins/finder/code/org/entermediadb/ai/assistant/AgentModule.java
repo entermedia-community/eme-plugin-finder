@@ -200,12 +200,11 @@ public class AgentModule extends BaseMediaModule
 			firesystemmessage = true;
 			agentContext.setFunctionName(functionname);
 		}
-		else
-			if (!firesystemmessage)
-			{
+		else if (!firesystemmessage)
+		{
 
-				return;
-			}
+			return;
+		}
 
 		Collection<String> params = inReq.getParameterMap().keySet();
 		for (Iterator iterator = params.iterator(); iterator.hasNext();)
@@ -223,7 +222,7 @@ public class AgentModule extends BaseMediaModule
 		getMediaArchive(inReq).saveData("agentcontext", agentContext);
 		// Now that Context is set. Let the chat respond
 
-		assistantManager.sendSystemMessage(agentContext, inReq.getUserName(), null);
+		assistantManager.sendSystemMessage(agentContext, inReq.getUserName(), null, functionname);
 	}
 
 	public AgentContext loadAgentContext(WebPageRequest inReq) throws Exception

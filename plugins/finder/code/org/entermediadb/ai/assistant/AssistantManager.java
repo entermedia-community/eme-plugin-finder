@@ -273,7 +273,7 @@ public class AssistantManager extends BaseAiManager
 				}
 			}
 			// chatMessageContext.setFunctionName(functionName);
-			execCurrentFunctionFromChat(chatMessageContext);
+			execCurrentFunctionFromChat(chatMessageContext, usermessage);
 		}
 		catch (Exception ex)
 		{
@@ -295,24 +295,24 @@ public class AssistantManager extends BaseAiManager
 	}
 
 	// MultiValued usermessage, MultiValued agentmessage, chatMessageContext chatMessageContext
-	public void execCurrentFunctionFromChat(ChatMessageContext chatMessageContext)
+	public void execCurrentFunctionFromChat(ChatMessageContext chatMessageContext, MultiValued usermessage)
 	{
 		ChatServer server = (ChatServer) getMediaArchive().getBean("chatServer");
 
-		MultiValued usermessage = chatMessageContext.getUserMessage();
 		MultiValued agentmessage = chatMessageContext.getAgentMessage();
 
-		String functionName = chatMessageContext.getFunctionName();
+		String functionName = usermessage.get("functionname"); // chatMessageContext.getFunctionName();
+		chatMessageContext.setFunctionName(functionName);
 
-		if (functionName == null)
-		{
-			functionName = chatMessageContext.getNextFunctionName();
-		}
+		// if (functionName == null)
+		// {
+		// functionName = chatMessageContext.getNextFunctionName();
+		// }
 
-		if (functionName == null)
-		{
-			functionName = chatMessageContext.getCurrentScenario().getId() + "_welcome";
-		}
+		// if (functionName == null)
+		// {
+		// functionName = chatMessageContext.getCurrentScenario().getId() + "_welcome";
+		// }
 
 		MultiValued function = (MultiValued) getMediaArchive().getCachedData("aifunction", functionName);
 		chatMessageContext.setNextFunctionName(null);
@@ -457,7 +457,7 @@ public class AssistantManager extends BaseAiManager
 				{
 					MultiValued nextFunction = (MultiValued) archive.getCachedData("aifunction", agentNextFn);
 					chatMessageContext.setAiFunction(nextFunction);
-					execCurrentFunctionFromChat(chatMessageContext);
+					execCurrentFunctionFromChat(chatMessageContext, usermessage);
 				}
 				// Save the current state
 			}
@@ -790,7 +790,7 @@ public class AssistantManager extends BaseAiManager
 		return manager;
 	}
 
-	public void sendSystemMessage(ChatMessageContext inContext, String inUser, String message)
+	public void sendSystemMessage(ChatMessageContext inContext, String inUser, String message, String functionname)
 	{
 		MediaArchive archive = getMediaArchive();
 
@@ -800,6 +800,7 @@ public class AssistantManager extends BaseAiManager
 		chat.setValue("messagetype", "system");
 		chat.setValue("user", inUser);
 		chat.setValue("date", new Date());
+		chat.setValue("functionname", functionname);
 		chat.setValue("chatmessagestatus", "received");
 		chat.setValue("channel", inContext.getChannel().getId());
 		chat.setValue("message", message);
@@ -934,12 +935,11 @@ public class AssistantManager extends BaseAiManager
 				id = "fieldsonly_welcome_" + module.getId();
 				messagehandler = "entityCreationSkill";
 			}
-			else
-				if (method.equals("smartcreator"))
-				{
-					id = "smartcreator_welcome_" + module.getId();
-					messagehandler = "smartCreatorSkill";
-				}
+			else if (method.equals("smartcreator"))
+			{
+				id = "smartcreator_welcome_" + module.getId();
+				messagehandler = "smartCreatorSkill";
+			}
 
 			Data exists = getMediaArchive().getData("aifunction", id);
 			if (exists != null)
