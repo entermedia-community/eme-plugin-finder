@@ -10,7 +10,8 @@
 			</a>
 			<div class="dropdown-menu dropdown-menu-end">
 
-				#set($scenarios = $mediaarchive.query("automationscenario").exact("connectedtop","chatlabel").sort("ordering").cachedSearch())
+				#set($scenarios = $mediaarchive.query("automationscenario").exact("enabled","true").exact("chatenabled","true").sort("ordering").cachedSearch())
+
 				#foreach( $scenario in $scenarios )
 						<a class="dropdown-item  ajax ai-func #if($currentscenario.getId() == $scenario.getId())active#end me-2"
 							href="$edithome/changescenario.html"

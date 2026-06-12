@@ -55,6 +55,18 @@
       <language id="en"><![CDATA[Message Status]]></language>
     </name>
   </property>
+  <property id="chatmessagestatus" index="true" editable="true" stored="true" type="list">
+    <name>
+      <language id="en"><![CDATA[Chat Message Status]]></language>
+    </name>
+  </property>
+
+  <property id="functionname" index="true" editable="true" stored="true" indextype="not_analyzed">
+    <name>
+      <language id="en"><![CDATA[Function Name]]></language>
+    </name>
+  </property>
+
 
   <property id="replytoid" index="true" editable="true" stored="true" datatype="list" listid="chatterbox">
     <name>
@@ -89,10 +101,5 @@
     </name>
   </property>
 
-  <property id="chatmessagestatus" index="true" editable="true" stored="true" type="list">
-    <name>
-      <language id="en"><![CDATA[Chat Message Status]]></language>
-    </name>
-  </property>
 
 </properties>

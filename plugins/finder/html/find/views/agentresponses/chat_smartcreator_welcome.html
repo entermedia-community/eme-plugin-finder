@@ -1,22 +1,29 @@
-#set($creatortype = $inflector.singularize($playbackentitymodule.getName()))
-<p class="m-0">
-  [[Welcome to]] $creatortype [[creation wizard]].
-</p>
-<h5 class="mb-2">
-  [[Choose the type of content you would like to create:]]
+
+<h5 class="m-0">
+  [[Welcome to Smart Creator wizard]].
 </h5>
+<p class="mb-2">
+  [[Choose the type of content you would like to create:]]
+</p>
 
-#set($modules = $mediaarchive.query("module").exact("aicreationmethod","smartcreator").sort("name").cachedSearch()) )
-#ifnotnull($modules)
-
+#set($modules = $mediaarchive.query("module").exact("aicreationmethod","smartcreator").sort("name").cachedSearch()) 
   <ul>
     #foreach($module in $modules)
-      <li class="autoprefixchatmsg"
+      <li class=""
         style="text-transform: capitalize;"
         data-prefix="Create a $module.getName()."
       >
-      <span>$module.getName()</span>
+      <a class="ajax ai-func"
+							href="$apphome/views/modules/$module.getId()/editors/entitychat/changescenario.html"
+							data-targetdiv="aichatsearch"
+							data-channel="$agentcontext.getChannel().getId()"
+							data-currentscenario="$agentcontext.getCurrentScenario().getId()"
+              data-functionname="chat_smartcreator_suggest"
+              data-context_playbackentitymoduleid="$module.getId()"
+							data-oemaxlevel="1">
+							<span>#text( $module )</span>
+			</a>
+      
     </li>
     #end
   </ul> 
-#end

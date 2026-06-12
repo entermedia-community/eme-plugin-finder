@@ -195,13 +195,20 @@ public class AgentModule extends BaseMediaModule
 		}
 		if (agentContext.getFunctionName() == null)
 		{
-			// int messagecount = assistantManager.channelMessageCount(channelid);
+			int messagecount = assistantManager.channelMessageCount(channelid);
+			if (messagecount > 0)
+			{
+				// This is just a refresh. Don't send the welcome again.
+				return;
+			}
 			functionname = agentContext.getCurrentScenario().getId() + "_welcome";
 			firesystemmessage = true;
 			agentContext.setFunctionName(functionname);
 		}
-		else
+
+		if (!firesystemmessage)
 		{
+
 			return;
 		}
 
@@ -221,7 +228,7 @@ public class AgentModule extends BaseMediaModule
 		getMediaArchive(inReq).saveData("agentcontext", agentContext);
 		// Now that Context is set. Let the chat respond
 
-		assistantManager.sendSystemMessage(agentContext, inReq.getUserName(), null);
+		assistantManager.sendSystemMessage(agentContext, inReq.getUserName(), null, functionname);
 	}
 
 	public AgentContext loadAgentContext(WebPageRequest inReq) throws Exception
