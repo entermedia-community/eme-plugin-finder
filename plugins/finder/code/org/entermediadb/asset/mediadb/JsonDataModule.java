@@ -132,7 +132,7 @@ public class JsonDataModule extends BaseJsonModule
 
 		context.setUserMessage(usermessage);
 		context.setAgentMessage(agentmessage);
-		assistantManager.execCurrentFunctionFromChat(context, usermessage);
+		assistantManager.execCurrentFunctionFromChat(context, usermessage, pagename);
 
 		// Why did I set this afterwards? I think I wanted to make sure it was in the context for the
 		// function execution, but it should be there before too.

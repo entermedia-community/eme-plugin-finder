@@ -272,8 +272,15 @@ public class AssistantManager extends BaseAiManager
 					return;
 				}
 			}
-			// chatMessageContext.setFunctionName(functionName);
-			execCurrentFunctionFromChat(chatMessageContext, usermessage);
+			String functionName = usermessage.get("functionname");
+			if (functionName == null)
+			{
+				log.error("Should we have a function");
+			}
+			if (functionName != null)
+			{
+				execCurrentFunctionFromChat(chatMessageContext, usermessage, functionName);
+			}
 		}
 		catch (Exception ex)
 		{
@@ -295,13 +302,13 @@ public class AssistantManager extends BaseAiManager
 	}
 
 	// MultiValued usermessage, MultiValued agentmessage, chatMessageContext chatMessageContext
-	public void execCurrentFunctionFromChat(ChatMessageContext chatMessageContext, MultiValued usermessage)
+	public void execCurrentFunctionFromChat(ChatMessageContext chatMessageContext, MultiValued usermessage, String functionName)
 	{
 		ChatServer server = (ChatServer) getMediaArchive().getBean("chatServer");
 
 		MultiValued agentmessage = chatMessageContext.getAgentMessage();
 
-		String functionName = usermessage.get("functionname"); // chatMessageContext.getFunctionName();
+		// We require that it be on the message
 		chatMessageContext.setFunctionName(functionName);
 
 		// if (functionName == null)
@@ -457,7 +464,7 @@ public class AssistantManager extends BaseAiManager
 				{
 					MultiValued nextFunction = (MultiValued) archive.getCachedData("aifunction", agentNextFn);
 					chatMessageContext.setAiFunction(nextFunction);
-					execCurrentFunctionFromChat(chatMessageContext, usermessage);
+					execCurrentFunctionFromChat(chatMessageContext, usermessage, agentNextFn);
 				}
 				// Save the current state
 			}
