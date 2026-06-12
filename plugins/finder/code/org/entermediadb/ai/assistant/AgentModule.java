@@ -195,12 +195,18 @@ public class AgentModule extends BaseMediaModule
 		}
 		if (agentContext.getFunctionName() == null)
 		{
-			// int messagecount = assistantManager.channelMessageCount(channelid);
+			int messagecount = assistantManager.channelMessageCount(channelid);
+			if (messagecount > 0)
+			{
+				// This is just a refresh. Don't send the welcome again.
+				return;
+			}
 			functionname = agentContext.getCurrentScenario().getId() + "_welcome";
 			firesystemmessage = true;
 			agentContext.setFunctionName(functionname);
 		}
-		else if (!firesystemmessage)
+
+		if (!firesystemmessage)
 		{
 
 			return;
