@@ -201,9 +201,11 @@ public class AgentModule extends BaseMediaModule
 			agentContext.setFunctionName(functionname);
 		}
 		else
-		{
-			return;
-		}
+			if (!firesystemmessage)
+			{
+
+				return;
+			}
 
 		Collection<String> params = inReq.getParameterMap().keySet();
 		for (Iterator iterator = params.iterator(); iterator.hasNext();)

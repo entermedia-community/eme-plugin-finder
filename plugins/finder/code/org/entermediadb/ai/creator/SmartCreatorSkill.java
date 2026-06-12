@@ -12,6 +12,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.entermediadb.ai.BaseAiManager;
 import org.entermediadb.ai.BaseSkill;
+import org.entermediadb.ai.ChatMessageContext;
 import org.entermediadb.ai.assistant.AssistantManager;
 import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.llm.BaseAgentContext;
@@ -38,10 +39,10 @@ public class SmartCreatorSkill extends BaseSkill
 {
 	private static final Log log = LogFactory.getLog(SmartCreatorSkill.class);
 
-	protected String findLocalActionName(AgentContext inAgentContext)
+	protected String findLocalActionName(AgentContext messageContext)
 	{
-		String agentFn = inAgentContext.getFunctionName();
-		String apphome = (String) inAgentContext.getContextValue("apphome");
+		String agentFn = messageContext.getFunctionName();
+		String apphome = (String) messageContext.getContextValue("apphome");
 
 		String templatepath = apphome + "/views/agentresponses/" + agentFn + ".html";
 		boolean pageexists = getMediaArchive().getPageManager().getPage(templatepath).exists();
@@ -53,253 +54,275 @@ public class SmartCreatorSkill extends BaseSkill
 		return agentFn;
 	}
 
-	@Override
-	public LlmResponse processMessage(AgentContext inAgentContext, MultiValued inAgentMessage, MultiValued inAiFunction)
+	public void process(AgentContext inContext)
 	{
+		// This is for the chat UI to pass it back
+		ChatMessageContext messageContext = (ChatMessageContext) inContext;
 
-		String agentFn = inAgentContext.getFunctionName();
+		String agentFn = messageContext.getFunctionName();
+		MultiValued inAiFunction = messageContext.getAiFunction();
 
-		AiSmartCreatorSteps instructions = inAgentContext.getAiSmartCreatorSteps();
+		AiSmartCreatorSteps instructions = messageContext.getAiSmartCreatorSteps();
 
 		if (instructions == null)
 		{
-			String playbackentitymoduleid = (String) inAgentContext.getContextValue("playbackentitymoduleid");
+			String playbackentitymoduleid = (String) messageContext.getContextValue("playbackentitymoduleid");
 			if (playbackentitymoduleid != null)
 			{
 				Data playbackentitymodule = getMediaArchive().getCachedData("module", playbackentitymoduleid);
 
-				String playbackentityid = (String) inAgentContext.getContextValue("playbackentityid");
+				String playbackentityid = (String) messageContext.getContextValue("playbackentityid");
 				Data playbackentity = getMediaArchive().getCachedData(playbackentitymoduleid, playbackentityid);
 
 				instructions = new AiSmartCreatorSteps();
 				instructions.setTargetModule(playbackentitymodule);
 				instructions.setTargetEntity(playbackentity);
 
-				inAgentContext.setAiSmartCreatorSteps(instructions);
+				messageContext.setAiSmartCreatorSteps(instructions);
 			}
 		}
 
-		String channelId = inAgentContext.get("channel");
+		String channelId = messageContext.get("channel");
 
-		if (agentFn.startsWith("smartcreator_welcome_"))
+		// Data usermessage = messageContext.getUserMessage();
+		Data agentmessage = messageContext.getAgentMessage();
+
+		// getMediaArchive().getCachedData("chatterbox", inAgentMessage.get("replytoid"));
+
+		if (agentFn.equals("chat_smartcreator_welcome"))
 		{
-			String playbackentitymoduleid = agentFn.substring("smartcreator_welcome_".length());
-			Data playbackentitymodule = getMediaArchive().getCachedData("module", playbackentitymoduleid);
-			inAgentContext.addContext("playbackentitymodule", playbackentitymodule);
+			LlmConnection llmconnection = getMediaArchive().getLlmConnection(inAiFunction.getId());
+			LlmResponse response = llmconnection.renderLocalAction(messageContext);
+			// messageContext.setFunctionName("question_ask");
+			messageContext.setWaitTime(null);
+			messageContext.setLastResponse(response);
 
-			instructions = new AiSmartCreatorSteps();
-			instructions.setTargetModule(playbackentitymodule);
-			inAgentContext.setAiSmartCreatorSteps(instructions);
+			return;
 
-			// oldway?
-			String entityid = inAgentContext.get("entityid");
-			String entitymoduleid = inAgentContext.get("entitymoduleid");
-			// --
-
-			MultiValued entity = (MultiValued) getMediaArchive().getCachedData(entitymoduleid, entityid);
-			inAgentContext.addContext("entity", entity);
-
-			inAgentContext.setCurrentEntity(entity);
-
-			MultiValued module = (MultiValued) getMediaArchive().getCachedData("module", entitymoduleid);
-			inAgentContext.setCurrentEntityModule(module);
-
-			String function = findLocalActionName(inAgentContext);
-
-			LlmConnection llmconnection = getMediaArchive().getLlmConnection(function);
-			LlmResponse response = llmconnection.renderLocalAction(inAgentContext, function);
-			// This is for the chat UI to pass it back
-			inAgentContext.setFunctionName("smartcreator_parse");
-			return response;
 		}
 		else
-			if (agentFn.equals("smartcreator_parse"))
+			if (agentFn.equals("chat_smartcreator_suggest"))
 			{
-				Data usermessage = getMediaArchive().getCachedData("chatterbox", inAgentMessage.get("replytoid"));
-				String prompt = usermessage.get("message");
+				String playbackentitymoduleid = (String) messageContext.getContextValue("playbackentitymoduleid");
+				Data playbackentitymodule = getMediaArchive().getCachedData("module", playbackentitymoduleid);
+				messageContext.addContext("playbackentitymodule", playbackentitymodule);
 
-				LlmResponse res = parseCreationPrompt(inAgentContext, prompt);
-				// TODO: Show the user what they typed and say processing
-				if ("testchannel".equals(channelId))
-				{
-					inAgentContext.setFunctionName("smartcreator_createoutline");
-					// This allows manually running next function in mediadb test environment
-				}
-				else
-				{
-					inAgentContext.setNextFunctionName("smartcreator_createoutline");
-				}
+				instructions = new AiSmartCreatorSteps();
+				instructions.setTargetModule(playbackentitymodule);
+				messageContext.setAiSmartCreatorSteps(instructions);
 
-				// Show the user what we have thus far
+				// oldway?
+				String entityid = messageContext.get("entityid");
+				String entitymoduleid = messageContext.get("entitymoduleid");
+				// --
 
-				return res;
+				MultiValued entity = (MultiValued) getMediaArchive().getCachedData(entitymoduleid, entityid);
+				messageContext.addContext("entity", entity);
+
+				messageContext.setCurrentEntity(entity);
+
+				MultiValued module = (MultiValued) getMediaArchive().getCachedData("module", entitymoduleid);
+				messageContext.setCurrentEntityModule(module);
+
+				String function = findLocalActionName(messageContext);
+
+				LlmConnection llmconnection = getMediaArchive().getLlmConnection(function);
+				LlmResponse response = llmconnection.renderLocalAction(messageContext, function);
+				messageContext.setWaitTime(null);
+				messageContext.setLastResponse(response);
+				// This is for the chat UI to pass it back
+				messageContext.setFunctionName("smartcreator_parse");
+				return;
+
 			}
 			else
-				if (agentFn.startsWith("smartcreator_createoutline"))
+				if (agentFn.equals("smartcreator_parse"))
 				{
-					String entityid = inAgentContext.get("entityid");
-					String entitymoduleid = inAgentContext.get("entitymoduleid");
 
-					AssistantManager assistant = (AssistantManager) getMediaArchive().getBean("assistantManager");
-					Collection<String> parentIds = assistant.findDocIdsForEntity(entitymoduleid, entityid);
-					instructions.setEmbeddedParentIds(parentIds);
-					createOutLine(inAgentContext, instructions);
+					Data usermessage = getMediaArchive().getCachedData("chatterbox", agentmessage.get("replytoid"));
 
-					// Show the user
-					// String function = findLocalActionName(inAgentContext);
-					LlmConnection llmconnection2 = getMediaArchive().getLlmConnection(agentFn);
-					LlmResponse response = llmconnection2.renderLocalAction(inAgentContext, agentFn);
+					String prompt = usermessage.get("message");
 
-					inAgentContext.setFunctionName("smartcreator_confirmoutline");
+					LlmResponse res = parseCreationPrompt(messageContext, prompt);
+					// TODO: Show the user what they typed and say processing
+					if ("testchannel".equals(channelId))
+					{
+						messageContext.setFunctionName("smartcreator_createoutline");
+						// This allows manually running next function in mediadb test environment
+					}
+					else
+					{
+						messageContext.setNextFunctionName("smartcreator_createoutline");
+					}
 
-					return response;
+					// Show the user what we have thus far
+
+					return;
 				}
 				else
-					if (agentFn.startsWith("smartcreator_confirmoutline"))
+					if (agentFn.startsWith("smartcreator_createoutline"))
 					{
-						LlmConnection llmconnection = getMediaArchive().getLlmConnection("smartcreator_confirmoutline");
+						String entityid = messageContext.get("entityid");
+						String entitymoduleid = messageContext.get("entitymoduleid");
 
-						// Adjust the outline as needed using regular AI
-						inAgentContext.addContext("proposedoutline", instructions.getProposedSections());
+						AssistantManager assistant = (AssistantManager) getMediaArchive().getBean("assistantManager");
+						Collection<String> parentIds = assistant.findDocIdsForEntity(entitymoduleid, entityid);
+						instructions.setEmbeddedParentIds(parentIds);
+						createOutLine(messageContext, instructions);
 
-						Data usermessage = getMediaArchive().getCachedData("chatterbox", inAgentMessage.get("replytoid"));
-						String prompt = usermessage.get("message");
-						inAgentContext.addContext("confirmationprompt", prompt);
+						// Show the user
+						// String function = findLocalActionName(messageContext);
+						LlmConnection llmconnection2 = getMediaArchive().getLlmConnection(agentFn);
+						LlmResponse response = llmconnection2.renderLocalAction(messageContext, agentFn);
 
-						LlmResponse res = llmconnection.callStructure(inAgentContext, "smartcreator_confirmoutline");
+						messageContext.setFunctionName("smartcreator_confirmoutline");
 
-						JSONObject updatedSectionsJson = res.getMessageStructured();
-
-						Collection<String> updatedSections = (Collection<String>) updatedSectionsJson.get("updated_outline");
-						instructions.setProposedSections(updatedSections);
-
-						boolean changed = (boolean) updatedSectionsJson.get("changed");
-
-						inAgentContext.addContext("changed", changed);
-
-						if (changed)
+						return;
+					}
+					else
+						if (agentFn.startsWith("smartcreator_confirmoutline"))
 						{
-							inAgentContext.addContext("proposedoutline", instructions.getProposedSections());
-							inAgentContext.setFunctionName("smartcreator_confirmoutline");
+							LlmConnection llmconnection = getMediaArchive().getLlmConnection("smartcreator_confirmoutline");
 
-							String function = findLocalActionName(inAgentContext); // Ask again
+							// Adjust the outline as needed using regular AI
+							messageContext.addContext("proposedoutline", instructions.getProposedSections());
+							Data usermessage = getMediaArchive().getCachedData("chatterbox", agentmessage.get("replytoid"));
+							String prompt = usermessage.get("message");
+							messageContext.addContext("confirmationprompt", prompt);
 
-							LlmConnection llmconnection2 = getMediaArchive().getLlmConnection(function);
-							LlmResponse response = llmconnection2.renderLocalAction(inAgentContext, function);
+							LlmResponse res = llmconnection.callStructure(messageContext, "smartcreator_confirmoutline");
 
-							return response;
-						}
-						else
-						{
-							// Create new tutorial
-							Data playbackentitymodule = instructions.getTargetModule();
-							Data playbackentity = getMediaArchive().getSearcher(playbackentitymodule.getId()).createNewData();
-							playbackentity.setValue(inAgentContext.get("entitymoduleid"), inAgentContext.get("entityid"));
-							String name = instructions.getTitleName();
-							name = Inflector.getInstance().capitalize(name);
-							playbackentity.setName(name);
-							playbackentity.setValue("entity_date", new Date());
-							getMediaArchive().saveData(playbackentitymodule.getId(), playbackentity);
-							instructions.setTargetEntity(playbackentity);
+							JSONObject updatedSectionsJson = res.getMessageStructured();
 
-							initConfirmedSections(instructions);
-							String step2CreatePrompt = instructions.getStepContentCreate();
-							if (step2CreatePrompt != null && !step2CreatePrompt.isEmpty())
+							Collection<String> updatedSections = (Collection<String>) updatedSectionsJson.get("updated_outline");
+							instructions.setProposedSections(updatedSections);
+
+							boolean changed = (boolean) updatedSectionsJson.get("changed");
+
+							messageContext.addContext("changed", changed);
+
+							if (changed)
 							{
-								if ("testchannel".equals(channelId))
+								messageContext.addContext("proposedoutline", instructions.getProposedSections());
+								messageContext.setFunctionName("smartcreator_confirmoutline");
+
+								String function = findLocalActionName(messageContext); // Ask again
+
+								LlmConnection llmconnection2 = getMediaArchive().getLlmConnection(function);
+								LlmResponse response = llmconnection2.renderLocalAction(messageContext, function);
+
+								return;
+							}
+							else
+							{
+								// Create new tutorial
+								Data playbackentitymodule = instructions.getTargetModule();
+								Data playbackentity = getMediaArchive().getSearcher(playbackentitymodule.getId()).createNewData();
+								playbackentity.setValue(messageContext.get("entitymoduleid"), messageContext.get("entityid"));
+								String name = instructions.getTitleName();
+								name = Inflector.getInstance().capitalize(name);
+								playbackentity.setName(name);
+								playbackentity.setValue("entity_date", new Date());
+								getMediaArchive().saveData(playbackentitymodule.getId(), playbackentity);
+								instructions.setTargetEntity(playbackentity);
+
+								initConfirmedSections(instructions);
+								String step2CreatePrompt = instructions.getStepContentCreate();
+								if (step2CreatePrompt != null && !step2CreatePrompt.isEmpty())
 								{
-									inAgentContext.setFunctionName("smartcreator_createsectioncontents");
-									// This allows manually running next function in mediadb test environment
+									if ("testchannel".equals(channelId))
+									{
+										messageContext.setFunctionName("smartcreator_createsectioncontents");
+										// This allows manually running next function in mediadb test environment
+									}
+									else
+									{
+										messageContext.setNextFunctionName("smartcreator_createsectioncontents");
+									}
 								}
 								else
 								{
-									inAgentContext.setNextFunctionName("smartcreator_createsectioncontents");
+									messageContext.addContext("confirmedoutline", instructions.getConfirmedSections());
+
+									messageContext.addContext("playbackentity", instructions.getTargetEntity());
+									messageContext.addContext("playbackentitymodule", instructions.getTargetModule());
+
+									llmconnection = getMediaArchive().getLlmConnection("smartcreator_renderoutline");
+									res = llmconnection.renderLocalAction(messageContext, "smartcreator_renderoutline");
 								}
+								return;
 							}
-							else
-							{
-								inAgentContext.addContext("confirmedoutline", instructions.getConfirmedSections());
 
-								inAgentContext.addContext("playbackentity", instructions.getTargetEntity());
-								inAgentContext.addContext("playbackentitymodule", instructions.getTargetModule());
-
-								llmconnection = getMediaArchive().getLlmConnection("smartcreator_renderoutline");
-								res = llmconnection.renderLocalAction(inAgentContext, "smartcreator_renderoutline");
-							}
-							return res;
-						}
-
-					}
-					else
-						if (agentFn.startsWith("smartcreator_createsectioncontents"))
-						{
-							populateSectionsWithContents(inAgentContext);
-
-							inAgentContext.addContext("confirmedoutline", instructions.getConfirmedSections());
-							inAgentContext.addContext("playbackentity", instructions.getTargetEntity());
-							inAgentContext.addContext("playbackentitymodule", instructions.getTargetModule());
-							LlmConnection llmconnection = getMediaArchive().getLlmConnection("smartcreator_renderoutline");
-							LlmResponse response = llmconnection.renderLocalAction(inAgentContext, "smartcreator_renderoutline");
-
-							return response;
 						}
 						else
-							if (agentFn.equals("smartcreator_parsecontent"))
+							if (agentFn.startsWith("smartcreator_createsectioncontents"))
 							{
+								populateSectionsWithContents(messageContext);
 
-								Data usermessage = getMediaArchive().getCachedData("chatterbox", inAgentMessage.get("replytoid"));
-								String sectiontext = usermessage.get("message");
-								inAgentContext.addContext("sectiontext", sectiontext);
-								// String sectiontext = (String)inAgentContext.getContextValue("sectiontext");
-								parseSection(inAgentContext, sectiontext);
+								messageContext.addContext("confirmedoutline", instructions.getConfirmedSections());
+								messageContext.addContext("playbackentity", instructions.getTargetEntity());
+								messageContext.addContext("playbackentitymodule", instructions.getTargetModule());
+								LlmConnection llmconnection = getMediaArchive().getLlmConnection("smartcreator_renderoutline");
+								LlmResponse response = llmconnection.renderLocalAction(messageContext, "smartcreator_renderoutline");
 
-								return null;
-
+								return;
 							}
 							else
-								if ("smartcreator_play".equals(agentFn))
+								if (agentFn.equals("smartcreator_parsecontent"))
 								{
+									Data usermessage = getMediaArchive().getCachedData("chatterbox", agentmessage.get("replytoid"));
+									String sectiontext = usermessage.get("message");
+									messageContext.addContext("sectiontext", sectiontext);
+									// String sectiontext = (String)messageContext.getContextValue("sectiontext");
+									parseSection(messageContext, sectiontext);
 
-									Data playbackentity = instructions.getTargetEntity();
-									inAgentContext.addContext("playbackentity", playbackentity);
+									return;
 
-									Data playbackentitymodule = instructions.getTargetModule();
-									inAgentContext.addContext("playbackentitymodule", playbackentitymodule);
-
-									String entityid = inAgentContext.get("entityid");
-									String entitymoduleid = inAgentContext.get("entitymoduleid");
-
-									LlmConnection llmconnection = getMediaArchive().getLlmConnection(agentFn);
-									LlmResponse response = llmconnection.renderLocalAction(inAgentContext, agentFn);
-
-									return response;
 								}
+								else
+									if ("smartcreator_play".equals(agentFn))
+									{
+
+										Data playbackentity = instructions.getTargetEntity();
+										messageContext.addContext("playbackentity", playbackentity);
+
+										Data playbackentitymodule = instructions.getTargetModule();
+										messageContext.addContext("playbackentitymodule", playbackentitymodule);
+
+										String entityid = messageContext.get("entityid");
+										String entitymoduleid = messageContext.get("entitymoduleid");
+
+										LlmConnection llmconnection = getMediaArchive().getLlmConnection(agentFn);
+										LlmResponse response = llmconnection.renderLocalAction(messageContext, agentFn);
+
+										return;
+									}
 		/*
 		 * else if ("conversation".equals(agentFn)) { MultiValued usermessage =
 		 * (MultiValued)getMediaArchive().getCachedData("chatterbox", inAgentMessage.get("replytoid"));
 		 * MultiValued function = (MultiValued)getMediaArchive().getCachedData("aifunction", agentFn);
-		 * LlmResponse response = startChat(inAgentContext, usermessage, inAgentMessage, function); String
+		 * LlmResponse response = startChat(messageContext, usermessage, inAgentMessage, function); String
 		 * generalresponse = response.getMessage(); if(generalresponse != null) { MarkdownUtil md = new
 		 * MarkdownUtil(); generalresponse = md.render(generalresponse); }
-		 * response.setMessage(generalresponse); inAgentContext.setNextFunctionName(null); return response;
+		 * response.setMessage(generalresponse); messageContext.setNextFunctionName(null); return response;
 		 * }
 		 */
 		throw new OpenEditException("Function not handled: " + agentFn);
 	}
 
-	public LlmResponse parseCreationPrompt(AgentContext inAgentContext, String prompt)
+	public LlmResponse parseCreationPrompt(AgentContext messageContext, String prompt)
 	{
-		AiSmartCreatorSteps instructions = inAgentContext.getAiSmartCreatorSteps();
-		inAgentContext.addContext("creationprompt", prompt);
+		AiSmartCreatorSteps instructions = messageContext.getAiSmartCreatorSteps();
+		messageContext.addContext("creationprompt", prompt);
 		LlmConnection llmconnection = getMediaArchive().getLlmConnection("smartcreator_parse");
-		LlmResponse res = llmconnection.callStructure(inAgentContext, "smartcreator_parse");
+		LlmResponse res = llmconnection.callStructure(messageContext, "smartcreator_parse");
 
 		JSONObject paragraphs = res.getMessageStructured();
 		instructions.loadJsonParts(paragraphs);
 		return res;
 	}
 
-	public void createOutLine(AgentContext inAgentContext, AiSmartCreatorSteps instructions)
+	public void createOutLine(AgentContext messageContext, AiSmartCreatorSteps instructions)
 	{
 		Collection<String> parentIds = instructions.getEmbeddedParentIds();
 
@@ -330,7 +353,7 @@ public class SmartCreatorSkill extends BaseSkill
 		}
 
 		instructions.setProposedSections(cleanedOutline);
-		inAgentContext.addContext("proposedoutline", instructions.getProposedSections());
+		messageContext.addContext("proposedoutline", instructions.getProposedSections());
 	}
 
 	public void getCreator(WebPageRequest inReq)
@@ -805,22 +828,22 @@ public class SmartCreatorSkill extends BaseSkill
 
 	}
 
-	public void populateSectionsWithContents(AgentContext inAgentContext)
+	public void populateSectionsWithContents(AgentContext messageContext)
 	{
 
-		AiSmartCreatorSteps instructions = inAgentContext.getAiSmartCreatorSteps();
+		AiSmartCreatorSteps instructions = messageContext.getAiSmartCreatorSteps();
 
-		String entityid = inAgentContext.getCurrentEntity().getId();
-		String entitymoduleid = inAgentContext.getCurrentEntityModule().getId();
+		String entityid = messageContext.getCurrentEntity().getId();
+		String entitymoduleid = messageContext.getCurrentEntityModule().getId();
 
 		AssistantManager assistant = (AssistantManager) getMediaArchive().getBean("assistantManager");
 
 		Collection<String> parentIds = assistant.findDocIdsForEntity(entitymoduleid, entityid);
 		instructions.setEmbeddedParentIds(parentIds);
-		createSections(inAgentContext, instructions);
+		createSections(messageContext, instructions);
 	}
 
-	public void createSections(AgentContext inAgentContext, AiSmartCreatorSteps instructions)
+	public void createSections(AgentContext messageContext, AiSmartCreatorSteps instructions)
 	{
 		Collection<Data> sections = instructions.getConfirmedSections();
 
@@ -854,7 +877,7 @@ public class SmartCreatorSkill extends BaseSkill
 
 			if (answer == null)
 			{
-				inAgentContext.error("No answer found " + answer);
+				messageContext.error("No answer found " + answer);
 				continue;
 			}
 
@@ -918,9 +941,9 @@ public class SmartCreatorSkill extends BaseSkill
 				ordering++;
 			}
 
-			// inAgentContext.addContext("output", exportContent.toString());
+			// messageContext.addContext("output", exportContent.toString());
 
-			// exportAsAsset(inAgentContext, exportContent.toString());
+			// exportAsAsset(messageContext, exportContent.toString());
 
 			/*
 			 * Improve speed // try semantically matching an asset to the section SearchingSkill
@@ -980,17 +1003,17 @@ public class SmartCreatorSkill extends BaseSkill
 
 	}
 
-	private void exportAsAsset(AgentContext inAgentContext, String inString)
+	private void exportAsAsset(AgentContext messageContext, String inString)
 	{
 
-		Data playbackentitymodule = inAgentContext.getAiSmartCreatorSteps().getTargetModule();
-		Data playbackentity = inAgentContext.getAiSmartCreatorSteps().getTargetEntity();
+		Data playbackentitymodule = messageContext.getAiSmartCreatorSteps().getTargetModule();
+		Data playbackentity = messageContext.getAiSmartCreatorSteps().getTargetEntity();
 
-		exportAsAsset(inAgentContext, playbackentitymodule, playbackentity, inString);
+		exportAsAsset(messageContext, playbackentitymodule, playbackentity, inString);
 
 	}
 
-	public void exportAsAsset(AgentContext inAgentContext, Data playbackentitymodule, Data playbackentity, String inHtml)
+	public void exportAsAsset(AgentContext messageContext, Data playbackentitymodule, Data playbackentity, String inHtml)
 	{
 		String assetsourcepath = getMediaArchive().getEntityManager().loadUploadSourcepath(playbackentitymodule, playbackentity, null);
 		assetsourcepath = assetsourcepath + "/" + playbackentity.getName() + ".html";
@@ -1009,13 +1032,13 @@ public class SmartCreatorSkill extends BaseSkill
 		ContentItem content = new StringItem("/WEB-INF/data/" + getMediaArchive().getCatalogId() + "/originals/" + assetsourcepath, inHtml, "UTF-8");
 		getMediaArchive().getPageManager().getRepository().put(content);
 
-		asset = getMediaArchive().getAssetManager().findAssetSource(asset).createAsset(asset, content, new HashMap(), assetsourcepath, false, inAgentContext.getChatUser());
+		asset = getMediaArchive().getAssetManager().findAssetSource(asset).createAsset(asset, content, new HashMap(), assetsourcepath, false, messageContext.getChatUser());
 		asset.setProperty("importstatus", "created");
 
 		String userid = playbackentity.get("owner");
-		if (userid == null && inAgentContext.getChatUser() != null)
+		if (userid == null && messageContext.getChatUser() != null)
 		{
-			userid = inAgentContext.getChatUser().getId();
+			userid = messageContext.getChatUser().getId();
 		}
 
 		User user = getMediaArchive().getUser(userid);
@@ -1036,12 +1059,12 @@ public class SmartCreatorSkill extends BaseSkill
 		// getMediaArchive().fireSharedMediaEvent("llm/addmetadata");
 	}
 
-	public Collection<Map> parseSection(AgentContext inAgentContext, String inSectionText)
+	public Collection<Map> parseSection(AgentContext messageContext, String inSectionText)
 	{
 
-		inAgentContext.addContext("sectiontext", inSectionText);
+		messageContext.addContext("sectiontext", inSectionText);
 		LlmConnection llmconnection = getMediaArchive().getLlmConnection("smartcreator_parsecontent");
-		LlmResponse response = llmconnection.callStructure(inAgentContext, "smartcreator_parsecontent");
+		LlmResponse response = llmconnection.callStructure(messageContext, "smartcreator_parsecontent");
 		JSONObject json = response.getMessageStructured();
 		Collection boundaries = (Collection) json.get("parsed_content");
 		return boundaries;
