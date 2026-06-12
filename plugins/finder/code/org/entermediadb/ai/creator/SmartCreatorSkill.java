@@ -174,7 +174,8 @@ public class SmartCreatorSkill extends BaseSkill
 						// String function = findLocalActionName(messageContext);
 						LlmConnection llmconnection2 = getMediaArchive().getLlmConnection(agentFn);
 						LlmResponse response = llmconnection2.renderLocalAction(messageContext, agentFn);
-
+						messageContext.setWaitTime(null);
+						messageContext.setLastResponse(response);
 						messageContext.setFunctionName("smartcreator_confirmoutline");
 
 						return;
@@ -249,6 +250,8 @@ public class SmartCreatorSkill extends BaseSkill
 
 									llmconnection = getMediaArchive().getLlmConnection("smartcreator_renderoutline");
 									res = llmconnection.renderLocalAction(messageContext, "smartcreator_renderoutline");
+									messageContext.setWaitTime(null);
+									messageContext.setLastResponse(res);
 								}
 								return;
 							}
@@ -264,6 +267,8 @@ public class SmartCreatorSkill extends BaseSkill
 								messageContext.addContext("playbackentitymodule", instructions.getTargetModule());
 								LlmConnection llmconnection = getMediaArchive().getLlmConnection("smartcreator_renderoutline");
 								LlmResponse response = llmconnection.renderLocalAction(messageContext, "smartcreator_renderoutline");
+								messageContext.setWaitTime(null);
+								messageContext.setLastResponse(response);
 
 								return;
 							}
