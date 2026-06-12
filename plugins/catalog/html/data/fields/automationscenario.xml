@@ -46,6 +46,12 @@
     </name>
   </property>
 
+  <property id="chatenabled" index="true" stored="true" editable="true" datatype="boolean">
+    <name>
+      <language id="en"><![CDATA[Chat Enabled]]></language>
+    </name>
+  </property>
+
 
   <property id="scenarioicon" editable="true" stored="true" index="true">
     <name>

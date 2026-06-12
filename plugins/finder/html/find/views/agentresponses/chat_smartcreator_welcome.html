@@ -1,0 +1,22 @@
+#set($creatortype = $inflector.singularize($playbackentitymodule.getName()))
+<p class="m-0">
+  [[Welcome to]] $creatortype [[creation wizard]].
+</p>
+<h5 class="mb-2">
+  [[Choose the type of content you would like to create:]]
+</h5>
+
+#set($modules = $mediaarchive.query("module").exact("aicreationmethod","smartcreator").sort("name").cachedSearch()) )
+#ifnotnull($modules)
+
+  <ul>
+    #foreach($module in $modules)
+      <li class="autoprefixchatmsg"
+        style="text-transform: capitalize;"
+        data-prefix="Create a $module.getName()."
+      >
+      <span>$module.getName()</span>
+    </li>
+    #end
+  </ul> 
+#end

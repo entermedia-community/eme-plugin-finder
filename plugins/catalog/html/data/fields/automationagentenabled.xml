@@ -68,7 +68,6 @@
     </name>
   </property>
 
-
   <property id="automationagent" index="true" type="list" editable="true" stored="true" required="true">
     <name>
       <language id="en"><![CDATA[Automation Agent]]></language>

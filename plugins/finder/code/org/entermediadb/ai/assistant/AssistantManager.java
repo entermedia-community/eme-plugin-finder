@@ -216,18 +216,7 @@ public class AssistantManager extends BaseAiManager
 		String applicationid = inChannel.get("chatapplicationid");
 		ChatMessageContext chatMessageContext = loadContext(applicationid, inChannel.getId());
 
-		// LlmConnection llmconnection = archive.getLlmConnection("agentChat");
-		// chatMessageContext.addContext("model", llmconnection.getModelName() );
-
 		ChatServer server = (ChatServer) archive.getBean("chatServer");
-
-		// if (!llmconnection.isReady())
-		// {
-		// inLog.error("LLM Manager is not ready, check key for: " +
-		// llmconnection.getModelName() + ".
-		// Cannot process channel: " + inChannel);
-		// return;
-		// }
 
 		String channeltype = inChannel.get("channeltype");
 		if (channeltype == null)
@@ -929,7 +918,6 @@ public class AssistantManager extends BaseAiManager
 		int created = 0;
 		for (Iterator iterator = modules.iterator(); iterator.hasNext();)
 		{
-
 			MultiValued module = (MultiValued) iterator.next();
 			String method = module.get("aicreationmethod");
 
@@ -946,11 +934,12 @@ public class AssistantManager extends BaseAiManager
 				id = "fieldsonly_welcome_" + module.getId();
 				messagehandler = "entityCreationSkill";
 			}
-			else if (method.equals("smartcreator"))
-			{
-				id = "smartcreator_welcome_" + module.getId();
-				messagehandler = "smartCreatorSkill";
-			}
+			else
+				if (method.equals("smartcreator"))
+				{
+					id = "smartcreator_welcome_" + module.getId();
+					messagehandler = "smartCreatorSkill";
+				}
 
 			Data exists = getMediaArchive().getData("aifunction", id);
 			if (exists != null)
@@ -974,30 +963,6 @@ public class AssistantManager extends BaseAiManager
 
 			created++;
 			inLog.info(id + " AI function created for " + module.getName());
-
-			/*
-			 * using generic from now on if(method.equals("smartcreator")) { id = "smartcreator_parse_" +
-			 * module.getId(); Data create_aifunction =
-			 * getMediaArchive().getSearcher("aifunction").createNewData(); create_aifunction.setId(id);
-			 * create_aifunction.setValue("messagehandler", messagehandler);
-			 * create_aifunction.setValue("toplevel", false); create_aifunction.setValue("processingmessage",
-			 * "Parsing new " + module.getName()); create_aifunction.setName("Parse " + module.getName());
-			 * tosave.add(create_aifunction); usetext.add(create_aifunction);
-			 * 
-			 * id = "smartcreator_createoutline_" + module.getId(); create_aifunction =
-			 * getMediaArchive().getSearcher("aifunction").createNewData(); create_aifunction.setId(id);
-			 * create_aifunction.setValue("messagehandler", messagehandler);
-			 * create_aifunction.setValue("toplevel", false); create_aifunction.setValue("processingmessage",
-			 * "Creating new " + module.getName()); create_aifunction.setName("Createing " + module.getName());
-			 * tosave.add(create_aifunction); usetext.add(create_aifunction);
-			 * 
-			 * id = "smartcreator_play_" + module.getId(); Data play_aifunction =
-			 * getMediaArchive().getSearcher("aifunction").createNewData(); play_aifunction.setId(id);
-			 * play_aifunction.setValue("messagehandler", messagehandler); play_aifunction.setValue("toplevel",
-			 * true); play_aifunction.setValue("processingmessage", "Playing " + module.getName());
-			 * play_aifunction.setName("View " + module.getName()); tosave.add(play_aifunction); }
-			 */
-
 		}
 		getMediaArchive().saveData("aifunction", tosave);
 
@@ -1030,7 +995,6 @@ public class AssistantManager extends BaseAiManager
 
 		// Clear Cache
 		getMediaArchive().clearAll();
-
 	}
 
 	public Collection<String> getModulesAsEnum()
@@ -1046,6 +1010,44 @@ public class AssistantManager extends BaseAiManager
 		Collections.addAll(nameenums, "files", "images", "videos", "documents", "audio");
 
 		return nameenums;
+	}
+
+	public void addSmartCreatorTypes(ScriptLogger inLog)
+	{
+		Collection<Data> modules = getMediaArchive().query("module").exact("aicreationmethod", "smartcreator").search();
+		List tosave = new ArrayList();
+
+		for (Iterator iterator = modules.iterator(); iterator.hasNext();)
+		{
+			Data module = (Data) iterator.next();
+			String type = module.get("searchtype");
+			if (type == null)
+			{
+				log.info("Module " + module.getId() + " does not have searchtype, skipping");
+				continue;
+			}
+
+			Data scenario = getMediaArchive().getCachedData("automationscenario", "smartcreator_" + type);
+			if (scenario == null)
+			{
+				scenario = getMediaArchive().getSearcher("automationscenario").createNewData();
+				scenario.setId("smartcreator_" + type);
+
+				// save isrunning="false" isvisible="true" ordering="50" scenarioicon="broadcast" enabled="true"
+				// connectedtop="chatlabel"
+				scenario.setValue("enabled", true);
+				scenario.setValue("isvisible", true);
+				scenario.setValue("scenarioicon", "broadcast");
+				scenario.setValue("isrunning", false);
+				scenario.setValue("ordering", 50);
+				scenario.setValue("connectedtop", "chatlabel");
+
+				scenario.setName("Smart Creator for " + module.getName());
+				tosave.add(scenario);
+				log.info("Created scenario for smart creator: " + scenario.getId());
+			}
+		}
+		getMediaArchive().saveData("automationscenario", tosave);
 	}
 
 }

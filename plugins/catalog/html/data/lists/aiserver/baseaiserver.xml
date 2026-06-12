@@ -9,9 +9,7 @@
 	<data id="llamat" connectionbean="llamaOpenAiConnection" modelname="Qwen3-14B-Q4_K_S.gguf" serverroot="https://llamat.emediaworkspace.com" serverpathprefix="/v1" serverapikey="demo" monitorspeed="true" aifunctions="agentChat
 |auto_detect_sitewide_parse
 |auto_detect_conversation
-|chat_detection_welcome
 |creation_image_parse
-|chat_questions_welcome
 |question_create_suggestions
 |classifyEntity
 |conversation
@@ -24,7 +22,6 @@
 |parseRagPrompt
 |search_parse
 |searchSemantic
-|chat_smartcreator_welcome
 |smartcreator_parse
 |smartcreator_confirmoutline
 |smartcreator_parsecontent
