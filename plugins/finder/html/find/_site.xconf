@@ -1,16 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <page>
-
-  <property name="fallbackdirectory">/community/default</property>
-
-
   <style cancel="true" id="jquery"/>
   <style id="jqueryui-css" href="/${applicationid}/components/javascript/jquery-ui/1.14/jquery-ui.css"/>
   <script src="/${applicationid}/components/javascript/jquery.form.js" id="jquery-form"/>
   <script src="/${applicationid}/components/javascript/validation/jquery.validate.min.js" id="validation"/>
-  <script id="ajaxformsubmit" src="/${applicationid}/components/javascript/emedia/ajax/ajaxformsubmit.js"/>
-  <script id="liveajax" src="/${applicationid}/components/javascript/emedia/liveajax.js"/>
+  <script src="/${applicationid}/components/javascript/emedia/ajax/ajaxformsubmit.js" id="ajaxformsubmit"/>
+  <script src="/${applicationid}/components/javascript/emedia/liveajax.js" id="liveajax"/>
   <style id="bootstrap-css" href="/${applicationid}/components/javascript/bootstrap/5.3.8/css/bootstrap.min.css"/>
   <style id="fontawesome-css" href="/${applicationid}/components/javascript/bootstrap/fonts/css/fontawesome-all.min.css"/>
   <style id="bootstra-icons" href="/${applicationid}/components/javascript/bootstrap/5.3.8/icons/bootstrap-icons.min.css"/>
@@ -62,8 +58,8 @@
   <script src="/${applicationid}/components/javascript/emedia/brick.js" id="jquerybrick"/>
   <script src="/${applicationid}/components/javascript/emedia/brickvertical.js" id="jquerybrickvertical"/>
   <script defer="true" src="/${applicationid}/components/javascript/chart/Chart.bundle.js" id="chartjs"/>
-  <script id="jscuepoint" src="/${applicationid}/components/javascript/jquery.cuepoint.js"   />
-	<script id="jsclosedcaptions" src="/${applicationid}/views/modules/asset/editor/closedcaptions/closedcaptions.js"  />
+  <script src="/${applicationid}/components/javascript/jquery.cuepoint.js" id="jscuepoint"/>
+  <script src="/${applicationid}/views/modules/asset/editor/closedcaptions/closedcaptions.js" id="jsclosedcaptions"/>
   <property name="searchtypeFromRequest">true</property>
   <property name="profilemanagerid">${catalogid}</property>
   <property name="thumbsize">thumb</property>
@@ -75,6 +71,7 @@
   <property name="bs">4</property>
   <property name="enableprofilefilters">true</property>
   <property name="collectionroot">/${applicationid}/views/modules/librarycollection/media</property>
+  <property name="fallbackdirectory">/community/default</property>
   <property name="themeprefix">/${applicationid}/theme</property>
   <property name="login-path">/${applicationid}/authentication/nopermissions.html</property>
   <property name="applicationid">${siteid}/find</property>
