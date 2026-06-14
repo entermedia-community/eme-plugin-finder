@@ -135,12 +135,6 @@ body {
 	font-size: 1.25rem;
 	color: #4a4a4a;
 }
-#sidebarOpenBtn {
-	display: none;
-}
-.sidebar-collapsed #sidebarOpenBtn {
-	display: block;
-}
 .chat-main {
 	padding-top: 72px;
 }

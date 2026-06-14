@@ -1,8 +1,15 @@
 <div id="header" class="mediacenterheader personal-menu d-flex justify-content-between py-2 pe-2">
 	<div class="d-flex align-items-center ps-2">
-		<button class="btn btn-sm icon-btn py-0" id="sidebarOpenBtn" title="[[Collapse sidebar]]">
+		<a class="btn btn-sm icon-btn py-0"
+			id="emeSidebarOpenBtn"
+			title="[[Collapse sidebar]]"
+			style="display: none;"
+			href="$apphome/components/sidebars/index.html"
+			data-targetdiv="col-sidebars"
+			data-action="show"
+			data-sidebarcomponent="eme">
       <i class="bi bi-layout-sidebar" style="font-size:1.25rem;"></i>
-    </button>
+    </a>
 		<div class="d-flex align-items-center px-2">
 			#set ($homeurl = "$!{siteroot}$apphome/index.html")
 
