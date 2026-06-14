@@ -25,6 +25,10 @@ $context.putSessionValue("fullOriginalEntryPage", $!loginokpage)
 				<div class="dot active"></div>
 				<div class="dot"></div>
 			</div>
+      <a class="ajax d-block mb-3" href="$!{home}${content.loginroot}/loginform.html" data-targetdiv="ajaxlogincontainer">
+				<i class="fas fa-chevron-left me-1"></i>
+				Back
+			</a>
 			#if( $allowguestregistration == "true")
 				<h1>[[Sign in / Sign up]]</h1>
 			#else
@@ -41,22 +45,43 @@ $context.putSessionValue("fullOriginalEntryPage", $!loginokpage)
 				#end
 			</p>
 			
-			<form class="ajaxform" 
-				data-targetdiv="ajaxlogincontainer"
-				action="$home$content.loginroot/sendmagiclinkfinish.html" id="login" name="login"  method="post">
+			<form action="$home$content.loginroot/login.html" id="login" name="login"  method="POST" onsubmit="return confirmPassword(this);" rel="nofollow">
 				#ifnotnull( $userCategory)
 					<input type="hidden" name="categoryid" value="$!userCategory.id" />
 				#end
 				
-				<label for="loginemail">Email</label>
+				<label for="loginemail">[[Email or Username]]</label>
 				<input
 					id="loginemail"
-					type="email"
-					name="email"
-					placeholder="[[Enter your email address]]"
-					class="form-control required grabfocus"
-					autocomplete="email"
+					type="text"
+					name="accountname"
+					placeholder="[[Enter your email address or username]]"
+					class="form-control required grabfocus mb-3"
+					autocomplete="username"
 				/>
+
+        <label for="password">[[Password]]</label>
+        <input
+          id="password"
+          type="password"
+          name="password"
+          placeholder="[[Enter your password]]"
+          class="form-control required"
+          autocomplete="current-password"
+        />
+
+        #if($mediaarchive.isCatalogSettingTrue("twofactorauthentication"))
+          <label for="googleauth">[[Two Factor Authenticator Code]]</label>
+          <input type="hidden" name="field" value="googlekeystring"/> 
+          <input 
+            id="googleauth"
+            type="text"
+            name="googlekeystring.value"
+            class="form-control required"
+            placeholder="[[Enter your two factor authenticator code]]"
+          /> 
+          <a href="$home$content.loginroot/getkey.html" class="my-1 d-block">[[If you haven't yet generated a two factor key, click here]]</a>
+        #end
 
 				#set( $error = $context.getPageValue("oe-exception") )
 				#if ( $error ) 
@@ -70,13 +95,6 @@ $context.putSessionValue("fullOriginalEntryPage", $!loginokpage)
 				<button class="btn-primary mt-3" id="nextBtn" type="submit">Next</button>
 				<input type="hidden" name="subject" value="[[Your Login Info]]"/>
 			</form>
-			<div class="text-end">
-				<a href="$apphome/authentication/legacyform.html" class="ajax p-1" data-targetdiv="ajaxlogincontainer" title="[[Legacy login with username & password]]"><i class="fas fa-key me-1 me-1"></i>[[Legacy Login]]</a>
-			</div>
 		</div>
 	</div>
 </div>
-
-	
-
- 
