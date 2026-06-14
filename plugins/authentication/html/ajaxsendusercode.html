@@ -14,9 +14,9 @@
 
 			<a class="ajax d-block mb-3" href="$!{home}${content.loginroot}/ajaxlogin.html" data-targetdiv="ajaxlogincontainer">
 				<i class="fas fa-chevron-left me-1"></i>
-				Back
+				[[Back]]
 			</a>
-			
+
 			#set( $error = $context.getPageValue("oe-exception") )
 			#if ( $error ) 
 				<div class="alert alert-danger w-100 mt-3 mb-0 p-2" role="alert">

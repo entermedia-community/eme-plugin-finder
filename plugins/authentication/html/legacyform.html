@@ -27,7 +27,7 @@ $context.putSessionValue("fullOriginalEntryPage", $!loginokpage)
 			</div>
       <a class="ajax d-block mb-3" href="$!{home}${content.loginroot}/loginform.html" data-targetdiv="ajaxlogincontainer">
 				<i class="fas fa-chevron-left me-1"></i>
-				Back
+				[[Back]]
 			</a>
 			#if( $allowguestregistration == "true")
 				<h1>[[Sign in / Sign up]]</h1>
@@ -96,5 +96,7 @@ $context.putSessionValue("fullOriginalEntryPage", $!loginokpage)
 				<input type="hidden" name="subject" value="[[Your Login Info]]"/>
 			</form>
 		</div>
+    $pages.include("$home$content.loginroot/sociallogin.html", $context)
+    $pages.include("$home$content.loginroot/loginhelp.html", $context)
 	</div>
 </div>
