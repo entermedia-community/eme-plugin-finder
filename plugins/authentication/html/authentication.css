@@ -189,7 +189,6 @@
 	display: inline-flex;
 	align-items: center;
 	gap: 0.4rem;
-	background: #1f1f25;
 	border: 1px solid var(--auth-border);
 	border-radius: 4px;
 	padding: 0.28rem 0.75rem;
