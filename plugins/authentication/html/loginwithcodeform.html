@@ -38,6 +38,20 @@
 	
 			<form name="login" id="login" action="$home$content.loginroot/login.html" method="POST">
 
+				#if( $email )
+					<input type="hidden" name="email" value="$email" />
+				#else
+					<label for="loginemail">Email</label>
+					<input
+						id="loginemail"
+						type="email"
+						name="email"
+						placeholder="[[Enter your email address]]"
+						class="form-control required grabfocus mb-3"
+						autocomplete="email"
+					/>
+				#end
+
 				<label>Verification code</label>
 				<div class="otp-row">
 					<input
@@ -77,20 +91,6 @@
 						maxlength="1"
 					/>
 				</div>
-				
-				#if( $email )
-					<input type="hidden" name="email" value="$email" />
-				#else
-					<label for="loginemail">Email</label>
-					<input
-						id="loginemail"
-						type="email"
-						name="email"
-						placeholder="[[Enter your email address]]"
-						class="form-control required grabfocus"
-						autocomplete="email"
-					/>
-				#end
 
 				<input type="hidden" name="templogincode" id="loginCode" />
 				
