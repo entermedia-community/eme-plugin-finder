@@ -63,7 +63,7 @@ public class AgentModule extends BaseMediaModule
 		String semanticquery = agentContext.get("semanticquery");
 
 		agentContext.setValue("semanticquery", null);
-		agentContext.setNextFunctionName(null);
+		// agentContext.setRunFunctionName(null);
 
 		inReq.setRequestParameter("semanticquery", semanticquery);
 		if (agentContext.getExcludedEntityIds() != null)
@@ -178,33 +178,27 @@ public class AgentModule extends BaseMediaModule
 				currentscenario = "chat_detection";
 			}
 		}
+		String functionname = inReq.getRequestParameter("functionname");
 		if (agentContext.getCurrentScenario() == null || !currentscenario.equals(agentContext.getCurrentScenario().getId()))
 		{
 			// Scenario changed. Clear the context and start over.
-			agentContext.setFunctionName(null);
-			agentContext.setNextFunctionName(null);
+
 			automationscenario = (MultiValued) getMediaArchive(inReq).getCachedData("automationscenario", currentscenario);
 			agentContext.setCurrentScenario(automationscenario);
 			firesystemmessage = true;
-		}
-		String functionname = inReq.getRequestParameter("functionname");
-		if (functionname != null)
-		{
-			firesystemmessage = true;
-			agentContext.setFunctionName(functionname);
-		}
-		if (agentContext.getFunctionName() == null)
-		{
-			int messagecount = assistantManager.channelMessageCount(channelid);
-			if (messagecount > 0)
+
+			if (functionname == null)
 			{
-				// This is just a refresh. Don't send the welcome again.
-				return;
+				functionname = agentContext.getCurrentScenario().getId() + "_welcome";
+
 			}
-			functionname = agentContext.getCurrentScenario().getId() + "_welcome";
-			firesystemmessage = true;
-			agentContext.setFunctionName(functionname);
+
 		}
+		else
+			if (functionname != null)
+			{
+				firesystemmessage = true;
+			}
 
 		if (!firesystemmessage)
 		{

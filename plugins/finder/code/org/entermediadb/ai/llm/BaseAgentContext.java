@@ -240,16 +240,6 @@ public class BaseAgentContext extends BaseData implements CatalogEnabled, AgentC
 		return value;
 	}
 
-	public String getNextFunctionName()
-	{
-		return get("nextfunctionname");
-	}
-
-	public void setNextFunctionName(String inNextFunctionName)
-	{
-		setValue("nextfunctionname", inNextFunctionName);
-	}
-
 	public Map<String, Object> getContext()
 	{
 		if (context == null)
@@ -332,7 +322,7 @@ public class BaseAgentContext extends BaseData implements CatalogEnabled, AgentC
 
 	public void putContextValue(String inKey, Object inValue)
 	{
-		getContext().put(inKey, inValue);
+		getRootContext().getContext().put(inKey, inValue);
 	}
 
 	// public JSONObject getArguments() {
@@ -418,16 +408,6 @@ public class BaseAgentContext extends BaseData implements CatalogEnabled, AgentC
 	public void setAiSmartCreatorSteps(AiSmartCreatorSteps inAiCreatorSteps)
 	{
 		fieldAiSmartCreatorSteps = inAiCreatorSteps;
-	}
-
-	public String getFunctionName()
-	{
-		return get("functionname");
-	}
-
-	public void setFunctionName(String inFunctionName)
-	{
-		setValue("functionname", inFunctionName);
 	}
 
 	public String getMessagePrefix()
@@ -630,6 +610,16 @@ public class BaseAgentContext extends BaseData implements CatalogEnabled, AgentC
 	public void setAiFunction(MultiValued inAiFunction)
 	{
 		putContextValue("aiFunction", inAiFunction);
+	}
+
+	public LlmResponse getLastResponse()
+	{
+		return (LlmResponse) getContextValue("lastResponse");
+	}
+
+	public void setLastResponse(LlmResponse inLastResponse)
+	{
+		putContextValue("lastResponse", inLastResponse);
 	}
 
 }

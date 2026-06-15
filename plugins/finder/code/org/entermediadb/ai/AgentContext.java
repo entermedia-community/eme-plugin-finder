@@ -7,6 +7,7 @@ import org.entermediadb.ai.assistant.AiSearch;
 import org.entermediadb.ai.knn.RankedResult;
 import org.entermediadb.ai.creator.AiSmartCreatorSteps;
 import org.entermediadb.ai.llm.AgentEnabled;
+import org.entermediadb.ai.llm.LlmResponse;
 import org.entermediadb.ai.llm.LogEntry;
 import org.entermediadb.scripts.ScriptLogger;
 import org.openedit.Data;
@@ -66,9 +67,9 @@ public interface AgentContext extends Data
 
 	String get(String inKey);
 
-	String getNextFunctionName();
+	// String getRunFunctionName();
 
-	void setNextFunctionName(String inNextFunctionName);
+	// void setRunFunctionName(String inNextFunctionName);
 
 	Map<String, Object> getContext();
 
@@ -105,10 +106,6 @@ public interface AgentContext extends Data
 	AiSmartCreatorSteps getAiSmartCreatorSteps();
 
 	void setAiSmartCreatorSteps(AiSmartCreatorSteps inAiSmartCreatorSteps);
-
-	String getFunctionName();
-
-	void setFunctionName(String inFunctionName);
 
 	String getMessagePrefix();
 
@@ -153,4 +150,9 @@ public interface AgentContext extends Data
 	public MultiValued getAiFunction();
 
 	public void setAiFunction(MultiValued inAiFunction);
+
+	public LlmResponse getLastResponse();
+
+	public void setLastResponse(LlmResponse inLastResponse);
+
 }

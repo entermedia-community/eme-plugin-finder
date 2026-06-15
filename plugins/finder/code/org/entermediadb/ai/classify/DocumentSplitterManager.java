@@ -134,13 +134,13 @@ public class DocumentSplitterManager extends BaseAiManager
 						}
 					}
 
-					agentcontext.setFunctionName("documentsplitasset");
 					LlmConnection llmconnection = getMediaArchive().getLlmConnection("documentsplitasset");
 					LlmResponse response = llmconnection.renderLocalAction(agentcontext);
 					if (response != null)
 					{
 						fulltext = response.getMessage();
 					}
+					// agentcontext.setFunctionName("documentsplitasset");
 				}
 				if (fulltext != null)
 				{

@@ -918,7 +918,7 @@ public class ContentPublishingSkill extends BaseSkill implements CatalogEnabled
 				targetsearcher.updateData(child, args);
 			}
 			child.setValue("entity_date", new Date());
-			child.setValue("ai-functioncall", results.getFunctionName());
+			child.setValue("ai-functioncall", results.getRunFunctionName());
 			child.setValue("owner", inContentrequest.get("owner"));
 			targetsearcher.saveData(child);
 
@@ -1028,7 +1028,7 @@ public class ContentPublishingSkill extends BaseSkill implements CatalogEnabled
 		 * 
 		 * LlmResponse result = llmconnection.renderLocalAction(inAgentContext);
 		 * 
-		 * log.info("Next function: " + inAgentContext.getNextFunctionName());
+		 * log.info("Next function: " + inAgentContext.getRunFunctionName());
 		 * 
 		 * 
 		 * return result;
@@ -1036,7 +1036,7 @@ public class ContentPublishingSkill extends BaseSkill implements CatalogEnabled
 		 * }
 		 * 
 		 */
-		throw new OpenEditException("Unknown function name: " + inAgentContext.getFunctionName());
+		throw new OpenEditException("Unknown function name: " + inAiFunction.getId());
 
 	}
 

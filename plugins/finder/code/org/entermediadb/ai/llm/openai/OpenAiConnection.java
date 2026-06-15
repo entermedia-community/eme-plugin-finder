@@ -50,13 +50,12 @@ public class OpenAiConnection extends BaseLlmConnection implements CatalogEnable
 		LlmResponse response = (LlmResponse) createResponse();
 		response.setRawResponse(json);
 
-		String nextFunction = response.getFunctionName();
-		if (nextFunction != null)
-		{
-			agentcontext.setFunctionName(nextFunction);
-		}
+		/*
+		 * String nextFunction = response.getRunFunctionName(); if (nextFunction != null) {
+		 * agentcontext.setFunctionName(nextFunction); }
+		 */
 
-		getMediaArchive().saveData("agentcontext", agentcontext);
+		// getMediaArchive().saveData("agentcontext", agentcontext);
 		return response;
 
 	}

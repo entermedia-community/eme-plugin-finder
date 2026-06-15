@@ -546,7 +546,7 @@ public class EmbeddingManager extends BaseAiManager
 		log.info(" sending to server: " + chatjson.toJSONString());
 
 		LlmResponse response = llmconnection.callJson("/query", headers, chatjson);
-		response.setFunctionName("ragresponse"); // Remove this?
+		// response.setRunFunctionName("ragresponse"); // Remove this?
 
 		if (includeSources)
 		{
