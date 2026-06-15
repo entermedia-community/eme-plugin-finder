@@ -77,7 +77,7 @@
 }
 .loginbox .form-control:focus {
 	background: var(--auth-input-bg);
-	border-color: var(--auth-accent);
+	border-color: var(--auth-accent-h);
 	box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.18);
 	color: var(--auth-text) !important;
 	outline: none;
@@ -151,7 +151,7 @@
 	background: none;
 	border: none;
 	padding: 0;
-	color: var(--auth-accent);
+	color: var(--auth-accent-h);
 	font-size: 0.82rem;
 	cursor: pointer;
 	font-family: inherit;
@@ -189,7 +189,6 @@
 	display: inline-flex;
 	align-items: center;
 	gap: 0.4rem;
-	background: #1f1f25;
 	border: 1px solid var(--auth-border);
 	border-radius: 4px;
 	padding: 0.28rem 0.75rem;
@@ -214,21 +213,6 @@
 	}
 }
 
-.loginbox .success-icon {
-	width: 52px;
-	height: 52px;
-	background: rgba(99, 102, 241, 0.15);
-	border-radius: 50%;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	margin-bottom: 1.25rem;
-}
-.loginbox .success-icon svg {
-	width: 24px;
-	height: 24px;
-	stroke: var(--auth-accent);
-}
 .loginbox .error {
 	padding: 0.75rem;
 	background: rgba(239, 68, 68, 0.1);

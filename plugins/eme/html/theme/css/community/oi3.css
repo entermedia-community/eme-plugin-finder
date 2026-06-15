@@ -1521,17 +1521,6 @@ img.cat-thumb {
 	width: 100%;
 	border-collapse: collapse;
 }
-
-.storecontainer .ajaxloginbox {
-	background-color: #eee;
-}
-.ajaxloginbox .text-error {
-	background-color: var(--bs-danger);
-	color: #fff;
-}
-.ajaxloginbox .text-info {
-	background-color: #fff;
-}
 .detail-input .input-label {
 	font-size: 0.9rem;
 	color: #606060;

@@ -1,8 +1,15 @@
 <div id="header" class="mediacenterheader personal-menu d-flex justify-content-between py-2 pe-2">
 	<div class="d-flex align-items-center ps-2">
-		<button class="btn btn-sm icon-btn py-0" id="sidebarOpenBtn" title="[[Collapse sidebar]]">
+		<a class="btn btn-sm icon-btn py-0"
+			id="emeSidebarOpenBtn"
+			title="[[Collapse sidebar]]"
+			style="display: none;"
+			href="$apphome/components/sidebars/index.html"
+			data-targetdiv="col-sidebars"
+			data-action="show"
+			data-sidebarcomponent="eme">
       <i class="bi bi-layout-sidebar" style="font-size:1.25rem;"></i>
-    </button>
+    </a>
 		<div class="d-flex align-items-center px-2">
 			#set ($homeurl = "$!{siteroot}$apphome/index.html")
 
@@ -22,8 +29,27 @@
 			#end
 			#ifnull($emeprofile)
 				<a class="personal-brand text-decoration-none d-flex align-items-center" href="$homeurl" title="[[EME]]" style="height: var(--themed-logo-height);">
-					<img src="$apphome/theme/images/logo.svg" alt="[[EME]]" style="height: 52px; width: auto;object-fit:contain;" class="me-2">
-					[[Tierra Sagrada]] ## load from catalog settings
+					#ifnotnull($category)
+						#set( $assetid = $category.findValue("headercategoryimage") )
+						#ifnotnull($assetid)
+							#set($logoasset = $mediaarchive.getCachedData("asset",$assetid))
+							#set($logourl = $mediaarchive.asLinkToOriginal($logoasset))
+							#set($logourl = "$siteroot/$mediadbappid/services/module/asset/downloads/originals/${logourl}")
+						#end
+					#end
+
+					#ifnull($logourl)
+						#set( $logourl = "$!{siteroot}$themeprefix/$themeid/logo.png")
+						
+						#set($theme = $mediaarchive.getCachedData("theme", $themeid))
+						#set($logowidth = $theme.logowidth)
+						#set($logoheight = $theme.logoheight)
+					#end
+					#ifnotnull($logourl)
+						<img src="$logourl" alt="[[EME]]" style="height: 52px; width: auto;object-fit:contain;" class="me-2">
+					#end
+					#set($sitetitle = $mediaarchive.getCatalogSettingValue("sitetitle"))
+					$sitetitle
 				</a>
 			#end
 			#if($module.id != "emeprofile")

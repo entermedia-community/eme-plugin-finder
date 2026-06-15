@@ -515,6 +515,7 @@ public class BaseUserManager implements UserManager
 				user.setEnabled(true);
 				user.setValue("firstName", found.get("firstName"));
 				user.setValue("lastName", found.get("lastName"));
+				user.setValue("screenname", found.get("screenName"));
 				user.setEmail(found.get("email"));
 				saveUser(user);
 				found.setValue("user", user.getId());

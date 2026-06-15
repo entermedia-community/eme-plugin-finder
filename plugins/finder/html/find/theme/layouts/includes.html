@@ -1,3 +1,7 @@
+#ifnull($user)
+	<link rel="stylesheet" type="text/css" href="/${applicationid}/authentication/authentication.css" />
+	<script type="text/javascript" src="/${applicationid}/authentication/authentication.js"></script>
+#end
 #foreach( $style in $pageManager.getStylePathsFor($content) )
 <link rel="stylesheet" type="text/css" href="$style" />
 #end
@@ -61,9 +65,4 @@ $pages.include("/${applicationid}/components/captureclick/end.html")
 <script type="text/javascript" src="/${applicationid}/components/javascript/emedia/drawer.js"></script>
 <link rel="stylesheet" type="text/css" href="/${applicationid}/theme/styles/mobile.css" />
 <script type="text/javascript" src="/${applicationid}/components/javascript/emedia/mobile.js"></script>
-#end
-
-#ifnull($user)
-	<link rel="stylesheet" type="text/css" href="/${applicationid}/authentication/authentication.css" />
-	<script type="text/javascript" src="/${applicationid}/authentication/authentication.js"></script>
 #end
