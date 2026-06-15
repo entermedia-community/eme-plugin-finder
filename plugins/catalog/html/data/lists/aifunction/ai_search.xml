@@ -2,7 +2,7 @@
 
 <root>
 
-   <data id="search_welcome" showuser="1" toplevel="true" icon="patch-question" processingmessage="Welcome to search">
+   <data id="chat_searching_welcome" showuser="1" toplevel="true" icon="patch-question" processingmessage="Welcome to search">
       <name>
          <language id="en"><![CDATA[Searching]]></language>
       </name>

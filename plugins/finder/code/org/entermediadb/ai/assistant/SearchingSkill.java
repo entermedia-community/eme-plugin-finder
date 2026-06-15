@@ -46,7 +46,7 @@ public class SearchingSkill extends BaseSkill
 		MultiValued currentfunction = messageContext.getAiFunction();
 		String agentFn = currentfunction.getId();
 
-		if ("search_welcome".equals(agentFn))
+		if ("chat_searching_welcome".equals(agentFn))
 		{
 			inAgentMessage.setValue("chatmessagestatus", "completed");
 			Schema schema = loadSchema();
@@ -641,7 +641,7 @@ public class SearchingSkill extends BaseSkill
 
 		}
 
-		if (search.getStep1().getTargetTable() == null)
+		if (search.getStep1() != null && search.getStep1().getTargetTable() == null)
 		{
 			Data modulesearch = getMediaArchive().getCachedData("module", "modulesearch");
 			search.getStep1().setModule(modulesearch);
@@ -649,7 +649,7 @@ public class SearchingSkill extends BaseSkill
 		else
 		{
 
-			if (search.getStep2() == null && search.getStep1().getForeignTable() != null)
+			if (search.getStep2() == null && search.getStep1() != null && search.getStep1().getForeignTable() != null)
 			{
 				search.setStep2(search.getStep1());
 
