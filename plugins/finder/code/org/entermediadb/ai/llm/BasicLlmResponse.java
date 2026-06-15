@@ -12,7 +12,8 @@ public class BasicLlmResponse implements LlmResponse
 {
 	protected String fieldMessage;
 	protected String fieldMessagePlain;
-	protected String fieldFunctionName;
+	protected String fieldRunFunctionName;
+	protected String fieldNextFunctionName;
 	protected JSONObject fieldFunctionArguments;
 	protected AiSearch fieldAiSearchParams;
 	Collection<RankedResult> fieldRankedSuggestions;
@@ -92,14 +93,14 @@ public class BasicLlmResponse implements LlmResponse
 	}
 
 	@Override
-	public String getFunctionName()
+	public String getRunFunctionName()
 	{
-		return fieldFunctionName;
+		return fieldRunFunctionName;
 	}
 
-	public void setFunctionName(String inFunctionName)
+	public void setRunFunctionName(String inFunctionName)
 	{
-		fieldFunctionName = inFunctionName;
+		fieldRunFunctionName = inFunctionName;
 	}
 
 	@Override
@@ -179,4 +180,13 @@ public class BasicLlmResponse implements LlmResponse
 		return getMessageStructured();
 	}
 
+	public void setNextFunctionName(String inFunction)
+	{
+		fieldNextFunctionName = inFunction;
+	}
+
+	public String getNextFunctionName()
+	{
+		return fieldNextFunctionName;
+	}
 }

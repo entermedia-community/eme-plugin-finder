@@ -30,9 +30,13 @@ public interface LlmResponse
 
     void setMessagePlain(String inMessagePlain);
 
-    String getFunctionName();
+    String getRunFunctionName();
 
-    void setFunctionName(String inFunction);
+    void setRunFunctionName(String inFunction);
+
+    String getNextFunctionName();
+
+    void setNextFunctionName(String inFunction);
 
     JSONObject getFunctionArguments();
 

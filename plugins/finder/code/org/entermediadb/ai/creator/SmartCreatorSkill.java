@@ -16,6 +16,7 @@ import org.entermediadb.ai.ChatMessageContext;
 import org.entermediadb.ai.assistant.AssistantManager;
 import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.llm.BaseAgentContext;
+import org.entermediadb.ai.llm.BasicLlmResponse;
 import org.entermediadb.ai.llm.LlmConnection;
 import org.entermediadb.ai.llm.LlmResponse;
 import org.entermediadb.asset.Asset;
@@ -39,28 +40,13 @@ public class SmartCreatorSkill extends BaseSkill
 {
 	private static final Log log = LogFactory.getLog(SmartCreatorSkill.class);
 
-	protected String findLocalActionName(AgentContext messageContext)
-	{
-		String agentFn = messageContext.getFunctionName();
-		String apphome = (String) messageContext.getContextValue("apphome");
-
-		String templatepath = apphome + "/views/agentresponses/" + agentFn + ".html";
-		boolean pageexists = getMediaArchive().getPageManager().getPage(templatepath).exists();
-		if (!pageexists)
-		{
-			int lastone = agentFn.lastIndexOf("_");
-			agentFn = agentFn.substring(0, lastone);
-		}
-		return agentFn;
-	}
-
 	public void process(AgentContext inContext)
 	{
 		// This is for the chat UI to pass it back
 		ChatMessageContext messageContext = (ChatMessageContext) inContext;
+		MultiValued currentfunction = messageContext.getAiFunction();
 
-		String agentFn = messageContext.getFunctionName();
-		MultiValued inAiFunction = messageContext.getAiFunction();
+		String agentFn = currentfunction.getId();
 
 		AiSmartCreatorSteps instructions = messageContext.getAiSmartCreatorSteps();
 
@@ -91,7 +77,7 @@ public class SmartCreatorSkill extends BaseSkill
 
 		if (agentFn.equals("chat_smartcreator_welcome"))
 		{
-			LlmConnection llmconnection = getMediaArchive().getLlmConnection(inAiFunction.getId());
+			LlmConnection llmconnection = getMediaArchive().getLlmConnection(currentfunction.getId());
 			LlmResponse response = llmconnection.renderLocalAction(messageContext);
 			// messageContext.setFunctionName("question_ask");
 			messageContext.setWaitTime(null);
@@ -124,14 +110,12 @@ public class SmartCreatorSkill extends BaseSkill
 				MultiValued module = (MultiValued) getMediaArchive().getCachedData("module", entitymoduleid);
 				messageContext.setCurrentEntityModule(module);
 
-				String function = findLocalActionName(messageContext);
-
-				LlmConnection llmconnection = getMediaArchive().getLlmConnection(function);
-				LlmResponse response = llmconnection.renderLocalAction(messageContext, function);
+				LlmConnection llmconnection = getMediaArchive().getLlmConnection(agentFn);
+				LlmResponse response = llmconnection.renderLocalAction(messageContext, agentFn);
 				messageContext.setWaitTime(null);
-				messageContext.setLastResponse(response);
 				// This is for the chat UI to pass it back
-				messageContext.setFunctionName("smartcreator_parse");
+				response.setNextFunctionName("smartcreator_parse");
+				messageContext.setLastResponse(response);
 				return;
 
 			}
@@ -143,20 +127,11 @@ public class SmartCreatorSkill extends BaseSkill
 
 					String prompt = usermessage.get("message");
 
-					LlmResponse res = parseCreationPrompt(messageContext, prompt);
+					LlmResponse response = parseCreationPrompt(messageContext, prompt);
 					// TODO: Show the user what they typed and say processing
-					if ("testchannel".equals(channelId))
-					{
-						messageContext.setFunctionName("smartcreator_createoutline");
-						// This allows manually running next function in mediadb test environment
-					}
-					else
-					{
-						messageContext.setNextFunctionName("smartcreator_createoutline");
-					}
 
-					// Show the user what we have thus far
-
+					response.setRunFunctionName("smartcreator_createoutline");
+					inContext.setLastResponse(response);
 					return;
 				}
 				else
@@ -175,9 +150,9 @@ public class SmartCreatorSkill extends BaseSkill
 						LlmConnection llmconnection2 = getMediaArchive().getLlmConnection(agentFn);
 						LlmResponse response = llmconnection2.renderLocalAction(messageContext, agentFn);
 						messageContext.setWaitTime(null);
+						// inContext.setFunctionName("smartcreator_confirmoutline");
+						response.setNextFunctionName("smartcreator_confirmoutline");
 						messageContext.setLastResponse(response);
-						messageContext.setFunctionName("smartcreator_confirmoutline");
-
 						return;
 					}
 					else
@@ -205,13 +180,10 @@ public class SmartCreatorSkill extends BaseSkill
 							if (changed)
 							{
 								messageContext.addContext("proposedoutline", instructions.getProposedSections());
-								messageContext.setFunctionName("smartcreator_confirmoutline");
-
-								String function = findLocalActionName(messageContext); // Ask again
-
-								LlmConnection llmconnection2 = getMediaArchive().getLlmConnection(function);
-								LlmResponse response = llmconnection2.renderLocalAction(messageContext, function);
-
+								LlmConnection llmconnection2 = getMediaArchive().getLlmConnection(agentFn);
+								LlmResponse response = llmconnection2.renderLocalAction(messageContext, agentFn);
+								response.setNextFunctionName("smartcreator_confirmoutline"); //
+								messageContext.setLastResponse(response);
 								return;
 							}
 							else
@@ -231,15 +203,10 @@ public class SmartCreatorSkill extends BaseSkill
 								String step2CreatePrompt = instructions.getStepContentCreate();
 								if (step2CreatePrompt != null && !step2CreatePrompt.isEmpty())
 								{
-									if ("testchannel".equals(channelId))
-									{
-										messageContext.setFunctionName("smartcreator_createsectioncontents");
-										// This allows manually running next function in mediadb test environment
-									}
-									else
-									{
-										messageContext.setNextFunctionName("smartcreator_createsectioncontents");
-									}
+									// Create the content
+									BasicLlmResponse step2response = new BasicLlmResponse();
+									step2response.setRunFunctionName("smartcreator_createsectioncontents");
+									messageContext.setLastResponse(step2response);
 								}
 								else
 								{
@@ -251,7 +218,9 @@ public class SmartCreatorSkill extends BaseSkill
 									llmconnection = getMediaArchive().getLlmConnection("smartcreator_renderoutline");
 									res = llmconnection.renderLocalAction(messageContext, "smartcreator_renderoutline");
 									messageContext.setWaitTime(null);
+									// final interaction, no next steps. What is the next function?
 									messageContext.setLastResponse(res);
+
 								}
 								return;
 							}
@@ -309,8 +278,7 @@ public class SmartCreatorSkill extends BaseSkill
 		 * LlmResponse response = startChat(messageContext, usermessage, inAgentMessage, function); String
 		 * generalresponse = response.getMessage(); if(generalresponse != null) { MarkdownUtil md = new
 		 * MarkdownUtil(); generalresponse = md.render(generalresponse); }
-		 * response.setMessage(generalresponse); messageContext.setNextFunctionName(null); return response;
-		 * }
+		 * response.setMessage(generalresponse); messageContext.setRunFunctionName(null); return response; }
 		 */
 		throw new OpenEditException("Function not handled: " + agentFn);
 	}

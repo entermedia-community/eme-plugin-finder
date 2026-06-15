@@ -30,7 +30,13 @@ $context.putPageValue("goalsenabled", $goalsenabled)
 	$pages.include($messagetype, $context)
 #else
 #set($messagetime = $chat.getDate("date"))
-<div id="chatter-message-$!{chat.id}" data-createdat="$messagetime.getTime()" data-messagetype="$!{chat.messagetype}" class="msg-bubble">
+<div id="chatter-message-$!{chat.id}" 
+	class="msg-bubble"
+	data-createdat="$messagetime.getTime()" 
+	data-messagetype="$!{chat.messagetype}"
+	data-functionname="$!{chat.functionname}"
+	data-nextfunctionname="$!{chat.nextfunctionname}"
+	>
 	<div class="chatterbox-chat" role="alert" >
 		<div class="chat-icon">
 			#if ($chat.user == "agent")

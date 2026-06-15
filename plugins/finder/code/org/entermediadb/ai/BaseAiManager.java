@@ -84,7 +84,8 @@ public class BaseAiManager implements CatalogEnabled
 		LlmConnection llmconnection = getMediaArchive().getLlmConnection("render_error");
 		LlmResponse response = llmconnection.renderLocalAction(inAgentContext, "render_error");
 		// inAgentContext.setFunctionName(null);
-		inAgentContext.setNextFunctionName(null);
+		response.setRunFunctionName(null);
+		inAgentContext.setLastResponse(response);
 		return response;
 	}
 
@@ -451,21 +452,6 @@ public class BaseAiManager implements CatalogEnabled
 			action.setVectors(vector);
 		}
 
-	}
-
-	protected String findLocalActionName(AgentContext inAgentContext)
-	{
-		String agentFn = inAgentContext.getFunctionName();
-		String apphome = (String) inAgentContext.getContextValue("apphome");
-
-		String templatepath = apphome + "/views/agentresponses/" + agentFn + ".html";
-		boolean pageexists = getMediaArchive().getPageManager().getPage(templatepath).exists();
-		if (!pageexists)
-		{
-			int lastone = agentFn.lastIndexOf("_");
-			agentFn = agentFn.substring(0, lastone);
-		}
-		return agentFn;
 	}
 
 	public SemanticTableManager loadSemanticTableManager(String inConfigId)

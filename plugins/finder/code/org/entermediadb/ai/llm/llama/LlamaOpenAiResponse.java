@@ -62,11 +62,11 @@ public class LlamaOpenAiResponse extends OpenAiResponse
     }
 
     @Override
-    public String getFunctionName()
+    public String getRunFunctionName()
     {
-        if (fieldFunctionName != null)
+        if (fieldRunFunctionName != null)
         {
-            return fieldFunctionName;
+            return fieldRunFunctionName;
         }
 
         if (!isToolCall())

@@ -34,9 +34,9 @@ public class CreationSkill extends BaseSkill
 	{
 		ChatMessageContext messageContext = (ChatMessageContext) inAgentContext;
 		MultiValued agentmessage = messageContext.getAgentMessage();
-		MultiValued function = messageContext.getAiFunction();
-		String agentFn = inAgentContext.getFunctionName();
-		if ("creation_image_welcome".equals(inAgentContext.getFunctionName()))
+		MultiValued currentfunction = messageContext.getAiFunction();
+		String agentFn = currentfunction.getId();
+		if ("creation_image_welcome".equals(agentFn))
 		{
 			String entityid = inAgentContext.get("entityid");
 			String entitymoduleid = inAgentContext.get("entitymoduleid");
@@ -44,40 +44,40 @@ public class CreationSkill extends BaseSkill
 			Data entity = getMediaArchive().getCachedData(entitymoduleid, entityid);
 			inAgentContext.addContext("entity", entity);
 
-			LlmConnection llmconnection = getMediaArchive().getLlmConnection(inAgentContext.getFunctionName());
-			LlmResponse response = llmconnection.renderLocalAction(inAgentContext, inAgentContext.getFunctionName());
+			LlmConnection llmconnection = getMediaArchive().getLlmConnection(agentFn);
+			LlmResponse response = llmconnection.renderLocalAction(inAgentContext, agentFn);
 			// This is for the chat UI to pass it back
-			inAgentContext.setFunctionName("creation_image_parse");
+			response.setNextFunctionName("creation_image_parse");
 			messageContext.setLastResponse(response);
 			return;
 		}
 		else
-			if ("creation_image_parse".equals(inAgentContext.getFunctionName()))
+			if ("creation_image_parse".equals(agentFn))
 			{
-				LlmConnection llmconnection = getMediaArchive().getLlmConnection("creation_image_parse");
-				LlmResponse response = llmconnection.callStructure(inAgentContext, "creation_image_parse");
+				LlmConnection llmconnection = getMediaArchive().getLlmConnection(agentFn);
+				LlmResponse response = llmconnection.callStructure(inAgentContext, agentFn);
 				if (response == null)
 				{
-					throw new OpenEditException("No results from AI for function: " + inAgentContext.getFunctionName());
+					throw new OpenEditException("No results from AI for function: " + agentFn);
 				}
 				AiCreation creation = inAgentContext.getAiCreationParams();
 				JSONObject content = response.getMessageStructured();
 				creation.setCreationFields(content);
 				response.setMessage("");
-				inAgentContext.setNextFunctionName("creation_image_create");
+				response.setRunFunctionName("creation_image_create");
 				messageContext.setLastResponse(response);
 				return;
 			}
 			else
-				if ("creation_image_create".equals(inAgentContext.getFunctionName()))
+				if ("creation_image_create".equals(agentFn))
 				{
 					LlmResponse result = createImage(inAgentContext);
-					inAgentContext.setNextFunctionName("creation_image_render");
+					result.setRunFunctionName("creation_image_render");
 					messageContext.setLastResponse(result);
 					return;
 				}
 				else
-					if ("creation_image_render".equals(inAgentContext.getFunctionName()))
+					if ("creation_image_render".equals(agentFn))
 					{
 						String assetid = inAgentContext.get("assetid");
 
@@ -90,14 +90,14 @@ public class CreationSkill extends BaseSkill
 
 						LlmResponse result = llmconnection.renderLocalAction(inAgentContext);
 
-						log.info("Next function: " + inAgentContext.getNextFunctionName());
+						log.info("Next function: " + result.getRunFunctionName());
 
 						messageContext.setLastResponse(result);
 						return;
 
 					}
 					else
-						if ("creation_entity_create".equals(inAgentContext.getFunctionName()))
+						if ("creation_entity_create".equals(agentFn))
 						{
 							// This was parsed from AutoDetectManager so app params should be in
 							// agentcontext already
@@ -200,9 +200,10 @@ public class CreationSkill extends BaseSkill
 
 			// inReq.putPageValue("asset", asset);
 			inAgentContext.addContext("asset", asset);
-			inAgentContext.setNextFunctionName("creation_image_render");
+			results.setRunFunctionName("creation_image_render");
 			inAgentContext.setValue("assetid", asset.getId());
 			inAgentContext.setValue("wait", 1000);
+			inAgentContext.setLastResponse(results);
 		}
 
 		archive.fireSharedMediaEvent("importing/assetscreated");

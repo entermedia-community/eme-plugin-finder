@@ -35,13 +35,4 @@ public class ChatMessageContext extends BaseAgentContext
 		putContextValue("usermessage", inMessage);
 	}
 
-	public LlmResponse getLastResponse()
-	{
-		return (LlmResponse) getContextValue("lastResponse");
-	}
-
-	public void setLastResponse(LlmResponse inLastResponse)
-	{
-		putContextValue("lastResponse", inLastResponse);
-	}
 }

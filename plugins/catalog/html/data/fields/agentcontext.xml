@@ -39,7 +39,7 @@
   </property>
 
 
-  <property id="nextfunctionname" index="true" editable="true" stored="true" indextype="not_analyzed">
+  <property id="runfunctionname" index="true" editable="true" stored="true" indextype="not_analyzed">
     <name>
       <language id="en"><![CDATA[Next Function Name]]></language>
     </name>

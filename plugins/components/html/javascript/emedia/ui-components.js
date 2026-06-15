@@ -1177,8 +1177,10 @@ jQuery(document).ready(function () {
 	}
 
 	lQuery(".autoprefixchatmsg").livequery("click", function () {
-		var prefix = $(this).data("prefix");
-		var editorid = $(this).data("editorid");
+		var link = $(this);
+		var prefix = link.data("prefix");
+		var editorid = link.data("editorid");
+		var functionname = link.data("functionname");
 		if (!editorid) {
 			editorid = "chatter-msg";
 		}
@@ -1187,6 +1189,7 @@ jQuery(document).ready(function () {
 			toggleAiSuggestions();
 			editor.focus();
 			editor.val(prefix);
+			
 		}, 100);
 	});
 

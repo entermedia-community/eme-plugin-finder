@@ -309,11 +309,10 @@ public class AssistantManager extends BaseAiManager
 		MultiValued agentmessage = chatMessageContext.getAgentMessage();
 
 		// We require that it be on the message
-		chatMessageContext.setFunctionName(functionName);
 
 		// if (functionName == null)
 		// {
-		// functionName = chatMessageContext.getNextFunctionName();
+		// functionName = chatMessageContext.getRunFunctionName();
 		// }
 
 		// if (functionName == null)
@@ -322,7 +321,6 @@ public class AssistantManager extends BaseAiManager
 		// }
 
 		MultiValued function = (MultiValued) getMediaArchive().getCachedData("aifunction", functionName);
-		chatMessageContext.setNextFunctionName(null);
 
 		String loader = "<i class=\"fas fa-spinner fa-spin mr-2\"></i> ";
 		String processingmessage = null;
@@ -345,6 +343,7 @@ public class AssistantManager extends BaseAiManager
 
 		String message = chatMessageContext.getMessagePrefix() + processingmessage;
 		agentmessage.setValue("message", message); // setting status
+		agentmessage.setValue("functionname", functionName);
 		getMediaArchive().saveData("chatterbox", agentmessage);
 		server.broadcastMessage(getMediaArchive().getCatalogId(), agentmessage);
 
@@ -424,7 +423,10 @@ public class AssistantManager extends BaseAiManager
 					agentmessage.setValue("messageplain", messageplain);
 				}
 			}
+			String nextFunctionName = response.getNextFunctionName();
 
+			agentmessage.setValue("functionname", functionName);
+			agentmessage.setValue("nextfunctionname", nextFunctionName);
 			agentmessage.setValue("chatmessagestatus", "completed");
 			getMediaArchive().saveData("chatterbox", agentmessage);
 
@@ -435,6 +437,7 @@ public class AssistantManager extends BaseAiManager
 			functionMessageUpdate.put("channel", agentmessage.get("channel"));
 			functionMessageUpdate.put("messageid", agentmessage.getId());
 			functionMessageUpdate.put("message", agentmessage.get("message"));
+			functionMessageUpdate.put("nextfunctionname", nextFunctionName);
 			server.broadcastMessage(functionMessageUpdate);
 
 			Long waittime = 200l;
@@ -451,27 +454,22 @@ public class AssistantManager extends BaseAiManager
 					Thread.sleep(wait);
 				}
 
-				String agentNextFn = chatMessageContext.getNextFunctionName();
-				if (agentNextFn != null)
-				{
-					chatMessageContext.setFunctionName(agentNextFn);
-				}
-				chatMessageContext.setNextFunctionName(null);
-
 				chatMessageContext.setAgentMessage(agentmessage);
 				chatMessageContext.setUserMessage(usermessage);
-				if (agentNextFn != null)
+
+				String runFunctionName = response.getRunFunctionName();
+				if (runFunctionName != null)
 				{
-					MultiValued nextFunction = (MultiValued) archive.getCachedData("aifunction", agentNextFn);
+					MultiValued nextFunction = (MultiValued) archive.getCachedData("aifunction", runFunctionName);
 					chatMessageContext.setAiFunction(nextFunction);
-					execCurrentFunctionFromChat(chatMessageContext, usermessage, agentNextFn);
+					execCurrentFunctionFromChat(chatMessageContext, usermessage, runFunctionName);
 				}
 				// Save the current state
 			}
 		}
 		catch (Exception e)
 		{
-			log.error("Could not execute function: " + chatMessageContext.getFunctionName(), e);
+			log.error("Could not execute function: " + functionName, e);
 			agentmessage.setValue("functionresponse", e.toString());
 			agentmessage.setValue("chatmessagestatus", "failed");
 			archive.saveData("chatterbox", agentmessage);
@@ -942,11 +940,12 @@ public class AssistantManager extends BaseAiManager
 				id = "fieldsonly_welcome_" + module.getId();
 				messagehandler = "entityCreationSkill";
 			}
-			else if (method.equals("smartcreator"))
-			{
-				id = "smartcreator_welcome_" + module.getId();
-				messagehandler = "smartCreatorSkill";
-			}
+			else
+				if (method.equals("smartcreator"))
+				{
+					id = "smartcreator_welcome_" + module.getId();
+					messagehandler = "smartCreatorSkill";
+				}
 
 			Data exists = getMediaArchive().getData("aifunction", id);
 			if (exists != null)

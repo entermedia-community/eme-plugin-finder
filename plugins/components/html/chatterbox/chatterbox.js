@@ -11,6 +11,19 @@ jQuery(document).ready(function () {
 	}
 	const userid = app.data("user");
 
+	function lookupFunctionName(chatter) {
+		//loop chatterbox for messages in reverse order and get data-functionname of the first one that has it. This is the function we will run after the message is sent.
+		const messages = chatter.find(".msg-bubble").get().reverse();
+		for (let i = 0; i < messages.length; i++) {
+			var message =  $(messages[i]);
+			const fn = message.data("nextfunctionname");
+			if (fn) {
+				return fn;
+			}
+		}
+		return null;
+	}
+
 	function initChatterbox() {
 		cancelKeepAlive();
 		connect();
@@ -23,7 +36,7 @@ jQuery(document).ready(function () {
 
 			data = $.extend({}, data); //So we can edit it
 			data.command = button.data("command");
-			data.functionname = button.data("functionname");
+			data.functionname = lookupFunctionName(chatter);
 
 			const input = $("#chatter-msg");
 			const replytoid = input.data("replytoid");
@@ -310,6 +323,7 @@ jQuery(document).ready(function () {
 			if (message.command === "messageremoved") {
 				existing.remove();
 			} else {
+				
 				const msgBody = $(existing).find(".msg-body-content");
 				if (msgBody.length) {
 					msgBody.html(message.message);
@@ -317,6 +331,8 @@ jQuery(document).ready(function () {
 					const chatMsg = $(existing).find(".chat-msg");
 					chatMsg.html(message.message);
 				}
+
+				$(existing).data("nextfunctionname", message.nextfunctionname);
 			}
 
 			scrollToChat();

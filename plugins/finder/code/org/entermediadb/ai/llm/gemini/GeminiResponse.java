@@ -59,7 +59,7 @@ public class GeminiResponse extends BasicLlmResponse
     }
 
     @Override
-    public String getFunctionName()
+    public String getRunFunctionName()
     {
         if (!isToolCall())
             return null;

@@ -16,13 +16,13 @@
       #end
       $pages.include("${searchhome}/convertqueue/previewstatus.html?assetid=$!{asset.id}", $context)
 	    
-      $agentcontext.setNextFunctionName("image_creation_render")
+      $agentcontext.setRunFunctionName("image_creation_render")
 	    $agentcontext.setValue("assetid", $asset.id)
 	    $agentcontext.setWaitTime(1000)
 	  
     #else
     
-      $agentcontext.setNextFunctionName(null)
+      $agentcontext.setRunFunctionName(null)
       <messageplain>[[Image loaded successfully!]]</messageplain>
       $pages.include("${searchhome}/thumbnails/image.html", $context)
     #end

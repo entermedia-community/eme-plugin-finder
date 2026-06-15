@@ -58,7 +58,7 @@ public class QuestionsSkill extends BaseSkill
 
 			/*
 			 * for(GuideStatus stat : statuses) { if(!stat.isReady()) { messageContext.setValue("wait", 1000L);
-			 * messageContext.setNextFunctionName(messageContext.getFunctionName());
+			 * messageContext.setRunFunctionName(messageContext.getFunctionName());
 			 * 
 			 * return null; } }
 			 */
@@ -71,11 +71,11 @@ public class QuestionsSkill extends BaseSkill
 			LlmResponse response = llmconnection.renderLocalAction(messageContext);
 			if (aisuggestions.isEmpty())
 			{
-				messageContext.setNextFunctionName("question_create_suggestions");
+				response.setRunFunctionName("question_create_suggestions");
 			}
 			else
 			{
-				messageContext.setFunctionName("question_ask");
+				response.setNextFunctionName("question_ask");
 				messageContext.setWaitTime(null);
 			}
 			messageContext.setLastResponse(response);
@@ -117,7 +117,7 @@ public class QuestionsSkill extends BaseSkill
 				}
 				else
 				{
-					messageContext.setNextFunctionName("chat_questions_welcome");
+					response.setRunFunctionName("chat_questions_welcome");
 				}
 				messageContext.setLastResponse(response);
 				return;
