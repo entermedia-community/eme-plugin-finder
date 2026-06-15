@@ -135,7 +135,7 @@ public class DocumentSplitterManager extends BaseAiManager
 					}
 
 					LlmConnection llmconnection = getMediaArchive().getLlmConnection("documentsplitasset");
-					LlmResponse response = llmconnection.renderLocalAction(agentcontext);
+					LlmResponse response = llmconnection.renderLocalAction(agentcontext, "documentsplitasset");
 					if (response != null)
 					{
 						fulltext = response.getMessage();

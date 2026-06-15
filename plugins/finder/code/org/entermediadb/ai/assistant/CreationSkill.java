@@ -86,9 +86,9 @@ public class CreationSkill extends BaseSkill
 
 						inAgentContext.addContext("refreshing", "true");
 
-						LlmConnection llmconnection = getMediaArchive().getLlmConnection("creation_image_render");
+						LlmConnection llmconnection = getMediaArchive().getLlmConnection(agentFn);
 
-						LlmResponse result = llmconnection.renderLocalAction(inAgentContext);
+						LlmResponse result = llmconnection.renderLocalAction(inAgentContext, agentFn);
 
 						log.info("Next function: " + result.getRunFunctionName());
 

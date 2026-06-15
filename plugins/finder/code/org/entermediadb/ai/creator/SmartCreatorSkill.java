@@ -77,8 +77,8 @@ public class SmartCreatorSkill extends BaseSkill
 
 		if (agentFn.equals("chat_smartcreator_welcome"))
 		{
-			LlmConnection llmconnection = getMediaArchive().getLlmConnection(currentfunction.getId());
-			LlmResponse response = llmconnection.renderLocalAction(messageContext);
+			LlmConnection llmconnection = getMediaArchive().getLlmConnection(agentFn);
+			LlmResponse response = llmconnection.renderLocalAction(messageContext, agentFn);
 			// messageContext.setFunctionName("question_ask");
 			messageContext.setWaitTime(null);
 			messageContext.setLastResponse(response);

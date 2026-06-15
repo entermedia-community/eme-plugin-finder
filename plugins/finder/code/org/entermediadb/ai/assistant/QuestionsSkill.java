@@ -66,9 +66,9 @@ public class QuestionsSkill extends BaseSkill
 			Collection aisuggestions = getMediaArchive().query("aisuggestion").exact("entityid", entity).search();
 			messageContext.addContext("suggestions", aisuggestions);
 
-			LlmConnection llmconnection = getMediaArchive().getLlmConnection(inAiFunction.getId()); // Should stay
-																									// search_start
-			LlmResponse response = llmconnection.renderLocalAction(messageContext);
+			LlmConnection llmconnection = getMediaArchive().getLlmConnection(agentFn); // Should stay
+																						// search_start
+			LlmResponse response = llmconnection.renderLocalAction(messageContext, agentFn);
 			if (aisuggestions.isEmpty())
 			{
 				response.setRunFunctionName("question_create_suggestions");

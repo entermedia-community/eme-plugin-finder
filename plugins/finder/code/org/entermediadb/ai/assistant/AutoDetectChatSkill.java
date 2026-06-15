@@ -39,9 +39,9 @@ public class AutoDetectChatSkill extends BaseSkill
 			messageContext.putContextValue("sentwelcome", true);
 			agentmessage.setValue("chatmessagestatus", "completed");
 
-			LlmConnection llmconnection = getMediaArchive().getLlmConnection(currentfunction.getId()); // Should stay
+			LlmConnection llmconnection = getMediaArchive().getLlmConnection(agentFn); // Should stay
 			// search_start
-			LlmResponse response = llmconnection.renderLocalAction(inAgentContext);
+			LlmResponse response = llmconnection.renderLocalAction(inAgentContext, agentFn);
 			response.setNextFunctionName("auto_detect_conversation");
 			messageContext.setLastResponse(response);
 			messageContext.log("sent" + response.getMessagePlain());
@@ -104,7 +104,7 @@ public class AutoDetectChatSkill extends BaseSkill
 						agentmessage.setValue("chatmessagestatus", "completed");
 
 						LlmConnection llmconnection = getMediaArchive().getLlmConnection(agentFn); // Should stay search_start
-						LlmResponse response = llmconnection.renderLocalAction(inAgentContext);
+						LlmResponse response = llmconnection.renderLocalAction(inAgentContext, agentFn);
 						response.setNextFunctionName("auto_detect_sitewide_parse");
 						messageContext.setLastResponse(response);
 						return;

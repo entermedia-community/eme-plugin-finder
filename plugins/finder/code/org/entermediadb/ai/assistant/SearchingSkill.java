@@ -51,9 +51,9 @@ public class SearchingSkill extends BaseSkill
 			inAgentMessage.setValue("chatmessagestatus", "completed");
 			Schema schema = loadSchema();
 			messageContext.addContext("schema", schema);
-			LlmConnection llmconnection = getMediaArchive().getLlmConnection(currentfunction.getId()); // Should stay
-																										// search_start
-			LlmResponse response = llmconnection.renderLocalAction(messageContext);
+			LlmConnection llmconnection = getMediaArchive().getLlmConnection(agentFn); // Should stay
+																						// search_start
+			LlmResponse response = llmconnection.renderLocalAction(messageContext, agentFn);
 			response.setNextFunctionName("search_parse");
 			messageContext.setLastResponse(response);
 			return;
@@ -113,9 +113,9 @@ public class SearchingSkill extends BaseSkill
 			else
 				if ("search_tables".equals(agentFn))
 				{
-					LlmConnection llmconnection = getMediaArchive().getLlmConnection("search_tables");
-					LlmResponse response = llmconnection.renderLocalAction(messageContext); // TOREVIEW: This is rendering
-																							// previous searches results first
+					LlmConnection llmconnection = getMediaArchive().getLlmConnection(agentFn);
+					LlmResponse response = llmconnection.renderLocalAction(messageContext, agentFn); // TOREVIEW: This is rendering
+					// previous searches results first
 
 					String message = response.getMessage();
 					messageContext.setMessagePrefix(message);
@@ -163,8 +163,8 @@ public class SearchingSkill extends BaseSkill
 						{
 							inAgentContext.addContext("semanticquery", semanticquery.trim());
 
-							LlmConnection llmconnection = getMediaArchive().getLlmConnection("search_semantic");
-							result = llmconnection.renderLocalAction(inAgentContext);
+							LlmConnection llmconnection = getMediaArchive().getLlmConnection(agentFn);
+							result = llmconnection.renderLocalAction(inAgentContext, agentFn);
 						}
 						else
 						{

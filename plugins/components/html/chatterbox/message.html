@@ -58,7 +58,7 @@ $context.putPageValue("goalsenabled", $goalsenabled)
 		<div class="chat-msg">
 			<div class="chat-author">
 				#if ($chat.user == "agent")
-					<strong>$chatuser.getAnonNickName()</strong>
+					<strong>EME #text($entity)</strong>
 				#else
 					<a href="#esc($userlink)" title="$context.getDateTime($chat.date)">
 						<strong>$chatuser.getAnonNickName()</strong>

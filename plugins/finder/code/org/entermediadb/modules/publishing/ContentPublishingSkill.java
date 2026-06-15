@@ -1026,7 +1026,7 @@ public class ContentPublishingSkill extends BaseSkill implements CatalogEnabled
 		 * 
 		 * LlmConnection llmconnection = getMediaArchive().getLlmConnection("image_creation_render");
 		 * 
-		 * LlmResponse result = llmconnection.renderLocalAction(inAgentContext);
+		 * LlmResponse result = llmconnection.renderLocalAction(inAgentContext, agentFn);
 		 * 
 		 * log.info("Next function: " + inAgentContext.getRunFunctionName());
 		 * 
@@ -1084,7 +1084,7 @@ public class ContentPublishingSkill extends BaseSkill implements CatalogEnabled
 
 		LlmConnection llmconnection = getMediaArchive().getLlmConnection("createRecord");
 
-		LlmResponse result = llmconnection.renderLocalAction(inAgentContext);
+		LlmResponse result = llmconnection.renderLocalAction(inAgentContext, "createRecord");
 
 		return result;
 

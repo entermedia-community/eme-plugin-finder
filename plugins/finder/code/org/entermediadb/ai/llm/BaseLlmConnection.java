@@ -274,17 +274,6 @@ public class BaseLlmConnection implements LlmConnection
 		}
 	}
 
-	public LlmResponse renderLocalAction(AgentContext agentcontext)
-	{
-		String functionName = agentcontext.getAiFunction().getId();
-		if (functionName == null)
-		{
-			throw new OpenEditException("Cannot load function response, functionName is null");
-		}
-
-		return renderLocalAction(agentcontext, functionName);
-	}
-
 	public LlmResponse renderLocalAction(AgentContext agentcontext, String inTemplateName)
 	{
 		String appid = agentcontext.getChannel().get("chatapplicationid");
