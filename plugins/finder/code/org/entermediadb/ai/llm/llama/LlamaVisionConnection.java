@@ -35,11 +35,11 @@ public class LlamaVisionConnection extends LlamaOpenAiConnection
 	{
 		MediaArchive archive = getMediaArchive();
 
-		params.put("model", getModelName());
+		params.putContextValue("model", getModelName());
 
 		if (textContent != null)
 		{
-			params.put("textcontent", textContent);
+			params.putContextValue("textcontent", textContent);
 		}
 
 		String templatepath = "/" + archive.getMediaDbId() + "/ai/" + getLlmProtocol() + "/calls/" + inFunction + ".json";
@@ -73,7 +73,7 @@ public class LlamaVisionConnection extends LlamaOpenAiConnection
 	@Override
 	public LlmResponse callStructure(AgentContext inParams, String inFunctionName)
 	{
-		inParams.put("model", getModelName());
+		inParams.putContextValue("model", getModelName());
 
 		String templatepath = "/" + getMediaArchive().getMediaDbId() + "/ai/" + getLlmProtocol() + "/calls/" + inFunctionName + ".json";
 		String prompt = loadInputFromTemplate(inParams, templatepath);

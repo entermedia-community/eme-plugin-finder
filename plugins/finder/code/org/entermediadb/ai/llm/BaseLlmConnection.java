@@ -181,7 +181,7 @@ public class BaseLlmConnection implements LlmConnection
 
 	public String loadInputFromTemplate(AgentContext agentcontext, String inTemplate)
 	{
-		Map<String, Object> inContext = agentcontext.getContext();
+		Map<String, Object> inContext = agentcontext.getAllContext();
 		if (inTemplate == null)
 		{
 			throw new OpenEditException("Cannot load input, template is null" + inContext);
@@ -197,7 +197,7 @@ public class BaseLlmConnection implements LlmConnection
 
 			if (agentcontext != null)
 			{
-				loadagentcontextParameters(agentcontext, request);
+				loadAgentContextParameters(agentcontext, request);
 			}
 
 			request.putPageValues(inContext);
@@ -227,7 +227,7 @@ public class BaseLlmConnection implements LlmConnection
 		}
 	}
 
-	protected void loadagentcontextParameters(AgentContext agentcontext, WebPageRequest request)
+	protected void loadAgentContextParameters(AgentContext agentcontext, WebPageRequest request)
 	{
 		request.putPageValue("sessionlocale", agentcontext.getLocale());
 
@@ -241,12 +241,14 @@ public class BaseLlmConnection implements LlmConnection
 				request.setRequestParameter(key, (String) obj);
 			}
 			else
+			{
 				if (obj instanceof JSONObject)
 				{
 					JSONObject json = (JSONObject) obj;
 					request.setRequestParameter(key, json.toJSONString());
 				}
 				else
+				{
 					if (obj instanceof Collection)
 					{
 						Collection<String> col = (Collection<String>) obj;
@@ -254,12 +256,16 @@ public class BaseLlmConnection implements LlmConnection
 						request.setRequestParameter(key, (String[]) obj);
 					}
 					else
+					{
 						if (obj instanceof String[])
 						{
 							request.setRequestParameter(key, (String[]) obj);
 						}
+					}
+				}
+			}
 		}
-		Map pagevalues = agentcontext.getContext();
+		Map pagevalues = agentcontext.getAllContext();
 		if (pagevalues != null)
 		{
 			for (Iterator iterator = pagevalues.keySet().iterator(); iterator.hasNext();)
@@ -289,7 +295,7 @@ public class BaseLlmConnection implements LlmConnection
 			WebPageRequest inReq = getRequestUtils().createPageRequest(template, user);
 			inReq.putPageValues(agentcontext.getAllContext());
 			inReq.putPageValue("agentcontext", agentcontext);
-			loadagentcontextParameters(agentcontext, inReq);
+			loadAgentContextParameters(agentcontext, inReq);
 
 			StringWriter output = new StringWriter();
 			inReq.setWriter(output);
