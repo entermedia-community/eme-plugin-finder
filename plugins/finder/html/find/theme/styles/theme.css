@@ -7883,6 +7883,11 @@ h3.modal-insight-datatype {
 .modal-dialog {
 	max-width: 800px;
 }
+.modal-dialog.modal-fullscreen {
+	max-width: 100%;
+	height: 100%;
+	margin: 0;
+}
 
 .modal-lg {
 	max-width: 600px;
