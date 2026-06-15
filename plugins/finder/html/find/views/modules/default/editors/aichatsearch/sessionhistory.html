@@ -12,13 +12,20 @@
     <strong>[[Session History]]</strong>
   </p>
 
+  
+
   #set($toplevelfunctionid = $agentcontext.getTopLevelFunctionName())
 
   #if ($page.channeltype == "agentchat")
-  	#set( $hits = $mediaarchive.query("channel").exact("user",$user).exact("searchtype", "user").sort("refreshdateDown").search($context))
+  	#set( $hits = $mediaarchive.query("channel").exact("user", $user).exact("searchtype", "user").sort("refreshdateDown").search($context))
   #else
-  	#set( $hits = $mediaarchive.query("channel").exact("dataid",$entity.id).exact("searchtype", $module.id).sort("refreshdateDown").search($context))
+    #if($entity.owner == $user.id)
+      #set( $hits = $mediaarchive.query("channel").exact("dataid",$entity.id).exact("searchtype", $module.id).sort("refreshdateDown").search($context))
+    #else
+      #set( $hits = $mediaarchive.query("channel").exact("dataid",$entity.id).exact("searchtype", $module.id).exact("user", $user).sort("refreshdateDown").search($context))
+    #end
   #end
+
   #foreach($hit in $hits.getPageOfHits() )
     <div class="sessionhistory-item #if( $currentchannel.id == $hit.id ) active #end">
 

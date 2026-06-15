@@ -621,12 +621,16 @@ public class ChatModule extends BaseMediaModule
 			entityid = inReq.findValue("dataid");
 		}
 
+		boolean isowner = false;
+
 		if (entityid == null && "agententitychat".equals(channeltype))
 		{
 			Data entity = (Data) inReq.getPageValue("entity");
+
 			if (entity != null)
 			{
 				entityid = entity.getId();
+				isowner = entity.get("owner").equals(inReq.getUserName());
 			}
 			// else
 			// {
@@ -663,15 +667,30 @@ public class ChatModule extends BaseMediaModule
 				// TODO: Add flag for multi user
 				if (entityid != null)
 				{
-					// Shared chat. Like in OI
-					currentchannel =
-						(MultiValued) channelsearcher.query().exact("dataid", entityid).exact("searchtype", module).after("refreshdate", now.getTime()).sort("refreshdateDown").searchOne();
+					if (isowner)
+					{
+						currentchannel =
+							(MultiValued) channelsearcher.query().exact("dataid", entityid).exact("searchtype", module).after("refreshdate", now.getTime()).sort("refreshdateDown").searchOne();
+					}
+					else
+					{
+						currentchannel = (MultiValued) channelsearcher.query()
+							.exact("dataid", entityid)
+							.exact("searchtype", module)
+							.exact("user", inReq.getUserName())
+							.after("refreshdate", now.getTime())
+							.sort("refreshdateDown")
+							.searchOne();
+					}
+
 				}
 				else
 				{
 					// By user
 					currentchannel = (MultiValued) channelsearcher.query().exact("user", inReq.getUserName()).missing("dataid").after("refreshdate", now.getTime()).sort("refreshdateDown").searchOne();
 				}
+
+				channelname = inReq.getUser().getName();
 			}
 		}
 
