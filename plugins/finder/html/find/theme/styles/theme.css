@@ -2765,7 +2765,9 @@ select + .select2-container {
 	height: 100%;
 	padding-bottom: 32px;
 }
-
+.col-content-main.loggedout {
+	margin: 0;
+}
 .mediaappcontent .col-content-main {
 	margin-top: 90px;
 }
@@ -7882,6 +7884,11 @@ h3.modal-insight-datatype {
 
 .modal-dialog {
 	max-width: 800px;
+}
+.modal-dialog.modal-fullscreen {
+	max-width: 100%;
+	height: 100%;
+	margin: 0;
 }
 
 .modal-lg {

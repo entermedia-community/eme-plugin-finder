@@ -16,7 +16,7 @@ $context.putPageValue("sidebarwidth", $sidebarwidth)
 #set( $sidebarcomponent = $userprofile.get("sidebarcomponent"))
 $context.putPageValue("sidebarcomponent", $sidebarcomponent)
 
-<div id="applicationstructure" class="col-main col-content-main">
+<div id="applicationstructure" class="col-main col-content-main #ifnull($user) loggedout #end">
 	<div class="pushcontent finderlayout col-main-inner"
 			style="#if($sidebarcomponent && $sidebarwidth) margin-left:$!{sidebarwidth}px;#end"
 			data-sidebarcomponent="$!sidebarcomponent">
