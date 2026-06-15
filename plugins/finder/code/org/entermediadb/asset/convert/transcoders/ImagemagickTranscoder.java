@@ -177,7 +177,8 @@ public class ImagemagickTranscoder extends BaseTranscoder
 			}
 
 			// Alawys strip profiles/metadata
-			com.add(0, "-strip");
+			// imagemagick fails with strip for documents
+			com.add("-strip");
 
 			if (!inStructions.isCrop()) // not a crop!
 			{
