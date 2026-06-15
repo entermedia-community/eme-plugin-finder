@@ -322,6 +322,12 @@ public class AssistantManager extends BaseAiManager
 
 		MultiValued function = (MultiValued) getMediaArchive().getCachedData("aifunction", functionName);
 
+		if (function == null)
+		{
+			log.error("Could not find function: " + functionName);
+			return;
+		}
+
 		String loader = "<i class=\"fas fa-spinner fa-spin mr-2\"></i> ";
 		String processingmessage = null;
 		if (function != null)

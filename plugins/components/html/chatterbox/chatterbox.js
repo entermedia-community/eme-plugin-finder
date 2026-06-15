@@ -37,6 +37,7 @@ jQuery(document).ready(function () {
 			data = $.extend({}, data); //So we can edit it
 			data.command = button.data("command");
 			data.functionname = lookupFunctionName(chatter);
+			console.log(data);
 
 			const input = $("#chatter-msg");
 			const replytoid = input.data("replytoid");

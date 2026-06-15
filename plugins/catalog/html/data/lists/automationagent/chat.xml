@@ -13,7 +13,7 @@
    </data>
 
 
-   <data id="searchingChatSkill" bean="searchingChatSkill" agenttype="remoteagent" ordering="10">
+   <data id="searchingChatSkill" bean="searchingSkill" agenttype="remoteagent" ordering="10">
       <name>
          <![CDATA[Searching Chat]]>
       </name>
