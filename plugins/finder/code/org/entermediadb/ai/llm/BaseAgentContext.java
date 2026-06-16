@@ -114,7 +114,14 @@ public class BaseAgentContext extends BaseData implements CatalogEnabled, AgentC
 	public void setCurrentScenario(MultiValued inCurrentScenario)
 	{
 		fieldCurrentScenario = inCurrentScenario;
-		setValue("currentscenario", inCurrentScenario.getId());
+		if (inCurrentScenario != null)
+		{
+			setValue("currentscenario", inCurrentScenario.getId());
+		}
+		else
+		{
+			setValue("currentscenario", null);
+		}
 	}
 
 	protected AgentEnabled fieldCurrentAgentEnable;
@@ -236,6 +243,17 @@ public class BaseAgentContext extends BaseData implements CatalogEnabled, AgentC
 		if (value == null && getParentContext() != null)
 		{
 			return getParentContext().get(inId);
+		}
+		return value;
+	}
+
+	public Object getValue(String inId)
+	{
+		Object value = super.getValue(inId);
+
+		if (value == null && getParentContext() != null)
+		{
+			return getParentContext().getValue(inId);
 		}
 		return value;
 	}

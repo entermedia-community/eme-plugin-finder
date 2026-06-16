@@ -159,7 +159,7 @@ public class AgentModule extends BaseMediaModule
 		// Get the contenxt and update it first
 		String channelid = inReq.getRequestParameter("channel");
 		String applicationid = inReq.findValue("applicationid");
-		ChatMessageContext agentContext = assistantManager.loadContext(applicationid, channelid);
+		ChatMessageContext agentContext = assistantManager.loadChatContext(applicationid, channelid);
 		// Refresh drop down area?
 		inReq.putPageValue("agentcontext", agentContext);
 
@@ -184,7 +184,10 @@ public class AgentModule extends BaseMediaModule
 			// Scenario changed. Clear the context and start over.
 
 			automationscenario = (MultiValued) getMediaArchive(inReq).getCachedData("automationscenario", currentscenario);
+
 			agentContext.setCurrentScenario(automationscenario);
+			getMediaArchive(inReq).saveData("agentcontext", agentContext);
+
 			firesystemmessage = true;
 
 			if (functionname == null)
@@ -242,7 +245,7 @@ public class AgentModule extends BaseMediaModule
 		}
 		String applicationid = inReq.findValue("applicationid");
 
-		AgentContext context = assistantManager.loadContext(applicationid, channelid);
+		AgentContext context = assistantManager.loadChatContext(applicationid, channelid);
 
 		context.setLocale(inReq.getLocale()); // ----
 
