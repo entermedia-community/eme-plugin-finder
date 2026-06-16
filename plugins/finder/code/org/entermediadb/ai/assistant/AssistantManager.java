@@ -11,16 +11,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.BaseAiManager;
 import org.entermediadb.ai.ChatMessageContext;
-import org.entermediadb.ai.Skill;
 import org.entermediadb.ai.automation.AutomationManager;
 import org.entermediadb.ai.classify.EmbeddingManager;
-import org.entermediadb.ai.informatics.InformaticsContext;
-import org.entermediadb.ai.llm.AgentEnabled;
+import org.entermediadb.ai.llm.BaseAgentContext;
 import org.entermediadb.ai.llm.LlmResponse;
 import org.entermediadb.asset.MediaArchive;
 import org.entermediadb.find.EntityManager;
@@ -36,7 +34,6 @@ import org.openedit.HttpException;
 import org.openedit.MultiValued;
 import org.openedit.OpenEditException;
 import org.openedit.WebPageRequest;
-import org.openedit.data.BaseData;
 import org.openedit.data.PropertyDetail;
 import org.openedit.data.QueryBuilder;
 import org.openedit.data.Searcher;
@@ -44,7 +41,6 @@ import org.openedit.hittracker.HitTracker;
 import org.openedit.profile.UserProfile;
 import org.openedit.users.User;
 import org.openedit.util.DateStorageUtil;
-import org.openedit.util.PathUtilities;
 
 public class AssistantManager extends BaseAiManager
 {
@@ -161,52 +157,71 @@ public class AssistantManager extends BaseAiManager
 	// return manager;
 	// }
 	//
-	public ChatMessageContext loadContext(String applicationId, String inChannelId)
+
+	public ChatMessageContext loadChatContext(String applicationId, String inChannelId)
 	{
 		MediaArchive archive = getMediaArchive();
 		ChatMessageContext chatMessageContext = (ChatMessageContext) archive.getCacheManager().get("chatMessageContext", inChannelId);
 		if (chatMessageContext == null)
 		{
-			// Searcher searcher = archive.getSearcher("chatMessageContext");
-			// chatMessageContext = (ChatMessageContext) searcher.query().exact("channel",
-			// inChannelId).searchOne(); // TODO Look in DB
-			// hitory?
-			// if (chatMessageContext == null)
-			// {
-			// chatMessageContext = (chatMessageContext) searcher.createNewData();
-			// }
-			chatMessageContext = new ChatMessageContext();
-
-			Data channel = getMediaArchive().getCachedData("channel", inChannelId);
-			if (channel == null)
-			{
-				log.error("Should not have to create new channel");
-				channel = getMediaArchive().getSearcher("channel").createNewData();
-				channel.setId(inChannelId);
-				channel.setValue("date", new Date());
-				channel.setValue("refreshdate", new Date());
-				// String siteid = PathUtilities.extractDirectoryPath(getMediaArchive().getCatalogId());
-				channel.setValue("chatapplicationid", applicationId);
-				getMediaArchive().saveData("channel", channel);
-
-			}
-			chatMessageContext.setChannel(channel);
-			chatMessageContext.setValue("channel", inChannelId);
-			String entitymoduleid = channel.get("searchtype");
-			if (channel.get("dataid") != null)
-			{
-				Data entity = archive.getCachedData(entitymoduleid, channel.get("dataid"));
-				Data entitymodule = archive.getCachedData("module", entitymoduleid);
-				chatMessageContext.setValue("entityid", entity.getId());
-				chatMessageContext.setValue("entitymoduleid", entitymoduleid);
-				chatMessageContext.addContext("entity", entity);
-				chatMessageContext.addContext("entitymodule", entitymodule);
-			}
-			// searcher.saveData(chatMessageContext);
-
+			chatMessageContext = new ChatMessageContext(loadContext(applicationId, inChannelId));
 			archive.getCacheManager().put("chatMessageContext", inChannelId, chatMessageContext);
 		}
 		return chatMessageContext;
+	}
+
+	public AgentContext loadContext(String applicationId, String inChannelId)
+	{
+		MediaArchive archive = getMediaArchive();
+		AgentContext agentContext = (AgentContext) archive.getCacheManager().get("agentContext", inChannelId);
+		if (agentContext == null)
+		{
+			Searcher searcher = archive.getSearcher("agentcontext");
+			agentContext = (AgentContext) searcher.query().exact("channel", inChannelId).searchOne();
+			// hitory?
+			if (agentContext == null)
+			{
+				agentContext = new BaseAgentContext();
+				Data channel = getMediaArchive().getCachedData("channel", inChannelId);
+				if (channel == null)
+				{
+					log.error("Should not have to create new channel");
+					channel = getMediaArchive().getSearcher("channel").createNewData();
+					channel.setId(inChannelId);
+					channel.setValue("date", new Date());
+					channel.setValue("refreshdate", new Date());
+					// String siteid = PathUtilities.extractDirectoryPath(getMediaArchive().getCatalogId());
+					channel.setValue("chatapplicationid", applicationId);
+					getMediaArchive().saveData("channel", channel);
+
+				}
+
+				agentContext.setValue("channel", inChannelId);
+				String entitymoduleid = channel.get("searchtype");
+				if (channel.get("dataid") != null)
+				{
+					agentContext.setValue("entityid", channel.get("dataid"));
+					agentContext.setValue("entitymoduleid", entitymoduleid);
+
+				}
+
+			}
+
+			Data channel = getMediaArchive().getCachedData("channel", inChannelId);
+			agentContext.setChannel(channel);
+
+			Data entity = archive.getCachedData((String) agentContext.getValue("entitymoduleid"), agentContext.get("entityid"));
+			Data entitymodule = archive.getCachedData("module", agentContext.get("entitymoduleid"));
+			agentContext.addContext("entity", entity);
+			agentContext.addContext("entitymodule", entitymodule);
+
+			MultiValued currentscenario = (MultiValued) archive.getCachedData("automationscenario", agentContext.get("currentscenario"));
+			agentContext.setCurrentScenario(currentscenario);
+
+			searcher.saveData(agentContext);
+			archive.getCacheManager().put("agentContext", inChannelId, agentContext);
+		}
+		return agentContext;
 	}
 
 	public void respondToChannel(ScriptLogger inLog, Data inChannel, MultiValued usermessage)
@@ -214,7 +229,7 @@ public class AssistantManager extends BaseAiManager
 		MediaArchive archive = getMediaArchive();
 
 		String applicationid = inChannel.get("chatapplicationid");
-		ChatMessageContext chatMessageContext = loadContext(applicationid, inChannel.getId());
+		ChatMessageContext chatMessageContext = loadChatContext(applicationid, inChannel.getId());
 
 		ChatServer server = (ChatServer) archive.getBean("chatServer");
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<properties beanname="dataSearcher" class="agentContext">
+<properties beanname="dataSearcher" class="baseAgentContext">
 
 
   <property id="id" internalfield="true" index="true" editable="true" stored="true">
