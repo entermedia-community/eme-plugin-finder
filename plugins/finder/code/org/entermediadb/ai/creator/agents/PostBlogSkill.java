@@ -6,16 +6,16 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.entermediadb.ai.BaseSkill;
-import org.entermediadb.ai.creator.SmartCreatorSkill;
+import org.entermediadb.ai.creator.ChatSmartCreatorConfirmationSkill;
 import org.entermediadb.ai.informatics.InformaticsContext;
 import org.entermediadb.ai.AgentContext;
 import org.openedit.MultiValued;
 
 public class PostBlogSkill extends BaseSkill
 {
-	public SmartCreatorSkill getSmartCreatorSkill()
+	public ChatSmartCreatorConfirmationSkill getSmartCreatorSkill()
 	{
-		SmartCreatorSkill manager = (SmartCreatorSkill) getMediaArchive().getBean("smartCreatorSkill");
+		ChatSmartCreatorConfirmationSkill manager = (ChatSmartCreatorConfirmationSkill) getMediaArchive().getBean("smartCreatorSkill");
 		return manager;
 	}
 

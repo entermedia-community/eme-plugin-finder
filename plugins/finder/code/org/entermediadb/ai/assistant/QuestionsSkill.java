@@ -33,7 +33,7 @@ public class QuestionsSkill extends BaseSkill
 		ChatMessageContext messageContext = (ChatMessageContext) inAgentContext;
 		///
 		MultiValued inAgentMessage = messageContext.getAgentMessage();
-		MultiValued inAiFunction = messageContext.getAiFunction();
+		MultiValued inAiFunction = messageContext.getCurrentFunction();
 
 		MultiValued usermessage = (MultiValued) getMediaArchive().getCachedData("chatterbox", inAgentMessage.get("replytoid"));
 		String query = usermessage.get("message");

@@ -620,14 +620,24 @@ public class BaseAgentContext extends BaseData implements CatalogEnabled, AgentC
 		return count;
 	}
 
-	public MultiValued getAiFunction()
+	public MultiValued getCurrentFunction()
 	{
 		return (MultiValued) getContextValue("aiFunction");
 	}
 
-	public void setAiFunction(MultiValued inAiFunction)
+	public void setCurrentFunction(MultiValued inAiFunction)
 	{
 		putContextValue("aiFunction", inAiFunction);
+	}
+
+	public String getCurrentFunctionId()
+	{
+		MultiValued function = getCurrentFunction();
+		if (function != null)
+		{
+			return function.getId();
+		}
+		return null;
 	}
 
 	public LlmResponse getLastResponse()
