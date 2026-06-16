@@ -1,7 +1,7 @@
 <div class="sidebar-section-btn"
   style="background-color: #f4f4f6;">
   <span class="d-flex align-items-center gap-2">
-    <i class="bi bi-clock-history sect-icon"></i>[[Chat History]]
+    <i class="bi bi-clock-history sect-icon"></i>[[EME Chat]]
   </span>
 </div>
 
@@ -22,11 +22,12 @@
     #foreach($sess in $chatsessions.getPageOfHits())
       <div class="session-row">
         
-        <a class="session-link ajax #if($currentchannel && $currentchannel.id == $sess.id)active#end"
-          href="$apphome/components/chat-dashboard/sessionrestore.html"
-          data-targetdiv="chatMainContent"
-          data-channel="$sess.id"
-          data-oemaxlevel="1"
+        <a class="session-link emdialog"
+          href="$apphome/views/modules/emeprofile/editors/fullscreenchat/index.html"
+          data-hidefooter="true"
+          data-entityid="$emeprofile.id"
+          data-entitymoduleid="emeprofile"
+          data-channelid="$sess.id"
           title="[[Load session]]">
           <i class="bi bi-chat-left-dots" style="font-size:0.82rem; flex-shrink:0; color:#9ca3af;"></i>
           <span class="s-title">
@@ -53,7 +54,6 @@
       </div>
     #end
   #else
-    <p class="px-2 py-2" style="font-size:0.81rem; color:#9ca3af;">[[No sessions yet — start a new chat!]]</p>
+    <p class="px-2 py-2" style="font-size:0.81rem; color:#9ca3af;">[[No EME chat started yet!]]</p>
   #end
-  
 </div>

@@ -138,6 +138,15 @@
 	overflow: hidden;
 	margin-bottom: 1px;
 }
+.session-thumb {
+	width: 40px;
+	height: 40px;
+	border-radius: 9px;
+	background: #e5e7eb;
+	flex-shrink: 0;
+	object-fit: cover;
+	margin-right: 12px;
+}
 .session-link {
 	flex: 1;
 	display: flex;
