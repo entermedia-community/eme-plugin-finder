@@ -58,26 +58,26 @@ public class ProfileLoader extends BaseManager implements PageLoader, CatalogEna
 			return null;
 		}
 
-		// String[] subdomain = domain.split("\\.");
-		// if(subdomain.length < 3)
-		// {
-		// subdomain = ("default." + domain).split("\\.");
-		// }
-		// String communityurlname = null;
-		String secondpart = null;
+		if (url.length > 1 && !url[1].equals("profiles"))
+		{
+			// Not in teams
+			return null;
+		}
+
+		String profileurlname = null;
 		String anythingelse = null;
 
 		// communityurlname = subdomain[0];
 		if (url.length > 1) // Might be a virtual project
 		{
-			secondpart = url[1]; // might be wrong
-			if (url.length > 2)
+			profileurlname = url[2]; // Giessing
+			if (url.length > 3)
 			{
-				anythingelse = requestedPath.substring(requestedPath.indexOf(secondpart) + secondpart.length());
+				anythingelse = requestedPath.substring(requestedPath.indexOf(profileurlname) + profileurlname.length());
 			}
 		}
 
-		if (secondpart == null)
+		if (profileurlname == null)
 		{
 			String domain = util.domain(); // Not used
 			RightPage page = goHome(inPage, domain);
@@ -100,7 +100,7 @@ public class ProfileLoader extends BaseManager implements PageLoader, CatalogEna
 		}
 
 		String apphome = "/" + appid;
-		String fixedpath = apphome + "/" + secondpart;
+		String fixedpath = apphome + "/profiles/" + profileurlname;
 
 		Page page = null;
 
@@ -141,7 +141,7 @@ public class ProfileLoader extends BaseManager implements PageLoader, CatalogEna
 		}
 
 		// Must be a project with something on the end?
-		QueryBuilder query = getMediaArchive().query("emeprofile").exact("urlname", secondpart).hitsPerPage(1);
+		QueryBuilder query = getMediaArchive().query("emeprofile").exact("urlname", profileurlname).hitsPerPage(1);
 		HitTracker hits = getMediaArchive().getCachedSearch(query);
 		Data emeprofile = (Data) hits.first();
 		if (emeprofile != null)
@@ -180,7 +180,7 @@ public class ProfileLoader extends BaseManager implements PageLoader, CatalogEna
 		}
 		else
 		{
-			// log.info("Couldn't find Collection: " + secondpart);
+			log.info("Couldn't find Collection: " + profileurlname);
 		}
 		if (log.isDebugEnabled())
 			log.debug("Couldn't find any content: Orinal path: " + requestedPath + " Community Home:" + apphome);
