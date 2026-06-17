@@ -65,5 +65,5 @@ Most plugins follow this pattern:
 
 ## Key Configuration Files
 - `plugins/<name>/html/src/plugin.xml` - Bean definitions
-- `plugins/catalog/html/data/lists/automationagent/*.xml` - Automation steps
+- `plugins/catalog/html/data/lists/aiskill/*.xml` - Automation steps
 - `plugins/system/lib/*.jar` - Core libraries

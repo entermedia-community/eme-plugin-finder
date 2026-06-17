@@ -5,12 +5,14 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import org.entermediadb.ai.AgentContext;
+import org.entermediadb.ai.SkillStatusListener;
 import org.entermediadb.ai.assistant.AiCreation;
 import org.entermediadb.ai.assistant.AiSearch;
-import org.entermediadb.ai.knn.RankedResult;
 import org.entermediadb.ai.creator.AiSmartCreatorSteps;
+import org.entermediadb.ai.knn.RankedResult;
 import org.entermediadb.scripts.ScriptLogger;
 import org.json.simple.JSONObject;
 import org.openedit.CatalogEnabled;
@@ -24,6 +26,44 @@ import org.openedit.users.User;
 public class BaseAgentContext extends BaseData implements CatalogEnabled, AgentContext
 {
 	protected ScriptLogger fieldScriptLogger;
+
+	List<SkillStatusListener> fieldStatusListeners;
+
+	public List<SkillStatusListener> getStatusListeners()
+	{
+		if (fieldStatusListeners == null)
+		{
+			fieldStatusListeners = new ArrayList<>();
+		}
+		return fieldStatusListeners;
+	}
+
+	public void setStatusListeners(List<SkillStatusListener> inStatusListeners)
+	{
+		fieldStatusListeners = inStatusListeners;
+	}
+
+	public void addStatusListener(SkillStatusListener inListener)
+	{
+		getStatusListeners().add(inListener);
+	}
+
+	public void fireStatusStarting(String inMessage)
+	{
+		for (SkillStatusListener listener : getStatusListeners())
+		{
+			listener.fireStatusStarting(this, inMessage);
+		}
+	}
+
+	@Override
+	public void fireStatusComplete(String inMessage)
+	{
+		for (SkillStatusListener listener : getStatusListeners())
+		{
+			listener.fireStatusComplete(this, inMessage);
+		}
+	}
 
 	public BaseAgentContext() {
 

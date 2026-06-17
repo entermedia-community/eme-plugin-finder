@@ -2,7 +2,7 @@
 
 <root>
   <property id="enabled" />
-  <property id="automationagent" />
+  <property id="aiskill" />
   <property id="name" />
   <property id="skilloverview" />
   <property id="llmprompt" />

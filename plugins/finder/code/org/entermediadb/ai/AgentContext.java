@@ -157,4 +157,8 @@ public interface AgentContext extends Data
 
 	public void setLastResponse(LlmResponse inLastResponse);
 
+	public void fireStatusStarting(String inMessage);
+
+	public void fireStatusComplete(String inMessage);
+
 }
