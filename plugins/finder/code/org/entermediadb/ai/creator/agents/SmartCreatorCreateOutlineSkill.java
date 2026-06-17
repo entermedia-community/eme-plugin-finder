@@ -8,7 +8,6 @@ import java.util.Map;
 import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.BaseSkill;
 import org.entermediadb.ai.creator.AiSmartCreatorSteps;
-import org.entermediadb.ai.creator.ChatSmartCreatorConfirmationSkill;
 import org.entermediadb.ai.llm.LlmConnection;
 import org.entermediadb.ai.llm.LlmResponse;
 import org.json.simple.JSONObject;
@@ -68,9 +67,8 @@ public class SmartCreatorCreateOutlineSkill extends BaseSkill
 
 		if (messageContext.getContextValue("confirmoutline") != null)
 		{
-			messageContext.getLastResponse().setRunFunctionName(null);
-			messageContext.setNextSkill("smartcreator_confirmoutline");
-			messageContext.setRunSkill("smartcreator_confirmoutline");
+			messageContext.getLastResponse().setRunSkillEnabled(null);
+			messageContext.getLastResponse().setNextSkillEnabled("smartcreator_confirmoutline");
 		}
 
 	}

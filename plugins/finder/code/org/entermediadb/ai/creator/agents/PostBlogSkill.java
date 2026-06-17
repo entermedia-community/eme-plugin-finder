@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.entermediadb.ai.BaseSkill;
-import org.entermediadb.ai.creator.ChatSmartCreatorConfirmationSkill;
 import org.entermediadb.ai.informatics.InformaticsContext;
 import org.entermediadb.ai.AgentContext;
 import org.openedit.MultiValued;

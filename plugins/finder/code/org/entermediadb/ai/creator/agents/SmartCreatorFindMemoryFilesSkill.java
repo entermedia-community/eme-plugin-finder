@@ -8,7 +8,6 @@ import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.BaseSkill;
 import org.entermediadb.ai.assistant.AssistantManager;
 import org.entermediadb.ai.assistant.SearchingSkill;
-import org.entermediadb.ai.creator.ChatSmartCreatorConfirmationSkill;
 import org.entermediadb.ai.llm.BasicLlmResponse;
 import org.json.simple.JSONArray;
 import org.openedit.Data;
@@ -44,7 +43,7 @@ public class SmartCreatorFindMemoryFilesSkill extends BaseSkill
 		{
 			findMemoryFiles(inContext);
 			BasicLlmResponse response = new BasicLlmResponse();
-			response.setRunFunctionName("smartcreator_createoutline");
+			response.setRunSkillEnabled("smartcreator_createoutline");
 			inContext.setLastResponse(response);
 		}
 	}

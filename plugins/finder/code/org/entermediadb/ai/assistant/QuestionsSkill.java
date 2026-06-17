@@ -33,12 +33,10 @@ public class QuestionsSkill extends BaseSkill
 		ChatMessageContext messageContext = (ChatMessageContext) inAgentContext;
 		///
 		MultiValued inAgentMessage = messageContext.getAgentMessage();
-		MultiValued inAiFunction = messageContext.getCurrentFunction();
+		String agentFn = messageContext.getCurrentAgentEnable().getEnabledId();
 
 		MultiValued usermessage = (MultiValued) getMediaArchive().getCachedData("chatterbox", inAgentMessage.get("replytoid"));
 		String query = usermessage.get("message");
-
-		String agentFn = inAiFunction.getId();
 
 		if ("chat_questions_welcome".equals(agentFn))
 		{
@@ -71,11 +69,11 @@ public class QuestionsSkill extends BaseSkill
 			LlmResponse response = llmconnection.renderLocalAction(messageContext, agentFn);
 			if (aisuggestions.isEmpty())
 			{
-				response.setRunFunctionName("question_create_suggestions");
+				response.setRunSkillEnabled("question_create_suggestions");
 			}
 			else
 			{
-				response.setNextFunctionName("question_ask");
+				response.setNextSkillEnabled("question_ask");
 				messageContext.setWaitTime(null);
 			}
 			messageContext.setLastResponse(response);
@@ -117,7 +115,7 @@ public class QuestionsSkill extends BaseSkill
 				}
 				else
 				{
-					response.setRunFunctionName("chat_questions_welcome");
+					response.setRunSkillEnabled("chat_questions_welcome");
 				}
 				messageContext.setLastResponse(response);
 				return;

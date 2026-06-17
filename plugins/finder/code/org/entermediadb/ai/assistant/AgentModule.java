@@ -8,6 +8,7 @@ import org.entermediadb.ai.informatics.InformaticsProcessorSkill;
 import org.entermediadb.ai.informatics.InformaticsProcessorManager;
 import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.ChatMessageContext;
+import org.entermediadb.ai.automation.RunningScenario;
 import org.entermediadb.asset.MediaArchive;
 import org.entermediadb.asset.modules.BaseMediaModule;
 import org.entermediadb.scripts.ScriptLogger;
@@ -166,26 +167,25 @@ public class AgentModule extends BaseMediaModule
 		boolean firesystemmessage = false;
 		MultiValued automationscenario = null;
 
-		String currentscenario = inReq.getRequestParameter("currentscenario");
-		if (currentscenario == null)
+		String currentscenarioid = inReq.getRequestParameter("currentscenario");
+		if (currentscenarioid == null)
 		{
 			if (agentContext.getCurrentScenario() != null)
 			{
-				currentscenario = agentContext.getCurrentScenario().getId();
+				currentscenarioid = agentContext.getCurrentScenario().getId();
 			}
 			else
 			{
-				currentscenario = "chat_detection";
+				currentscenarioid = "chat_detection";
 			}
 		}
 		String functionname = inReq.getRequestParameter("functionname");
-		if (agentContext.getCurrentScenario() == null || !currentscenario.equals(agentContext.getCurrentScenario().getId()))
+		if (agentContext.getCurrentScenario() == null || !currentscenarioid.equals(agentContext.getCurrentScenario().getId()))
 		{
 			// Scenario changed. Clear the context and start over.
-
-			automationscenario = (MultiValued) getMediaArchive(inReq).getCachedData("automationscenario", currentscenario);
-
-			agentContext.setCurrentScenario(automationscenario);
+			RunningScenario running = (RunningScenario) getMediaArchive(inReq).getBean("runningscenario", false);
+			running.setId(currentscenarioid);
+			agentContext.setCurrentScenario(running);
 			getMediaArchive(inReq).saveData("agentcontext", agentContext);
 
 			firesystemmessage = true;

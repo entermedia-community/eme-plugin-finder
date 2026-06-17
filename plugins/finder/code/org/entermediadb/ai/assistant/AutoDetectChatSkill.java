@@ -23,11 +23,12 @@ public class AutoDetectChatSkill extends BaseSkill
 	{
 		ChatMessageContext messageContext = (ChatMessageContext) inAgentContext;
 		MultiValued agentmessage = messageContext.getAgentMessage();
-		MultiValued currentfunction = messageContext.getCurrentFunction();
+		// MultiValued currentfunction = messageContext.getCurrentFunction();
+
 		MultiValued usermessage = (MultiValued) getMediaArchive().getCachedData("chatterbox", agentmessage.get("replytoid"));
 		String query = usermessage.get("message");
 
-		String agentFn = currentfunction.getId();
+		String agentFn = inAgentContext.getCurrentAgentEnable().getAutomationEnabledData().getId();
 
 		if ("chat_detection_welcome".equals(agentFn) || agentFn == null)
 		{
@@ -42,7 +43,7 @@ public class AutoDetectChatSkill extends BaseSkill
 			LlmConnection llmconnection = getMediaArchive().getLlmConnection(agentFn); // Should stay
 			// search_start
 			LlmResponse response = llmconnection.renderLocalAction(inAgentContext, agentFn);
-			response.setNextFunctionName("auto_detect_conversation");
+			response.setNextSkillEnabled("auto_detect_conversation");
 			messageContext.setLastResponse(response);
 			messageContext.log("sent" + response.getMessagePlain());
 			return;
@@ -62,13 +63,13 @@ public class AutoDetectChatSkill extends BaseSkill
 
 				log.info(response.getRawResponse());
 
-				String functionName = response.getRunFunctionName();
+				String functionName = response.getRunSkillEnabled();
 				JSONObject functionArgs = response.getFunctionArguments();
 
 				inAgentContext.addContext("messagestructured", response.getMessageStructured());
 				inAgentContext.addContext("userquery", query);
 				inAgentContext.addContext("arguments", functionArgs);
-				response.setRunFunctionName(functionName);
+				response.setRunSkillEnabled(functionName);
 
 				/*
 				 * // TODO: sync with auto created function names if("create_tutorial".equals(functionName)) {
@@ -94,7 +95,7 @@ public class AutoDetectChatSkill extends BaseSkill
 				{
 					LlmConnection llmconnection = getMediaArchive().getLlmConnection(agentFn); // Should stay search_start
 					LlmResponse response = llmconnection.renderLocalAction(inAgentContext, "auto_detect_showresponse");
-					response.setNextFunctionName("auto_detect_conversation");
+					response.setNextSkillEnabled("auto_detect_conversation");
 					messageContext.setLastResponse(response);
 					return;
 				}
@@ -105,23 +106,23 @@ public class AutoDetectChatSkill extends BaseSkill
 
 						LlmConnection llmconnection = getMediaArchive().getLlmConnection(agentFn); // Should stay search_start
 						LlmResponse response = llmconnection.renderLocalAction(inAgentContext, agentFn);
-						response.setNextFunctionName("auto_detect_sitewide_parse");
+						response.setNextSkillEnabled("auto_detect_sitewide_parse");
 						messageContext.setLastResponse(response);
 						return;
 					}
 					else
 						if ("auto_detect_sitewide_parse".equals(agentFn))
 						{
-							LlmConnection llmconnection = getMediaArchive().getLlmConnection(currentfunction.getId()); // Should stay
+							LlmConnection llmconnection = getMediaArchive().getLlmConnection(agentFn); // Should stay
 							// search_start
 							LlmResponse response = llmconnection.callToolsFunction(inAgentContext, agentFn);
 
 							log.info(response.getRawResponse());
 
-							String functionName = response.getRunFunctionName();
+							String functionName = response.getRunSkillEnabled();
 							JSONObject functionArgs = response.getFunctionArguments();
 							inAgentContext.addContext("arguments", functionArgs);
-							response.setRunFunctionName(functionName);
+							response.setRunSkillEnabled(functionName);
 							inAgentContext.setLastResponse(response);
 						}
 

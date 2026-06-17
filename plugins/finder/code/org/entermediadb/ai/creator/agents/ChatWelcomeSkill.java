@@ -1,4 +1,4 @@
-package org.entermediadb.ai.creator;
+package org.entermediadb.ai.creator.agents;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -9,6 +9,7 @@ import org.apache.commons.logging.LogFactory;
 import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.BaseSkill;
 import org.entermediadb.ai.ChatMessageContext;
+import org.entermediadb.ai.creator.AiSmartCreatorSteps;
 import org.entermediadb.ai.llm.BasicLlmResponse;
 import org.entermediadb.ai.llm.LlmConnection;
 import org.entermediadb.ai.llm.LlmResponse;
@@ -16,50 +17,23 @@ import org.entermediadb.asset.MediaArchive;
 import org.entermediadb.util.Inflector;
 import org.json.simple.JSONObject;
 import org.openedit.Data;
-import org.openedit.MultiValued;
 import org.openedit.data.Searcher;
 
-public class ChatSmartCreatorConfirmationSkill extends BaseSkill
+public class ChatWelcomeSkill extends BaseSkill
 {
-	private static final Log log = LogFactory.getLog(ChatSmartCreatorConfirmationSkill.class);
+	private static final Log log = LogFactory.getLog(ChatWelcomeSkill.class);
 
 	public void process(AgentContext inContext)
 	{
 		ChatMessageContext messageContext = (ChatMessageContext) inContext;
-		String functionName = inContext.getCurrentFunctionId();
-		boolean runandreturn = "chat_smartcreator_welcome".equals(functionName);
-		if (functionName == null || runandreturn)
-		{
-			messageContext.fireStatusStarting();
-			sendWelcomeMessage(messageContext);
-			messageContext.putContextValue("confirmoutline", true);
-			messageContext.fireStatusComplete();
-			response.setNextFunctionName("smartcreator_confirmoutline"); //
-			if (runandreturn)
-			{
-				return;
-			}
-		}
-
-		runandreturn = "smartcreator_confirmoutline".equals(functionName);
-		if (functionName == null || runandreturn)
-		{
-			confirmOutline(messageContext, functionName);
-			if (runandreturn)
-			{
-				return;
-			}
-		}
-
-		super.process(inContext);
+		sendWelcomeMessage(messageContext);
+		messageContext.putContextValue("confirmoutline", true);
 
 	}
 
 	public LlmResponse sendWelcomeMessage(ChatMessageContext messageContext)
 	{
-		MultiValued currentfunction = messageContext.getCurrentFunction();
-
-		String agentFn = currentfunction.getId();
+		String agentFn = messageContext.getCurrentAgentEnable().getEnabledId();
 
 		LlmConnection llmconnection = getMediaArchive().getLlmConnection(agentFn);
 		LlmResponse response = llmconnection.renderLocalAction(messageContext, agentFn);
@@ -104,7 +78,7 @@ public class ChatSmartCreatorConfirmationSkill extends BaseSkill
 			messageContext.addContext("proposedoutline", instructions.getProposedSections());
 			LlmConnection llmconnection2 = getMediaArchive().getLlmConnection(agentFn);
 			LlmResponse response = llmconnection2.renderLocalAction(messageContext, agentFn);
-			response.setNextFunctionName("smartcreator_confirmoutline"); //
+			response.setNextSkillEnabled("smartcreator_confirmoutline"); //
 			messageContext.setLastResponse(response);
 			return response;
 		}
@@ -128,13 +102,13 @@ public class ChatSmartCreatorConfirmationSkill extends BaseSkill
 			{
 				// Create the content
 				step2response = new BasicLlmResponse();
-				step2response.setNextFunctionName("smartcreator_createsectioncontents");
+				step2response.setNextSkillEnabled("smartcreator_createsectioncontents");
 				messageContext.setLastResponse(step2response);
 			}
 			else
 			{
 				step2response = new BasicLlmResponse();
-				step2response.setNextFunctionName("smartcreator_renderoutline");
+				step2response.setNextSkillEnabled("smartcreator_renderoutline");
 				messageContext.setLastResponse(step2response);
 
 				/*

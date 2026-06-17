@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Map;
 import org.entermediadb.ai.assistant.AiCreation;
 import org.entermediadb.ai.assistant.AiSearch;
+import org.entermediadb.ai.automation.RunningScenario;
 import org.entermediadb.ai.knn.RankedResult;
 import org.entermediadb.ai.creator.AiSmartCreatorSteps;
 import org.entermediadb.ai.llm.AgentEnabled;
@@ -39,9 +40,9 @@ public interface AgentContext extends Data
 
 	void setWaitTime(Long inWaitTime);
 
-	MultiValued getCurrentScenario();
+	RunningScenario getCurrentScenario();
 
-	void setCurrentScenario(MultiValued inCurrentScenario);
+	void setCurrentScenario(RunningScenario inCurrentScenario);
 
 	AgentEnabled getCurrentAgentEnable();
 
@@ -147,18 +148,12 @@ public interface AgentContext extends Data
 
 	Collection<LogEntry> getLogs();
 
-	public String getCurrentFunctionId();
-
-	public MultiValued getCurrentFunction();
-
-	public void setCurrentFunction(MultiValued inAiFunction);
-
 	public LlmResponse getLastResponse();
 
 	public void setLastResponse(LlmResponse inLastResponse);
 
-	public void fireStatusStarting(String inMessage);
+	public void fireStatusStarting(AgentEnabled inAgentEnabled);
 
-	public void fireStatusComplete(String inMessage);
+	public void fireStatusComplete(AgentEnabled inAgentEnabled);
 
 }

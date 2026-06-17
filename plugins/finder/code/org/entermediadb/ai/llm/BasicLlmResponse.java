@@ -14,6 +14,7 @@ public class BasicLlmResponse implements LlmResponse
 	protected String fieldMessagePlain;
 	protected String fieldRunFunctionName;
 	protected String fieldNextFunctionName;
+	protected String fieldOperationState; // error, cancel, continue, runskill
 	protected JSONObject fieldFunctionArguments;
 	protected AiSearch fieldAiSearchParams;
 	Collection<RankedResult> fieldRankedSuggestions;
@@ -93,12 +94,12 @@ public class BasicLlmResponse implements LlmResponse
 	}
 
 	@Override
-	public String getRunFunctionName()
+	public String getRunSkillEnabled()
 	{
 		return fieldRunFunctionName;
 	}
 
-	public void setRunFunctionName(String inFunctionName)
+	public void setRunSkillEnabled(String inFunctionName)
 	{
 		fieldRunFunctionName = inFunctionName;
 	}
@@ -180,13 +181,18 @@ public class BasicLlmResponse implements LlmResponse
 		return getMessageStructured();
 	}
 
-	public void setNextFunctionName(String inFunction)
+	public void setNextSkillEnabled(String inFunction)
 	{
 		fieldNextFunctionName = inFunction;
 	}
 
-	public String getNextFunctionName()
+	public String getNextSkillEnabled()
 	{
 		return fieldNextFunctionName;
+	}
+
+	public String getOperationState()
+	{
+		return fieldOperationState;
 	}
 }

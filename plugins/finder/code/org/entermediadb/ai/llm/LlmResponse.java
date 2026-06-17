@@ -30,13 +30,13 @@ public interface LlmResponse
 
     void setMessagePlain(String inMessagePlain);
 
-    String getRunFunctionName();
+    String getRunSkillEnabled();
 
-    void setRunFunctionName(String inFunction);
+    void setRunSkillEnabled(String inFunction);
 
-    String getNextFunctionName();
+    String getNextSkillEnabled();
 
-    void setNextFunctionName(String inFunction);
+    void setNextSkillEnabled(String inFunction);
 
     JSONObject getFunctionArguments();
 
@@ -52,4 +52,5 @@ public interface LlmResponse
 
     String getFileName();
 
+    String getOperationState(); // error, cancel, continue, runskill
 }

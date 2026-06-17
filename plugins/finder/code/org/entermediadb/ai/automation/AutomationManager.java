@@ -57,7 +57,6 @@ public class AutomationManager extends BaseAiManager implements WebEventListener
 	private static final Log log = LogFactory.getLog(AutomationManager.class);
 
 	protected Map<String, List<AgentContext>> fieldRecentContextByAutomation = new HashMap();
-	protected JSONParser fieldJsonParser = new JSONParser();
 
 	public Collection<AgentContext> getRecentScenerioContext(String inScenerio)
 	{
@@ -114,27 +113,22 @@ public class AutomationManager extends BaseAiManager implements WebEventListener
 
 	public void runScenario(String inId, AgentContext inContext)
 	{
-		MultiValued scenario = (MultiValued) getMediaArchive().getCachedData("automationscenario", inId);
-		// query("automationscenerio").exact("enabled", true).sort("ordering").search();
+		RunningScenario running = (RunningScenario) getMediaArchive().getBean("runningscenario", false);
+		running.setId(inId);
 
-		if (scenario == null)
-		{
-			log.error("Could not find scenario " + inId);
-			return;
-		}
 		if (inContext.getId() == null)
 		{
 			inContext.setId(inCrementId());
 		}
 		addContext(inId, inContext);
-		inContext.setCurrentScenario(scenario);
+		inContext.setCurrentScenario(running);
 
 		// Lock it
 		inContext.setValue("lastrunstart", new Date());
-		scenario.setValue("lastrunstart", new Date());
-		scenario.setValue("isrunning", true);
+		// running.getScenarioData().setValue("lastrunstart", new Date()); // ? needed/
+		// running.getScenarioData().setValue("isrunning", true);
 
-		Collection<AgentEnabled> enabled = getEnabledAgents(inId);
+		Collection<AgentEnabled> enabled = running.getEnabledAgents();
 
 		if (enabled == null || enabled.isEmpty())
 		{
@@ -143,29 +137,19 @@ public class AutomationManager extends BaseAiManager implements WebEventListener
 		}
 
 		inContext.setAgentEnableChildren(enabled);
-
+		boolean cancel = false;
 		for (AgentEnabled agentEnabled : enabled)
 		{
-			inContext.setCurrentAgentEnable(agentEnabled);
-			agentEnabled.getAgent().process(inContext);
+			cancel = running.runProcess(agentEnabled, inContext);
+			if (cancel)
+			{
+				log.info("Process was cancelled by " + agentEnabled.getAgentData().getId() + " in scenario " + inId);
+				break;
+			}
 		}
-		scenario.setValue("isrunning", false);
-		getMediaArchive().saveData("automationscenario", scenario);
-	}
-
-	private void addContextValues(AgentEnabled inAgentEnabled)
-	{
-		MultiValued automationEnabledData = (MultiValued) inAgentEnabled.getAutomationEnabledData();
-		String text = automationEnabledData.get("contextvalues");
-		if (text == null && inAgentEnabled.getAgentData() != null)
-		{
-			text = inAgentEnabled.getAgentData().get("contextvalues");
-		}
-		if (text != null)
-		{
-			JSONObject json = (JSONObject) fieldJsonParser.parse(text);
-			inAgentEnabled.setExtraContextValues(json);
-		}
+		// running.getScenarioData().setValue("isrunning", false); // Do this in memory? Do we want more
+		// than one running?
+		// getMediaArchive().saveData("automationscenario", running.getScenarioData());
 	}
 
 	public Map<String, MultiValued> getAllPositions()
@@ -318,63 +302,6 @@ public class AutomationManager extends BaseAiManager implements WebEventListener
 
 	}
 
-	public Collection<AgentEnabled> getEnabledAgents(String inId)
-	{
-		Collection<AgentEnabled> cached = (Collection<AgentEnabled>) getMediaArchive().getCacheManager().get("agentsenabled", inId);
-		if (cached == null || cached.isEmpty())
-		{
-			Collection found = getMediaArchive().query("aiskillenabled").exact("automationscenario", inId).exact("enabled", true).search();
-			Map<String, AgentEnabled> allparents = new HashMap();
-			for (Iterator iterator = found.iterator(); iterator.hasNext();)
-			{
-				MultiValued agentenableddata = (MultiValued) iterator.next();
-				AgentEnabled enabled = new AgentEnabled();
-				enabled.setAutomationEnabledData(agentenableddata);
-				String agentid = agentenableddata.get("aiskill");
-				MultiValued agentdata = (MultiValued) getMediaArchive().getCachedData("aiskill", agentid);
-				enabled.setAgentData(agentdata);
-
-				addContextValues(enabled);
-
-				if (agentdata == null)
-				{
-					log.error("Could not find agent data for enabled agent " + agentenableddata.getId() + " with agentid " + agentid);
-					continue;
-				}
-
-				String bean = agentdata.get("bean");
-				if (bean == null)
-				{
-					log.error("No bean defined for agent " + agentenableddata.getId());
-					continue;
-				}
-				Skill agent = loadAgent(bean);
-				enabled.setAgent(agent);
-
-				allparents.put(agentenableddata.getId(), enabled);
-			}
-			// Sort the list
-			cached = new ArrayList();
-			for (Iterator iterator = allparents.values().iterator(); iterator.hasNext();)
-			{
-				AgentEnabled childAgent = (AgentEnabled) iterator.next();
-				String myparent = childAgent.getParentAgent();
-				AgentEnabled parentAgent = allparents.get(myparent);
-				if (myparent == null || parentAgent == null)
-				{
-					cached.add(childAgent);
-				}
-				else
-				{
-					parentAgent.addChild(childAgent);
-				}
-			}
-			getMediaArchive().getCacheManager().put("agentsenabled", inId, cached);
-		}
-
-		return cached;
-	}
-
 	public void saveAllScenerios()
 	{
 		// Save events xconfs
@@ -424,21 +351,6 @@ public class AutomationManager extends BaseAiManager implements WebEventListener
 				}
 			}
 		}
-	}
-
-	public Skill loadAgent(String inName)
-	{
-		if (inName == null)
-		{
-			throw new IllegalArgumentException("Bean name not provided");
-		}
-		Skill Agent = (Skill) getMediaArchive().getCacheManager().get("ai", "Agent" + inName);
-		if (Agent == null)
-		{
-			Agent = (Skill) getModuleManager().getBean(getCatalogId(), inName);
-			getMediaArchive().getCacheManager().put("ai", "Agent" + inName, Agent);
-		}
-		return Agent;
 	}
 
 	public Collection<MultiValued> getAgentsData()

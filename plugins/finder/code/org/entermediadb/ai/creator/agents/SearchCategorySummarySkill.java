@@ -3,8 +3,6 @@ package org.entermediadb.ai.creator.agents;
 import java.util.Collection;
 
 import org.entermediadb.ai.BaseSkill;
-import org.entermediadb.ai.creator.ChatSmartCreatorConfirmationSkill;
-import org.entermediadb.ai.creator.SmartCreatorPlaybackSkill;
 import org.entermediadb.ai.AgentContext;
 
 public class SearchCategorySummarySkill extends BaseSkill

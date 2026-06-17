@@ -2,12 +2,17 @@ package org.entermediadb.ai.llm;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.Skill;
+import org.entermediadb.ai.automation.RunningScenario;
 import org.json.simple.JSONObject;
 import org.openedit.MultiValued;
 
 public class AgentEnabled
 {
+	private static final Log log = LogFactory.getLog(AgentEnabled.class);
 
 	AgentEnabled fieldParentAgentEnabled;
 
@@ -161,4 +166,10 @@ public class AgentEnabled
 	{
 		fieldExtraContextValues = inExtraContextValues;
 	}
+
+	public String getEnabledId()
+	{
+		return getAutomationEnabledData().getId();
+	}
+
 }

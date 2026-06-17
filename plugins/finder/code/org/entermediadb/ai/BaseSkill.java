@@ -2,7 +2,9 @@ package org.entermediadb.ai;
 
 import java.util.Collection;
 import org.entermediadb.ai.llm.AgentEnabled;
+import org.entermediadb.ai.llm.LlmConnection;
 import org.openedit.CatalogEnabled;
+import org.openedit.MultiValued;
 
 public class BaseSkill extends BaseAiManager implements Skill, CatalogEnabled
 {
@@ -32,12 +34,14 @@ public class BaseSkill extends BaseAiManager implements Skill, CatalogEnabled
 	public void process(AgentContext inContext)
 	{
 		Collection<AgentEnabled> children = inContext.getAgentEnableChildren();
+		inContext.getCurrentScenario();
+
 		for (AgentEnabled agentEnabled : children)
 		{
 			AgentContext childContext = createAgentContext(inContext, agentEnabled);
 
 			agentEnabled.getAgent().processstart(childContext);
-			agentEnabled.getAgent().process(childContext);
+			inContext.getCurrentScenario().runProcess(agentEnabled, childContext);
 			agentEnabled.getAgent().processend(childContext);
 		}
 	}

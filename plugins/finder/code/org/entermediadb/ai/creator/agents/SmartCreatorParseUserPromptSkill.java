@@ -16,7 +16,7 @@ public class SmartCreatorParseUserPromptSkill extends BaseSkill
 	public void process(AgentContext inContext)
 	{
 		ChatMessageContext messageContext = (ChatMessageContext) inContext;
-		String functionName = inContext.getCurrentFunctionId();
+		String functionName = inContext.getCurrentAgentEnable().getEnabledId();
 
 		Boolean runandreturn = "smartcreator_parse".equals(functionName);
 		if (functionName == null || runandreturn)
@@ -37,7 +37,7 @@ public class SmartCreatorParseUserPromptSkill extends BaseSkill
 
 		LlmResponse response = parseCreationPrompt(messageContext, prompt);
 
-		response.setRunFunctionName("chat_smartcreator_findmemory");
+		response.setRunSkillEnabled("chat_smartcreator_findmemory");
 		messageContext.setLastResponse(response);
 		return response;
 	}

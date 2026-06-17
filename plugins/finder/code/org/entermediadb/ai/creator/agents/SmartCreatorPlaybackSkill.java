@@ -1,4 +1,4 @@
-package org.entermediadb.ai.creator;
+package org.entermediadb.ai.creator.agents;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,6 +14,7 @@ import org.entermediadb.ai.BaseAiManager;
 import org.entermediadb.ai.BaseSkill;
 import org.entermediadb.ai.ChatMessageContext;
 import org.entermediadb.ai.assistant.AssistantManager;
+import org.entermediadb.ai.creator.SmartCreatorSession;
 import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.llm.BaseAgentContext;
 import org.entermediadb.ai.llm.BasicLlmResponse;
@@ -43,7 +44,7 @@ public class SmartCreatorPlaybackSkill extends BaseSkill
 	public void process(AgentContext inContext)
 	{
 		ChatMessageContext messageContext = (ChatMessageContext) inContext;
-		String functionName = inContext.getCurrentFunctionId();
+		String functionName = inContext.getCurrentAgentEnable().getEnabledId();
 		boolean runandreturn = "smartcreator_parsecontent".equals(functionName);
 		if (functionName == null || runandreturn)
 		{

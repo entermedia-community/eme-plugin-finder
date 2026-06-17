@@ -11,6 +11,7 @@ import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.SkillStatusListener;
 import org.entermediadb.ai.assistant.AiCreation;
 import org.entermediadb.ai.assistant.AiSearch;
+import org.entermediadb.ai.automation.RunningScenario;
 import org.entermediadb.ai.creator.AiSmartCreatorSteps;
 import org.entermediadb.ai.knn.RankedResult;
 import org.entermediadb.scripts.ScriptLogger;
@@ -48,20 +49,20 @@ public class BaseAgentContext extends BaseData implements CatalogEnabled, AgentC
 		getStatusListeners().add(inListener);
 	}
 
-	public void fireStatusStarting(String inMessage)
+	public void fireStatusStarting(AgentEnabled inAgentEnabled)
 	{
 		for (SkillStatusListener listener : getStatusListeners())
 		{
-			listener.fireStatusStarting(this, inMessage);
+			listener.fireStatusStarting(this, inAgentEnabled);
 		}
 	}
 
 	@Override
-	public void fireStatusComplete(String inMessage)
+	public void fireStatusComplete(AgentEnabled inAgentEnabled)
 	{
 		for (SkillStatusListener listener : getStatusListeners())
 		{
-			listener.fireStatusComplete(this, inMessage);
+			listener.fireStatusComplete(this, inAgentEnabled);
 		}
 	}
 
@@ -140,9 +141,9 @@ public class BaseAgentContext extends BaseData implements CatalogEnabled, AgentC
 
 	protected String fieldCatalogId;
 
-	protected MultiValued fieldCurrentScenario;
+	protected RunningScenario fieldCurrentScenario;
 
-	public MultiValued getCurrentScenario()
+	public RunningScenario getCurrentScenario()
 	{
 		if (fieldCurrentScenario == null && getParentContext() != null)
 		{
@@ -151,7 +152,7 @@ public class BaseAgentContext extends BaseData implements CatalogEnabled, AgentC
 		return fieldCurrentScenario;
 	}
 
-	public void setCurrentScenario(MultiValued inCurrentScenario)
+	public void setCurrentScenario(RunningScenario inCurrentScenario)
 	{
 		fieldCurrentScenario = inCurrentScenario;
 		if (inCurrentScenario != null)
@@ -659,34 +660,18 @@ public class BaseAgentContext extends BaseData implements CatalogEnabled, AgentC
 		return count;
 	}
 
-	public MultiValued getCurrentFunction()
-	{
-		return (MultiValued) getContextValue("aiFunction");
-	}
-
-	public void setCurrentFunction(MultiValued inAiFunction)
-	{
-		putContextValue("aiFunction", inAiFunction);
-	}
-
-	public String getCurrentFunctionId()
-	{
-		MultiValued function = getCurrentFunction();
-		if (function != null)
-		{
-			return function.getId();
-		}
-		return null;
-	}
+	// Dont keep this shared across contexts. It should be set by the skill that is running it and only
+	// used for the next skill to determine what to run next. After that it should be cleared.
+	LlmResponse fieldLastResponse;
 
 	public LlmResponse getLastResponse()
 	{
-		return (LlmResponse) getContextValue("lastResponse");
+		return fieldLastResponse;
 	}
 
 	public void setLastResponse(LlmResponse inLastResponse)
 	{
-		putContextValue("lastResponse", inLastResponse);
+		fieldLastResponse = inLastResponse;
 	}
 
 }

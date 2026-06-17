@@ -918,7 +918,7 @@ public class ContentPublishingSkill extends BaseSkill implements CatalogEnabled
 				targetsearcher.updateData(child, args);
 			}
 			child.setValue("entity_date", new Date());
-			child.setValue("ai-functioncall", results.getRunFunctionName());
+			child.setValue("ai-functioncall", results.getRunSkillEnabled());
 			child.setValue("owner", inContentrequest.get("owner"));
 			targetsearcher.saveData(child);
 
@@ -998,7 +998,6 @@ public class ContentPublishingSkill extends BaseSkill implements CatalogEnabled
 	{
 		ChatMessageContext chatMessageContext = (ChatMessageContext) inAgentContext;
 		MultiValued inAgentMessage = chatMessageContext.getAgentMessage();
-		MultiValued inAiFunction = chatMessageContext.getCurrentFunction();
 
 		/*
 		 * if("image_creation_welcome".equals(inAgentContext.getFunctionName())) { String entityid =
@@ -1036,7 +1035,7 @@ public class ContentPublishingSkill extends BaseSkill implements CatalogEnabled
 		 * }
 		 * 
 		 */
-		throw new OpenEditException("Unknown function name: " + inAiFunction.getId());
+		throw new OpenEditException("Unknown function name: " + inAgentContext.getCurrentAgentEnable().getEnabledId());
 
 	}
 

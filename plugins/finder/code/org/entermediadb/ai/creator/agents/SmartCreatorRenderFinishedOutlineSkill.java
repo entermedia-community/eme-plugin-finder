@@ -11,7 +11,7 @@ public class SmartCreatorRenderFinishedOutlineSkill extends BaseSkill
 	@Override
 	public void process(AgentContext inContext)
 	{
-		String functionName = inContext.getCurrentFunctionId();
+		String functionName = inContext.getCurrentAgentEnable().getEnabledId();
 		boolean runandreturn = "smartcreator_renderoutline".equals(functionName);
 		if (functionName == null || runandreturn)
 		{
