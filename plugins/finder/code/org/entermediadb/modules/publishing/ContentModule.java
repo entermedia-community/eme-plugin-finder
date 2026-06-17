@@ -91,11 +91,11 @@ public class ContentModule extends BaseMediaModule
 			LlmConnection llm = null;
 			if ("image".equals(contentrequest.get("contentcreatortype")))
 			{
-				llm = (LlmConnection) archive.getLlmConnection("createAsset");
+				llm = (LlmConnection) archive.getLlmConnection("thinking");
 			}
 			else
 			{
-				llm = (LlmConnection) archive.getLlmConnection("createRecord");
+				llm = (LlmConnection) archive.getLlmConnection("thinking");
 			}
 
 			manager.createFromLLM(params, llm, contentrequest);

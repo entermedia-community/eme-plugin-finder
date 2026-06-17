@@ -35,7 +35,7 @@ public class ChatWelcomeSkill extends BaseSkill
 	{
 		String agentFn = messageContext.getCurrentAgentEnable().getEnabledId();
 
-		LlmConnection llmconnection = getMediaArchive().getLlmConnection(agentFn);
+		LlmConnection llmconnection = getMediaArchive().getLlmConnection("localrender");
 		LlmResponse response = llmconnection.renderLocalAction(messageContext, agentFn);
 		// messageContext.setFunctionName("question_ask");
 		messageContext.setWaitTime(null);
@@ -46,7 +46,7 @@ public class ChatWelcomeSkill extends BaseSkill
 
 	public LlmResponse confirmOutline(ChatMessageContext messageContext, String agentFn)
 	{
-		LlmConnection llmconnection = getMediaArchive().getLlmConnection("smartcreator_confirmoutline");
+		LlmConnection llmconnection = getMediaArchive().getLlmConnection("localrender");
 
 		AiSmartCreatorSteps instructions = messageContext.getAiSmartCreatorSteps();
 
@@ -76,7 +76,7 @@ public class ChatWelcomeSkill extends BaseSkill
 		if (changed)
 		{
 			messageContext.addContext("proposedoutline", instructions.getProposedSections());
-			LlmConnection llmconnection2 = getMediaArchive().getLlmConnection(agentFn);
+			LlmConnection llmconnection2 = getMediaArchive().getLlmConnection("localrender");
 			LlmResponse response = llmconnection2.renderLocalAction(messageContext, agentFn);
 			response.setNextSkillEnabled("smartcreator_confirmoutline"); //
 			messageContext.setLastResponse(response);

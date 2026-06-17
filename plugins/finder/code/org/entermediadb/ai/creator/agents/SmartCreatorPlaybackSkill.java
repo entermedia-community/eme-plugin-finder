@@ -517,7 +517,7 @@ public class SmartCreatorPlaybackSkill extends BaseSkill
 		context.put("cdnprefix", inCdnPrefix);
 
 		/// views/agentresponses/smartcreator/index.html
-		LlmConnection llmconnection = getMediaArchive().getLlmConnection("smartcreator_renderhtml");
+		LlmConnection llmconnection = getMediaArchive().getLlmConnection("localrender");
 		LlmResponse response = llmconnection.renderLocalAction(context, "smartcreator/renderhtml");
 		String got = response.getMessage();
 		return got;
@@ -593,7 +593,7 @@ public class SmartCreatorPlaybackSkill extends BaseSkill
 		AgentContext agentcontext = new BaseAgentContext();
 		agentcontext.put("paragraph", content);
 
-		LlmConnection llmconnection = getMediaArchive().getLlmConnection("startCreator");
+		LlmConnection llmconnection = getMediaArchive().getLlmConnection("thinking");
 		LlmResponse response = llmconnection.callSmartCreatorAiAction(agentcontext, "grammar");
 
 		JSONObject result = response.getMessageStructured();
@@ -621,7 +621,7 @@ public class SmartCreatorPlaybackSkill extends BaseSkill
 		AgentContext agentcontext = new BaseAgentContext();
 		agentcontext.put("paragraph", content);
 
-		LlmConnection llmconnection = getMediaArchive().getLlmConnection("startCreator");
+		LlmConnection llmconnection = getMediaArchive().getLlmConnection("thinking");
 		LlmResponse response = llmconnection.callSmartCreatorAiAction(agentcontext, "improve");
 
 		JSONObject result = response.getMessageStructured();
@@ -648,7 +648,7 @@ public class SmartCreatorPlaybackSkill extends BaseSkill
 		AgentContext agentcontext = new BaseAgentContext();
 		agentcontext.put("prompt", inPrompt);
 
-		LlmConnection llmconnection = getMediaArchive().getLlmConnection("startCreator");
+		LlmConnection llmconnection = getMediaArchive().getLlmConnection("thinking");
 		LlmResponse response = llmconnection.callSmartCreatorAiAction(agentcontext, "generate");
 
 		JSONObject result = response.getMessageStructured();
@@ -685,7 +685,7 @@ public class SmartCreatorPlaybackSkill extends BaseSkill
 		Data usermessage = getMediaArchive().getCachedData("chatterbox", messageContext.getAgentMessage().get("replytoid"));
 		String sectiontext = usermessage.get("message");
 		messageContext.addContext("sectiontext", sectiontext);
-		LlmConnection llmconnection = getMediaArchive().getLlmConnection("smartcreator_parsecontent");
+		LlmConnection llmconnection = getMediaArchive().getLlmConnection("thinking");
 		LlmResponse response = llmconnection.callStructure(messageContext, "smartcreator_parsecontent");
 		JSONObject json = response.getMessageStructured();
 		Collection boundaries = (Collection) json.get("parsed_content");

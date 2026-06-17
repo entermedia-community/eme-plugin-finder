@@ -47,7 +47,7 @@ public class SmartCreatorParseUserPromptSkill extends BaseSkill
 		// instructions come from SmartCreatorMakeSuggestionsSkill.makeSuggestions
 		AiSmartCreatorSteps instructions = messageContext.getAiSmartCreatorSteps();
 		messageContext.addContext("creationprompt", prompt);
-		LlmConnection llmconnection = getMediaArchive().getLlmConnection("smartcreator_parse");
+		LlmConnection llmconnection = getMediaArchive().getLlmConnection("thinking");
 		LlmResponse res = llmconnection.callStructure(messageContext, "smartcreator_parse");
 
 		JSONObject paragraphs = res.getMessageStructured();

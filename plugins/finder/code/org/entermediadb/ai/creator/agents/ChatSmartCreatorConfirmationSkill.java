@@ -34,7 +34,7 @@ public class ChatSmartCreatorConfirmationSkill extends BaseSkill
 
 	public LlmResponse confirmOutline(ChatMessageContext messageContext, String agentFn)
 	{
-		LlmConnection llmconnection = getMediaArchive().getLlmConnection("smartcreator_confirmoutline");
+		LlmConnection llmconnection = getMediaArchive().getLlmConnection("localrender");
 
 		AiSmartCreatorSteps instructions = messageContext.getAiSmartCreatorSteps();
 
@@ -64,7 +64,7 @@ public class ChatSmartCreatorConfirmationSkill extends BaseSkill
 		if (changed) // First one
 		{
 			messageContext.addContext("proposedoutline", instructions.getProposedSections());
-			LlmConnection llmconnection2 = getMediaArchive().getLlmConnection(agentFn);
+			LlmConnection llmconnection2 = getMediaArchive().getLlmConnection("thinking");
 			LlmResponse response = llmconnection2.renderLocalAction(messageContext, agentFn);
 			response.setNextSkillEnabled("smartcreator_confirmoutline"); // DID not confirm
 			messageContext.setLastResponse(response);

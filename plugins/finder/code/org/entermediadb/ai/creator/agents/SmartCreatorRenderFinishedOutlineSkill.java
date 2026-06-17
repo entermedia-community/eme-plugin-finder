@@ -30,7 +30,7 @@ public class SmartCreatorRenderFinishedOutlineSkill extends BaseSkill
 		messageContext.addContext("confirmedoutline", instructions.getConfirmedSections());
 		messageContext.addContext("playbackentity", instructions.getTargetEntity());
 		messageContext.addContext("playbackentitymodule", instructions.getTargetModule());
-		LlmConnection llmconnection = getMediaArchive().getLlmConnection("smartcreator_renderoutline");
+		LlmConnection llmconnection = getMediaArchive().getLlmConnection("localrender");
 		LlmResponse response = llmconnection.renderLocalAction(messageContext, "smartcreator_renderoutline");
 		messageContext.setWaitTime(null);
 		messageContext.setLastResponse(response);

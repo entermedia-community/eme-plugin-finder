@@ -49,7 +49,7 @@ public class BaseAiManager extends BaseMediaObject
 	{
 		inAgentContext.addContext("error", inError);
 		inAgentContext.addContext("errorcode", inCode);
-		LlmConnection llmconnection = getMediaArchive().getLlmConnection("render_error");
+		LlmConnection llmconnection = getMediaArchive().getLlmConnection("localrender");
 		LlmResponse response = llmconnection.renderLocalAction(inAgentContext, "render_error");
 		// inAgentContext.setFunctionName(null);
 		response.setRunSkillEnabled(null);

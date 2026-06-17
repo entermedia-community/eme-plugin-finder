@@ -262,7 +262,7 @@ public class TranscriberManager extends BaseAiManager
 		{
 			throw new FileNotFoundException("File not found: " + audioFile);
 		}
-		LlmConnection connection = getMediaArchive().getLlmConnection("transcribeFile");
+		LlmConnection connection = getMediaArchive().getLlmConnection("transcribe");
 
 		Map headers = new HashMap();
 		headers.put("Authorization", "Bearer " + connection.getApiKey());

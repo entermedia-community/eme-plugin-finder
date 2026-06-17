@@ -64,8 +64,8 @@ public class QuestionsSkill extends BaseSkill
 			Collection aisuggestions = getMediaArchive().query("aisuggestion").exact("entityid", entity).search();
 			messageContext.addContext("suggestions", aisuggestions);
 
-			LlmConnection llmconnection = getMediaArchive().getLlmConnection(agentFn); // Should stay
-																						// search_start
+			LlmConnection llmconnection = getMediaArchive().getLlmConnection("localrender"); // Should stay
+																								// search_start
 			LlmResponse response = llmconnection.renderLocalAction(messageContext, agentFn);
 			if (aisuggestions.isEmpty())
 			{
@@ -89,7 +89,7 @@ public class QuestionsSkill extends BaseSkill
 				String text = findSampleOfEmbeddedData(entitymodule, entity);
 
 				messageContext.addContext("embeddedtext", text);
-				LlmConnection llmconnection = getMediaArchive().getLlmConnection(agentFn);
+				LlmConnection llmconnection = getMediaArchive().getLlmConnection("embedding");
 				LlmResponse response = llmconnection.callStructure(messageContext, agentFn);
 
 				Searcher searcher = getMediaArchive().getSearcher("aisuggestion");

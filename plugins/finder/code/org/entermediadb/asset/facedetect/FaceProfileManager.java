@@ -822,7 +822,7 @@ public class FaceProfileManager extends BaseAiManager implements CatalogEnabled
 
 		// long start = System.currentTimeMillis();
 		// log.debug("Facial Profile Detection sending " + inAsset.getName() );
-		LlmConnection connection = getMediaArchive().getLlmConnection("faceDetect");
+		LlmConnection connection = getMediaArchive().getLlmConnection("facedetect");
 		LlmResponse resp = connection.callJson("/face", null, tosendparams);
 
 		List<Map> results = (List<Map>) resp.getRawCollection();

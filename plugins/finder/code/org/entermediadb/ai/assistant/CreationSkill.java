@@ -42,7 +42,7 @@ public class CreationSkill extends BaseSkill
 			Data entity = getMediaArchive().getCachedData(entitymoduleid, entityid);
 			inAgentContext.addContext("entity", entity);
 
-			LlmConnection llmconnection = getMediaArchive().getLlmConnection(agentFn);
+			LlmConnection llmconnection = getMediaArchive().getLlmConnection("localrender");
 			LlmResponse response = llmconnection.renderLocalAction(inAgentContext, agentFn);
 			// This is for the chat UI to pass it back
 			response.setNextSkillEnabled("creation_image_parse");
@@ -52,7 +52,7 @@ public class CreationSkill extends BaseSkill
 		else
 			if ("creation_image_parse".equals(agentFn))
 			{
-				LlmConnection llmconnection = getMediaArchive().getLlmConnection(agentFn);
+				LlmConnection llmconnection = getMediaArchive().getLlmConnection("thinking");
 				LlmResponse response = llmconnection.callStructure(inAgentContext, agentFn);
 				if (response == null)
 				{
@@ -84,7 +84,7 @@ public class CreationSkill extends BaseSkill
 
 						inAgentContext.addContext("refreshing", "true");
 
-						LlmConnection llmconnection = getMediaArchive().getLlmConnection(agentFn);
+						LlmConnection llmconnection = getMediaArchive().getLlmConnection("localrender");
 
 						LlmResponse result = llmconnection.renderLocalAction(inAgentContext, agentFn);
 
@@ -120,7 +120,7 @@ public class CreationSkill extends BaseSkill
 	{
 		MediaArchive archive = getMediaArchive();
 		AiCreation aiCreation = inAgentContext.getAiCreationParams();
-		LlmConnection llmconnection = archive.getLlmConnection("creation_image_create");
+		LlmConnection llmconnection = archive.getLlmConnection("createimage");
 
 		JSONObject imagefields = (JSONObject) aiCreation.getCreationFields();
 

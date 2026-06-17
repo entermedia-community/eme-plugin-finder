@@ -122,7 +122,7 @@ public class TranslationManager extends BaseAiManager implements CatalogEnabled
 		{
 			// payload.put("contents", contents);
 			// payload.put("sourceLanguageCode", sourceLang);
-			LlmConnection connection = getMediaArchive().getLlmConnection("googleTranslateFields");
+			LlmConnection connection = getMediaArchive().getLlmConnection("translategoogle");
 			log.info("Translating " + contents + " from " + sourceLang + " to " + googleTargets + " in server: " + connection.getServerRoot());
 
 			googleTranslations = googleTranslate(inConfig, connection, text, sourceLang, googleTargets);
@@ -132,7 +132,7 @@ public class TranslationManager extends BaseAiManager implements CatalogEnabled
 			payload.put("q", contents);
 			payload.put("source", sourceLang);
 
-			LlmConnection connection = getMediaArchive().getLlmConnection("translateFields");
+			LlmConnection connection = getMediaArchive().getLlmConnection("translate");
 			log.info("Translating " + contents + " from " + sourceLang + " to " + eMediaTargets + " in server: " + connection.getServerRoot());
 
 			eMediaTranslations = eMediaTranslate(connection, payload, eMediaTargets);

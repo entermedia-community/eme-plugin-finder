@@ -329,7 +329,7 @@ public class AutomationManager extends BaseAiManager implements WebEventListener
 
 			if (skilloverview != null)
 			{
-				LlmConnection llmConnection = getMediaArchive().getLlmConnection("agentparamsfromskill");
+				LlmConnection llmConnection = getMediaArchive().getLlmConnection("thinking");
 
 				AgentContext context = new BaseAgentContext();
 				context.addContext("skilloverview", skilloverview);

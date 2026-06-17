@@ -70,7 +70,7 @@ public class SmartCreatorMakeSectionsSkill extends BaseSkill
 
 		Collection<String> parentIds = instructions.getEmbeddedParentIds();
 
-		LlmConnection llmconnection = getMediaArchive().getLlmConnection("smartcreator_createsectioncontents");
+		LlmConnection llmconnection = getMediaArchive().getLlmConnection("embedding");
 		Searcher contentearcher = getMediaArchive().getSearcher("componentcontent");
 
 		Collection<Data> tosave = new ArrayList<Data>();

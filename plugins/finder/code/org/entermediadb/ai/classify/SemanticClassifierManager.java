@@ -49,7 +49,7 @@ public class SemanticClassifierManager extends BaseAiManager
 
 		setConfigurationId(fieldname); // TODO: Read from config
 
-		LlmConnection llmsemanticconnection = getMediaArchive().getLlmConnection("createSemanticTopics");
+		LlmConnection llmsemanticconnection = getMediaArchive().getLlmConnection("thinking");
 
 		long start = System.currentTimeMillis();
 
