@@ -5,7 +5,6 @@ import java.util.Iterator;
 
 import org.entermediadb.ai.BaseSkill;
 import org.entermediadb.ai.creator.AiSmartCreatorSteps;
-import org.entermediadb.ai.creator.ChatSmartCreatorConfirmationSkill;
 import org.entermediadb.ai.AgentContext;
 import org.openedit.Data;
 import org.openedit.MultiValued;
@@ -68,7 +67,7 @@ public class SmartCreatorProcessPendingSkill extends BaseSkill
 
 				inContext.setAiSmartCreatorSteps(instructions);
 
-				getSmartCreatorSkill().parseCreationPrompt(inContext, llmprompt);
+				// getSmartCreatorSkill().parseCreationPrompt(inContext, llmprompt);
 
 				super.process(inContext); // To Create outline
 

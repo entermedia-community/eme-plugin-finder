@@ -13,7 +13,7 @@ public class SmartCreatorMakeSuggestionsSkill extends BaseSkill
 	@Override
 	public void process(AgentContext inContext)
 	{
-		String functionName = inContext.getCurrentFunctionId();
+		String functionName = inContext.getCurrentAgentEnable().getEnabledId();
 		boolean runandreturn = "chat_smartcreator_suggest".equals(functionName);
 		if (functionName == null || runandreturn)
 		{
@@ -56,7 +56,7 @@ public class SmartCreatorMakeSuggestionsSkill extends BaseSkill
 		LlmResponse response = llmconnection.renderLocalAction(messageContext, agentFn);
 		messageContext.setWaitTime(null);
 		// This is for the chat UI to pass it back
-		response.setNextFunctionName("smartcreator_parse");
+		response.setNextSkillEnabled("smartcreator_parse");
 		messageContext.setLastResponse(response);
 		return;
 	}

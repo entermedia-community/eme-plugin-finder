@@ -43,8 +43,7 @@ public class SearchingSkill extends BaseSkill
 		ChatMessageContext messageContext = (ChatMessageContext) inAgentContext;
 
 		MultiValued inAgentMessage = messageContext.getAgentMessage();
-		MultiValued currentfunction = messageContext.getCurrentFunction();
-		String agentFn = currentfunction.getId();
+		String agentFn = messageContext.getCurrentAgentEnable().getEnabledId();
 
 		if ("chat_searching_welcome".equals(agentFn))
 		{
@@ -54,7 +53,7 @@ public class SearchingSkill extends BaseSkill
 			LlmConnection llmconnection = getMediaArchive().getLlmConnection(agentFn); // Should stay
 																						// search_start
 			LlmResponse response = llmconnection.renderLocalAction(messageContext, agentFn);
-			response.setNextFunctionName("search_parse");
+			response.setNextSkillEnabled("search_parse");
 			messageContext.setLastResponse(response);
 			return;
 		}
@@ -104,7 +103,7 @@ public class SearchingSkill extends BaseSkill
 				}
 				else
 				{
-					res.setRunFunctionName("search_tables");
+					res.setRunSkillEnabled("search_tables");
 				}
 				messageContext.setLastResponse(res);
 				return;
@@ -120,7 +119,7 @@ public class SearchingSkill extends BaseSkill
 					String message = response.getMessage();
 					messageContext.setMessagePrefix(message);
 
-					response.setRunFunctionName("search_semantic");
+					response.setRunSkillEnabled("search_semantic");
 
 					messageContext.setLastResponse(response);
 					return;
@@ -175,7 +174,7 @@ public class SearchingSkill extends BaseSkill
 						}
 						inAgentContext.setMessagePrefix(null);
 						// Set next function to be able to search again
-						result.setNextFunctionName("search_parse");
+						result.setNextSkillEnabled("search_parse");
 						messageContext.setLastResponse(result);
 						return;
 

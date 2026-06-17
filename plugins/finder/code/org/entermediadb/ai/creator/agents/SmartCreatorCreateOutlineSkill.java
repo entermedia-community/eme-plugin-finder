@@ -2,21 +2,16 @@ package org.entermediadb.ai.creator.agents;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.BaseSkill;
-import org.entermediadb.ai.assistant.AssistantManager;
 import org.entermediadb.ai.creator.AiSmartCreatorSteps;
-import org.entermediadb.ai.creator.ChatSmartCreatorConfirmationSkill;
 import org.entermediadb.ai.llm.LlmConnection;
 import org.entermediadb.ai.llm.LlmResponse;
-import org.entermediadb.asset.MediaArchive;
 import org.json.simple.JSONObject;
-import org.openedit.Data;
-import org.openedit.data.Searcher;
+import org.openedit.MultiValued;
 
 public class SmartCreatorCreateOutlineSkill extends BaseSkill
 {
@@ -30,18 +25,7 @@ public class SmartCreatorCreateOutlineSkill extends BaseSkill
 	@Override
 	public void process(AgentContext inContext)
 	{
-
-		String functionName = inContext.getCurrentFunctionId();
-		boolean runandreturn = "smartcreator_createoutline".equals(functionName);
-		if (functionName == null || runandreturn)
-		{
-			createOutLine(inContext, inContext.getAiSmartCreatorSteps());
-			if (runandreturn)
-			{
-				return;
-			}
-		}
-
+		createOutLine(inContext, inContext.getAiSmartCreatorSteps());
 		super.process(inContext);
 
 	}
@@ -80,6 +64,12 @@ public class SmartCreatorCreateOutlineSkill extends BaseSkill
 
 		instructions.setProposedSections(cleanedOutline);
 		messageContext.addContext("proposedoutline", instructions.getProposedSections());
+
+		if (messageContext.getContextValue("confirmoutline") != null)
+		{
+			messageContext.getLastResponse().setRunSkillEnabled(null);
+			messageContext.getLastResponse().setNextSkillEnabled("smartcreator_confirmoutline");
+		}
 
 	}
 

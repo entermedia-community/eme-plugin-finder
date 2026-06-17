@@ -1,8 +1,5 @@
 package org.entermediadb.ai;
 
-import org.entermediadb.ai.AgentContext;
-import org.openedit.CatalogEnabled;
-
 public interface Skill
 {
 	public void processstart(AgentContext inContext);
@@ -10,4 +7,5 @@ public interface Skill
 	public void processend(AgentContext inContext);
 
 	void process(AgentContext inContext);
+
 }

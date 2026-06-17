@@ -1,4 +1,4 @@
-package org.entermediadb.ai.creator;
+package org.entermediadb.ai.creator.agents;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,6 +14,7 @@ import org.entermediadb.ai.BaseAiManager;
 import org.entermediadb.ai.BaseSkill;
 import org.entermediadb.ai.ChatMessageContext;
 import org.entermediadb.ai.assistant.AssistantManager;
+import org.entermediadb.ai.creator.SmartCreatorSession;
 import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.llm.BaseAgentContext;
 import org.entermediadb.ai.llm.BasicLlmResponse;
@@ -43,17 +44,16 @@ public class SmartCreatorPlaybackSkill extends BaseSkill
 	public void process(AgentContext inContext)
 	{
 		ChatMessageContext messageContext = (ChatMessageContext) inContext;
-		String functionName = inContext.getCurrentFunctionId();
-		boolean runandreturn = "chat_smartcreator_welcome".equals(functionName);
+		String functionName = inContext.getCurrentAgentEnable().getEnabledId();
+		boolean runandreturn = "smartcreator_parsecontent".equals(functionName);
 		if (functionName == null || runandreturn)
 		{
-			// sendWelcomeMessage(messageContext);
+			parseSection(messageContext);
 			if (runandreturn)
 			{
 				return;
 			}
 		}
-
 		super.process(inContext);
 
 	}
@@ -678,6 +678,18 @@ public class SmartCreatorPlaybackSkill extends BaseSkill
 	public void createContentFromSearchCategories(Collection inCategories)
 	{
 
+	}
+
+	public Collection<Map> parseSection(ChatMessageContext messageContext)
+	{
+		Data usermessage = getMediaArchive().getCachedData("chatterbox", messageContext.getAgentMessage().get("replytoid"));
+		String sectiontext = usermessage.get("message");
+		messageContext.addContext("sectiontext", sectiontext);
+		LlmConnection llmconnection = getMediaArchive().getLlmConnection("smartcreator_parsecontent");
+		LlmResponse response = llmconnection.callStructure(messageContext, "smartcreator_parsecontent");
+		JSONObject json = response.getMessageStructured();
+		Collection boundaries = (Collection) json.get("parsed_content");
+		return boundaries;
 	}
 
 }

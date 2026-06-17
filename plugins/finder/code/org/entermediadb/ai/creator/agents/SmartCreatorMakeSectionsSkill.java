@@ -13,7 +13,6 @@ import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.BaseSkill;
 import org.entermediadb.ai.assistant.AssistantManager;
 import org.entermediadb.ai.creator.AiSmartCreatorSteps;
-import org.entermediadb.ai.creator.ChatSmartCreatorConfirmationSkill;
 import org.entermediadb.ai.llm.LlmConnection;
 import org.entermediadb.ai.llm.LlmResponse;
 import org.entermediadb.asset.MediaArchive;
@@ -35,7 +34,7 @@ public class SmartCreatorMakeSectionsSkill extends BaseSkill
 	@Override
 	public void process(AgentContext inContext)
 	{
-		String functionName = inContext.getCurrentFunctionId();
+		String functionName = inContext.getCurrentAgentEnable().getEnabledId();
 		boolean runandreturn = "smartcreator_createsectioncontents".equals(functionName);
 		if (functionName == null || runandreturn)
 		{

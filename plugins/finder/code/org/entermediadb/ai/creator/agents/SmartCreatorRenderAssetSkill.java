@@ -8,8 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.entermediadb.ai.BaseSkill;
-import org.entermediadb.ai.creator.ChatSmartCreatorConfirmationSkill;
-import org.entermediadb.ai.creator.SmartCreatorPlaybackSkill;
 import org.entermediadb.ai.informatics.InformaticsContext;
 import org.entermediadb.ai.AgentContext;
 import org.openedit.Data;

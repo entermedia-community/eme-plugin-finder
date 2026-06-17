@@ -10,20 +10,18 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.entermediadb.ai.assistant.SemanticAction;
 import org.entermediadb.ai.automation.AutomationManager;
 import org.entermediadb.ai.classify.SemanticTableManager;
-import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.llm.LlmConnection;
 import org.entermediadb.ai.llm.LlmResponse;
 import org.entermediadb.asset.MediaArchive;
 import org.entermediadb.asset.util.JsonUtil;
+import org.entermediadb.manager.BaseMediaObject;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.openedit.CatalogEnabled;
 import org.openedit.Data;
 import org.openedit.ModuleManager;
 import org.openedit.MultiValued;
@@ -37,40 +35,10 @@ import org.openedit.util.Exec;
 import org.openedit.util.ExecResult;
 import org.openedit.util.RequestUtils;
 
-public class BaseAiManager implements CatalogEnabled
+public class BaseAiManager extends BaseMediaObject
 {
 
 	private static final Log log = LogFactory.getLog(BaseAiManager.class);
-
-	// Calls functions as he wants
-	protected String fieldCatalogId;
-
-	public String getCatalogId()
-	{
-		return fieldCatalogId;
-	}
-
-	public void setCatalogId(String inCatalogId)
-	{
-		fieldCatalogId = inCatalogId;
-	}
-
-	protected ModuleManager fieldModuleManager;
-
-	public ModuleManager getModuleManager()
-	{
-		return fieldModuleManager;
-	}
-
-	public void setModuleManager(ModuleManager inModuleManager)
-	{
-		fieldModuleManager = inModuleManager;
-	}
-
-	protected MediaArchive getMediaArchive()
-	{
-		return (MediaArchive) getModuleManager().getBean(getCatalogId(), "mediaArchive");
-	}
 
 	public LlmResponse handleError(AgentContext inAgentContext, String inError)
 	{
@@ -84,7 +52,7 @@ public class BaseAiManager implements CatalogEnabled
 		LlmConnection llmconnection = getMediaArchive().getLlmConnection("render_error");
 		LlmResponse response = llmconnection.renderLocalAction(inAgentContext, "render_error");
 		// inAgentContext.setFunctionName(null);
-		response.setRunFunctionName(null);
+		response.setRunSkillEnabled(null);
 		inAgentContext.setLastResponse(response);
 		return response;
 	}

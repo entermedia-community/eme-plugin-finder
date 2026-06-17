@@ -4,13 +4,14 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.BaseSkill;
 import org.entermediadb.ai.assistant.AssistantManager;
 import org.entermediadb.ai.assistant.SearchingSkill;
-import org.entermediadb.ai.creator.ChatSmartCreatorConfirmationSkill;
-import org.entermediadb.ai.AgentContext;
+import org.entermediadb.ai.llm.BasicLlmResponse;
 import org.json.simple.JSONArray;
 import org.openedit.Data;
+import org.openedit.MultiValued;
 import org.openedit.hittracker.HitTracker;
 
 public class SmartCreatorFindMemoryFilesSkill extends BaseSkill
@@ -31,20 +32,20 @@ public class SmartCreatorFindMemoryFilesSkill extends BaseSkill
 	@Override
 	public void process(AgentContext inContext)
 	{
+		findMemoryFiles(inContext);
+		super.process(inContext);
+	}
 
-		String functionName = inContext.getCurrentFunctionId();
-		boolean runandreturn = "smartcreator_createoutline".equals(functionName);
-		if (functionName == null || runandreturn)
+	public void runfunction(AgentContext inContext, MultiValued currentFunction)
+	{
+		String functionName = currentFunction.getId();
+		if ("chat_smartcreator_findmemory".equals(functionName))
 		{
 			findMemoryFiles(inContext);
-			if (runandreturn)
-			{
-				return;
-			}
+			BasicLlmResponse response = new BasicLlmResponse();
+			response.setRunSkillEnabled("smartcreator_createoutline");
+			inContext.setLastResponse(response);
 		}
-
-		super.process(inContext);
-
 	}
 
 	public void findMemoryFiles(AgentContext inContext)

@@ -1177,7 +1177,6 @@ public class MediaArchive implements CatalogEnabled
 		if (fieldCategoryEditor == null)
 		{
 			fieldCategoryEditor = (CategoryEditor) getModuleManager().getBean(getCatalogId(), "categoryEditor");
-			fieldCategoryEditor = (CategoryEditor) getModuleManager().getBean(getCatalogId(), "categoryEditor");
 			fieldCategoryEditor.setMediaArchive(this);
 		}
 		return fieldCategoryEditor;
@@ -1192,7 +1191,6 @@ public class MediaArchive implements CatalogEnabled
 	{
 		if (fieldAssetEditor == null)
 		{
-			fieldAssetEditor = (AssetEditor) getModuleManager().getBean(getCatalogId(), "assetEditor");
 			fieldAssetEditor = (AssetEditor) getModuleManager().getBean(getCatalogId(), "assetEditor");
 			fieldAssetEditor.setMediaArchive(this);
 		}
@@ -3408,39 +3406,39 @@ public class MediaArchive implements CatalogEnabled
 		return manager;
 	}
 
-	public LlmConnection getLlmConnection(String inAiFunctionName)
+	public LlmConnection getLlmConnection(String inAiSkillEnabled)
 	{
 		String cacheName = "llmconnection";
-		LlmConnection connection = (LlmConnection) getCacheManager().get(cacheName, inAiFunctionName);
+		LlmConnection connection = (LlmConnection) getCacheManager().get(cacheName, inAiSkillEnabled);
 
 		if (connection == null)
 		{
-			Data aifunction = query("aifunction").id(inAiFunctionName).searchOne();
-			if (aifunction == null)
+			Data skillenabled = query("aiskillenabled").id(inAiSkillEnabled).searchOne();
+			if (skillenabled == null)
 			{
-				log.info("Could not find AIFunction named " + inAiFunctionName + " using default");
-				aifunction = query("aifunction").id("default").searchOne();
+				log.info("Could not find AIFunction named " + inAiSkillEnabled + " using default");
+				skillenabled = query("aifunction").id("default").searchOne();
 			}
-			Data serverinfo = query("aiserver").exact("aifunctions", aifunction.getId()).sort("ordering").searchOne();
+			Data serverinfo = query("aiserver").exact("aiskillenabled", skillenabled.getId()).sort("ordering").searchOne();
 			if (serverinfo == null)
 			{
 				serverinfo = getCachedData("aiserver", "localhost");
 				if (serverinfo == null)
 				{
-					throw new OpenEditException("Using localhost for aifunction " + inAiFunctionName);
+					throw new OpenEditException("Using localhost for aifunction " + inAiSkillEnabled);
 				}
 			}
 			String llm = serverinfo.get("connectionbean");
 			connection = (LlmConnection) getModuleManager().getBean(getCatalogId(), llm, false);
-			if ("default".equals(aifunction.getId()))
+			if ("default".equals(skillenabled.getId()))
 			{
 				// setting the name and id to the requested function name if default was used
-				serverinfo.setName(inAiFunctionName);
-				serverinfo.setId(inAiFunctionName);
+				serverinfo.setName(inAiSkillEnabled);
+				serverinfo.setId(inAiSkillEnabled);
 			}
 			connection.setAiServerData(serverinfo);
-			getCacheManager().put(cacheName, inAiFunctionName, connection);
-			log.info(inAiFunctionName + " picked llmconnection type:" + llm + " selected AI server URL: " + serverinfo.get("serverroot"));
+			getCacheManager().put(cacheName, inAiSkillEnabled, connection);
+			log.info(inAiSkillEnabled + " picked llmconnection type:" + llm + " selected AI server URL: " + serverinfo.get("serverroot"));
 		}
 
 		return connection;

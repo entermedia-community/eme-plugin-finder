@@ -9,6 +9,7 @@ import java.util.Map;
 import org.entermediadb.ai.assistant.AssistantManager;
 import org.entermediadb.ai.assistant.QuestionsSkill;
 import org.entermediadb.ai.assistant.SearchingSkill;
+import org.entermediadb.ai.creator.agents.SmartCreatorPlaybackSkill;
 import org.entermediadb.asset.MediaArchive;
 import org.entermediadb.asset.modules.BaseMediaModule;
 import org.openedit.Data;

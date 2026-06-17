@@ -68,7 +68,7 @@ public class AutomationModule extends BaseMediaModule
 		Data scenario = archive.query("automationscenario").exact("id", scenarioid).searchOne();
 		inReq.putPageValue("scenario", scenario);
 
-		Searcher agentEnabledSearcher = archive.getSearcher("automationagentenabled");
+		Searcher agentEnabledSearcher = archive.getSearcher("aiskillenabled");
 		inReq.putPageValue("agentenabledsearcher", agentEnabledSearcher);
 
 		Collection<MultiValued> agents = agentEnabledSearcher.query().exact("automationscenario", scenario.getId()).search();
@@ -87,7 +87,7 @@ public class AutomationModule extends BaseMediaModule
 	 * Data scenario = archive.query("automationscenario").exact("id", scenarioid).searchOne();
 	 * inReq.putPageValue("scenario", scenario);
 	 * 
-	 * Searcher agentEnabledSearcher = archive.getSearcher("automationagentenabled");
+	 * Searcher agentEnabledSearcher = archive.getSearcher("aiskillenabled");
 	 * inReq.putPageValue("agentenabledsearcher", agentEnabledSearcher);
 	 * 
 	 * Collection<MultiValued> agents = agentEnabledSearcher.query().exact("automationscenario",
@@ -130,11 +130,11 @@ public class AutomationModule extends BaseMediaModule
 		inReq.putPageValue("agentid", agentEnabledData.getId());
 		inReq.putPageValue("scenarioid", agentEnabledData.get("automationscenario"));
 
-		Data agent = archive.query("automationagent").exact("id", agentEnabledData.get("automationagent")).searchOne();
+		Data agent = archive.query("aiskill").exact("id", agentEnabledData.get("aiskill")).searchOne();
 
 		agentEnabledData.setValue("agenttype", agent.get("agenttype"));
 
-		archive.saveData("automationagentenabled", agentEnabledData);
+		archive.saveData("aiskillenabled", agentEnabledData);
 
 		AutomationManager manager = getAutomationManager(inReq);
 		manager.generateParams(agentEnabledData);
@@ -160,7 +160,7 @@ public class AutomationModule extends BaseMediaModule
 			return;
 		}
 
-		Searcher agentEnabledSearcher = getMediaArchive(inReq).getSearcher("automationagentenabled");
+		Searcher agentEnabledSearcher = getMediaArchive(inReq).getSearcher("aiskillenabled");
 		for (Iterator iterator = data.iterator(); iterator.hasNext();)
 		{
 			JSONObject agentdata = (JSONObject) iterator.next();
@@ -263,7 +263,7 @@ public class AutomationModule extends BaseMediaModule
 
 		if (agentIds.size() > 0)
 		{
-			Searcher agentSearcher = archive.getSearcher("automationagentenabled");
+			Searcher agentSearcher = archive.getSearcher("aiskillenabled");
 			Collection<Data> agents = agentSearcher.query().ids(agentIds).search();
 			agentSearcher.deleteAll(agents, inReq.getUser());
 		}

@@ -3,7 +3,7 @@
 <!-- using more descriptive ids for easier debugging -->
 
 <records>
-   <data id="chat_autodetect" automationagent="autoDetectChatSkill" automationscenario="chat_detection" enabled="true" agenttype="eventagent">
+   <data id="chat_autodetect" aiskill="autoDetectChatSkill" automationscenario="chat_detection" enabled="true" agenttype="eventagent">
       <name>
          <![CDATA[Global Auto Detect Chat Type]]>
       </name>

@@ -66,7 +66,7 @@ public class ToolsCallingSkill extends BaseSkill
 			LlmConnection llmConnection = getMediaArchive().getLlmConnection(function);
 			LlmResponse res = llmConnection.callToolsFunction(inContext, function);
 
-			String selectedagentid = (String) res.getRunFunctionName();
+			String selectedagentid = (String) res.getRunSkillEnabled();
 
 			AgentEnabled selectedenabled = currentEnabled.getChildren(selectedagentid);
 			if (selectedenabled != null)

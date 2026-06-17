@@ -33,9 +33,7 @@ public class CreationSkill extends BaseSkill
 	public void process(AgentContext inAgentContext)
 	{
 		ChatMessageContext messageContext = (ChatMessageContext) inAgentContext;
-		MultiValued agentmessage = messageContext.getAgentMessage();
-		MultiValued currentfunction = messageContext.getCurrentFunction();
-		String agentFn = currentfunction.getId();
+		String agentFn = messageContext.getCurrentAgentEnable().getEnabledId();
 		if ("creation_image_welcome".equals(agentFn))
 		{
 			String entityid = inAgentContext.get("entityid");
@@ -47,7 +45,7 @@ public class CreationSkill extends BaseSkill
 			LlmConnection llmconnection = getMediaArchive().getLlmConnection(agentFn);
 			LlmResponse response = llmconnection.renderLocalAction(inAgentContext, agentFn);
 			// This is for the chat UI to pass it back
-			response.setNextFunctionName("creation_image_parse");
+			response.setNextSkillEnabled("creation_image_parse");
 			messageContext.setLastResponse(response);
 			return;
 		}
@@ -64,7 +62,7 @@ public class CreationSkill extends BaseSkill
 				JSONObject content = response.getMessageStructured();
 				creation.setCreationFields(content);
 				response.setMessage("");
-				response.setRunFunctionName("creation_image_create");
+				response.setRunSkillEnabled("creation_image_create");
 				messageContext.setLastResponse(response);
 				return;
 			}
@@ -72,7 +70,7 @@ public class CreationSkill extends BaseSkill
 				if ("creation_image_create".equals(agentFn))
 				{
 					LlmResponse result = createImage(inAgentContext);
-					result.setRunFunctionName("creation_image_render");
+					result.setRunSkillEnabled("creation_image_render");
 					messageContext.setLastResponse(result);
 					return;
 				}
@@ -90,7 +88,7 @@ public class CreationSkill extends BaseSkill
 
 						LlmResponse result = llmconnection.renderLocalAction(inAgentContext, agentFn);
 
-						log.info("Next function: " + result.getRunFunctionName());
+						log.info("Next function: " + result.getRunSkillEnabled());
 
 						messageContext.setLastResponse(result);
 						return;
@@ -200,7 +198,7 @@ public class CreationSkill extends BaseSkill
 
 			// inReq.putPageValue("asset", asset);
 			inAgentContext.addContext("asset", asset);
-			results.setRunFunctionName("creation_image_render");
+			results.setRunSkillEnabled("creation_image_render");
 			inAgentContext.setValue("assetid", asset.getId());
 			inAgentContext.setValue("wait", 1000);
 			inAgentContext.setLastResponse(results);
