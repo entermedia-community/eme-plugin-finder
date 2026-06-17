@@ -1,0 +1,9 @@
+<page>
+  <inner-layout>/community/default/views/modules/default/editors/default/tabs/dialoglayout.html</inner-layout>
+</page>
+<page>
+  <inner-layout>${edithome}/tabs/dialoglayout.html</inner-layout>
+</page>
+<page>
+  <inner-layout>${edithome}/tabs/dialoglayout.html</inner-layout>
+</page>

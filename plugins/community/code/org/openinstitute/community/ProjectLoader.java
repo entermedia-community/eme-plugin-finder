@@ -180,9 +180,15 @@ public class ProjectLoader extends BaseManager implements PageLoader, CatalogEna
 				template = apphome + "/project/chat/index.html";
 			}
 			else
-			{
-				template = apphome + "/project" + anythingelse;
-			}
+				if (anythingelse.startsWith("/modules"))
+				{
+					template = apphome + "/views/modules/" + url[3] + "/editors/listentities/tabs/rendertypes/" + url[4] + ".html";
+				}
+				else
+				{
+					template = apphome + "/project" + anythingelse;
+				}
+
 			String justname = PathUtilities.extractFileName(template);
 			if (!justname.contains("."))
 			{
@@ -196,8 +202,7 @@ public class ProjectLoader extends BaseManager implements PageLoader, CatalogEna
 			right.putParam("collectionid", librarycollection.getId());
 			librarycollection = getMediaArchive().getSearcher("librarycollection").loadData(librarycollection);
 			right.putPageValue("librarycol", librarycollection);
-			// right.putPageValue("projectlink" , "/" + domain + "/" +
-			// librarycollection.get("urlname") );
+			right.putPageValue("urlname", "/" + librarycollection.get("urlname"));
 			right.setRightPage(otherpage);
 			return right;
 		}

@@ -1,30 +1,43 @@
+#ifnull($user)
+	<link rel="stylesheet" type="text/css" href="/authentication/authentication.css" />
+	<script type="text/javascript" src="/authentication/authentication.js"></script>
+#end
+#foreach( $style in $pageManager.getStylePathsFor($content) )
+<link rel="stylesheet" type="text/css" href="$style" />
+#end
+<link rel="stylesheet" type="text/css" href="/${applicationid}/theme/css/community/blog.css" />
+
+#set($themeid = $userprofile.getValue("themeid") )
+#ifnull($themeid)
+	#set($themeid = $content.get("themeid") )
+#end	
+<link rel="stylesheet" type="text/css" href="/${applicationid}/theme/$themeid/custom.css" />
+
 $pages.include("/components/captureclick/init.html")
 
-<script type="text/javascript"  src="/components/javascript/jquery-core/jquery-4.0.0.min.js" onload="if (!window.jQuery) window.$ = window.jQuery = module.exports;"></script>
-<script type="text/javascript" src="/components/javascript/jquery-core/jquery-migrate-4.0.1.js"></script>
-
-<script type="text/javascript" defer src="/components/javascript/jquery-ui/1.14/jquery-ui.min.js" ></script>
-<script type="text/javascript" defer src="/components/javascript/jquery-ui/i18n/jquery-ui-i18n.js" ></script>
-
-<script type="text/javascript" defer src="/components/javascript/bootstrap/5.3.8/js/popper.min.js"></script>
-<script type="text/javascript" defer src="/components/javascript/bootstrap/5.3.8/js/bootstrap.min.js"></script>
-
-<link rel="stylesheet"  type="text/css" id="jqueryui" href="/components/javascript/jquery-ui/1.14/jquery-ui.css"/>
-<link rel="stylesheet" type="text/css" href="/components/javascript/bootstrap/5.3.8/css/bootstrap.min.css" />
-
-<link rel="stylesheet" href="/components/javascript/bootstrap/5.3.8/icons/bootstrap-icons.min.css" />
-<link rel="stylesheet" href="/components/javascript/fontawesome-5/css/all.min.css" />
-
-#foreach( $script in $pageManager.getScriptPathsWithoutApp($content))
-	<script type="text/javascript" src="#if(!$script.startsWith("http"))$home#end$script"></script>
+#if( $desktop)
+<script>if (typeof module === 'object') { window.module = module; module = undefined; }</script>
+<script type="text/javascript" src="/components/javascript/jquery-core/jquery-4.0.0.min.js" onload="if (!window.jQuery)  window.$ = window.jQuery = module.exports;"></script>
+#else
+<script type="text/javascript" src="/components/javascript/jquery-core/jquery-4.0.0.min.js" onload="if (!window.jQuery)  window.$ = window.jQuery = module.exports;"></script>
 #end
 
-<script type="text/javascript" src="/${applicationid}/components/javascript/indexdefer.js" defer></script>
+<script type="text/javascript" src="/components/javascript/jquery-core/jquery-migrate-4.0.1.js"></script>
+
+<script type="text/javascript" src="/components/javascript/jquery-ui/1.14/jquery-ui.min.js"></script>
+<script type="text/javascript" src="/components/javascript/jquery-ui/i18n/jquery-ui-i18n.js"></script> 
+
+<script type="text/javascript" src="/components/javascript/bootstrap/5.3.8/js/popper.min.js"></script>
+<script type="text/javascript" src="/components/javascript/bootstrap/5.3.8/js/bootstrap.min.js"></script>
+
+##This has all the js in one for performance
+<script type="text/javascript" src="$applink/components/javascript/index.min.js"></script>
+<script type="text/javascript" src="$applink/components/javascript/indexdefer.min.js" defer></script>
 
 $pages.include("/components/captureclick/end.html")
 
-#foreach( $style in $pageManager.getStylePathsFor($content) )
-	<link rel="stylesheet" type="text/css" href="$style" /> 
+#foreach( $script in $pageManager.getScriptPathsWithoutApp($content))
+<script type="text/javascript" src="$script"></script>
 #end
 
 <script type="importmap">
@@ -36,13 +49,27 @@ $pages.include("/components/captureclick/end.html")
 		}
 	}
 </script>
-<script type="module" src="/${applicationid}/components/javascript/htmleditor/htmleditor.js" defer></script>
-<link rel="stylesheet" type="text/css" href="/${applicationid}/components/javascript/ckeditor5/ckeditor5.css" />
+<script type="module" src="/components/javascript/htmleditor/htmleditor.js" defer></script>
 
-<link rel="stylesheet" href="/${applicationid}/components/javascript/datetimepicker/jquery.datetimepicker.min.css">
-<script src="/${applicationid}/components/javascript/datetimepicker/jquery.datetimepicker.full.min.js"></script>
+#set( $mapskey = $mediaarchive.getCatalogSettingValue("google-maps-key"))
+#ifnotnull( $mapskey )
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=${mapskey}"></script>
+#end
+
+<link rel="stylesheet" type="text/css" href="/components/javascript/ckeditor5/ckeditor5.css" />
+
+<link rel="stylesheet" href="/components/javascript/datetimepicker/jquery.datetimepicker.min.css">
+<script src="/components/javascript/datetimepicker/jquery.datetimepicker.full.min.js"></script>
 
 
 #if( $desktop)
-<script type="text/javascript" src="/${applicationid}/components/javascript/emedia/electron-renderer.js"></script>
+	<script type="text/javascript" src="/components/javascript/emedia/electron-renderer.js"></script>
+#end
+
+<script type="text/javascript" src="/components/javascript/emedia/downloadxhr.js"></script>
+
+#if( $browser.isNarrow() )
+	<script type="text/javascript" src="/components/javascript/emedia/drawer.js"></script>
+	<link rel="stylesheet" type="text/css" href="/${applicationid}/theme/styles/mobile.css" />
+	<script type="text/javascript" src="/components/javascript/emedia/mobile.js"></script>
 #end
