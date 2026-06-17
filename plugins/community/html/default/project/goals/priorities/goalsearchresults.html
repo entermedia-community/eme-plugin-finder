@@ -1,4 +1,6 @@
-#set($collectionid = $context.getRequestParameter("collectionid"))
+#ifnull($collectionid)
+	#set($collectionid = $context.getRequestParameter("collectionid"))
+#end
 <div id="goalresultsdiv">
 	<div class="d-flex justify-content-between align-items-end mb-3">
 		<div class="d-flex align-items-center text-muted">
