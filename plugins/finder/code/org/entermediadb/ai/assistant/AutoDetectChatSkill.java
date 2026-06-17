@@ -23,7 +23,7 @@ public class AutoDetectChatSkill extends BaseSkill
 	{
 		ChatMessageContext messageContext = (ChatMessageContext) inAgentContext;
 		MultiValued agentmessage = messageContext.getAgentMessage();
-		MultiValued currentfunction = messageContext.getAiFunction();
+		MultiValued currentfunction = messageContext.getCurrentFunction();
 		MultiValued usermessage = (MultiValued) getMediaArchive().getCachedData("chatterbox", agentmessage.get("replytoid"));
 		String query = usermessage.get("message");
 

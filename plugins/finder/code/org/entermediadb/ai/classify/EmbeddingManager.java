@@ -10,7 +10,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.entermediadb.ai.BaseAiManager;
-import org.entermediadb.ai.creator.SmartCreatorSkill;
+import org.entermediadb.ai.creator.ChatSmartCreatorConfirmationSkill;
 import org.entermediadb.ai.creator.SmartCreatorSession;
 import org.entermediadb.ai.informatics.InformaticsContext;
 import org.entermediadb.ai.AgentContext;
@@ -47,9 +47,9 @@ public class EmbeddingManager extends BaseAiManager
 		return fieldPageManager;
 	}
 
-	public SmartCreatorSkill getSmartCreatorSkill()
+	public ChatSmartCreatorConfirmationSkill getSmartCreatorSkill()
 	{
-		return (SmartCreatorSkill) getMediaArchive().getModuleManager().getBean(getCatalogId(), "smartCreatorSkill", true);
+		return (ChatSmartCreatorConfirmationSkill) getMediaArchive().getModuleManager().getBean(getCatalogId(), "smartCreatorSkill", true);
 	}
 
 	protected OpenEditEngine fieldEngine;

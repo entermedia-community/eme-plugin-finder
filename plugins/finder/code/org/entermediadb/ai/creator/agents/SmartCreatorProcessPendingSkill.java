@@ -5,7 +5,7 @@ import java.util.Iterator;
 
 import org.entermediadb.ai.BaseSkill;
 import org.entermediadb.ai.creator.AiSmartCreatorSteps;
-import org.entermediadb.ai.creator.SmartCreatorSkill;
+import org.entermediadb.ai.creator.ChatSmartCreatorConfirmationSkill;
 import org.entermediadb.ai.AgentContext;
 import org.openedit.Data;
 import org.openedit.MultiValued;
@@ -14,9 +14,9 @@ import org.openedit.WebPageRequest;
 public class SmartCreatorProcessPendingSkill extends BaseSkill
 {
 
-	public SmartCreatorSkill getSmartCreatorSkill()
+	public ChatSmartCreatorConfirmationSkill getSmartCreatorSkill()
 	{
-		SmartCreatorSkill smartCreatorManager = (SmartCreatorSkill) getMediaArchive().getBean("smartCreatorSkill");
+		ChatSmartCreatorConfirmationSkill smartCreatorManager = (ChatSmartCreatorConfirmationSkill) getMediaArchive().getBean("smartCreatorSkill");
 		return smartCreatorManager;
 	}
 

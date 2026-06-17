@@ -34,7 +34,7 @@ public class CreationSkill extends BaseSkill
 	{
 		ChatMessageContext messageContext = (ChatMessageContext) inAgentContext;
 		MultiValued agentmessage = messageContext.getAgentMessage();
-		MultiValued currentfunction = messageContext.getAiFunction();
+		MultiValued currentfunction = messageContext.getCurrentFunction();
 		String agentFn = currentfunction.getId();
 		if ("creation_image_welcome".equals(agentFn))
 		{

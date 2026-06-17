@@ -20,13 +20,23 @@
    </data>
 
 
-   <data id="smartCreatorChatSkill" bean="smartCreatorSkill" agenttype="remoteagent" ordering="10">
+   <data id="chatSmartCreatorConfirmationSkill" bean="chatSmartCreatorConfirmationSkill" agenttype="remoteagent" ordering="10">
       <name>
          <![CDATA[Smart Creator Chat]]>
       </name>
    </data>
 
+   <data id="smartCreatorRenderFinishedOutlineSkill" bean="smartCreatorRenderFinishedOutlineSkill" agenttype="remoteagent" ordering="10">
+      <name>
+         <![CDATA[Smart Creator Render Finished Outline]]>
+      </name>
+   </data>
 
+   <data id="smartCreatorMakeSuggestionsSkill" bean="smartCreatorMakeSuggestionsSkill" agenttype="remoteagent" ordering="10">
+      <name>
+         <![CDATA[Smart Creator Make Suggestions]]>
+      </name>
+   </data>
 
 
 </results>

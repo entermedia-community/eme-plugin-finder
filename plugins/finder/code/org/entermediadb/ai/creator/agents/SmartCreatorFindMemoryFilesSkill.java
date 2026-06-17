@@ -7,7 +7,7 @@ import java.util.Set;
 import org.entermediadb.ai.BaseSkill;
 import org.entermediadb.ai.assistant.AssistantManager;
 import org.entermediadb.ai.assistant.SearchingSkill;
-import org.entermediadb.ai.creator.SmartCreatorSkill;
+import org.entermediadb.ai.creator.ChatSmartCreatorConfirmationSkill;
 import org.entermediadb.ai.AgentContext;
 import org.json.simple.JSONArray;
 import org.openedit.Data;
@@ -22,14 +22,32 @@ public class SmartCreatorFindMemoryFilesSkill extends BaseSkill
 		return searchingManager;
 	}
 
-	public SmartCreatorSkill getSmartCreatorSkill()
+	public ChatSmartCreatorConfirmationSkill getSmartCreatorSkill()
 	{
-		SmartCreatorSkill smartCreatorManager = (SmartCreatorSkill) getMediaArchive().getBean("smartCreatorSkill");
+		ChatSmartCreatorConfirmationSkill smartCreatorManager = (ChatSmartCreatorConfirmationSkill) getMediaArchive().getBean("smartCreatorSkill");
 		return smartCreatorManager;
 	}
 
 	@Override
 	public void process(AgentContext inContext)
+	{
+
+		String functionName = inContext.getCurrentFunctionId();
+		boolean runandreturn = "smartcreator_createoutline".equals(functionName);
+		if (functionName == null || runandreturn)
+		{
+			findMemoryFiles(inContext);
+			if (runandreturn)
+			{
+				return;
+			}
+		}
+
+		super.process(inContext);
+
+	}
+
+	public void findMemoryFiles(AgentContext inContext)
 	{
 		Data module = inContext.getCurrentEntityModule();
 		Data entity = inContext.getCurrentEntity();
@@ -42,32 +60,37 @@ public class SmartCreatorFindMemoryFilesSkill extends BaseSkill
 		{
 			finalparentIds.addAll(localparentIds);
 		}
-		Collection<String> searchcats = entity.getValues("searchcategory");
-		if (searchcats != null && !searchcats.isEmpty())
+
+		Boolean skipcategorysearch = Boolean.valueOf(String.valueOf(inContext.getContextValue("skipcategorysearch")));
+
+		if (!skipcategorysearch)
 		{
-			HitTracker modules = getMediaArchive().query("module").exact("semanticenabled", true).cachedSearch();
-			Collection<String> moduleids = modules.collectValues("id");
-			HitTracker addedentites = getMediaArchive().query("modulesearch")
-				.addFacet("entitysourcetype")
-				.put("searchtypes", moduleids)
-				.includeDescription(true)
-				.orgroup("searchcategory", searchcats)
-				.exact("entityembeddingstatus", "embedded")
-				.search();
-			for (Iterator iterator = addedentites.iterator(); iterator.hasNext();)
+			Collection<String> searchcats = entity.getValues("searchcategory");
+			if (searchcats != null && !searchcats.isEmpty())
 			{
-				Data doc = (Data) iterator.next();
-				String type = doc.get("entitysourcetype");
-				String docid = type + "_" + doc.getId();
-				if (!finalparentIds.contains(docid))
+				HitTracker modules = getMediaArchive().query("module").exact("semanticenabled", true).cachedSearch();
+				Collection<String> moduleids = modules.collectValues("id");
+				HitTracker addedentites = getMediaArchive().query("modulesearch")
+					.addFacet("entitysourcetype")
+					.put("searchtypes", moduleids)
+					.includeDescription(true)
+					.orgroup("searchcategory", searchcats)
+					.exact("entityembeddingstatus", "embedded")
+					.search();
+				for (Iterator iterator = addedentites.iterator(); iterator.hasNext();)
 				{
-					finalparentIds.add(docid);
+					Data doc = (Data) iterator.next();
+					String type = doc.get("entitysourcetype");
+					String docid = type + "_" + doc.getId();
+					if (!finalparentIds.contains(docid))
+					{
+						finalparentIds.add(docid);
+					}
+
 				}
 
 			}
-
 		}
-
 		if (finalparentIds.isEmpty())
 		{
 			inContext.error("Error state, No embeded Documents to Process, dont process more"); // Mark as error?
@@ -76,7 +99,6 @@ public class SmartCreatorFindMemoryFilesSkill extends BaseSkill
 		JSONArray array = new JSONArray();
 		array.addAll(finalparentIds);
 		inContext.getAiSmartCreatorSteps().setEmbeddedParentIds(array);
-		super.process(inContext);
 
 	}
 }

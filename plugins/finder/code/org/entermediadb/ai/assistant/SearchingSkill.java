@@ -43,7 +43,7 @@ public class SearchingSkill extends BaseSkill
 		ChatMessageContext messageContext = (ChatMessageContext) inAgentContext;
 
 		MultiValued inAgentMessage = messageContext.getAgentMessage();
-		MultiValued currentfunction = messageContext.getAiFunction();
+		MultiValued currentfunction = messageContext.getCurrentFunction();
 		String agentFn = currentfunction.getId();
 
 		if ("chat_searching_welcome".equals(agentFn))

@@ -3,7 +3,8 @@ package org.entermediadb.ai.creator.agents;
 import java.util.Collection;
 
 import org.entermediadb.ai.BaseSkill;
-import org.entermediadb.ai.creator.SmartCreatorSkill;
+import org.entermediadb.ai.creator.ChatSmartCreatorConfirmationSkill;
+import org.entermediadb.ai.creator.SmartCreatorPlaybackSkill;
 import org.entermediadb.ai.AgentContext;
 
 public class SearchCategorySummarySkill extends BaseSkill
@@ -20,7 +21,7 @@ public class SearchCategorySummarySkill extends BaseSkill
 	{
 		// search for ones with an output type
 		// lastsummary_date
-		SmartCreatorSkill creatorManager = (SmartCreatorSkill) getMediaArchive().getBean("smartCreatorSkill");
+		SmartCreatorPlaybackSkill creatorManager = (SmartCreatorPlaybackSkill) getMediaArchive().getBean("SmartCreatorPlaybackSkill");
 
 		Collection categories = getMediaArchive().query("searchcategory").exact("lastsummary_enabled", true).search();
 		creatorManager.createContentFromSearchCategories(categories);

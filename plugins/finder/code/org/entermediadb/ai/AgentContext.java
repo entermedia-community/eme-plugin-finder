@@ -147,9 +147,11 @@ public interface AgentContext extends Data
 
 	Collection<LogEntry> getLogs();
 
-	public MultiValued getAiFunction();
+	public String getCurrentFunctionId();
 
-	public void setAiFunction(MultiValued inAiFunction);
+	public MultiValued getCurrentFunction();
+
+	public void setCurrentFunction(MultiValued inAiFunction);
 
 	public LlmResponse getLastResponse();
 

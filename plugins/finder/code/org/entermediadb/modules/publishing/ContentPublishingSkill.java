@@ -998,7 +998,7 @@ public class ContentPublishingSkill extends BaseSkill implements CatalogEnabled
 	{
 		ChatMessageContext chatMessageContext = (ChatMessageContext) inAgentContext;
 		MultiValued inAgentMessage = chatMessageContext.getAgentMessage();
-		MultiValued inAiFunction = chatMessageContext.getAiFunction();
+		MultiValued inAiFunction = chatMessageContext.getCurrentFunction();
 
 		/*
 		 * if("image_creation_welcome".equals(inAgentContext.getFunctionName())) { String entityid =

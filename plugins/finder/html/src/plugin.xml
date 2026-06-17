@@ -2746,7 +2746,25 @@
 		</property>
 	</bean>
 
-	<bean id="smartCreatorSkill" class="org.entermediadb.ai.creator.SmartCreatorSkill" scope="prototype">
+	<bean id="chatSmartCreatorConfirmationSkill" class="org.entermediadb.ai.creator.ChatSmartCreatorConfirmationSkill" scope="prototype">
+		<property name="moduleManager">
+			<ref bean="moduleManager" />
+		</property>
+	</bean>
+
+	<bean id="smartCreatorRenderFinishedOutlineSkill" class="org.entermediadb.ai.creator.agents.SmartCreatorRenderFinishedOutlineSkill" scope="prototype">
+		<property name="moduleManager">
+			<ref bean="moduleManager" />
+		</property>
+	</bean>
+
+	<bean id="smartCreatorMakeSuggestionsSkill" class="org.entermediadb.ai.creator.agents.SmartCreatorMakeSuggestionsSkill" scope="prototype">
+		<property name="moduleManager">
+			<ref bean="moduleManager" />
+		</property>
+	</bean>
+
+	<bean id="smartCreatorPlaybackSkill" class="org.entermediadb.ai.creator.agents.SmartCreatorPlaybackSkill" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>

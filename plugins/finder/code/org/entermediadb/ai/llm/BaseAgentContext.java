@@ -412,20 +412,19 @@ public class BaseAgentContext extends BaseData implements CatalogEnabled, AgentC
 		fieldAiCreationParams = inAiCreationParams;
 	}
 
-	AiSmartCreatorSteps fieldAiSmartCreatorSteps;
-
 	public AiSmartCreatorSteps getAiSmartCreatorSteps()
 	{
-		if (fieldAiSmartCreatorSteps == null && getParentContext() != null)
+		if (getParentContext() != null)
 		{
-			return getParentContext().getAiSmartCreatorSteps();
+			return (AiSmartCreatorSteps) getParentContext().getAiSmartCreatorSteps();
 		}
-		return fieldAiSmartCreatorSteps;
+		AiSmartCreatorSteps steps = (AiSmartCreatorSteps) getContextValue("aicreationparams");
+		return steps;
 	}
 
 	public void setAiSmartCreatorSteps(AiSmartCreatorSteps inAiCreatorSteps)
 	{
-		fieldAiSmartCreatorSteps = inAiCreatorSteps;
+		putContextValue("aicreationparams", inAiCreatorSteps);
 	}
 
 	public String getMessagePrefix()
@@ -620,14 +619,24 @@ public class BaseAgentContext extends BaseData implements CatalogEnabled, AgentC
 		return count;
 	}
 
-	public MultiValued getAiFunction()
+	public MultiValued getCurrentFunction()
 	{
 		return (MultiValued) getContextValue("aiFunction");
 	}
 
-	public void setAiFunction(MultiValued inAiFunction)
+	public void setCurrentFunction(MultiValued inAiFunction)
 	{
 		putContextValue("aiFunction", inAiFunction);
+	}
+
+	public String getCurrentFunctionId()
+	{
+		MultiValued function = getCurrentFunction();
+		if (function != null)
+		{
+			return function.getId();
+		}
+		return null;
 	}
 
 	public LlmResponse getLastResponse()

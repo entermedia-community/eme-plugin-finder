@@ -388,7 +388,7 @@ public class AssistantManager extends BaseAiManager
 		// ChatMessageContext messageContext = new ChatMessageContext(chatMessageContext);// Needed?
 		chatMessageContext.setAgentMessage(agentmessage);
 		chatMessageContext.setUserMessage(usermessage);
-		chatMessageContext.setAiFunction(function);
+		chatMessageContext.setCurrentFunction(function);
 
 		try
 		{
@@ -482,7 +482,7 @@ public class AssistantManager extends BaseAiManager
 				if (runFunctionName != null)
 				{
 					MultiValued nextFunction = (MultiValued) archive.getCachedData("aifunction", runFunctionName);
-					chatMessageContext.setAiFunction(nextFunction);
+					chatMessageContext.setCurrentFunction(nextFunction);
 					execCurrentFunctionFromChat(chatMessageContext, usermessage, runFunctionName);
 				}
 				// Save the current state
