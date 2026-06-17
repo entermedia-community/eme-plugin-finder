@@ -37,12 +37,14 @@
     #end
 
     #set($rendertype = $viewdata.rendertype)
-
-    <a href="$apphome/views/modules/${module.id}/editors/listentities/tabs/rendertypes/${rendertype}.html" 
+$rendertype
+    <a 
+    ## href="$apphome/views/modules/${module.id}/editors/listentities/tabs/rendertypes/${rendertype}.html"  
+    href="$urlname/modules/${module.id}/${rendertype}"  
       class="ajax activelistener file-row #if( $topmenuselected == $entityview.getId()) active#end" 
       data-targetdivinner="applicationcontent" 
       data-oemaxlevel="1" 
-      data-updateurl="false"
+      data-updateurl="true"
       data-scrolltotop="true"
       data-entitymoduleviewid="$entityview.id"
       data-entitymoduleid="$entityview.moduleid"

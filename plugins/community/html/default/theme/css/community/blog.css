@@ -1,7 +1,13 @@
-.blog-list-page {
-	max-width: 900px;
+.blog-list-page,
+.bloglistindex {
+	max-width: 1200px;
 	flex: 1;
-	margin: 0 auto;
+	margin: 24px auto;
+	min-height: calc(100vh - 154px);
+	background: #ffffff;
+	padding: 8px 16px;
+	border-radius: 16px;
+	box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 8px;
 }
 .modal-body .ck-content.ck-editor__editable {
 	max-height: 600px;
@@ -39,7 +45,6 @@
 	object-fit: cover;
 	overflow: hidden;
 	background-color: #f2f4f5;
-	
 }
 .comment-avatar {
 	width: 32px;
@@ -70,7 +75,7 @@
 .blog-thumbnail {
 	width: 100%;
 	aspect-ratio: 600/314;
-	overflow:hidden;
+	overflow: hidden;
 }
 .blog-thumbnail.video {
 	aspect-ratio: 16 / 9;
@@ -83,7 +88,6 @@
 	max-height: 100%;
 	/* aspect-ratio: 3/2; */
 	object-fit: cover;
-	
 }
 .blog-body {
 	position: relative;
@@ -103,7 +107,6 @@
 	line-height: 1;
 	font-weight: 700;
 	margin: 0.5rem auto;
-
 }
 .blog-post h1 {
 	font-size: 1.6rem;
