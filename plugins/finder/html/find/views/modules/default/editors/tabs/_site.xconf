@@ -1,0 +1,3 @@
+<page>
+  <inner-layout>${edithome}/tabs/dialoglayout.html</inner-layout>
+</page>
