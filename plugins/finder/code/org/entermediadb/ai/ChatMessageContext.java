@@ -1,7 +1,6 @@
 package org.entermediadb.ai;
 
 import org.entermediadb.ai.llm.BaseAgentContext;
-import org.entermediadb.ai.llm.LlmResponse;
 import org.openedit.MultiValued;
 
 public class ChatMessageContext extends BaseAgentContext

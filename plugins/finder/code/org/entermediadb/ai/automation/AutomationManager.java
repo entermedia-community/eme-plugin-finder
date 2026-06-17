@@ -323,15 +323,15 @@ public class AutomationManager extends BaseAiManager implements WebEventListener
 		Collection<AgentEnabled> cached = (Collection<AgentEnabled>) getMediaArchive().getCacheManager().get("agentsenabled", inId);
 		if (cached == null || cached.isEmpty())
 		{
-			Collection found = getMediaArchive().query("automationagentenabled").exact("automationscenario", inId).exact("enabled", true).search();
+			Collection found = getMediaArchive().query("aiskillenabled").exact("automationscenario", inId).exact("enabled", true).search();
 			Map<String, AgentEnabled> allparents = new HashMap();
 			for (Iterator iterator = found.iterator(); iterator.hasNext();)
 			{
 				MultiValued agentenableddata = (MultiValued) iterator.next();
 				AgentEnabled enabled = new AgentEnabled();
 				enabled.setAutomationEnabledData(agentenableddata);
-				String agentid = agentenableddata.get("automationagent");
-				MultiValued agentdata = (MultiValued) getMediaArchive().getCachedData("automationagent", agentid);
+				String agentid = agentenableddata.get("aiskill");
+				MultiValued agentdata = (MultiValued) getMediaArchive().getCachedData("aiskill", agentid);
 				enabled.setAgentData(agentdata);
 
 				addContextValues(enabled);
@@ -418,7 +418,7 @@ public class AutomationManager extends BaseAiManager implements WebEventListener
 					{
 						argumentString = arguments.toJSONString();
 						inAgentEnabledConfig.setValue("parameterstructure", argumentString);
-						getMediaArchive().saveData("automationagentenabled", inAgentEnabledConfig);
+						getMediaArchive().saveData("aiskillenabled", inAgentEnabledConfig);
 						getMediaArchive().getCacheManager().remove("agentsenabled", inAgentEnabledConfig.get("automationscenario"));
 					}
 				}
@@ -443,7 +443,7 @@ public class AutomationManager extends BaseAiManager implements WebEventListener
 
 	public Collection<MultiValued> getAgentsData()
 	{
-		Collection<MultiValued> records = getMediaArchive().query("automationagent").exact("enabled", true).sort("ordering").cachedSearch();
+		Collection<MultiValued> records = getMediaArchive().query("aiskill").exact("enabled", true).sort("ordering").cachedSearch();
 		return records;
 	}
 
@@ -484,7 +484,7 @@ public class AutomationManager extends BaseAiManager implements WebEventListener
 		if (cached == null)
 		{
 			cached = new HashSet();
-			Collection found = getMediaArchive().query("automationagentenabled").exact("runoperation", inEvent).exact("enabled", true).search();
+			Collection found = getMediaArchive().query("aiskillenabled").exact("runoperation", inEvent).exact("enabled", true).search();
 			if (found != null)
 			{
 				for (Iterator iterator = found.iterator(); iterator.hasNext();)

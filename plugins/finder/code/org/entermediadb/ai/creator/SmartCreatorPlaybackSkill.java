@@ -44,16 +44,15 @@ public class SmartCreatorPlaybackSkill extends BaseSkill
 	{
 		ChatMessageContext messageContext = (ChatMessageContext) inContext;
 		String functionName = inContext.getCurrentFunctionId();
-		boolean runandreturn = "chat_smartcreator_welcome".equals(functionName);
+		boolean runandreturn = "smartcreator_parsecontent".equals(functionName);
 		if (functionName == null || runandreturn)
 		{
-			// sendWelcomeMessage(messageContext);
+			parseSection(messageContext);
 			if (runandreturn)
 			{
 				return;
 			}
 		}
-
 		super.process(inContext);
 
 	}
@@ -678,6 +677,18 @@ public class SmartCreatorPlaybackSkill extends BaseSkill
 	public void createContentFromSearchCategories(Collection inCategories)
 	{
 
+	}
+
+	public Collection<Map> parseSection(ChatMessageContext messageContext)
+	{
+		Data usermessage = getMediaArchive().getCachedData("chatterbox", messageContext.getAgentMessage().get("replytoid"));
+		String sectiontext = usermessage.get("message");
+		messageContext.addContext("sectiontext", sectiontext);
+		LlmConnection llmconnection = getMediaArchive().getLlmConnection("smartcreator_parsecontent");
+		LlmResponse response = llmconnection.callStructure(messageContext, "smartcreator_parsecontent");
+		JSONObject json = response.getMessageStructured();
+		Collection boundaries = (Collection) json.get("parsed_content");
+		return boundaries;
 	}
 
 }

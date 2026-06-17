@@ -16,6 +16,7 @@ import org.apache.commons.logging.LogFactory;
 import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.BaseAiManager;
 import org.entermediadb.ai.ChatMessageContext;
+import org.entermediadb.ai.SkillStatusListener;
 import org.entermediadb.ai.automation.AutomationManager;
 import org.entermediadb.ai.classify.EmbeddingManager;
 import org.entermediadb.ai.llm.BaseAgentContext;
@@ -42,7 +43,7 @@ import org.openedit.profile.UserProfile;
 import org.openedit.users.User;
 import org.openedit.util.DateStorageUtil;
 
-public class AssistantManager extends BaseAiManager
+public class AssistantManager extends BaseAiManager implements SkillStatusListener
 {
 	private static final Log log = LogFactory.getLog(AssistantManager.class);
 
@@ -319,7 +320,6 @@ public class AssistantManager extends BaseAiManager
 	// MultiValued usermessage, MultiValued agentmessage, chatMessageContext chatMessageContext
 	public void execCurrentFunctionFromChat(ChatMessageContext chatMessageContext, MultiValued usermessage, String functionName)
 	{
-		ChatServer server = (ChatServer) getMediaArchive().getBean("chatServer");
 
 		MultiValued agentmessage = chatMessageContext.getAgentMessage();
 
@@ -343,31 +343,6 @@ public class AssistantManager extends BaseAiManager
 			return;
 		}
 
-		String loader = "<i class=\"fas fa-spinner fa-spin mr-2\"></i> ";
-		String processingmessage = null;
-		if (function != null)
-		{
-			processingmessage = function.get("processingmessage");
-		}
-		if (processingmessage == null)
-		{
-			processingmessage = "Analyzing";
-		}
-
-		String processingtype = (String) chatMessageContext.getContextValue("processingtype");
-		if (processingtype != null)
-		{
-			processingmessage += " " + processingtype;
-		}
-
-		processingmessage = loader + processingmessage + "...";
-
-		String message = chatMessageContext.getMessagePrefix() + processingmessage;
-		agentmessage.setValue("message", message); // setting status
-		agentmessage.setValue("functionname", functionName);
-		getMediaArchive().saveData("chatterbox", agentmessage);
-		server.broadcastMessage(getMediaArchive().getCatalogId(), agentmessage);
-
 		MediaArchive archive = getMediaArchive();
 
 		Data channel = archive.getCachedData("channel", agentmessage.get("channel"));
@@ -389,11 +364,12 @@ public class AssistantManager extends BaseAiManager
 		chatMessageContext.setAgentMessage(agentmessage);
 		chatMessageContext.setUserMessage(usermessage);
 		chatMessageContext.setCurrentFunction(function);
-
+		chatMessageContext.addStatusListener(this);
 		try
 		{
 			// get the scenerio and run that. Each scenerio will have one or more skills
 			MultiValued scenerio = chatMessageContext.getCurrentScenario();
+			chatMessageContext.setLastResponse(null);
 			getAutomationManager().runScenario(scenerio.getId(), chatMessageContext);
 			response = chatMessageContext.getLastResponse();
 		}
@@ -408,97 +384,18 @@ public class AssistantManager extends BaseAiManager
 			response = handleError(chatMessageContext, e.getMessage());
 		}
 
-		try
-		{
-			String updatedMessage = null;
+	}catch(
 
-			if (response != null && response.getMessage() != null)
-			{
-				if (messagePrefix != null)
-				{
-					updatedMessage = messagePrefix + response.getMessage();
-				}
-				else
-				{
-					updatedMessage = response.getMessage();
-				}
-			}
-
-			agentmessage.setValue("message", updatedMessage); // Final message
-
-			String messageplain = agentmessage.get("messageplain");
-			if (response != null)
-			{
-				String newmessageplain = response.getMessagePlain();
-
-				if (newmessageplain != null)
-				{
-					if (messageplain == null)
-					{
-						messageplain = newmessageplain;
-					}
-					else
-					{
-						messageplain += " \n " + newmessageplain;
-					}
-					agentmessage.setValue("messageplain", messageplain);
-				}
-			}
-			String nextFunctionName = response.getNextFunctionName();
-
-			agentmessage.setValue("functionname", functionName);
-			agentmessage.setValue("nextfunctionname", nextFunctionName);
-			agentmessage.setValue("chatmessagestatus", "completed");
-			getMediaArchive().saveData("chatterbox", agentmessage);
-
-			JSONObject functionMessageUpdate = new JSONObject();
-			functionMessageUpdate.put("messagetype", "airesponse");
-			functionMessageUpdate.put("catalogid", archive.getCatalogId());
-			functionMessageUpdate.put("user", "agent");
-			functionMessageUpdate.put("channel", agentmessage.get("channel"));
-			functionMessageUpdate.put("messageid", agentmessage.getId());
-			functionMessageUpdate.put("message", agentmessage.get("message"));
-			functionMessageUpdate.put("nextfunctionname", nextFunctionName);
-			server.broadcastMessage(functionMessageUpdate);
-
-			Long waittime = 200l;
-
-			MultiValued currentscenario = chatMessageContext.getCurrentScenario();
-			if (currentscenario != null)
-			{
-				Long wait = chatMessageContext.getWaitTime();
-				if (wait != null && wait instanceof Long)
-				{
-					chatMessageContext.setWaitTime(null);
-					waittime = wait;
-					log.info("Previous function requested to wait " + waittime + " milliseconds");
-					Thread.sleep(wait);
-				}
-
-				chatMessageContext.setAgentMessage(agentmessage);
-				chatMessageContext.setUserMessage(usermessage);
-
-				String runFunctionName = response.getRunFunctionName();
-				if (runFunctionName != null)
-				{
-					MultiValued nextFunction = (MultiValued) archive.getCachedData("aifunction", runFunctionName);
-					chatMessageContext.setCurrentFunction(nextFunction);
-					execCurrentFunctionFromChat(chatMessageContext, usermessage, runFunctionName);
-				}
-				// Save the current state
-			}
-		}
-		catch (Exception e)
-		{
-			log.error("Could not execute function: " + functionName, e);
-			agentmessage.setValue("functionresponse", e.toString());
-			agentmessage.setValue("chatmessagestatus", "failed");
-			archive.saveData("chatterbox", agentmessage);
-		}
-		finally
-		{
-			getMediaArchive().saveData("chatMessageContext", chatMessageContext);
-		}
+	Exception e)
+	{
+		log.error("Could not execute function: " + functionName, e);
+		agentmessage.setValue("functionresponse", e.toString());
+		agentmessage.setValue("chatmessagestatus", "failed");
+		archive.saveData("chatterbox", agentmessage);
+	}finally
+	{
+		getMediaArchive().saveData("chatMessageContext", chatMessageContext);
+	}
 	}
 
 	protected int channelMessageCount(String inChannelId)
@@ -1075,6 +972,149 @@ public class AssistantManager extends BaseAiManager
 			}
 		}
 		getMediaArchive().saveData("automationscenario", tosave);
+	}
+
+	public void fireStatusStarting(AgentContext inContext, String inMessage)
+	{
+		if (inContext instanceof ChatMessageContext)
+		{
+			return;
+		}
+
+		ChatMessageContext chatMessageContext = (ChatMessageContext) inContext;
+
+		MultiValued function = inContext.getCurrentFunction();
+		String loader = "<i class=\"fas fa-spinner fa-spin mr-2\"></i> ";
+		String processingmessage = null;
+		if (function != null)
+		{
+			processingmessage = function.get("processingmessage");
+		}
+		if (processingmessage == null)
+		{
+			processingmessage = "Analyzing";
+		}
+
+		String processingtype = (String) inContext.getContextValue("processingtype");
+		if (processingtype != null)
+		{
+			processingmessage += " " + processingtype;
+		}
+
+		processingmessage = loader + processingmessage + "...";
+
+		MultiValued agentmessage = chatMessageContext.getAgentMessage();
+
+		String message = inContext.getMessagePrefix() + processingmessage;
+		agentmessage.setValue("message", message); // setting status
+		agentmessage.setValue("functionname", function.getId());
+		getMediaArchive().saveData("chatterbox", agentmessage);
+		ChatServer server = (ChatServer) getMediaArchive().getBean("chatServer");
+		server.broadcastMessage(getMediaArchive().getCatalogId(), agentmessage);
+
+	}
+
+	public void fireStatusComplete(AgentContext inContext, String inMessage)
+	{
+
+		if (inContext instanceof ChatMessageContext)
+		{
+			return;
+		}
+
+		ChatMessageContext chatMessageContext = (ChatMessageContext) inContext;
+
+		MultiValued agentmessage = chatMessageContext.getAgentMessage();
+		LlmResponse response = chatMessageContext.getLastResponse();
+				MultiValued function = inContext.getCurrentFunction();
+
+		try
+		{
+			String updatedMessage = null;
+			String messagePrefix = chatMessageContext.getMessagePrefix();
+
+			if (response != null && response.getMessage() != null)
+			{
+				if (messagePrefix != null)
+				{
+					updatedMessage = messagePrefix + response.getMessage();
+				}
+				else
+				{
+					updatedMessage = response.getMessage();
+				}
+			}
+
+			agentmessage.setValue("message", updatedMessage); // Final message
+
+			String messageplain = agentmessage.get("messageplain");
+			if (response != null)
+			{
+				String newmessageplain = response.getMessagePlain();
+
+				if (newmessageplain != null)
+				{
+					if (messageplain == null)
+					{
+						messageplain = newmessageplain;
+					}
+					else
+					{
+						messageplain += " \n " + newmessageplain;
+					}
+					agentmessage.setValue("messageplain", messageplain);
+				}
+			}
+
+			String nextFunctionName = response.getNextFunctionName();
+
+			agentmessage.setValue("functionname", function.getId());
+			agentmessage.setValue("nextfunctionname", nextFunctionName);
+			agentmessage.setValue("chatmessagestatus", "completed");
+			getMediaArchive().saveData("chatterbox", agentmessage);
+
+			JSONObject functionMessageUpdate = new JSONObject();
+			functionMessageUpdate.put("messagetype", "airesponse");
+			functionMessageUpdate.put("catalogid", getMediaArchive().getCatalogId());
+			functionMessageUpdate.put("user", "agent");
+			functionMessageUpdate.put("channel", agentmessage.get("channel"));
+			functionMessageUpdate.put("messageid", agentmessage.getId());
+			functionMessageUpdate.put("message", agentmessage.get("message"));
+			functionMessageUpdate.put("nextfunctionname", nextFunctionName);
+					ChatServer server = (ChatServer) getMediaArchive().getBean("chatServer");
+
+			server.broadcastMessage(functionMessageUpdate);
+
+
+			Long waittime = 200l;
+
+		MultiValued currentscenario = chatMessageContext.getCurrentScenario();
+		if (currentscenario != null)
+		{
+			Long wait = chatMessageContext.getWaitTime();
+			if (wait != null && wait instanceof Long)
+			{
+				chatMessageContext.setWaitTime(null);
+				waittime = wait;
+				log.info("Previous function requested to wait " + waittime + " milliseconds");
+				Thread.sleep(wait);
+			}
+
+			chatMessageContext.setAgentMessage(agentmessage);
+			chatMessageContext.setUserMessage(usermessage);
+
+			String runFunctionName = response.getRunFunctionName();
+			if (runFunctionName != null)
+			{
+				MultiValued nextFunction = (MultiValued) archive.getCachedData("aifunction", runFunctionName);
+				chatMessageContext.setCurrentFunction(nextFunction);
+				execCurrentFunctionFromChat(chatMessageContext, usermessage, runFunctionName);
+			}
+			else
+			{
+				chatMessageContext.setCurrentFunction(null);
+			}
+			// Save the current state
 	}
 
 }

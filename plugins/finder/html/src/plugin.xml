@@ -2775,6 +2775,13 @@
 			<ref bean="moduleManager" />
 		</property>
 	</bean>
+
+	<bean id="smartCreatorParseUserPromptSkill" class="org.entermediadb.ai.creator.agents.SmartCreatorParseUserPromptSkill" scope="prototype">
+		<property name="moduleManager">
+			<ref bean="moduleManager" />
+		</property>
+	</bean>
+
 	<bean id="smartCreatorFindMemoryFilesSkill" class="org.entermediadb.ai.creator.agents.SmartCreatorFindMemoryFilesSkill" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
@@ -2802,6 +2809,13 @@
 			<ref bean="moduleManager" />
 		</property>
 	</bean>
+
+	<bean id="chatMessageContext" class="org.entermediadb.ai.ChatMessageContext" scope="prototype">
+		<property name="moduleManager">
+			<ref bean="moduleManager" />
+		</property>
+	</bean>
+
 
 	<bean id="AgentModule" class="org.entermediadb.ai.assistant.AgentModule">
 		<property name="moduleManager">

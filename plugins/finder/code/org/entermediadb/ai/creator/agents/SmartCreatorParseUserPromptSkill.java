@@ -1,0 +1,58 @@
+package org.entermediadb.ai.creator.agents;
+
+import org.entermediadb.ai.AgentContext;
+import org.entermediadb.ai.BaseSkill;
+import org.entermediadb.ai.ChatMessageContext;
+import org.entermediadb.ai.creator.AiSmartCreatorSteps;
+import org.entermediadb.ai.llm.LlmConnection;
+import org.entermediadb.ai.llm.LlmResponse;
+import org.json.simple.JSONObject;
+import org.openedit.Data;
+
+public class SmartCreatorParseUserPromptSkill extends BaseSkill
+{
+
+	@Override
+	public void process(AgentContext inContext)
+	{
+		ChatMessageContext messageContext = (ChatMessageContext) inContext;
+		String functionName = inContext.getCurrentFunctionId();
+
+		Boolean runandreturn = "smartcreator_parse".equals(functionName);
+		if (functionName == null || runandreturn)
+		{
+			parseUserPrompt(messageContext, functionName); // Calls smartcreator_createoutline
+			if (runandreturn)
+			{
+				return;
+			}
+		}
+	}
+
+	public LlmResponse parseUserPrompt(ChatMessageContext messageContext, String sectiontext)
+	{
+		Data usermessage = getMediaArchive().getCachedData("chatterbox", messageContext.getAgentMessage().get("replytoid"));
+
+		String prompt = usermessage.get("message");
+
+		LlmResponse response = parseCreationPrompt(messageContext, prompt);
+
+		response.setRunFunctionName("chat_smartcreator_findmemory");
+		messageContext.setLastResponse(response);
+		return response;
+	}
+
+	public LlmResponse parseCreationPrompt(AgentContext messageContext, String prompt)
+	{
+		// instructions come from SmartCreatorMakeSuggestionsSkill.makeSuggestions
+		AiSmartCreatorSteps instructions = messageContext.getAiSmartCreatorSteps();
+		messageContext.addContext("creationprompt", prompt);
+		LlmConnection llmconnection = getMediaArchive().getLlmConnection("smartcreator_parse");
+		LlmResponse res = llmconnection.callStructure(messageContext, "smartcreator_parse");
+
+		JSONObject paragraphs = res.getMessageStructured();
+		instructions.loadJsonParts(paragraphs);
+
+		return res;
+	}
+}

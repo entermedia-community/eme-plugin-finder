@@ -1,12 +1,12 @@
 <records>
 
-  <data id="customer_support_start" automationagent="handleWebEventSkill" runoperation="mcp.readmail" automationscenario="email" enabled="true">
+  <data id="customer_support_start" aiskill="handleWebEventSkill" runoperation="mcp.readmail" automationscenario="email" enabled="true">
     <name>
       <![CDATA[Start Customer Support]]>
     </name>
   </data>
 
-  <data id="process_email_enabled" automationagent="process_email" automationscenario="email" enabled="true" runafter="customer_support_start">
+  <data id="process_email_enabled" aiskill="process_email" automationscenario="email" enabled="true" runafter="customer_support_start">
     <name>
       <![CDATA[Process Email]]>
     </name>
@@ -17,13 +17,13 @@
     <contextvalues>{"mailserver": "mail.emediadb.net","mailport": 993,"mailusername": "dev@emediadb.net","mailpassword": ""}</contextvalues>
   </data>
 
-  <data id="find_embeddings_enabled" automationagent="find_embeddings" automationscenario="email" runafter="process_email_enabled" enabled="true">
+  <data id="find_embeddings_enabled" aiskill="find_embeddings" automationscenario="email" runafter="process_email_enabled" enabled="true">
     <name>
       <![CDATA[Find Embeddings]]>
     </name>
   </data>
 
-  <data id="answer_query_enabled" automationagent="answer_query" automationscenario="email" runafter="find_embeddings_enabled" enabled="true">
+  <data id="answer_query_enabled" aiskill="answer_query" automationscenario="email" runafter="find_embeddings_enabled" enabled="true">
     <name>
       <![CDATA[Find Answer for Query]]>
     </name>
@@ -36,20 +36,20 @@
     <parameterstructure>[{"data_type":"string","description":"The name of the user or requester.","id":"name"},{"data_type":"string","description":"The email address of the user or requester.","id":"email"},{"data_type":"string","description":"The specific question, query or greetings extracted from the email body.","id":"content"},{"data_tyoe":"string","description":"Type of email","id":"email_type","enum":["question","query","greetings","followup"]}]</parameterstructure>
   </data>
 
-  <data id="reply_email_enabled" automationagent="reply_email" automationscenario="email" runafter="answer_query_enabled" enabled="true">
+  <data id="reply_email_enabled" aiskill="reply_email" automationscenario="email" runafter="answer_query_enabled" enabled="true">
     <name>
       <![CDATA[Reply to Email]]>
     </name>
     <contextvalues>{"mailserver":"mail.emediadb.net","mailport":465,"mailusername":"dev@emediadb.net","mailpassword":"","ssl":true}</contextvalues>
   </data>
 
-  <data id="mark_as_done_enabled" automationagent="mark_as_done" automationscenario="email" runafter="reply_email_enabled" enabled="true">
+  <data id="mark_as_done_enabled" aiskill="mark_as_done" automationscenario="email" runafter="reply_email_enabled" enabled="true">
     <name>
       <![CDATA[Mark as Done]]>
     </name>
   </data>
 
-  <data id="mark_as_critical_enabled" automationagent="mark_as_critical" automationscenario="email" runafter="find_embeddings_enabled" enabled="true">
+  <data id="mark_as_critical_enabled" aiskill="mark_as_critical" automationscenario="email" runafter="find_embeddings_enabled" enabled="true">
     <name>
       <![CDATA[Mark as Critical]]>
     </name>
@@ -61,7 +61,7 @@
     </skilloverview>
   </data>
 
-  <data id="escalate_issue_enabled" automationagent="escalate_issue" automationscenario="email" runafter="mark_as_critical_enabled" enabled="true">
+  <data id="escalate_issue_enabled" aiskill="escalate_issue" automationscenario="email" runafter="mark_as_critical_enabled" enabled="true">
     <name>
       <![CDATA[Escalate Issue]]>
     </name>

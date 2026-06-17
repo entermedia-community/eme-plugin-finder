@@ -68,7 +68,7 @@ public class SmartCreatorProcessPendingSkill extends BaseSkill
 
 				inContext.setAiSmartCreatorSteps(instructions);
 
-				getSmartCreatorSkill().parseCreationPrompt(inContext, llmprompt);
+				// getSmartCreatorSkill().parseCreationPrompt(inContext, llmprompt);
 
 				super.process(inContext); // To Create outline
 

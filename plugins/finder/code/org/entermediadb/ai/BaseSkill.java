@@ -41,4 +41,5 @@ public class BaseSkill extends BaseAiManager implements Skill, CatalogEnabled
 			agentEnabled.getAgent().processend(childContext);
 		}
 	}
+
 }

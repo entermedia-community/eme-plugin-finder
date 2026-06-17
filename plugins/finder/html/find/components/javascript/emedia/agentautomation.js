@@ -1111,7 +1111,7 @@ $(document).ready(function () {
 						}
 					}
 
-					const label = node.name || node.automationagent.name;
+					const label = node.name || node.aiskill.name;
 					const icon = node.agenticon || null;
 					const bgColor = node.agentcolor || "#888888";
 
@@ -1128,7 +1128,7 @@ $(document).ready(function () {
 					const userData = {
 						id: node.id,
 						enabled: parseBoolean(node.enabled),
-						automationagent: node.automationagent.id,
+						aiskill: node.aiskill.id,
 						automationscenario: node.automationscenario.id,
 						skilloverview: node.skilloverview,
 					};
@@ -1656,7 +1656,7 @@ $(document).ready(function () {
 		$(this).find(".edit-btn").trigger("click");
 	});
 
-	lQuery("#automationagentvalue").livequery("select2:select", function (e) {
+	lQuery("#aiskillvalue").livequery("select2:select", function (e) {
 		let newLabel = e.params.data.text;
 		newLabel = newLabel.substring(newLabel.indexOf(":") + 1).trim();
 		$(this).closest("form").find("#name\\.value").val(newLabel);

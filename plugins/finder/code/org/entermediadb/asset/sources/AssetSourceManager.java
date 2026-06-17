@@ -111,7 +111,7 @@ public class AssetSourceManager implements CatalogEnabled
 	public void saveAgents()
 	{
 		// HitTracker existingagents =
-		// getMediaArchive().query("automationagent").all().search();
+		// getMediaArchive().query("aiskill").all().search();
 		// Collection existingids = existingagents.collectValues("id");
 		Collection tosave = new ArrayList();
 		for (Iterator iterator = getAssetSources().iterator(); iterator.hasNext();)
@@ -119,10 +119,10 @@ public class AssetSourceManager implements CatalogEnabled
 			AssetSource source = (AssetSource) iterator.next();
 			// if( !existingids.contains(source.getId()))
 			// {
-			Data agent = getMediaArchive().getData("automationagent", source.getId());
+			Data agent = getMediaArchive().getData("aiskill", source.getId());
 			if (agent == null)
 			{
-				agent = getMediaArchive().getSearcher("automationagent").createNewData();
+				agent = getMediaArchive().getSearcher("aiskill").createNewData();
 			}
 			agent.setId(source.getId());
 			String name = "HotFolder: " + source.getName();
@@ -139,12 +139,12 @@ public class AssetSourceManager implements CatalogEnabled
 			agent.setValue("agenttype", "hotfolder");
 			tosave.add(agent);
 		}
-		getMediaArchive().saveData("automationagent", tosave);
+		getMediaArchive().saveData("aiskill", tosave);
 
 		// Now make sure they are on the ui. Enabled or not
 		String defaultscenerio = "asset_hotfolder_scanning";
 		// HitTracker existingagentsenabled =
-		// getMediaArchive().query("automationagentenabled").exact("automationscenario",defaultscenerio).search();
+		// getMediaArchive().query("aiskillenabled").exact("automationscenario",defaultscenerio).search();
 		// Collection existingids = existingagentsenabled.collectValues("id");
 		Collection tosaveeanbled = new ArrayList();
 		String previousid = "asset_holfoder_scanning_start";
@@ -152,14 +152,14 @@ public class AssetSourceManager implements CatalogEnabled
 		{
 			MultiValued agent = (MultiValued) iterator.next();
 			String uid = "ahc_" + agent.getId();
-			MultiValued agentsenabled = (MultiValued) getMediaArchive().getData("automationagentenabled", uid);
+			MultiValued agentsenabled = (MultiValued) getMediaArchive().getData("aiskillenabled", uid);
 			if (agentsenabled == null)
 			{
-				agentsenabled = (MultiValued) getMediaArchive().getSearcher("automationagentenabled").createNewData();
+				agentsenabled = (MultiValued) getMediaArchive().getSearcher("aiskillenabled").createNewData();
 				agentsenabled.setValue("enabled", true);
 				agentsenabled.setId(uid);
 			}
-			agentsenabled.setValue("automationagent", agent.getId());
+			agentsenabled.setValue("aiskill", agent.getId());
 			agentsenabled.setValue("automationscenario", defaultscenerio);
 			agentsenabled.setValue("agenttype", "hotfolder");
 			agentsenabled.setValue("runafter", previousid);
@@ -167,7 +167,7 @@ public class AssetSourceManager implements CatalogEnabled
 			tosaveeanbled.add(agentsenabled);
 			previousid = uid;
 		}
-		getMediaArchive().saveData("automationagentenabled", tosaveeanbled);
+		getMediaArchive().saveData("aiskillenabled", tosaveeanbled);
 	}
 
 	public void setAssetSources(Collection inAssetSources)

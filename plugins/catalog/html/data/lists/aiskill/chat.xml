@@ -1,0 +1,23 @@
+<results>
+
+   <data id="autoDetectChatSkill" bean="autoDetectChatSkill" agenttype="remoteagent" ordering="10" contextbean="chatMessageContext">
+      <name>
+         <![CDATA[Auto Detect Chat]]>
+      </name>
+   </data>
+
+   <data id="questionsSkill" bean="questionsSkill" agenttype="remoteagent" ordering="10" contextbean="chatMessageContext">
+      <name>
+         <![CDATA[Questions Chat]]>
+      </name>
+   </data>
+
+
+   <data id="searchingChatSkill" bean="searchingSkill" agenttype="remoteagent" ordering="10" contextbean="chatMessageContext">
+      <name>
+         <![CDATA[Searching Chat]]>
+      </name>
+   </data>
+
+
+</results>

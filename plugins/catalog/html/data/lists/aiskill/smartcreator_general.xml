@@ -1,4 +1,25 @@
 <records>
+
+
+   <data id="chatSmartCreatorConfirmationSkill" bean="chatSmartCreatorConfirmationSkill" contextbean="chatMessageContext" agenttype="remoteagent" ordering="10">
+      <name>
+         <![CDATA[Smart Creator Chat]]>
+      </name>
+   </data>
+
+   <data id="smartCreatorRenderFinishedOutlineSkill" bean="smartCreatorRenderFinishedOutlineSkill" agenttype="remoteagent" ordering="10">
+      <name>
+         <![CDATA[Smart Creator Render Finished Outline]]>
+      </name>
+   </data>
+
+   <data id="smartCreatorMakeSuggestionsSkill" bean="smartCreatorMakeSuggestionsSkill" contextbean="chatMessageContext" agenttype="remoteagent" ordering="10">
+      <name>
+         <![CDATA[Smart Creator Make Suggestions]]>
+      </name>
+   </data>
+
+
    <data id="smartcreator_processpendingrecords" bean="smartCreatorProcessPendingSkill" agenttype="taskagent" ordering="20">
       <name>
          <language id="en"><![CDATA[Smart Creator: Process Pending Records]]></language>
@@ -16,6 +37,14 @@
          <language id="en"><![CDATA[Smart Creator: Find Embedded Search Categories Content]]></language>
       </name>
    </data>
+
+
+   <data id="smartCreatorParseUserPromptSkill" bean="smartCreatorParseUserPromptSkill" contextbean="chatMessageContext" agenttype="taskagent" ordering="20">
+      <name>
+         <language id="en"><![CDATA[Smart Creator: Parse User Prompt]]></language>
+      </name>
+   </data>
+
 
 
    <data id="smartcreator_createoutline" bean="smartCreatorCreateOutlineSkill" enabled="true" agenttype="taskagent" ordering="10">
