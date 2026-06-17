@@ -1,4 +1,4 @@
 <page>
 
- 	<property name="fallbackdirectory">/finder/find/views/settings/modules/default</property>
- </page>
+	<property name="fallbackdirectory">/community/default/views/settings/modules/default</property>
+</page>
