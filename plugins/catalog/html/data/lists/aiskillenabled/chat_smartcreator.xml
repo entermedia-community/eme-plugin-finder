@@ -9,21 +9,21 @@
       </name>
    </data> 
 
-   <data id="chat_smartcreator_make_suggestions" aiskill="smartCreatorMakeSuggestionsSkill" automationscenario="chat_smartcreator" enabled="true" runafter="chat_smartcreator">
+   <data id="chat_smartcreator_make_suggestions" aiskill="smartCreatorMakeSuggestionsSkill" automationscenario="chat_smartcreator" enabled="true" runafter="chat_smartcreator" processingmessage="Making Suggestions">
       <name>
          <language id="en"><![CDATA[Make Suggestions]]></language>
       </name>
    </data>
 
 
-   <data id="chat_smartcreator_parse_user_prompt" aiskill="smartCreatorParseUserPromptSkill" automationscenario="chat_smartcreator" enabled="true" runafter="chat_smartcreator_make_suggestions">
+   <data id="chat_smartcreator_parse_user_prompt" aiskill="smartCreatorParseUserPromptSkill" automationscenario="chat_smartcreator" enabled="true" runafter="chat_smartcreator_make_suggestions" processingmessage="Parsing">
       <name>
          <language id="en"><![CDATA[Parse User Prompt]]></language>
       </name>
    </data>
 
 
-   <data id="chat_smartcreator_findmemory" aiskill="smartcreator_findmemory" automationscenario="chat_smartcreator" enabled="true" runafter="chat_smartcreator_parse_user_prompt"  >
+   <data id="chat_smartcreator_findmemory" aiskill="smartcreator_findmemory" automationscenario="chat_smartcreator" enabled="true" runafter="chat_smartcreator_parse_user_prompt" processingmessage="Searching Memory">
       <name>
          <language id="en"><![CDATA[Search Memory]]></language>
       </name>
@@ -31,21 +31,21 @@
    </data>
 
 
-   <data id="chat_smartcreator_createoutline" aiskill="smartcreator_createoutline" automationscenario="chat_smartcreator" enabled="true" runafter="chat_smartcreator_findmemory" >
+   <data id="chat_smartcreator_createoutline" aiskill="smartcreator_createoutline" automationscenario="chat_smartcreator" enabled="true" runafter="chat_smartcreator_findmemory" processingmessage="Creating Outline">
       <name>
          <language id="en"><![CDATA[Create Article Outline]]></language>
       </name>
    </data>
 
 
-   <data id="chat_smartcreator_createsections" aiskill="smartcreator_createsections" automationscenario="chat_smartcreator" enabled="true" runafter="chat_smartcreator_createoutline">
+   <data id="chat_smartcreator_createsections" aiskill="smartcreator_createsections" automationscenario="chat_smartcreator" enabled="true" runafter="chat_smartcreator_createoutline" processingmessage="Creating Sections">
       <name>
-         <language id="en"><![CDATA[Create Article Sections]]></language>
+         <language id="en"><![CDATA[Create Sections]]></language>
       </name>
    </data>
 
-   <data id="chat_smartcreator_renderfinishedoutline" aiskill="smartCreatorRenderFinishedOutlineSkill" automationscenario="chat_smartcreator" enabled="true" runafter="chat_smartcreator_createsections">
-      <name>
+   <data id="chat_smartcreator_renderfinishedoutline" aiskill="smartCreatorRenderFinishedOutlineSkill" automationscenario="chat_smartcreator" enabled="true" runafter="chat_smartcreator_createsections" processingmessage="Rendering Finished Outline">
+       <name>
          <language id="en"><![CDATA[Render Finished Outline]]></language>
       </name>
    </data>
