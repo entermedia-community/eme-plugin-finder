@@ -177,7 +177,7 @@ public class ProjectLoader extends BaseManager implements PageLoader, CatalogEna
 			String template = null;
 			if (anythingelse == null)
 			{
-				template = apphome + "/project/blog-list/index.html";
+				template = apphome + "/project/chat/index.html";
 			}
 			else
 			{

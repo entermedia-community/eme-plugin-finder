@@ -7,7 +7,7 @@
 #if($librarycol.urlname)
 	#set($projectlink = "$!{community.externaldomain}/${librarycol.urlname}")
 #else
-	#set($projectlink = "${communitylink}/#dash($librarycol.getName())")
+	#set($projectlink = "${apphome}/#dash($librarycol.getName())")
 #end
 
 #if($userpost.urlname)

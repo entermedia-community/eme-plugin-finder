@@ -2,32 +2,32 @@
 
 <page>
 
-    <property name="loginroot">${apphome}/authentication</property>
-    <property name="login-path">${apphome}/authentication/login.html</property>
-	
-    <path-action name="Admin.autoLogin"/>
-	  <path-action name="MediaArchiveModule.loadApplicationId"/>
-	  <path-action name="MediaArchiveModule.loadComponentHome" />
-	  
-	  <path-action name="ProfileModule.loadUserProfile"/>
-	  <path-action name="PageValue.loadPageVariable" allowduplicates="true" bean="searcherManager"/>
-	  <path-action name="PageValue.loadPageVariable" allowduplicates="true" bean="userManager"/>
-	  <path-action name="SessionValue.loadSessionVariable" bean="moduleManager"/>
-	  <path-action name="Admin.loadPermissions"/>
-	  <path-action name="Admin.allowViewing"/>
-	  <path-action name="TranslationModule.loadBrowserLanguage"/>
+  <property name="loginroot">${apphome}/authentication</property>
+  <property name="login-path">${apphome}/authentication/login.html</property>
 
- 	  <path-action name="ProjectModule.trackReferralCode" />
-	  
-	  <path-action name="OiModule.loadCommunityTagFolder" />
-	
-	  <inner-layout>${apphome}/innerlayout.html</inner-layout>
-	  
-	  <property name="xmledithome">${apphome}/components/xml</property>
+  <path-action name="Admin.autoLogin"/>
+  <path-action name="MediaArchiveModule.loadApplicationId"/>
+  <path-action name="MediaArchiveModule.loadComponentHome" />
+
+  <path-action name="ProfileModule.loadUserProfile"/>
+  <path-action name="PageValue.loadPageVariable" allowduplicates="true" bean="searcherManager"/>
+  <path-action name="PageValue.loadPageVariable" allowduplicates="true" bean="userManager"/>
+  <path-action name="SessionValue.loadSessionVariable" bean="moduleManager"/>
+  <path-action name="Admin.loadPermissions"/>
+  <path-action name="Admin.allowViewing"/>
+  <path-action name="TranslationModule.loadBrowserLanguage"/>
+
+  <path-action name="ProjectModule.trackReferralCode" />
+
+  <path-action name="OiModule.loadCommunityTagFolder" />
+
+  <inner-layout>${apphome}/innerlayout.html</inner-layout>
+
+  <property name="xmledithome">${apphome}/components/xml</property>
 
   <style id="blog" href="${apphome}/theme/css/blog.css"/>
-	
-	<permission name="openeditdirectedit">
+
+  <permission name="openeditdirectedit">
     <group id="administrators"/>
   </permission>
   <permission name="quicksearch">
@@ -127,7 +127,8 @@
     <userprofile name="viewrelatedkeywords" value="true"/>
   </permission>
   <permission name="converthistory">
-    <userprofile name="converthistory" value="true"/>UI: CK Editor support in community apps. Make sure it saved the value 
+    <userprofile name="converthistory" value="true"/>
+UI: CK Editor support in community apps. Make sure it saved the value 
 
   </permission>
   <permission name="viewassetdownloadhistory">
@@ -152,7 +153,7 @@
     <userprofile name="viewmap" value="true"/>
   </permission>
   <permission name="viewsettings">
-      <userprofile name="viewsettings" value="true"/>
+    <userprofile name="viewsettings" value="true"/>
   </permission>
   <permission name="viewmodulesettings">
     <or>
@@ -169,13 +170,13 @@
   <permission name="shareasset">
     <userprofile name="shareasset" value="true"/>
   </permission>
-  
-  	<permission name="showpendingassets">
-		<userprofile property="showpendingassets" equals="true" />
-	</permission>	
 
-  
-  
+  <permission name="showpendingassets">
+    <userprofile property="showpendingassets" equals="true" />
+  </permission>
+
+
+
   <permission name="deleteasset">
     <and>
       <userprofile name="deleteasset" value="true"/>
@@ -314,31 +315,31 @@
   <permission name="openeditdirectedit">
     <group id="administrators"/>
   </permission>
-  
-    	<permission name="viewtimeline">
-		<userprofile property="viewtimeline" equals="true" />
-	</permission>
-	
-  	<permission name="viewclosedcaptions">
-		<userprofile property="viewclosedcaptions" equals="true" />
-	</permission>
-	
-		<permission name="showcollectionpicker">
-		<userprofile property="showcollectionpicker" equals="true" />
-	</permission>
 
-	<permission name="showsidebar">
-		<user />
-	</permission>
-	
-	
-    <permission name="editcollection">
-		<or>
-			<action name="ProjectModule.canEditCollection" />
-			<action name="ProjectModule.isOnTeam" />		
-			<group id="administrators"/>	
-		</or>
-	</permission>
-	
+  <permission name="viewtimeline">
+    <userprofile property="viewtimeline" equals="true" />
+  </permission>
+
+  <permission name="viewclosedcaptions">
+    <userprofile property="viewclosedcaptions" equals="true" />
+  </permission>
+
+  <permission name="showcollectionpicker">
+    <userprofile property="showcollectionpicker" equals="true" />
+  </permission>
+
+  <permission name="showsidebar">
+    <user />
+  </permission>
+
+
+  <permission name="editcollection">
+    <or>
+      <action name="ProjectModule.canEditCollection" />
+      <action name="ProjectModule.isOnTeam" />
+      <group id="administrators"/>
+    </or>
+  </permission>
+
 
 </page>

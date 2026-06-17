@@ -1,6 +1,8 @@
 #set( $topic = $context.getRequestParameter("collectiveproject"))		
-#set($collectionid = $context.getRequestParameter("collectionid"))
 
+#ifnull($collectionid)
+	#set($collectionid = $context.getRequestParameter("collectionid"))
+#end
 
 <h4>[[Incomes]]</h4>
 #set($totalusd = 0.0) 

@@ -1189,7 +1189,6 @@ jQuery(document).ready(function () {
 			toggleAiSuggestions();
 			editor.focus();
 			editor.val(prefix);
-			
 		}, 100);
 	});
 
@@ -1243,5 +1242,16 @@ jQuery(document).ready(function () {
 			}
 		});
 		formatBtn.trigger("click");
+	});
+
+	lQuery("#savecommunityblog button").livequery("click", function (e) {
+		var btn = $(this);
+		if (btn.attr("id") == "savePublish" || btn.attr("id") == "saveDraft") {
+			e.preventDefault();
+			var form = $("#savecommunityblog");
+			var poststatus = btn.data("poststatus");
+			form.find("#poststatus").val(poststatus);
+			form.submit();
+		}
 	});
 });
