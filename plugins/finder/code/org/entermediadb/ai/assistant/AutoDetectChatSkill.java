@@ -40,7 +40,7 @@ public class AutoDetectChatSkill extends BaseSkill
 			messageContext.putContextValue("sentwelcome", true);
 			agentmessage.setValue("chatmessagestatus", "completed");
 
-			LlmConnection llmconnection = getMediaArchive().getLlmConnection(agentFn); // Should stay
+			LlmConnection llmconnection = getMediaArchive().getLlmConnection("localrender"); // Should stay
 			// search_start
 			LlmResponse response = llmconnection.renderLocalAction(inAgentContext, agentFn);
 			response.setNextSkillEnabled("auto_detect_conversation");
@@ -57,7 +57,7 @@ public class AutoDetectChatSkill extends BaseSkill
 				Collection<Data> toplevelfunctions = getMediaArchive().query("aifunction").exact("toplevel", true).search();
 				inAgentContext.put("toplevelfunctions", toplevelfunctions);
 
-				LlmConnection llmconnection = getMediaArchive().getLlmConnection(agentFn);
+				LlmConnection llmconnection = getMediaArchive().getLlmConnection("thinking");
 
 				LlmResponse response = llmconnection.callToolsFunction(inAgentContext, agentFn);
 
@@ -93,7 +93,7 @@ public class AutoDetectChatSkill extends BaseSkill
 			else
 				if ("auto_detect_showresponse".equals(agentFn))
 				{
-					LlmConnection llmconnection = getMediaArchive().getLlmConnection(agentFn); // Should stay search_start
+					LlmConnection llmconnection = getMediaArchive().getLlmConnection("localrender"); // Should stay search_start
 					LlmResponse response = llmconnection.renderLocalAction(inAgentContext, "auto_detect_showresponse");
 					response.setNextSkillEnabled("auto_detect_conversation");
 					messageContext.setLastResponse(response);
@@ -104,7 +104,7 @@ public class AutoDetectChatSkill extends BaseSkill
 					{
 						agentmessage.setValue("chatmessagestatus", "completed");
 
-						LlmConnection llmconnection = getMediaArchive().getLlmConnection(agentFn); // Should stay search_start
+						LlmConnection llmconnection = getMediaArchive().getLlmConnection("localrender"); // Should stay search_start
 						LlmResponse response = llmconnection.renderLocalAction(inAgentContext, agentFn);
 						response.setNextSkillEnabled("auto_detect_sitewide_parse");
 						messageContext.setLastResponse(response);
@@ -113,7 +113,7 @@ public class AutoDetectChatSkill extends BaseSkill
 					else
 						if ("auto_detect_sitewide_parse".equals(agentFn))
 						{
-							LlmConnection llmconnection = getMediaArchive().getLlmConnection(agentFn); // Should stay
+							LlmConnection llmconnection = getMediaArchive().getLlmConnection("thinking"); // Should stay
 							// search_start
 							LlmResponse response = llmconnection.callToolsFunction(inAgentContext, agentFn);
 

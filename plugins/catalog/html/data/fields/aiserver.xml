@@ -67,4 +67,10 @@
     </name>
   </property>
 
+  
+    <property id="aiservertype" editable="true" index="true" stored="true" type="list">
+      <name>
+        <language id="en"><![CDATA[AI Server Type]]></language>
+      </name>
+
 </properties>

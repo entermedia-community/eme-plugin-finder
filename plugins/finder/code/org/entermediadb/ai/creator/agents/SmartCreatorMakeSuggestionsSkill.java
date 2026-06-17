@@ -52,7 +52,7 @@ public class SmartCreatorMakeSuggestionsSkill extends BaseSkill
 		MultiValued module = (MultiValued) getMediaArchive().getCachedData("module", entitymoduleid);
 		messageContext.setCurrentEntityModule(module);
 
-		LlmConnection llmconnection = getMediaArchive().getLlmConnection(agentFn);
+		LlmConnection llmconnection = getMediaArchive().getLlmConnection("thinking");
 		LlmResponse response = llmconnection.renderLocalAction(messageContext, agentFn);
 		messageContext.setWaitTime(null);
 		// This is for the chat UI to pass it back

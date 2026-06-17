@@ -25,12 +25,12 @@ public class ClassifyManager extends BaseAiManager
 
 	public LlmConnection getLlmNamingServer()
 	{
-		return getMediaArchive().getLlmConnection("classifyAsset");
+		return getMediaArchive().getLlmConnection("vision");
 	}
 
 	public LlmConnection getEntityClassificationLlmConnection()
 	{
-		return getMediaArchive().getLlmConnection("classifyEntity");
+		return getMediaArchive().getLlmConnection("vision");
 	}
 
 	// public void processInformaticsOnAssets(ScriptLogger inContext, MultiValued

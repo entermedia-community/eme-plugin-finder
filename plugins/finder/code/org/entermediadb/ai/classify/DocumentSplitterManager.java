@@ -134,7 +134,7 @@ public class DocumentSplitterManager extends BaseAiManager
 						}
 					}
 
-					LlmConnection llmconnection = getMediaArchive().getLlmConnection("documentsplitasset");
+					LlmConnection llmconnection = getMediaArchive().getLlmConnection("thinking");
 					LlmResponse response = llmconnection.renderLocalAction(agentcontext, "documentsplitasset");
 					if (response != null)
 					{
@@ -291,7 +291,7 @@ public class DocumentSplitterManager extends BaseAiManager
 
 	public void generateMarkdownFromImage(MultiValued pageEntity)
 	{
-		LlmConnection llmconnection = getMediaArchive().getLlmConnection("generateMarkdown");
+		LlmConnection llmconnection = getMediaArchive().getLlmConnection("vision");
 
 		String base64Img = loadDocumentContent(pageEntity);
 

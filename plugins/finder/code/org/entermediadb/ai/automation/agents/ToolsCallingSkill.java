@@ -63,7 +63,7 @@ public class ToolsCallingSkill extends BaseSkill
 			inContext.put("agentid", context_agentid);
 			inContext.put("agentoutput", context_agentoutput);
 
-			LlmConnection llmConnection = getMediaArchive().getLlmConnection(function);
+			LlmConnection llmConnection = getMediaArchive().getLlmConnection("thinking");
 			LlmResponse res = llmConnection.callToolsFunction(inContext, function);
 
 			String selectedagentid = (String) res.getRunSkillEnabled();

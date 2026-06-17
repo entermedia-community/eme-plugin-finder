@@ -3406,39 +3406,29 @@ public class MediaArchive implements CatalogEnabled
 		return manager;
 	}
 
-	public LlmConnection getLlmConnection(String inAiSkillEnabled)
+	public LlmConnection getLlmConnection(String inServerType)
 	{
 		String cacheName = "llmconnection";
-		LlmConnection connection = (LlmConnection) getCacheManager().get(cacheName, inAiSkillEnabled);
+		LlmConnection connection = (LlmConnection) getCacheManager().get(cacheName, inServerType);
 
 		if (connection == null)
 		{
-			Data skillenabled = query("aiskillenabled").id(inAiSkillEnabled).searchOne();
-			if (skillenabled == null)
-			{
-				log.info("Could not find AIFunction named " + inAiSkillEnabled + " using default");
-				skillenabled = query("aifunction").id("default").searchOne();
-			}
-			Data serverinfo = query("aiserver").exact("aiskillenabled", skillenabled.getId()).sort("ordering").searchOne();
+
+			Data serverinfo = query("aiserver").exact("aiservertype", inServerType).sort("ordering").searchOne();
 			if (serverinfo == null)
 			{
 				serverinfo = getCachedData("aiserver", "localhost");
 				if (serverinfo == null)
 				{
-					throw new OpenEditException("Using localhost for aifunction " + inAiSkillEnabled);
+					throw new OpenEditException("Using localhost for aifunction " + inServerType);
 				}
 			}
 			String llm = serverinfo.get("connectionbean");
 			connection = (LlmConnection) getModuleManager().getBean(getCatalogId(), llm, false);
-			if ("default".equals(skillenabled.getId()))
-			{
-				// setting the name and id to the requested function name if default was used
-				serverinfo.setName(inAiSkillEnabled);
-				serverinfo.setId(inAiSkillEnabled);
-			}
+
 			connection.setAiServerData(serverinfo);
-			getCacheManager().put(cacheName, inAiSkillEnabled, connection);
-			log.info(inAiSkillEnabled + " picked llmconnection type:" + llm + " selected AI server URL: " + serverinfo.get("serverroot"));
+			getCacheManager().put(cacheName, inServerType, connection);
+			log.info(inServerType + " picked llmconnection type:" + llm + " selected AI server URL: " + serverinfo.get("serverroot"));
 		}
 
 		return connection;

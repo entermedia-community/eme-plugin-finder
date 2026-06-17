@@ -37,7 +37,7 @@ public class EmbeddingManager extends BaseAiManager
 
 	public LlmConnection getDocumentEmbeddingConnection()
 	{
-		return getMediaArchive().getLlmConnection("documentEmbedding");
+		return getMediaArchive().getLlmConnection("embedding");
 	}
 
 	protected PageManager fieldPageManager;
@@ -523,7 +523,7 @@ public class EmbeddingManager extends BaseAiManager
 
 	public LlmResponse findAnswer(AgentContext inAgentContext, Collection<String> docids, String inQuery, boolean includeSources)
 	{
-		LlmConnection llmconnection = getMediaArchive().getLlmConnection("documentEmbedding");
+		LlmConnection llmconnection = getMediaArchive().getLlmConnection("embedding");
 		if (docids.isEmpty())
 		{
 			LlmResponse response = llmconnection.renderLocalAction(inAgentContext, "question_norecordsfound");
@@ -562,7 +562,7 @@ public class EmbeddingManager extends BaseAiManager
 		chatjson.put("query", inQuery);
 		chatjson.put("parent_ids", docids);
 
-		LlmConnection llmconnection = getMediaArchive().getLlmConnection("documentEmbedding");
+		LlmConnection llmconnection = getMediaArchive().getLlmConnection("embedding");
 
 		String customerkey = getMediaArchive().getCatalogSettingValue("catalog-storageid");
 		if (customerkey == null)
@@ -675,7 +675,7 @@ public class EmbeddingManager extends BaseAiManager
 
 		inAgentContext.addContext("raganswer", answer);
 
-		LlmConnection llmconnection = getMediaArchive().getLlmConnection("documentEmbedding"); // agentChat
+		LlmConnection llmconnection = getMediaArchive().getLlmConnection("embedding"); // agentChat
 
 		Data channel = inAgentContext.getChannel();
 		String apphome;

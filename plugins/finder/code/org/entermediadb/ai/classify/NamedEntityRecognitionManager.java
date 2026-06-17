@@ -22,7 +22,7 @@ public class NamedEntityRecognitionManager extends ClassifyManager
 	@Override
 	public LlmConnection getLlmNamingServer()
 	{
-		return getMediaArchive().getLlmConnection("namedEntityRecognition");
+		return getMediaArchive().getLlmConnection("thinking");
 	}
 
 	@Override

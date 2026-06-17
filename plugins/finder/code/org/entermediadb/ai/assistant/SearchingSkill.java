@@ -50,8 +50,8 @@ public class SearchingSkill extends BaseSkill
 			inAgentMessage.setValue("chatmessagestatus", "completed");
 			Schema schema = loadSchema();
 			messageContext.addContext("schema", schema);
-			LlmConnection llmconnection = getMediaArchive().getLlmConnection(agentFn); // Should stay
-																						// search_start
+			LlmConnection llmconnection = getMediaArchive().getLlmConnection("localrender"); // Should stay
+																								// search_start
 			LlmResponse response = llmconnection.renderLocalAction(messageContext, agentFn);
 			response.setNextSkillEnabled("search_parse");
 			messageContext.setLastResponse(response);
@@ -90,7 +90,7 @@ public class SearchingSkill extends BaseSkill
 				inAgentContext.setMessagePrefix(null);
 				inAgentContext.setAiSearchParams(null);
 
-				LlmConnection server = getMediaArchive().getLlmConnection(agentFn);
+				LlmConnection server = getMediaArchive().getLlmConnection("thinking");
 				LlmResponse res = server.callStructure(inAgentContext, agentFn);
 				JSONObject messagestructured = (JSONObject) res.getMessageStructured();
 
@@ -112,7 +112,7 @@ public class SearchingSkill extends BaseSkill
 			else
 				if ("search_tables".equals(agentFn))
 				{
-					LlmConnection llmconnection = getMediaArchive().getLlmConnection(agentFn);
+					LlmConnection llmconnection = getMediaArchive().getLlmConnection("localrender");
 					LlmResponse response = llmconnection.renderLocalAction(messageContext, agentFn); // TOREVIEW: This is rendering
 					// previous searches results first
 
@@ -162,7 +162,7 @@ public class SearchingSkill extends BaseSkill
 						{
 							inAgentContext.addContext("semanticquery", semanticquery.trim());
 
-							LlmConnection llmconnection = getMediaArchive().getLlmConnection(agentFn);
+							LlmConnection llmconnection = getMediaArchive().getLlmConnection("thinking");
 							result = llmconnection.renderLocalAction(inAgentContext, agentFn);
 						}
 						else
@@ -182,7 +182,7 @@ public class SearchingSkill extends BaseSkill
 					else
 						if (agentFn.startsWith("view_related_record"))
 						{
-							LlmConnection llmconnection = getMediaArchive().getLlmConnection(agentFn);
+							LlmConnection llmconnection = getMediaArchive().getLlmConnection("localrender");
 							LlmResponse response = llmconnection.renderLocalAction(inAgentContext, agentFn);
 							messageContext.setLastResponse(response);
 							return;
