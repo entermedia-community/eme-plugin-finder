@@ -412,20 +412,19 @@ public class BaseAgentContext extends BaseData implements CatalogEnabled, AgentC
 		fieldAiCreationParams = inAiCreationParams;
 	}
 
-	AiSmartCreatorSteps fieldAiSmartCreatorSteps;
-
 	public AiSmartCreatorSteps getAiSmartCreatorSteps()
 	{
-		if (fieldAiSmartCreatorSteps == null && getParentContext() != null)
+		if (getParentContext() != null)
 		{
-			return getParentContext().getAiSmartCreatorSteps();
+			return (AiSmartCreatorSteps) getParentContext().getAiSmartCreatorSteps();
 		}
-		return fieldAiSmartCreatorSteps;
+		AiSmartCreatorSteps steps = (AiSmartCreatorSteps) getContextValue("aicreationparams");
+		return steps;
 	}
 
 	public void setAiSmartCreatorSteps(AiSmartCreatorSteps inAiCreatorSteps)
 	{
-		fieldAiSmartCreatorSteps = inAiCreatorSteps;
+		putContextValue("aicreationparams", inAiCreatorSteps);
 	}
 
 	public String getMessagePrefix()

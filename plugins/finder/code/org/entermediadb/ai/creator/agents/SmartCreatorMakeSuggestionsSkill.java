@@ -29,6 +29,8 @@ public class SmartCreatorMakeSuggestionsSkill extends BaseSkill
 
 	public void makeSuggestions(AgentContext messageContext, AiSmartCreatorSteps instructions, String agentFn)
 	{
+
+		// This was passed in from html data-context_playbackentitymoduleid="$module.getId()"
 		String playbackentitymoduleid = (String) messageContext.getContextValue("playbackentitymoduleid");
 		Data playbackentitymodule = getMediaArchive().getCachedData("module", playbackentitymoduleid);
 		messageContext.addContext("playbackentitymodule", playbackentitymodule);

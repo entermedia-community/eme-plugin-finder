@@ -46,8 +46,10 @@ public class SmartCreatorCreateOutlineSkill extends BaseSkill
 
 	}
 
+	// instructions come from SmartCreatorMakeSuggestionsSkill.makeSuggestions
 	public void createOutLine(AgentContext messageContext, AiSmartCreatorSteps instructions)
 	{
+
 		Collection<String> parentIds = instructions.getEmbeddedParentIds();
 
 		LlmConnection llmconnection = getMediaArchive().getLlmConnection("smartcreator_createoutline");

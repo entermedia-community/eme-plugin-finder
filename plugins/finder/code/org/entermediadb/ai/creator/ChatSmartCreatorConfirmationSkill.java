@@ -56,12 +56,21 @@ public class ChatSmartCreatorConfirmationSkill extends BaseSkill
 		runandreturn = "smartcreator_parse".equals(functionName);
 		if (functionName == null || runandreturn)
 		{
-			parseResponse(messageContext, functionName);
+			parseResponse(messageContext, functionName); // Calls smartcreator_createoutline
 			if (runandreturn)
 			{
 				return;
 			}
 		}
+		runandreturn = "smartcreator_createoutline".equals(functionName);
+		if (runandreturn)
+		{
+			super.process(inContext);
+			inContext.getLastResponse().setRunFunctionName(null);
+			inContext.getLastResponse().setNextFunctionName("smartcreator_confirmoutline");
+			return;
+		}
+
 		runandreturn = "smartcreator_confirmoutline".equals(functionName);
 		if (functionName == null || runandreturn)
 		{
@@ -91,31 +100,6 @@ public class ChatSmartCreatorConfirmationSkill extends BaseSkill
 
 		String agentFn = currentfunction.getId();
 
-		AiSmartCreatorSteps instructions = messageContext.getAiSmartCreatorSteps();
-
-		if (instructions == null)
-		{
-			String playbackentitymoduleid = (String) messageContext.getContextValue("playbackentitymoduleid");
-			if (playbackentitymoduleid != null)
-			{
-				Data playbackentitymodule = getMediaArchive().getCachedData("module", playbackentitymoduleid);
-
-				String playbackentityid = (String) messageContext.getContextValue("playbackentityid");
-				Data playbackentity = getMediaArchive().getCachedData(playbackentitymoduleid, playbackentityid);
-
-				instructions = new AiSmartCreatorSteps();
-				instructions.setTargetModule(playbackentitymodule);
-				instructions.setTargetEntity(playbackentity);
-
-				messageContext.setAiSmartCreatorSteps(instructions);
-			}
-		}
-
-		String channelId = messageContext.get("channel");
-
-		// Data usermessage = messageContext.getUserMessage();
-		Data agentmessage = messageContext.getAgentMessage();
-
 		LlmConnection llmconnection = getMediaArchive().getLlmConnection(agentFn);
 		LlmResponse response = llmconnection.renderLocalAction(messageContext, agentFn);
 		// messageContext.setFunctionName("question_ask");
@@ -144,6 +128,12 @@ public class ChatSmartCreatorConfirmationSkill extends BaseSkill
 		LlmConnection llmconnection = getMediaArchive().getLlmConnection("smartcreator_confirmoutline");
 
 		AiSmartCreatorSteps instructions = messageContext.getAiSmartCreatorSteps();
+
+		if (instructions == null)
+		{
+			throw new IllegalStateException("Run chat_smartcreator_suggest first");
+
+		}
 
 		// Adjust the outline as needed using regular AI
 		messageContext.addContext("proposedoutline", instructions.getProposedSections());
@@ -266,6 +256,7 @@ public class ChatSmartCreatorConfirmationSkill extends BaseSkill
 
 	public LlmResponse parseCreationPrompt(AgentContext messageContext, String prompt)
 	{
+		// instructions come from SmartCreatorMakeSuggestionsSkill.makeSuggestions
 		AiSmartCreatorSteps instructions = messageContext.getAiSmartCreatorSteps();
 		messageContext.addContext("creationprompt", prompt);
 		LlmConnection llmconnection = getMediaArchive().getLlmConnection("smartcreator_parse");
@@ -273,6 +264,7 @@ public class ChatSmartCreatorConfirmationSkill extends BaseSkill
 
 		JSONObject paragraphs = res.getMessageStructured();
 		instructions.loadJsonParts(paragraphs);
+
 		return res;
 	}
 
