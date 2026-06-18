@@ -295,12 +295,12 @@ public class WorkspaceManager
 		{
 			homesettings.setProperty("module", module.getId());
 			PageProperty prop = new PageProperty("fallbackdirectory");
-			prop.setValue("../default");
+			prop.setValue("/${applicationid}/views/modules/default}");
 			homesettings.putProperty(prop);
 
 			modulesettings.setProperty("module", module.getId());
 			prop = new PageProperty("fallbackdirectory");
-			prop.setValue("../default");
+			prop.setValue("/${applicationid}/views/modules/settings/default}");
 			modulesettings.putProperty(prop);
 		}
 		getPageManager().getPageSettingsManager().saveSetting(homesettings);
