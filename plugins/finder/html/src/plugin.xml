@@ -2694,6 +2694,12 @@
 		</property>
 	</bean>
 
+	<bean id="renderLocalTemplateSkill" class="org.entermediadb.ai.skills.RenderLocalTemplateSkill" scope="prototype">
+		<property name="moduleManager">
+			<ref bean="moduleManager" />
+		</property>
+	</bean>
+
 
 	<bean id="autoDetectChatSkill" class="org.entermediadb.ai.skills.AutoDetectChatSkill" scope="prototype">
 		<property name="moduleManager">

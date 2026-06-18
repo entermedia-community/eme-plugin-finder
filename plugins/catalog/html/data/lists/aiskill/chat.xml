@@ -6,6 +6,13 @@
       </name>
    </data>
 
+   <data id="renderLocalTemplateSkill" bean="renderLocalTemplateSkill" agenttype="remoteagent" ordering="10" contextbean="chatMessageContext">
+      <name>
+         <language id="en"><![CDATA[Render Local Template]]></language>
+      </name>
+   </data>
+
+
 
    <data id="autoDetectChatSkill" bean="autoDetectChatSkill" agenttype="remoteagent" ordering="10" contextbean="chatMessageContext">
       <name>

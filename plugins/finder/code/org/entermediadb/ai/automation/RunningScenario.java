@@ -106,8 +106,10 @@ public class RunningScenario extends BaseMediaObject implements CatalogEnabled
 					// fire complete shoudl have sent it back to the user
 					return false;
 				}
-		log.error("No status from " + inContext.getCurrentScenario() + " running " + inSkillEnabled.getEnabledId() + ": " + response.getMessage());
-
+				else
+				{
+					log.info("No status from " + inContext.getCurrentScenario() + " running " + inSkillEnabled.getEnabledId());
+				}
 		return true;
 	}
 
