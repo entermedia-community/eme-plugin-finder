@@ -2803,6 +2803,13 @@
 		</property>
 	</bean>
 
+	<bean id="runningscenario" class="org.entermediadb.ai.automation.RunningScenario" scope="prototype">
+		<property name="moduleManager">
+			<ref bean="moduleManager" />
+		</property>
+	</bean>
+
+
 
 	<bean id="baseAgentContext" class="org.entermediadb.ai.llm.BaseAgentContext" scope="prototype">
 		<property name="moduleManager">

@@ -74,7 +74,7 @@
   <property name="fallbackdirectory">/community/default</property>
   <property name="themeprefix">/${applicationid}/theme</property>
   <property name="login-path">/${applicationid}/authentication/nopermissions.html</property>
-  <property name="applicationid">${siteid}/find</property>
+  <property name="applicationid">finder/find</property>
   <property name="editable">false</property>
   <property name="errorpage">${themeprefix}/layouts/errorpage.html</property>
   <property name="themeid">defaulttheme</property>

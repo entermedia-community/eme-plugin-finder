@@ -1,5 +1,6 @@
 <page>
 	
+	<property name="fallbackdirectory">../../../../../../components/chatterbox</property>
 	<page-action name="EntityModule.getEntity"/>
 	
 </page>
