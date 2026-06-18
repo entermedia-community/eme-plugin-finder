@@ -1,6 +1,6 @@
 <page>
-	
-	<property name="fallbackdirectory">../../../../../../components/chatterbox</property>
+
+	<property name="fallbackdirectory">../../aichatsearch/chatterbox</property>
 	<page-action name="EntityModule.getEntity"/>
-	
+
 </page>

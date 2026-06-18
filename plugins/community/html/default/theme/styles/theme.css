@@ -32,7 +32,7 @@
 	--dodger-blue-dark: #1174d4;
 	--dodger-blue: #3884fd;
 	--vertical-height: 100vh;
-	--height-ex-hf: calc(var(--vertical-height) - 122px);
+	--height-ex-hf: calc(var(--vertical-height) - 104px);
 	--nav-btn-height: 36px;
 }
 
@@ -476,7 +476,8 @@ button[type="submit"] {
 }
 
 #applicationcontent {
-	min-height: var(--height-ex-hf);
+	height: var(--height-ex-hf);
+	overflow-y: auto;
 }
 
 .popupdetails {

@@ -1,4 +1,4 @@
 <page>
 	<!-- TODO: check why application id not resolving -->
-	<property name="fallbackdirectory">../../../components/chatterbox</property>
+	<property name="fallbackdirectory">../../../views/modules/default/editors/aichatsearch/chatterbox</property>
 </page>

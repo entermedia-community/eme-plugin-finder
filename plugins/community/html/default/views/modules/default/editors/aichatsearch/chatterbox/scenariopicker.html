@@ -14,7 +14,7 @@
 
 				#foreach( $scenario in $scenarios )
 						<a class="dropdown-item  ajax ai-func #if($currentscenario.getId() == $scenario.getId())active#end me-2"
-							href="$edithome/changescenario.html"
+							href="${chatterboxhome}/changescenario.html"
 							data-targetdiv="chatterbox"
 							data-channel="$!{currentchannel.getId()}"
 							data-currentscenario="$scenario.id"

@@ -67,6 +67,7 @@
   <script src="/${applicationid}/components/javascript/emedia/ui-components.js" id="uicomponents"/>
   <script src="/${applicationid}/components/javascript/emedia/emtree.js" id="emtree"/>
   <script defer="true" src="/${applicationid}/components/javascript/fabric.min.js" id="fabric"/>
+  <style id="app-com-css" href="/${applicationid}/theme/styles/theme-community.css"/>
   <style id="app-css" href="/${applicationid}/theme/styles/theme.css"/>
   <style id="mediaplayer" href="/${applicationid}/theme/styles/pages/mediaplayer.css"/>
   <script defer="true" src="/${applicationid}/components/javascript/jquery.html5_upload.js" id="html5_upload"/>
