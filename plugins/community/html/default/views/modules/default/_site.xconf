@@ -13,4 +13,7 @@
 	<property name="searchhome">/${applicationid}/views/modules/${module}/results/default</property>
 	
 	<inner-layout>/${applicationid}/views/modules/${module}/innerlayout.html</inner-layout>
+
+	<property name="fallbackdirectory">NO_FALLBACK</property>
+
 </page>
