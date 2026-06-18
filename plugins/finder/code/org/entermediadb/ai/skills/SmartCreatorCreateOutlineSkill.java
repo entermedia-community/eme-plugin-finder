@@ -26,7 +26,6 @@ public class SmartCreatorCreateOutlineSkill extends BaseSkill
 	public void process(AgentContext inContext)
 	{
 		createOutLine(inContext, inContext.getAiSmartCreatorSteps());
-		super.process(inContext);
 
 	}
 
@@ -64,12 +63,14 @@ public class SmartCreatorCreateOutlineSkill extends BaseSkill
 
 		instructions.setProposedSections(cleanedOutline);
 		messageContext.addContext("proposedoutline", instructions.getProposedSections());
+		messageContext.setLastResponse(response);
+		super.process(messageContext);
 
-		if (messageContext.getContextValue("confirmoutline") != null)
-		{
-			messageContext.getLastResponse().setRunSkillEnabled(null);
-			messageContext.getLastResponse().setNextSkillEnabled("smartcreator_confirmoutline");
-		}
+		/*
+		 * if (messageContext.getContextValue("confirmoutline") == null) {
+		 * messageContext.getLastResponse().setRunSkillEnabled(null);
+		 * messageContext.getLastResponse().setNextSkillEnabled("smartcreator_confirmoutline"); }
+		 */
 
 	}
 

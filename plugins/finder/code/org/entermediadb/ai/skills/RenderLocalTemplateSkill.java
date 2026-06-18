@@ -29,6 +29,7 @@ public class RenderLocalTemplateSkill extends BaseSkill
 		// {
 		// response.setNextSkillEnabled(nextskill);
 		// }
+		log.info(response.getMessage());
 		messageContext.setLastResponse(response);
 		// messageContext.log("sent" + response.getMessagePlain());
 	}

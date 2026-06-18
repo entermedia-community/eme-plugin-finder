@@ -57,18 +57,16 @@ public class ChatSmartCreatorConfirmationSkill extends BaseSkill
 		Collection<String> updatedSections = (Collection<String>) updatedSectionsJson.get("updated_outline");
 		instructions.setProposedSections(updatedSections);
 
-		boolean changed = (boolean) updatedSectionsJson.get("changed");
+		boolean wasadjusted = (boolean) updatedSectionsJson.get("changed");
 
-		messageContext.addContext("changed", changed);
+		messageContext.addContext("changed", wasadjusted);
 
-		if (changed) // First one
+		if (wasadjusted)
 		{
 			messageContext.addContext("proposedoutline", instructions.getProposedSections());
-			LlmConnection llmconnection2 = getMediaArchive().getLlmConnection("thinking");
-			LlmResponse response = llmconnection2.renderLocalAction(messageContext, agentFn);
-			response.setNextSkillEnabled("smartcreator_confirmoutline"); // DID not confirm
-			messageContext.setLastResponse(response);
-			return response;
+			res.setRunSkillEnabled("smartcreator_renderoutline"); // DID not confirm
+			messageContext.setLastResponse(res);
+			return res;
 		}
 		else
 		{
@@ -84,37 +82,36 @@ public class ChatSmartCreatorConfirmationSkill extends BaseSkill
 			instructions.setTargetEntity(playbackentity);
 
 			initConfirmedSections(instructions);
-			String step2CreatePrompt = instructions.getStepContentCreate();
-			BasicLlmResponse step2response = null;
-			if (step2CreatePrompt != null && !step2CreatePrompt.isEmpty())
-			{
-				// Create the content
-				// step2response = new BasicLlmResponse();
-				// step2response.setNextSkillEnabled("smartcreator_createsectioncontents"); //already in the
-				// pipeline
-				// messageContext.setLastResponse(step2response);
-				super.process(messageContext); // To Create sections
-			}
-			else
-			{
-				// Show the outline again instead
-				step2response = new BasicLlmResponse();
-				step2response.setNextSkillEnabled("smartcreator_renderoutline");
-				messageContext.setLastResponse(step2response);
 
-				/*
-				 * messageContext.addContext("confirmedoutline", instructions.getConfirmedSections());
-				 * 
-				 * messageContext.addContext("playbackentity", instructions.getTargetEntity());
-				 * messageContext.addContext("playbackentitymodule", instructions.getTargetModule());
-				 * 
-				 * llmconnection = getMedia Archive().getLlmConnection("smartcreator_renderoutline"); res =
-				 * llmconnection.renderLocalAction(messageContext, "smartcreator_renderoutline");
-				 * messageContext.setWaitTime(null); // final interaction, no next steps. What is the next function?
-				 * messageContext.setLastResponse(res);
-				 */
-			}
-			return step2response;
+			// messageContext.addContext("confirmedoutline", instructions.getConfirmedSections());
+			messageContext.addContext("playbackentity", instructions.getTargetEntity());
+			messageContext.addContext("playbackentitymodule", instructions.getTargetModule());
+			super.process(messageContext);
+
+			/*
+			 * String step2CreatePrompt = instructions.getStepContentCreate(); BasicLlmResponse step2response =
+			 * null; if (step2CreatePrompt != null && !step2CreatePrompt.isEmpty()) { // Create the content //
+			 * step2response = new BasicLlmResponse(); //
+			 * step2response.setNextSkillEnabled("smartcreator_createsectioncontents"); //already in the //
+			 * pipeline // messageContext.setLastResponse(step2response); super.process(messageContext); // To
+			 * Create sections } else { // Show the outline again instead step2response = new
+			 * BasicLlmResponse(); step2response.setNextSkillEnabled("smartcreator_renderoutline");
+			 * messageContext.setLastResponse(step2response);
+			 * 
+			 * /* messageContext.addContext("confirmedoutline", instructions.getConfirmedSections());
+			 * 
+			 * messageContext.addContext("playbackentity", instructions.getTargetEntity());
+			 * messageContext.addContext("playbackentitymodule", instructions.getTargetModule());
+			 * 
+			 * llmconnection = getMedia Archive().getLlmConnection("smartcreator_renderoutline"); res =
+			 * llmconnection.renderLocalAction(messageContext, "smartcreator_renderoutline");
+			 * messageContext.setWaitTime(null); // final interaction, no next steps. What is the next function?
+			 * messageContext.setLastResponse(res);
+			 * 
+			 * }
+			 * 
+			 */
+			return res;
 		}
 	}
 
@@ -146,15 +143,14 @@ public class ChatSmartCreatorConfirmationSkill extends BaseSkill
 			{
 				componentSection.setValue("contentrole", "intro");
 			}
+			else if (!iterator.hasNext())
+			{
+				componentSection.setValue("contentrole", "conclusion");
+			}
 			else
-				if (!iterator.hasNext())
-				{
-					componentSection.setValue("contentrole", "conclusion");
-				}
-				else
-				{
-					componentSection.setValue("contentrole", "body");
-				}
+			{
+				componentSection.setValue("contentrole", "body");
+			}
 
 			tosave.add(componentSection);
 			ordering++;

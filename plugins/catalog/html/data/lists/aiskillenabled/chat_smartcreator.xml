@@ -38,7 +38,13 @@
       </name>
    </data>
 
-   <data id="chat_smartcreator_confirmation" aiskill="chatSmartCreatorConfirmationSkill" automationscenario="chat_smartcreator" enabled="true" agenttype="eventagent" runafter="chat_smartcreator_createoutline" processingmessage="Confirming Outline">
+   <data id="chat_smartcreator_renderoutline" aiskill="renderLocalTemplateSkill" automationscenario="chat_smartcreator" enabled="true" processingmessage="Rendering Outline" runafter="chat_smartcreator_createoutline" >
+      <name>
+         <language id="en"><![CDATA[Render Outline]]></language>
+      </name>
+   </data>
+
+   <data id="chat_smartcreator_confirmation" aiskill="chatSmartCreatorConfirmationSkill" automationscenario="chat_smartcreator" enabled="true" agenttype="eventagent" runafter="chat_smartcreator_renderoutline" processingmessage="Confirming Outline">
       <name>
          <language id="en"><![CDATA[Smart Creator Confirmation]]></language>
       </name>
