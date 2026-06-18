@@ -26,7 +26,7 @@ public class AutoDetectWelcomeSkill extends BaseSkill
 			LlmConnection llmconnection = getMediaArchive().getLlmConnection("localrender"); // Should stay
 			// search_start
 			LlmResponse response = llmconnection.renderLocalAction(inAgentContext, "chat_detection_welcome");
-			response.setNextSkillEnabled("auto_detect_conversation");
+			// response.setNextSkillEnabled("auto_detect_conversation");
 			messageContext.setLastResponse(response);
 			messageContext.log("sent" + response.getMessagePlain());
 		}

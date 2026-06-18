@@ -56,15 +56,12 @@ public class AutoDetectChatSkill extends BaseSkill
 			{
 				llmconnection = getMediaArchive().getLlmConnection("localrender"); // Should stay search_start
 				response = llmconnection.renderLocalAction(inAgentContext, "auto_detect_showresponse");
-				response.setNextSkillEnabled("auto_detect_conversation");
-				messageContext.setLastResponse(response);
 			}
 			else
 			{
 				response.setRunSkillEnabled(skillenableid);
-				messageContext.setLastResponse(response);
-				// super.process(messageContext);
 			}
+			messageContext.setLastResponse(response);
 
 		}
 	}

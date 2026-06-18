@@ -172,4 +172,12 @@ public class AgentEnabled
 		return getAutomationEnabledData().getId();
 	}
 
+	public AgentEnabled getNextAgentEnabled()
+	{
+		if (getChildren() != null && getChildren().size() > 0)
+		{
+			return getChildren().iterator().next();
+		}
+		return null;
+	}
 }

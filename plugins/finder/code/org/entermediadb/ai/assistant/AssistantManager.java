@@ -953,7 +953,7 @@ public class AssistantManager extends BaseAiManager implements SkillStatusListen
 		getMediaArchive().saveData("automationscenario", tosave);
 	}
 
-	public void fireStatusStarting(AgentContext inContext, AgentEnabled inSkill)
+	public void handleStatusStarting(AgentContext inContext, AgentEnabled inAgentEnabled)
 	{
 		if (inContext instanceof ChatMessageContext)
 		{
@@ -962,7 +962,7 @@ public class AssistantManager extends BaseAiManager implements SkillStatusListen
 
 		ChatMessageContext chatMessageContext = (ChatMessageContext) inContext;
 
-		MultiValued function = inSkill.getAutomationEnabledData();
+		MultiValued function = inAgentEnabled.getAutomationEnabledData();
 
 		String loader = "<i class=\"fas fa-spinner fa-spin mr-2\"></i> ";
 		String processingmessage = null;
@@ -994,7 +994,7 @@ public class AssistantManager extends BaseAiManager implements SkillStatusListen
 
 	}
 
-	public void fireStatusComplete(AgentContext inContext, AgentEnabled inSkill)
+	public void handleStatusComplete(AgentContext inContext, AgentEnabled inAgentEnabled)
 	{
 
 		if (!(inContext instanceof ChatMessageContext))
@@ -1046,8 +1046,16 @@ public class AssistantManager extends BaseAiManager implements SkillStatusListen
 			}
 
 			String nextFunctionName = response.getNextSkillEnabled();
+			if (nextFunctionName == null)
+			{
+				AgentEnabled nextEnabled = inAgentEnabled.getNextAgentEnabled();
+				if (nextEnabled != null)
+				{
+					nextFunctionName = nextEnabled.getEnabledId();
+				}
+			}
 
-			agentmessage.setValue("functionname", inSkill.getEnabledId());
+			agentmessage.setValue("functionname", inAgentEnabled.getEnabledId());
 			agentmessage.setValue("nextfunctionname", nextFunctionName);
 			agentmessage.setValue("chatmessagestatus", "completed");
 			getMediaArchive().saveData("chatterbox", agentmessage);

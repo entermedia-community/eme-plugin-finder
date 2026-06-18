@@ -53,7 +53,7 @@ public class BaseAgentContext extends BaseData implements CatalogEnabled, AgentC
 	{
 		for (SkillStatusListener listener : getStatusListeners())
 		{
-			listener.fireStatusStarting(this, inAgentEnabled);
+			listener.handleStatusStarting(this, inAgentEnabled);
 		}
 	}
 
@@ -62,7 +62,7 @@ public class BaseAgentContext extends BaseData implements CatalogEnabled, AgentC
 	{
 		for (SkillStatusListener listener : getStatusListeners())
 		{
-			listener.fireStatusComplete(this, inAgentEnabled);
+			listener.handleStatusComplete(this, inAgentEnabled);
 		}
 	}
 

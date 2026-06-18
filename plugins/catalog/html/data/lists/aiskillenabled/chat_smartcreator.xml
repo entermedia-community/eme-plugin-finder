@@ -4,11 +4,10 @@
 
 <records>
 
-   <data id="chat_smartcreator_welcome" aiskill="renderLocalTemplateSkill" automationscenario="chat_smartcreator" enabled="true" processingmessage="Loading Suggestions">
+   <data id="chat_smartcreator_welcome" aiskill="renderLocalTemplateSkill" automationscenario="chat_smartcreator" enabled="true" processingmessage="Loading Suggestions" >
       <name>
          <language id="en"><![CDATA[Smart Creator Choose Type]]></language>
       </name>
-       <contextvalues>{"skipcategorysearch":true}</contextvalues>
    </data>
 
    <data id="chat_smartcreator_make_suggestions" aiskill="smartCreatorMakeSuggestionsSkill" automationscenario="chat_smartcreator" enabled="true"  runafter="chat_smartcreator_welcome"  processingmessage="Loading Suggestions">

@@ -24,11 +24,11 @@ public class RenderLocalTemplateSkill extends BaseSkill
 		String template = inAgentContext.getCurrentAgentEnable().getEnabledId();
 		LlmResponse response = llmconnection.renderLocalAction(inAgentContext, template);
 
-		String nextskill = (String) inAgentContext.getContextValue("nextskillenabled");
-		if (nextskill != null)
-		{
-			response.setNextSkillEnabled(nextskill);
-		}
+		// String nextskill = (String) inAgentContext.getContextValue("nextskillenabled");
+		// if (nextskill != null)
+		// {
+		// response.setNextSkillEnabled(nextskill);
+		// }
 		messageContext.setLastResponse(response);
 		// messageContext.log("sent" + response.getMessagePlain());
 	}

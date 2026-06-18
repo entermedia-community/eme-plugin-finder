@@ -34,19 +34,8 @@ public class SmartCreatorMakeSectionsSkill extends BaseSkill
 	@Override
 	public void process(AgentContext inContext)
 	{
-		String functionName = inContext.getCurrentAgentEnable().getEnabledId();
-		boolean runandreturn = "smartcreator_createsectioncontents".equals(functionName);
-		if (functionName == null || runandreturn)
-		{
-			populateSectionsWithContents(inContext);
-			if (runandreturn)
-			{
-				return;
-			}
-		}
-
-		super.process(inContext);
-
+		populateSectionsWithContents(inContext);
+		// super.process(inContext);
 	}
 
 	public void populateSectionsWithContents(AgentContext messageContext)

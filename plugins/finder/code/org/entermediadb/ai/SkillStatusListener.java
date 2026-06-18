@@ -4,7 +4,7 @@ import org.entermediadb.ai.llm.AgentEnabled;
 
 public interface SkillStatusListener
 {
-	void fireStatusStarting(AgentContext inContext, AgentEnabled inAgentEnabled);
+	void handleStatusStarting(AgentContext inContext, AgentEnabled inAgentEnabled);
 
-	void fireStatusComplete(AgentContext inContext, AgentEnabled inAgentEnabled);
+	void handleStatusComplete(AgentContext inContext, AgentEnabled inAgentEnabled);
 }
