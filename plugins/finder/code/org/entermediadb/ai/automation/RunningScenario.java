@@ -75,6 +75,12 @@ public class RunningScenario extends BaseMediaObject implements CatalogEnabled
 		inSkillEnabled.getAgent().process(inContext);
 		inContext.fireStatusComplete(inSkillEnabled);
 		LlmResponse response = inContext.getLastResponse();
+		if (response == null)
+		{
+			log.error("No response from " + inContext.getCurrentScenario() + " running " + inSkillEnabled.getEnabledId());
+			return false;
+		}
+
 		if ("error".equals(response.getOperationState()))
 		{
 			log.error("Error from " + inContext.getCurrentScenario() + " running " + inSkillEnabled.getEnabledId() + ": " + response.getMessage());
@@ -91,16 +97,7 @@ public class RunningScenario extends BaseMediaObject implements CatalogEnabled
 			if ("runskill".equals(response.getOperationState()))
 			{
 				String runskill = response.getRunSkillEnabled();
-				for (AgentEnabled enabled : getAgentsEnabled())
-				{
-					{
-						if (enabled.getEnabledId().equals(runskill))
-						{
-							runProcess(enabled, inContext);
-							return false;
-						}
-					}
-				}
+				runProcess(runskill, inContext);
 				return false;
 			}
 			else
@@ -112,6 +109,36 @@ public class RunningScenario extends BaseMediaObject implements CatalogEnabled
 		log.error("No status from " + inContext.getCurrentScenario() + " running " + inSkillEnabled.getEnabledId() + ": " + response.getMessage());
 
 		return true;
+	}
+
+	public boolean runProcess(String inEnabledId, AgentContext inContext)
+	{
+
+		AgentEnabled enabled = findEnabled(getEnabledAgents(), inEnabledId);
+
+		if (enabled == null)
+		{
+			log.error("Could not find enabled agent " + inEnabledId + " for scenario " + getId());
+			return false;
+		}
+		return runProcess(enabled, inContext);
+	}
+
+	public AgentEnabled findEnabled(Collection<AgentEnabled> agents, String inEnabledId)
+	{
+		for (AgentEnabled enabled : agents)
+		{
+			if (enabled.getEnabledId().equals(inEnabledId))
+			{
+				return enabled;
+			}
+			AgentEnabled found = findEnabled(enabled.getChildren(), inEnabledId);
+			if (found != null)
+			{
+				return found;
+			}
+		}
+		return null;
 	}
 
 	public Collection<AgentEnabled> getEnabledAgents()

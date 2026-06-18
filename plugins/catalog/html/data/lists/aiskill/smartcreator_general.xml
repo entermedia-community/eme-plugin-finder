@@ -1,12 +1,6 @@
 <records>
 
 
-   <data id="chatSmartCreatorConfirmationSkill" bean="chatSmartCreatorConfirmationSkill" contextbean="chatMessageContext" agenttype="remoteagent" ordering="10">
-      <name>
-         <![CDATA[Smart Creator Chat]]>
-      </name>
-   </data>
-
    <data id="smartCreatorRenderFinishedOutlineSkill" bean="smartCreatorRenderFinishedOutlineSkill" agenttype="remoteagent" ordering="10">
       <name>
          <![CDATA[Smart Creator Render Finished Outline]]>
@@ -45,11 +39,16 @@
       </name>
    </data>
 
-
-
    <data id="smartcreator_createoutline" bean="smartCreatorCreateOutlineSkill" enabled="true" agenttype="taskagent" ordering="10">
       <name>
          <language id="en"><![CDATA[Smart Creator: Create Outline]]></language>
+      </name>
+   </data>
+
+
+   <data id="chatSmartCreatorConfirmationSkill" bean="chatSmartCreatorConfirmationSkill" contextbean="chatMessageContext" agenttype="remoteagent" ordering="10">
+      <name>
+         <language id="en"><![CDATA[Smart Creator Confirmation]]></language>
       </name>
    </data>
 

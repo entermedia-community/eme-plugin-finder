@@ -3,10 +3,18 @@
 <!-- using more descriptive ids for easier debugging -->
 
 <records>
-   <data id="chat_autodetect" aiskill="autoDetectChatSkill" automationscenario="chat_detection" enabled="true" agenttype="eventagent" processingmessage="Detecting" >
+
+   <data id="chat_detection_welcome" aiskill="autoDetectWelcomeSkill" automationscenario="chat_detection" enabled="true" agenttype="eventagent" processingmessage="Detecting" >
       <name>
-         <![CDATA[Global Auto Detect Chat Type]]>
+         <![CDATA[Auto Detect Welcome]]>
       </name>
    </data>
+
+   <data id="auto_detect_conversation" aiskill="autoDetectChatSkill" automationscenario="chat_detection" enabled="true" agenttype="eventagent" processingmessage="Detecting" runafter="chat_detection_welcome" >
+      <name>
+         <![CDATA[Auto Detect Next Step]]>
+      </name>
+   </data>
+   
 
    </records>

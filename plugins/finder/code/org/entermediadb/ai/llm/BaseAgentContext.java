@@ -190,32 +190,7 @@ public class BaseAgentContext extends BaseData implements CatalogEnabled, AgentC
 					addContext(String.valueOf(key), value);
 				}
 			}
-			Collection<AgentEnabled> children = inCurrentAgentEnable.getChildren();
-			setAgentEnableChildren(children);
 		}
-	}
-
-	protected Collection<AgentEnabled> fieldAgentEnableChildren;
-
-	public void setAgentEnableChildren(Collection<AgentEnabled> inAgentEnableChildren)
-	{
-		fieldAgentEnableChildren = inAgentEnableChildren;
-	}
-
-	public void setAgentEnableChildren(AgentEnabled inAgentEnableChildren)
-	{
-		Collection<AgentEnabled> children = new ArrayList<>();
-		children.add(inAgentEnableChildren);
-		setAgentEnableChildren(children);
-	}
-
-	public Collection<AgentEnabled> getAgentEnableChildren()
-	{
-		if (fieldAgentEnableChildren == null && getParentContext() != null)
-		{
-			return getParentContext().getAgentEnableChildren();
-		}
-		return fieldAgentEnableChildren;
 	}
 
 	public String getCatalogId()

@@ -326,14 +326,6 @@ public class AssistantManager extends BaseAiManager implements SkillStatusListen
 
 		MultiValued agentmessage = chatMessageContext.getAgentMessage();
 
-		MultiValued function = (MultiValued) getMediaArchive().getCachedData("aifunction", functionName);
-
-		if (function == null)
-		{
-			log.error("Could not find function: " + functionName);
-			return;
-		}
-
 		MediaArchive archive = getMediaArchive();
 
 		Data channel = archive.getCachedData("channel", agentmessage.get("channel"));
@@ -359,18 +351,21 @@ public class AssistantManager extends BaseAiManager implements SkillStatusListen
 		{
 			// get the scenerio and run that. Each scenerio will have one or more skills
 			RunningScenario scenerio = chatMessageContext.getCurrentScenario();
+
 			chatMessageContext.setLastResponse(null);
-			getAutomationManager().runScenario(scenerio.getId(), chatMessageContext);
+			scenerio.runProcess(functionName, chatMessageContext);
+
+			// getAutomationManager().runScenario(scenerio.getId(), chatMessageContext);
 
 		}
 		catch (HttpException e)
 		{
-			log.error("Error from " + chatMessageContext.getCurrentScenario() + " running " + function.getId(), e);
+			log.error("Error from " + chatMessageContext.getCurrentScenario() + " running " + chatMessageContext.getCurrentAgentEnable().getEnabledId(), e);
 			response = handleError(chatMessageContext, e.getMessage(), e.getErrorcode());
 		}
 		catch (Exception e)
 		{
-			log.error("Error from " + chatMessageContext.getCurrentScenario() + " running " + function.getId(), e);
+			log.error("Error from " + chatMessageContext.getCurrentScenario() + " running " + chatMessageContext.getCurrentAgentEnable().getEnabledId(), e);
 			response = handleError(chatMessageContext, e.getMessage());
 		}
 		// agentmessage.setValue("functionresponse", e.toString());
@@ -1002,7 +997,7 @@ public class AssistantManager extends BaseAiManager implements SkillStatusListen
 	public void fireStatusComplete(AgentContext inContext, AgentEnabled inSkill)
 	{
 
-		if (inContext instanceof ChatMessageContext)
+		if (!(inContext instanceof ChatMessageContext))
 		{
 			return;
 		}

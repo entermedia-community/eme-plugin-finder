@@ -3,18 +3,18 @@ package org.entermediadb.ai.assistant;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
-
-import org.entermediadb.ai.informatics.InformaticsProcessorSkill;
-import org.entermediadb.ai.informatics.InformaticsProcessorManager;
 import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.ChatMessageContext;
 import org.entermediadb.ai.automation.RunningScenario;
+import org.entermediadb.ai.informatics.InformaticsProcessorManager;
+import org.entermediadb.ai.skills.CreationSkill;
+import org.entermediadb.ai.skills.QuestionsSkill;
+import org.entermediadb.ai.skills.SearchingSkill;
 import org.entermediadb.asset.MediaArchive;
 import org.entermediadb.asset.modules.BaseMediaModule;
 import org.entermediadb.scripts.ScriptLogger;
 import org.entermediadb.workspace.WorkspaceManager;
 import org.openedit.Data;
-import org.openedit.MultiValued;
 import org.openedit.WebPageRequest;
 import org.openedit.data.Searcher;
 import org.openedit.hittracker.HitTracker;
@@ -165,7 +165,8 @@ public class AgentModule extends BaseMediaModule
 		inReq.putPageValue("agentcontext", agentContext);
 
 		boolean firesystemmessage = false;
-		MultiValued automationscenario = null;
+
+		String functionname = inReq.getRequestParameter("functionname");
 
 		String currentscenarioid = inReq.getRequestParameter("currentscenario");
 		if (currentscenarioid == null)
@@ -179,7 +180,6 @@ public class AgentModule extends BaseMediaModule
 				currentscenarioid = "chat_detection";
 			}
 		}
-		String functionname = inReq.getRequestParameter("functionname");
 		if (agentContext.getCurrentScenario() == null || !currentscenarioid.equals(agentContext.getCurrentScenario().getId()))
 		{
 			// Scenario changed. Clear the context and start over.

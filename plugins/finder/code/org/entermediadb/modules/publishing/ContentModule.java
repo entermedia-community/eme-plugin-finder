@@ -10,13 +10,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.llm.BaseAgentContext;
 import org.entermediadb.ai.llm.LlmConnection;
+import org.entermediadb.ai.skills.ContentPublishingSkill;
 import org.entermediadb.asset.Asset;
 import org.entermediadb.asset.BaseAsset;
 import org.entermediadb.asset.Category;

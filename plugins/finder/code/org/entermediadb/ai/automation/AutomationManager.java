@@ -135,21 +135,13 @@ public class AutomationManager extends BaseAiManager implements WebEventListener
 			log.info("No enabled agents for scenario " + inId);
 			return;
 		}
-
-		inContext.setAgentEnableChildren(enabled);
-		boolean cancel = false;
-		for (AgentEnabled agentEnabled : enabled)
+		AgentEnabled runskill = inContext.getCurrentAgentEnable();
+		if (runskill == null)
 		{
-			cancel = running.runProcess(agentEnabled, inContext);
-			if (cancel)
-			{
-				log.info("Process was cancelled by " + agentEnabled.getAgentData().getId() + " in scenario " + inId);
-				break;
-			}
+			runskill = enabled.iterator().next();
+			inContext.setCurrentAgentEnable(runskill);
 		}
-		// running.getScenarioData().setValue("isrunning", false); // Do this in memory? Do we want more
-		// than one running?
-		// getMediaArchive().saveData("automationscenario", running.getScenarioData());
+		running.runProcess(runskill, inContext);
 	}
 
 	public Map<String, MultiValued> getAllPositions()

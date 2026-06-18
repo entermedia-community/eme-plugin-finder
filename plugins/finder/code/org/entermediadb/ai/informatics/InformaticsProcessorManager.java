@@ -192,7 +192,7 @@ public class InformaticsProcessorManager extends BaseAiManager
 
 	}
 
-	protected Collection findValidRecords(List inPageOfHits)
+	public Collection findValidRecords(List inPageOfHits)
 	{
 		// TODO Auto-generated method stub
 		Collection valid = new ArrayList();
@@ -275,7 +275,7 @@ public class InformaticsProcessorManager extends BaseAiManager
 
 	}
 
-	protected Map<String, Collection> groupByModule(Collection<MultiValued> inPendingrecords)
+	public Map<String, Collection> groupByModule(Collection<MultiValued> inPendingrecords)
 	{
 		Map<String, Collection> groupbymodule = new HashMap();
 		for (Iterator iterator = inPendingrecords.iterator(); iterator.hasNext();)

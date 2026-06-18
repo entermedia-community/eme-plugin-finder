@@ -30,11 +30,13 @@ public class BaseSkill extends BaseAiManager implements Skill, CatalogEnabled
 		return childContext;
 	}
 
+	/**
+	 * This is the main process method that will be called by the agent to keep processing the children.
+	 */
 	@Override
 	public void process(AgentContext inContext)
 	{
-		Collection<AgentEnabled> children = inContext.getAgentEnableChildren();
-		inContext.getCurrentScenario();
+		Collection<AgentEnabled> children = inContext.getCurrentAgentEnable().getChildren();
 
 		for (AgentEnabled agentEnabled : children)
 		{

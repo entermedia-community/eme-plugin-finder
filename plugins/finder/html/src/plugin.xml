@@ -2534,7 +2534,7 @@
 	</bean>
 
 
-	<bean id="contentPublishingSkill" class="org.entermediadb.modules.publishing.ContentPublishingSkill" lazy-init="default" scope="prototype">
+	<bean id="contentPublishingSkill" class="org.entermediadb.ai.skills.ContentPublishingSkill" lazy-init="default" scope="prototype">
 		<property name="xmlUtil">
 			<ref bean="xmlUtil" />
 		</property>
@@ -2607,7 +2607,7 @@
 		</property>
 	</bean>
 
-	<bean id="classifySkill" class="org.entermediadb.ai.classify.agents.ClassifySkill" scope="prototype">
+	<bean id="classifySkill" class="org.entermediadb.ai.skills.ClassifySkill" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>
@@ -2630,7 +2630,7 @@
 			<ref bean="moduleManager" />
 		</property>
 	</bean>
-	<bean id="transcriberSkill" class="org.entermediadb.ai.transcriber.TranscriberSkill" scope="prototype">
+	<bean id="transcriberSkill" class="org.entermediadb.ai.skills.TranscriberSkill" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>
@@ -2641,7 +2641,7 @@
 			<ref bean="moduleManager" />
 		</property>
 	</bean>
-	<bean id="documentSplitterSkill" class="org.entermediadb.ai.classify.agents.DocumentSplitterSkill" scope="prototype">
+	<bean id="documentSplitterSkill" class="org.entermediadb.ai.skills.DocumentSplitterSkill" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>
@@ -2652,7 +2652,7 @@
 			<ref bean="moduleManager" />
 		</property>
 	</bean>
-	<bean id="embeddingSkill" class="org.entermediadb.ai.classify.agents.EmbeddingSkill" scope="prototype">
+	<bean id="embeddingSkill" class="org.entermediadb.ai.skills.EmbeddingSkill" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>
@@ -2664,19 +2664,19 @@
 		</property>
 	</bean>
 
-	<bean id="searchingSkill" class="org.entermediadb.ai.assistant.SearchingSkill" scope="prototype">
+	<bean id="searchingSkill" class="org.entermediadb.ai.skills.SearchingSkill" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>
 	</bean>
 
-	<bean id="creationSkill" class="org.entermediadb.ai.assistant.CreationSkill" scope="prototype">
+	<bean id="creationSkill" class="org.entermediadb.ai.skills.CreationSkill" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>
 	</bean>
 
-	<bean id="questionsSkill" class="org.entermediadb.ai.assistant.QuestionsSkill" scope="prototype">
+	<bean id="questionsSkill" class="org.entermediadb.ai.skills.QuestionsSkill" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>
@@ -2688,7 +2688,14 @@
 		</property>
 	</bean>
 
-	<bean id="autoDetectChatSkill" class="org.entermediadb.ai.assistant.AutoDetectChatSkill" scope="prototype">
+	<bean id="autoDetectWelcomeSkill" class="org.entermediadb.ai.skills.AutoDetectWelcomeSkill" scope="prototype">
+		<property name="moduleManager">
+			<ref bean="moduleManager" />
+		</property>
+	</bean>
+
+
+	<bean id="autoDetectChatSkill" class="org.entermediadb.ai.skills.AutoDetectChatSkill" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>
@@ -2697,37 +2704,37 @@
 	<bean id="SmartCreatorModule" class="org.entermediadb.ai.creator.SmartCreatorModule">
 	</bean>
 
-	<bean id="handleWebEventSkill" class="org.entermediadb.ai.automation.agents.HandleWebEventSkill" scope="prototype">
+	<bean id="handleWebEventSkill" class="org.entermediadb.ai.skills.HandleWebEventSkill" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>
 	</bean>
 
-	<bean id="assetImportCreated" class="org.entermediadb.ai.automation.agents.AssetImportCreatedSkill" scope="prototype">
+	<bean id="assetImportCreated" class="org.entermediadb.ai.skills.AssetImportCreatedSkill" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>
 	</bean>
-	<bean id="assetImportImported" class="org.entermediadb.ai.automation.agents.AssetImportImportedSkill" scope="prototype">
-		<property name="moduleManager">
-			<ref bean="moduleManager" />
-		</property>
-	</bean>
-
-	<bean id="processNeedsMetadataSkill" class="org.entermediadb.ai.automation.agents.ProcessNeedsMetadataSkill" scope="prototype">
+	<bean id="assetImportImported" class="org.entermediadb.ai.skills.AssetImportImportedSkill" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>
 	</bean>
 
-	<bean id="queueConversionsSkill" class="org.entermediadb.ai.automation.agents.QueueConversionsSkill" scope="prototype">
+	<bean id="processNeedsMetadataSkill" class="org.entermediadb.ai.skills.ProcessNeedsMetadataSkill" scope="prototype">
+		<property name="moduleManager">
+			<ref bean="moduleManager" />
+		</property>
+	</bean>
+
+	<bean id="queueConversionsSkill" class="org.entermediadb.ai.skills.QueueConversionsSkill" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>
 	</bean>
 
 	<!-- Not used yet-->
-	<bean id="runConversionsSkill" class="org.entermediadb.ai.automation.agents.RunConversionsSkill" scope="prototype">
+	<bean id="runConversionsSkill" class="org.entermediadb.ai.skills.RunConversionsSkill" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>
@@ -2735,69 +2742,70 @@
 
 
 
-	<bean id="runEventSkill" class="org.entermediadb.ai.automation.agents.RunEventSkill" scope="prototype">
+	<bean id="runEventSkill" class="org.entermediadb.ai.skills.RunEventSkill" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>
 	</bean>
-	<bean id="runSharedEventSkill" class="org.entermediadb.ai.automation.agents.RunSharedEventSkill" scope="prototype">
-		<property name="moduleManager">
-			<ref bean="moduleManager" />
-		</property>
-	</bean>
-
-	<bean id="chatSmartCreatorConfirmationSkill" class="org.entermediadb.ai.creator.ChatSmartCreatorConfirmationSkill" scope="prototype">
+	<bean id="runSharedEventSkill" class="org.entermediadb.ai.skills.RunSharedEventSkill" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>
 	</bean>
 
-	<bean id="smartCreatorRenderFinishedOutlineSkill" class="org.entermediadb.ai.creator.agents.SmartCreatorRenderFinishedOutlineSkill" scope="prototype">
+
+	<bean id="chatSmartCreatorConfirmationSkill" class="org.entermediadb.ai.skills.ChatSmartCreatorConfirmationSkill" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>
 	</bean>
 
-	<bean id="smartCreatorMakeSuggestionsSkill" class="org.entermediadb.ai.creator.agents.SmartCreatorMakeSuggestionsSkill" scope="prototype">
+	<bean id="smartCreatorRenderFinishedOutlineSkill" class="org.entermediadb.ai.skills.SmartCreatorRenderFinishedOutlineSkill" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>
 	</bean>
 
-	<bean id="smartCreatorPlaybackSkill" class="org.entermediadb.ai.creator.agents.SmartCreatorPlaybackSkill" scope="prototype">
+	<bean id="smartCreatorMakeSuggestionsSkill" class="org.entermediadb.ai.skills.SmartCreatorMakeSuggestionsSkill" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>
 	</bean>
 
-	<bean id="smartCreatorProcessPendingSkill" class="org.entermediadb.ai.creator.agents.SmartCreatorProcessPendingSkill" scope="prototype">
+	<bean id="smartCreatorPlaybackSkill" class="org.entermediadb.ai.skills.SmartCreatorPlaybackSkill" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>
 	</bean>
 
-	<bean id="smartCreatorParseUserPromptSkill" class="org.entermediadb.ai.creator.agents.SmartCreatorParseUserPromptSkill" scope="prototype">
+	<bean id="smartCreatorProcessPendingSkill" class="org.entermediadb.ai.skills.SmartCreatorProcessPendingSkill" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>
 	</bean>
 
-	<bean id="smartCreatorFindMemoryFilesSkill" class="org.entermediadb.ai.creator.agents.SmartCreatorFindMemoryFilesSkill" scope="prototype">
+	<bean id="smartCreatorParseUserPromptSkill" class="org.entermediadb.ai.skills.SmartCreatorParseUserPromptSkill" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>
 	</bean>
-	<bean id="smartCreatorCreateOutlineSkill" class="org.entermediadb.ai.creator.agents.SmartCreatorCreateOutlineSkill" scope="prototype">
+
+	<bean id="smartCreatorFindMemoryFilesSkill" class="org.entermediadb.ai.skills.SmartCreatorFindMemoryFilesSkill" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>
 	</bean>
-	<bean id="smartCreatorMakeSectionsSkill" class="org.entermediadb.ai.creator.agents.SmartCreatorMakeSectionsSkill" scope="prototype">
+	<bean id="smartCreatorCreateOutlineSkill" class="org.entermediadb.ai.skills.SmartCreatorCreateOutlineSkill" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>
 	</bean>
-	<bean id="smartCreatorRenderAssetSkill" class="org.entermediadb.ai.creator.agents.SmartCreatorRenderAssetSkill" scope="prototype">
+	<bean id="smartCreatorMakeSectionsSkill" class="org.entermediadb.ai.skills.SmartCreatorMakeSectionsSkill" scope="prototype">
+		<property name="moduleManager">
+			<ref bean="moduleManager" />
+		</property>
+	</bean>
+	<bean id="smartCreatorRenderAssetSkill" class="org.entermediadb.ai.skills.SmartCreatorRenderAssetSkill" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>
@@ -2842,7 +2850,7 @@
 		</property>
 	</bean>
 
-	<bean id="youtubeImporterSkill" class="org.entermediadb.asset.importer.YoutubeImporterSkill" scope="prototype">
+	<bean id="youtubeImporterSkill" class="org.entermediadb.ai.skills.YoutubeImporterSkill" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>
@@ -2912,7 +2920,7 @@
 			<ref bean="moduleManager" />
 		</property>
 	</bean>
-	<bean id="faceProfileSkill" class="org.entermediadb.asset.facedetect.FaceProfileSkill" lazy-init="default" scope="prototype">
+	<bean id="faceProfileSkill" class="org.entermediadb.ai.skills.FaceProfileSkill" lazy-init="default" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>
@@ -2923,7 +2931,7 @@
 			<ref bean="moduleManager" />
 		</property>
 	</bean>
-	<bean id="informaticsProcessorSkill" class="org.entermediadb.ai.informatics.InformaticsProcessorSkill" lazy-init="default" scope="prototype">
+	<bean id="informaticsProcessorSkill" class="org.entermediadb.ai.skills.InformaticsProcessorSkill" lazy-init="default" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>
@@ -2934,7 +2942,7 @@
 			<ref bean="moduleManager" />
 		</property>
 	</bean>
-	<bean id="semanticClassifierSkill" class="org.entermediadb.ai.classify.agents.SemanticClassifierSkill" lazy-init="default" scope="prototype">
+	<bean id="semanticClassifierSkill" class="org.entermediadb.ai.skills.SemanticClassifierSkill" lazy-init="default" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>
@@ -2958,7 +2966,7 @@
 			<ref bean="moduleManager" />
 		</property>
 	</bean>
-	<bean id="namedEntityRecognitionSkill" class="org.entermediadb.ai.classify.agents.NamedEntityRecognitionSkill" lazy-init="default" scope="prototype">
+	<bean id="namedEntityRecognitionSkill" class="org.entermediadb.ai.skills.NamedEntityRecognitionSkill" lazy-init="default" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>
@@ -2996,19 +3004,19 @@
 		</property>
 	</bean>
 
-	<bean id="googleGlossaryManagerSkill" class="org.entermediadb.translator.agents.GoogleGlossaryManagerSkill" lazy-init="default" scope="prototype">
+	<bean id="googleGlossaryManagerSkill" class="org.entermediadb.ai.skills.GoogleGlossaryManagerSkill" lazy-init="default" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>
 	</bean>
 
-	<bean id="fixCustomFieldSkill" class="org.entermediadb.translator.agents.FixCustomFieldSkill" lazy-init="default" scope="prototype">
+	<bean id="fixCustomFieldSkill" class="org.entermediadb.ai.skills.FixCustomFieldSkill" lazy-init="default" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>
 	</bean>
 
-	<bean id="translationSkill" class="org.entermediadb.translator.agents.TranslationSkill" lazy-init="default" scope="prototype">
+	<bean id="translationSkill" class="org.entermediadb.ai.skills.TranslationSkill" lazy-init="default" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>
@@ -3031,43 +3039,43 @@
 		</property>
 	</bean>
 
-	<bean id="runModuleSkill" class="org.entermediadb.ai.automation.agents.RunModuleSkill" lazy-init="default" scope="prototype">
+	<bean id="runModuleSkill" class="org.entermediadb.ai.skills.RunModuleSkill" lazy-init="default" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>
 	</bean>
 
-	<bean id="hotFolderSourceSkill" class="org.entermediadb.asset.sources.agents.HotFolderSourceSkill" lazy-init="default" scope="prototype">
+	<bean id="hotFolderSourceSkill" class="org.entermediadb.ai.skills.HotFolderSourceSkill" lazy-init="default" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>
 	</bean>
 
-	<bean id="imapMailCheckerSkill" class="org.entermediadb.email.agents.ImapMailCheckerSkill" lazy-init="default" scope="prototype">
+	<bean id="imapMailCheckerSkill" class="org.entermediadb.ai.skills.ImapMailCheckerSkill" lazy-init="default" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>
 	</bean>
 
-	<bean id="imapMailSenderSkill" class="org.entermediadb.email.agents.ImapMailSenderSkill" lazy-init="default" scope="prototype">
+	<bean id="imapMailSenderSkill" class="org.entermediadb.ai.skills.ImapMailSenderSkill" lazy-init="default" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>
 	</bean>
 
-	<bean id="goalManagerSkill" class="org.entermediadb.tasks.GoalManagerSkill" lazy-init="default" scope="prototype">
+	<bean id="goalManagerSkill" class="org.entermediadb.ai.skills.GoalManagerSkill" lazy-init="default" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>
 	</bean>
 
-	<bean id="questionManagerSkill" class="org.entermediadb.tasks.QuestionManagerSkill" lazy-init="default" scope="prototype">
+	<bean id="questionManagerSkill" class="org.entermediadb.ai.skills.QuestionManagerSkill" lazy-init="default" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>
 	</bean>
 
-	<bean id="embeddingFinderSkill" class="org.entermediadb.tasks.EmbeddingFinderSkill" lazy-init="default" scope="prototype">
+	<bean id="embeddingFinderSkill" class="org.entermediadb.ai.skills.EmbeddingFinderSkill" lazy-init="default" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>

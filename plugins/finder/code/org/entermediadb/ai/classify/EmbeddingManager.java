@@ -11,7 +11,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.entermediadb.ai.BaseAiManager;
 import org.entermediadb.ai.creator.SmartCreatorSession;
-import org.entermediadb.ai.creator.agents.ChatSmartCreatorConfirmationSkill;
+import org.entermediadb.ai.skills.ChatSmartCreatorConfirmationSkill;
 import org.entermediadb.ai.informatics.InformaticsContext;
 import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.llm.LlmConnection;

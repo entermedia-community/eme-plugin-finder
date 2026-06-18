@@ -3,13 +3,10 @@
 <!-- using more descriptive ids for easier debugging -->
 
 <records>
-   <data id="chat_smartcreator" aiskill="chatSmartCreatorConfirmationSkill" automationscenario="chat_smartcreator" enabled="true" agenttype="eventagent">
-      <name>
-         <![CDATA[Smart Creator Welcome]]>
-      </name>
-   </data> 
 
-   <data id="chat_smartcreator_make_suggestions" aiskill="smartCreatorMakeSuggestionsSkill" automationscenario="chat_smartcreator" enabled="true" runafter="chat_smartcreator" processingmessage="Making Suggestions">
+   <!--The global auto detect will call this new scenario-->
+
+   <data id="chat_smartcreator_make_suggestions" aiskill="smartCreatorMakeSuggestionsSkill" automationscenario="chat_smartcreator" enabled="true" processingmessage="Loading Suggestions">
       <name>
          <language id="en"><![CDATA[Make Suggestions]]></language>
       </name>
@@ -37,8 +34,14 @@
       </name>
    </data>
 
+   <data id="chat_smartcreator_confirmation" aiskill="chatSmartCreatorConfirmationSkill" automationscenario="chat_smartcreator" enabled="true" agenttype="eventagent" runafter="chat_smartcreator_createoutline" processingmessage="Confirming Outline">
+      <name>
+         <language id="en"><![CDATA[Smart Creator Confirmation]]></language>
+      </name>
+   </data> 
 
-   <data id="chat_smartcreator_createsections" aiskill="smartcreator_createsections" automationscenario="chat_smartcreator" enabled="true" runafter="chat_smartcreator_createoutline" processingmessage="Creating Sections">
+
+   <data id="chat_smartcreator_createsections" aiskill="smartcreator_createsections" automationscenario="chat_smartcreator" enabled="true" runafter="chat_smartcreator_confirmation" processingmessage="Creating Sections">
       <name>
          <language id="en"><![CDATA[Create Sections]]></language>
       </name>

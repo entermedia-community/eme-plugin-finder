@@ -48,12 +48,6 @@ public interface AgentContext extends Data
 
 	void setCurrentAgentEnable(AgentEnabled inCurrentAgentEnable);
 
-	void setAgentEnableChildren(Collection<AgentEnabled> inAgentEnableChildren);
-
-	void setAgentEnableChildren(AgentEnabled inAgentEnableChild);
-
-	Collection<AgentEnabled> getAgentEnableChildren();
-
 	String getCatalogId();
 
 	void setCatalogId(String inCatalogId);
