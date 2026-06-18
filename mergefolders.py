@@ -4,8 +4,8 @@ import shutil
 from pathlib import Path
 
 # Change these
-SRC = Path("plugins/finder/html/find/authentication")
-DST = Path("plugins/community/html/default/authentication")
+SRC = Path("plugins/components/html")
+DST = Path("plugins/community/html/default/components")
 
 
 def move_merge(src: Path, dst: Path):

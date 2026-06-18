@@ -27,7 +27,7 @@ $context.putPageValue("convertpreset", $convertpreset)
 		$context.putPageValue("asset", $entry)
 		
 		
-		#set($searchhome = "${finderhome}/views/modules/asset/results/chatterbox")
+		#set($searchhome = "${apphome}/views/modules/asset/results/chatterbox")
 		$context.putPageValue("searchhome", $searchhome) 
 		
 		#if($caneditcollection)
@@ -36,7 +36,6 @@ $context.putPageValue("convertpreset", $convertpreset)
 		#if($canviewsettings)
 			$context.putPageValue("assetlink_enabled", "true")
 		#end
-		$context.putPageValue("apphome", $finderhome)
 		
 		$pages.include("${searchhome}/thumbnails/${rendertype}.html?assetid=${entry.id}", $context)
  

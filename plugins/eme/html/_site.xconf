@@ -22,63 +22,63 @@
   </permission>
 
   <style cancel="true" id="jquery"/>
-  <style id="jqueryui-css" href="/components/javascript/jquery-ui/1.14/jquery-ui.css"/>
-  <script src="/components/javascript/jquery.form.js" id="jquery-form"/>
-  <script src="/components/javascript/validation/jquery.validate.min.js" id="validation"/>
-  <script src="/components/javascript/emedia/ajax/ajaxformsubmit.js" id="ajaxformsubmit"/>
-  <script src="/components/javascript/emedia/liveajax.js" id="liveajax"/>
-  <style id="bootstrap-css" href="/components/javascript/bootstrap/5.3.8/css/bootstrap.min.css"/>
-  <style id="fontawesome-css" href="/components/javascript/bootstrap/fonts/css/fontawesome-all.min.css"/>
-  <style id="bootstra-icons" href="/components/javascript/bootstrap/5.3.8/icons/bootstrap-icons.min.css"/>
+  <style id="jqueryui-css" href="/${applicationid}/components/javascript/jquery-ui/1.14/jquery-ui.css"/>
+  <script src="/${applicationid}/components/javascript/jquery.form.js" id="jquery-form"/>
+  <script src="/${applicationid}/components/javascript/validation/jquery.validate.min.js" id="validation"/>
+  <script src="/${applicationid}/components/javascript/emedia/ajax/ajaxformsubmit.js" id="ajaxformsubmit"/>
+  <script src="/${applicationid}/components/javascript/emedia/liveajax.js" id="liveajax"/>
+  <style id="bootstrap-css" href="/${applicationid}/components/javascript/bootstrap/5.3.8/css/bootstrap.min.css"/>
+  <style id="fontawesome-css" href="/${applicationid}/components/javascript/bootstrap/fonts/css/fontawesome-all.min.css"/>
+  <style id="bootstra-icons" href="/${applicationid}/components/javascript/bootstrap/5.3.8/icons/bootstrap-icons.min.css"/>
   <script src="/openedit/components/javascript/openedit.js" id="openedit"/>
-  <script src="/components/javascript/select2/4.1.0rc0/js/select2.full.js" id="select2"/>
-  <style id="select2-css" href="/components/javascript/select2/4.1.0rc0/css/select2.css"/>
-  <script src="/components/javascript/jplayer/jquery.jplayer.min.js" id="jplayer"/>
-  <style id="jplayer-css" href="/components/javascript/jplayer/premium.pixels/premium-pixels.css"/>
-  <script defer="true" src="/components/javascript/minicolors/jquery.minicolors.min.js" id="minicolors"/>
-  <style id="minicolors-css" href="/components/javascript/minicolors/jquery.minicolors.css"/>
-  <script src="/components/xml/detaileditor.js" id="detaileditor"/>
-  <script src="/components/javascript/emedia/ajax/runajax.js" id="runajax"/>
-  <script src="/components/javascript/emedia/ajax/emdialog.js" id="emdialog"/>
-  <script src="/components/javascript/emedia/dataentryfields.js" id="dataentryfields"/>
-  <script src="/components/javascript/emedia/dataentrypickers.js" id="dataentrypickers"/>
-  <script src="/components/javascript/emedia/utility-plugins.js" id="utility-plugins"/>
-  <script src="/components/javascript/emedia/util.js" id="util"/>
-  <script src="/components/javascript/emedia/toast.js" id="toast"/>
-  <script src="/components/javascript/emedia/image-editor.js" id="imageditor"/>
-  <script src="/components/chatterbox/chatterbox.js" id="chatterbox"/>
-  <style id="chatterbox" href="/components/chatterbox/chatterbox.css"/>
-  <script defer="true" src="/components/javascript/twemoji/twemoji.js" id="twemoji"/>
-  <script defer="true" src="/components/javascript/videojs/8.20.0/video.min.js" id="videojs"/>
-  <script defer="true" src="/components/javascript/videojs/8.20.0/videojs-quality-selector.min.js" id="videojs-qs"/>
-  <style id="videojs-css" href="/components/javascript/videojs/8.20.0/video-js.min.css"/>
+  <script src="/${applicationid}/components/javascript/select2/4.1.0rc0/js/select2.full.js" id="select2"/>
+  <style id="select2-css" href="/${applicationid}/components/javascript/select2/4.1.0rc0/css/select2.css"/>
+  <script src="/${applicationid}/components/javascript/jplayer/jquery.jplayer.min.js" id="jplayer"/>
+  <style id="jplayer-css" href="/${applicationid}/components/javascript/jplayer/premium.pixels/premium-pixels.css"/>
+  <script defer="true" src="/${applicationid}/components/javascript/minicolors/jquery.minicolors.min.js" id="minicolors"/>
+  <style id="minicolors-css" href="/${applicationid}/components/javascript/minicolors/jquery.minicolors.css"/>
+  <script src="/${applicationid}/components/xml/detaileditor.js" id="detaileditor"/>
+  <script src="/${applicationid}/components/javascript/emedia/ajax/runajax.js" id="runajax"/>
+  <script src="/${applicationid}/components/javascript/emedia/ajax/emdialog.js" id="emdialog"/>
+  <script src="/${applicationid}/components/javascript/emedia/dataentryfields.js" id="dataentryfields"/>
+  <script src="/${applicationid}/components/javascript/emedia/dataentrypickers.js" id="dataentrypickers"/>
+  <script src="/${applicationid}/components/javascript/emedia/utility-plugins.js" id="utility-plugins"/>
+  <script src="/${applicationid}/components/javascript/emedia/util.js" id="util"/>
+  <script src="/${applicationid}/components/javascript/emedia/toast.js" id="toast"/>
+  <script src="/${applicationid}/components/javascript/emedia/image-editor.js" id="imageditor"/>
+  <script src="/${applicationid}/components/chatterbox/chatterbox.js" id="chatterbox"/>
+  <style id="chatterbox" href="/${applicationid}/components/chatterbox/chatterbox.css"/>
+  <script defer="true" src="/${applicationid}/components/javascript/twemoji/twemoji.js" id="twemoji"/>
+  <script defer="true" src="/${applicationid}/components/javascript/videojs/8.20.0/video.min.js" id="videojs"/>
+  <script defer="true" src="/${applicationid}/components/javascript/videojs/8.20.0/videojs-quality-selector.min.js" id="videojs-qs"/>
+  <style id="videojs-css" href="/${applicationid}/components/javascript/videojs/8.20.0/video-js.min.css"/>
   <style id="closedcaptionplayercss" href="/${applicationid}/theme/styles/timeline/timeslider.css"/>
   <style id="videoplayer-css" href="/${applicationid}/theme/styles/timeline/timeline.css"/>
-  <script defer="true" src="/components/javascript/draw2d.min.js" id="smart2d"/>
-  <script defer="true" src="/components/javascript/jszip/jszip.min.js" id="jszip"/>
-  <script defer="true" src="/components/javascript/emedia/smartorganizer.js" id="smartorganizer"/>
-  <script defer="true" src="/components/javascript/emedia/smartcreator.js" id="smartcreator"/>
-  <script defer="true" src="/components/javascript/emedia/agentautomation.js" id="agentautomation"/>
-  <script defer="true" src="/components/javascript/jcrop/jquery.Jcrop.min.js" id="jcrop"/>
-  <style id="jcrop-css" href="/components/javascript/jcrop/jquery.Jcrop.min.css"/>
-  <script defer="true" src="/components/javascript/emedia/aitools.js" id="aitools"/>
-  <script defer="true" src="/components/javascript/emedia/dragdrop.js" id="dragdrop"/>
-  <script src="/components/javascript/emedia/ui-components-old.js" id="uicomponentsold"/>
-  <script src="/components/javascript/emedia/ui-components.js" id="uicomponents"/>
-  <script src="/components/javascript/emedia/emtree.js" id="emtree"/>
-  <script defer="true" src="/components/javascript/fabric.min.js" id="fabric"/>
+  <script defer="true" src="/${applicationid}/components/javascript/draw2d.min.js" id="smart2d"/>
+  <script defer="true" src="/${applicationid}/components/javascript/jszip/jszip.min.js" id="jszip"/>
+  <script defer="true" src="/${applicationid}/components/javascript/emedia/smartorganizer.js" id="smartorganizer"/>
+  <script defer="true" src="/${applicationid}/components/javascript/emedia/smartcreator.js" id="smartcreator"/>
+  <script defer="true" src="/${applicationid}/components/javascript/emedia/agentautomation.js" id="agentautomation"/>
+  <script defer="true" src="/${applicationid}/components/javascript/jcrop/jquery.Jcrop.min.js" id="jcrop"/>
+  <style id="jcrop-css" href="/${applicationid}/components/javascript/jcrop/jquery.Jcrop.min.css"/>
+  <script defer="true" src="/${applicationid}/components/javascript/emedia/aitools.js" id="aitools"/>
+  <script defer="true" src="/${applicationid}/components/javascript/emedia/dragdrop.js" id="dragdrop"/>
+  <script src="/${applicationid}/components/javascript/emedia/ui-components-old.js" id="uicomponentsold"/>
+  <script src="/${applicationid}/components/javascript/emedia/ui-components.js" id="uicomponents"/>
+  <script src="/${applicationid}/components/javascript/emedia/emtree.js" id="emtree"/>
+  <script defer="true" src="/${applicationid}/components/javascript/fabric.min.js" id="fabric"/>
   <style id="app-css" href="/${applicationid}/theme/styles/theme.css"/>
   <style id="mediaplayer" href="/${applicationid}/theme/styles/pages/mediaplayer.css"/>
-  <script defer="true" src="/components/javascript/jquery.html5_upload.js" id="html5_upload"/>
-  <script defer="true" src="/components/javascript/emedia/upload.js" id="upload"/>
-  <script defer="true" src="/components/javascript/emedia/quicksearch.js" id="quicksearch"/>
-  <script src="/components/javascript/emedia/results.js" id="results"/>
+  <script defer="true" src="/${applicationid}/components/javascript/jquery.html5_upload.js" id="html5_upload"/>
+  <script defer="true" src="/${applicationid}/components/javascript/emedia/upload.js" id="upload"/>
+  <script defer="true" src="/${applicationid}/components/javascript/emedia/quicksearch.js" id="quicksearch"/>
+  <script src="/${applicationid}/components/javascript/emedia/results.js" id="results"/>
   <style id="results-css" href="/${applicationid}/theme/styles/pages/results.css"/>
   <style id="dropdown-css" href="/${applicationid}/theme/styles/dropdown.css"/>
-  <script src="/components/javascript/emedia/brick.js" id="jquerybrick"/>
-  <script src="/components/javascript/emedia/brickvertical.js" id="jquerybrickvertical"/>
-  <script defer="true" src="/components/javascript/chart/Chart.bundle.js" id="chartjs"/>
-  <script src="/components/javascript/jquery.cuepoint.js" id="jscuepoint"/>
+  <script src="/${applicationid}/components/javascript/emedia/brick.js" id="jquerybrick"/>
+  <script src="/${applicationid}/components/javascript/emedia/brickvertical.js" id="jquerybrickvertical"/>
+  <script defer="true" src="/${applicationid}/components/javascript/chart/Chart.bundle.js" id="chartjs"/>
+  <script src="/${applicationid}/components/javascript/jquery.cuepoint.js" id="jscuepoint"/>
   <script src="/${applicationid}/views/modules/asset/editor/closedcaptions/closedcaptions.js" id="jsclosedcaptions"/>
   <property name="searchtypeFromRequest">true</property>
   <property name="profilemanagerid">${catalogid}</property>

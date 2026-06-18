@@ -11,10 +11,10 @@
 	<property name="menu_store">false</property>
 
 	<page-loader loader="projectLoader" />
-	
+
 	<script id="stripe" src="https://js.stripe.com/basil/stripe.js" />
-	
-	<script id="dragdrop" src="${finderhome}/components/javascript/emedia/dragdrop.js" defer="true" />
-	<style id="tasks" href="${finderhome}/theme/styles/pages/results.css" />
-	
+
+	<script id="dragdrop" src="/${applicationid}/components/javascript/emedia/dragdrop.js" defer="true" />
+	<style id="tasks" href="/${applicationid}/theme/styles/pages/results.css" />
+
 </page>

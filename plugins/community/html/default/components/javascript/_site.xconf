@@ -1,5 +1,7 @@
 <?xml version="1.0"?>
 
 <page>
-	<property name="fallbackdirectory">/components/javascript</property>
+	<permission name="view">
+		<boolean value="true" />
+	</permission>
 </page>
