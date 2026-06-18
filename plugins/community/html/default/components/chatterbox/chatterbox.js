@@ -15,7 +15,7 @@ jQuery(document).ready(function () {
 		//loop chatterbox for messages in reverse order and get data-functionname of the first one that has it. This is the function we will run after the message is sent.
 		const messages = chatter.find(".msg-bubble").get().reverse();
 		for (let i = 0; i < messages.length; i++) {
-			var message =  $(messages[i]);
+			var message = $(messages[i]);
 			const fn = message.data("nextfunctionname");
 			if (fn) {
 				return fn;
@@ -324,7 +324,6 @@ jQuery(document).ready(function () {
 			if (message.command === "messageremoved") {
 				existing.remove();
 			} else {
-				
 				const msgBody = $(existing).find(".msg-body-content");
 				if (msgBody.length) {
 					msgBody.html(message.message);
