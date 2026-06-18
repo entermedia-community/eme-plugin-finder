@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -28,18 +29,23 @@ public class BaseAgentContext extends BaseData implements CatalogEnabled, AgentC
 {
 	protected ScriptLogger fieldScriptLogger;
 
-	List<SkillStatusListener> fieldStatusListeners;
+	Collection<SkillStatusListener> fieldStatusListeners;
 
-	public List<SkillStatusListener> getStatusListeners()
+	public Collection<SkillStatusListener> getStatusListeners()
 	{
+		if (getParentContext() != null)
+		{
+			return getParentContext().getStatusListeners();
+		}
+
 		if (fieldStatusListeners == null)
 		{
-			fieldStatusListeners = new ArrayList<>();
+			fieldStatusListeners = new HashSet();
 		}
 		return fieldStatusListeners;
 	}
 
-	public void setStatusListeners(List<SkillStatusListener> inStatusListeners)
+	public void setStatusListeners(Collection<SkillStatusListener> inStatusListeners)
 	{
 		fieldStatusListeners = inStatusListeners;
 	}

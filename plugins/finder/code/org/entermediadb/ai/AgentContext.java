@@ -146,6 +146,10 @@ public interface AgentContext extends Data
 
 	public void setLastResponse(LlmResponse inLastResponse);
 
+	public Collection<SkillStatusListener> getStatusListeners();
+
+	public void addStatusListener(SkillStatusListener inListener);
+
 	public void fireStatusStarting(AgentEnabled inAgentEnabled);
 
 	public void fireStatusComplete(AgentEnabled inAgentEnabled);
