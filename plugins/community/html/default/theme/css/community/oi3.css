@@ -1051,7 +1051,7 @@ img.cat-thumb {
 .community-layout {
 	display: flex;
 	position: relative;
-	min-height: calc(100vh - 66px);
+	min-height: calc(100vh - 120px);
 	font-size: 0.95rem;
 	margin-left: 0;
 	transition: margin-left 0.25s ease-in-out;
@@ -1070,7 +1070,7 @@ img.cat-thumb {
 	min-height: 100%;
 	padding: 0 0.5rem 1rem 1rem;
 	margin: 0;
-	padding: 1rem 0.5rem 1rem 1rem;
+	padding: 1rem 0;
 	background-color: #ffffff;
 	position: relative;
 }
@@ -1241,8 +1241,7 @@ img.cat-thumb {
 .navigation i.fas {
 	margin-top: -5px;
 }
-.project-list-container,
-.community-layout {
+.project-list-container {
 	min-height: calc(100vh - 236px);
 }
 .chatterbox-write .btn.chatter-send {
@@ -1322,7 +1321,7 @@ img.cat-thumb {
 @media screen and (max-width: 1440px) {
 	.project-list-container,
 	.community-layout {
-		min-height: calc(100vh - 180px);
+		min-height: calc(100vh - 136px);
 	}
 	.project-navbar .navbar-collective .collapsed-menu {
 		display: block;

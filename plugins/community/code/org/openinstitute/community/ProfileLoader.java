@@ -2,11 +2,9 @@ package org.openinstitute.community;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.entermediadb.asset.MediaArchive;
 import org.entermediadb.manager.BaseManager;
 import org.openedit.CatalogEnabled;
 import org.openedit.Data;
-import org.openedit.ModuleManager;
 import org.openedit.OpenEditException;
 import org.openedit.data.QueryBuilder;
 import org.openedit.hittracker.HitTracker;

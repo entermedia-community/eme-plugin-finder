@@ -72,6 +72,19 @@
 .msg-bubble .chat-author a:hover {
 	color: #000;
 }
+.chatterbox-messages:has(.resultspositions) {
+	padding-top: 40px;
+}
+.chatterbox-messages-readonly {
+	height: calc(100% - 48px) !important;
+}
+.chatterbox-messages {
+	height: calc(100% - 150px) !important;
+}
+.chatterbox:has(.ai-functions) .chatterbox-messages {
+	height: calc(100% - 200px) !important;
+}
+
 .chatterbox-write .chatterbox-media {
 	height: 24px;
 	background-color: #9cdc81;
@@ -123,6 +136,9 @@
 	.chatterbox-messages {
 		height: calc(100% - 118px) !important;
 		min-height: 100px;
+	}
+	.chatterbox:has(.ai-functions) .chatterbox-messages {
+		height: calc(100% - 158px) !important;
 	}
 	.emwidget-chatterbox .emwidget-header {
 		padding: 8px 0 0 15px;
