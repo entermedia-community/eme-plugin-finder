@@ -2,7 +2,7 @@
 
 	<property name="edithomename">entitycustomupload</property>
 
-	<property name="fallbackdirectory">../entityimports</property>
+	<property name="fallbackdirectory">/${applicationid}/views/modules/default/editors/entityimports</property>
 
 	<path-action name="EntityModule.getEntity"/>
 

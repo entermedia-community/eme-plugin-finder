@@ -1,0 +1,5 @@
+$pageManager.clearCache("/finder/find/views/modules/asset/results/default/thumbnails/small.html")
+#set($p = $pageManager.getPage("/finder/find/views/modules/asset/results/default/thumbnails/small.html", false))
+$p.exists()
+$p.getPageSettings().getFallback()
+

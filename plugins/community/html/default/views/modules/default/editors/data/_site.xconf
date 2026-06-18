@@ -3,7 +3,7 @@
 <page>
 
 	<property name="edithomename">data</property>
-	<property name="fallbackdirectory">../default</property>
-	
+	<property name="fallbackdirectory">/${applicationid}/views/modules/default/editors/default</property>
+
 	<path-action name="EntityModule.getEntity"/>
 </page>

@@ -3,12 +3,12 @@
 	<property name="edithomename">assetupload</property>
 
 	<property name="section">uploadmedia</property>
-			<property name="fallbackdirectory">../default</property>
-		
+	<property name="fallbackdirectory">/${applicationid}/views/modules/default/editors/default</property>
+
 	<permission name="view">
-			<userprofile property="viewupload" equals="true" />
+		<userprofile property="viewupload" equals="true" />
 	</permission>
-	
-		<path-action name="EntityModule.getEntity" />
-	
+
+	<path-action name="EntityModule.getEntity" />
+
 </page>

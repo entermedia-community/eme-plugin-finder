@@ -5,8 +5,8 @@
 	<property name="searchhome">/${applicationid}/views/modules/${module}/results/lightboxes</property>
 
 	<property name="edithomename">lightboxes</property>
-	<property name="fallbackdirectory">../lightboxboxes</property>
+	<property name="fallbackdirectory">/${applicationid}/views/modules/default/editors/lightboxboxes</property>
 
-	
+
 
 </page>

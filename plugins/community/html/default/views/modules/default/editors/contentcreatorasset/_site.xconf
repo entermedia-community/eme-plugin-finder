@@ -1,5 +1,6 @@
 <page>
-	<property name="fallbackdirectory">../contentcreator</property>
+	<property name="fallbackdirectory">/${applicationid}/views/modules/default/editors/contentcreator</property>
 	<property name="edithomename">contentcreatorasset</property>
 
 </page>
+

@@ -1,5 +1,5 @@
 <page>
 
-	<property name="fallbackdirectory">../../../../../../components/chatterbox</property>
+	<property name="fallbackdirectory">/${applicationid}/components/chatterbox</property>
 
 </page>

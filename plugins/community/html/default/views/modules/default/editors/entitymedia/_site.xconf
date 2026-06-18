@@ -3,8 +3,8 @@
 	<path-action name="EntityModule.getEntity"/>
 
 	<property name="edithomename">entitymedia</property>
-	<property name="fallbackdirectory">../basecategorywithtree</property>
-	
+	<property name="fallbackdirectory">/${applicationid}/views/modules/default/editors/basecategorywithtree</property>
+
 	<property name="sortableassets">true</property>
 
 

@@ -4,7 +4,7 @@
 
 	<property name="searchhomename">submodulesexcludelist</property>
 	<property name="searchhome">/${applicationid}/views/modules/${module}/results/${searchhomename}</property>
-	<property name="fallbackdirectory">../default</property>
+	<property name="fallbackdirectory">/${applicationid}/views/modules/default/editors/default</property>
 
 	<!-- THis is impoortant. Used in filters and results.html -->
 	<property name="excludeentityinfilter">true</property>

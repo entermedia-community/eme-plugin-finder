@@ -3,7 +3,7 @@
 
 	<property name="searchhome">/${applicationid}/views/modules/asset/results/files</property>
 
-	<property name="fallbackdirectory">../default</property>
-	
-	
+	<property name="fallbackdirectory">/${applicationid}/views/modules/${module}/results/default</property>
+
+
 </page>

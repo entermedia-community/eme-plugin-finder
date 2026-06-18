@@ -4,12 +4,12 @@
 
 	<property name="searchhome">/${applicationid}/views/modules/asset/results/categorywithtree</property>
 
-	<property name="fallbackdirectory">../default</property>
-	
+	<property name="fallbackdirectory">/${applicationid}/views/modules/${module}/results/default</property>
+
 	<path-action name="EntityModule.getEntity" />
-	
+
 	<property name="searchhomeid">${module}categorywithtree</property>
-	
+
 	<property name="updateurl">false</property>
-	
+
 </page>

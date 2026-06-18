@@ -2,7 +2,7 @@
 
   <property name="edithomename">fullscreenchat</property>
 
-  <property name="fallbackdirectory">../aichatsearch</property>
+  <property name="fallbackdirectory">/${applicationid}/views/modules/default/editors/aichatsearch</property>
 
   <path-action name="EntityModule.getEntity"/>
 

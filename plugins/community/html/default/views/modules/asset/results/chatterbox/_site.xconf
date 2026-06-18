@@ -3,11 +3,11 @@
 
 	<property name="searchhome">/${applicationid}/views/modules/asset/results/${searchhomename}</property>
 
-	<property name="fallbackdirectory">../default</property>
-	
+	<property name="fallbackdirectory">/${applicationid}/views/modules/${module}/results/default</property>
+
 	<path-action name="EntityModule.getEntity" />
-	
+
 	<property name="enableactions">false</property>
-	
-	
+
+
 </page>
