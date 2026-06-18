@@ -955,7 +955,7 @@ public class AssistantManager extends BaseAiManager implements SkillStatusListen
 
 	public void handleStatusStarting(AgentContext inContext, AgentEnabled inAgentEnabled)
 	{
-		if (inContext instanceof ChatMessageContext)
+		if (!(inContext instanceof ChatMessageContext))
 		{
 			return;
 		}
@@ -1044,8 +1044,16 @@ public class AssistantManager extends BaseAiManager implements SkillStatusListen
 					agentmessage.setValue("messageplain", messageplain);
 				}
 			}
+			String nextFunctionName = null;
+			if (response == null)
+			{
+				log.error("Skipping null responses");
+			}
+			else
+			{
+				nextFunctionName = response.getNextSkillEnabled();
+			}
 
-			String nextFunctionName = response.getNextSkillEnabled();
 			if (nextFunctionName == null)
 			{
 				AgentEnabled nextEnabled = inAgentEnabled.getNextAgentEnabled();
