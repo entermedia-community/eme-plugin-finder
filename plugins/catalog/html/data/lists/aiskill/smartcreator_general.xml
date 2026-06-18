@@ -28,7 +28,7 @@
 
    <data id="smartcreator_findmemory" bean="smartCreatorFindMemoryFilesSkill" agenttype="taskagent" ordering="20">
       <name>
-         <language id="en"><![CDATA[Smart Creator: Find Embedded Search Categories Content]]></language>
+         <language id="en"><![CDATA[Smart Creator: Find Memory]]></language>
       </name>
    </data>
 

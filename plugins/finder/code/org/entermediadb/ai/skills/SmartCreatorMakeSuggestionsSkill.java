@@ -3,6 +3,7 @@ package org.entermediadb.ai.skills;
 import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.BaseSkill;
 import org.entermediadb.ai.creator.AiSmartCreatorSteps;
+import org.entermediadb.ai.llm.AgentEnabled;
 import org.entermediadb.ai.llm.LlmConnection;
 import org.entermediadb.ai.llm.LlmResponse;
 import org.openedit.Data;
@@ -48,6 +49,9 @@ public class SmartCreatorMakeSuggestionsSkill extends BaseSkill
 		// This is for the chat UI to pass it back
 		// response.setNextSkillEnabled("smartcreator_parse"); chat_smartcreator_parse_user_prompt
 		messageContext.setLastResponse(response);
+
+		AgentEnabled skillEnabled = messageContext.getCurrentAgentEnable();
+		messageContext.fireStatusComplete(skillEnabled);
 		return;
 	}
 

@@ -73,7 +73,7 @@ public class RunningScenario extends BaseMediaObject implements CatalogEnabled
 		}
 		inContext.fireStatusStarting(inSkillEnabled);
 		inSkillEnabled.getAgent().process(inContext);
-		inContext.fireStatusComplete(inSkillEnabled);
+
 		LlmResponse response = inContext.getLastResponse();
 		if (response == null)
 		{
@@ -93,23 +93,21 @@ public class RunningScenario extends BaseMediaObject implements CatalogEnabled
 			// we determine we dont need to do anything.
 			return false;
 		}
+		else if ("runskill".equals(response.getOperationState()))
+		{
+			String runskill = response.getRunSkillEnabled();
+			runProcess(runskill, inContext);
+			return false;
+		}
+		else if ("needuserinput".equals(response.getOperationState()))
+		{
+			// fire complete shoudl have sent it back to the user
+			return false;
+		}
 		else
-			if ("runskill".equals(response.getOperationState()))
-			{
-				String runskill = response.getRunSkillEnabled();
-				runProcess(runskill, inContext);
-				return false;
-			}
-			else
-				if ("needuserinput".equals(response.getOperationState()))
-				{
-					// fire complete shoudl have sent it back to the user
-					return false;
-				}
-				else
-				{
-					log.info("No status from " + inContext.getCurrentScenario() + " running " + inSkillEnabled.getEnabledId());
-				}
+		{
+			log.info("No status from " + inContext.getCurrentScenario() + " running " + inSkillEnabled.getEnabledId());
+		}
 		return true;
 	}
 

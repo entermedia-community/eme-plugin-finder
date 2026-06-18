@@ -7,6 +7,7 @@ import org.apache.commons.logging.LogFactory;
 import org.entermediadb.ai.BaseSkill;
 import org.entermediadb.ai.ChatMessageContext;
 import org.entermediadb.ai.AgentContext;
+import org.entermediadb.ai.llm.AgentEnabled;
 import org.entermediadb.ai.llm.LlmConnection;
 import org.entermediadb.ai.llm.LlmResponse;
 import org.json.simple.JSONObject;
@@ -33,7 +34,6 @@ public class AutoDetectChatSkill extends BaseSkill
 		// Move to its own skill, next step is parse text
 		if ("auto_detect_conversation".equals(agentFn)) // Todo: Rename to Parse
 		{
-
 			inAgentContext.put("userquery", query);
 
 			Collection<Data> toplevelfunctions = getMediaArchive().query("aifunction").exact("toplevel", true).search();
@@ -62,8 +62,10 @@ public class AutoDetectChatSkill extends BaseSkill
 				response.setRunSkillEnabled(skillenableid);
 			}
 			messageContext.setLastResponse(response);
-
 		}
+
+		AgentEnabled skillEnabled = messageContext.getCurrentAgentEnable();
+		messageContext.fireStatusComplete(skillEnabled);
 	}
 
 }

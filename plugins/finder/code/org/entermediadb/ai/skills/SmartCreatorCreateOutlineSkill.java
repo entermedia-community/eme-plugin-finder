@@ -63,7 +63,7 @@ public class SmartCreatorCreateOutlineSkill extends BaseSkill
 
 		instructions.setProposedSections(cleanedOutline);
 		messageContext.addContext("proposedoutline", instructions.getProposedSections());
-		messageContext.setLastResponse(response);
+		// messageContext.setLastResponse(response);
 		super.process(messageContext);
 
 		/*

@@ -5,6 +5,7 @@ import org.apache.commons.logging.LogFactory;
 import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.BaseSkill;
 import org.entermediadb.ai.ChatMessageContext;
+import org.entermediadb.ai.llm.AgentEnabled;
 import org.entermediadb.ai.llm.LlmConnection;
 import org.entermediadb.ai.llm.LlmResponse;
 import org.openedit.MultiValued;
@@ -31,6 +32,9 @@ public class AutoDetectWelcomeSkill extends BaseSkill
 			messageContext.log("sent" + response.getMessagePlain());
 		}
 		// super.process(messageContext);
+
+		AgentEnabled skillEnabled = messageContext.getCurrentAgentEnable();
+		messageContext.fireStatusComplete(skillEnabled);
 	}
 
 }

@@ -36,6 +36,9 @@ public class BaseSkill extends BaseAiManager implements Skill, CatalogEnabled
 	@Override
 	public void process(AgentContext inContext)
 	{
+		AgentEnabled skillEnabled = inContext.getCurrentAgentEnable();
+		inContext.fireStatusComplete(skillEnabled);
+
 		Collection<AgentEnabled> children = inContext.getCurrentAgentEnable().getChildren();
 
 		for (AgentEnabled agentEnabled : children)
