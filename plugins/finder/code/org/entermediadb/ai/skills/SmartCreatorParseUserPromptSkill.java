@@ -16,20 +16,11 @@ public class SmartCreatorParseUserPromptSkill extends BaseSkill
 	public void process(AgentContext inContext)
 	{
 		ChatMessageContext messageContext = (ChatMessageContext) inContext;
-		String functionName = inContext.getCurrentAgentEnable().getEnabledId();
-
-		Boolean runandreturn = "smartcreator_parse".equals(functionName);
-		if (functionName == null || runandreturn)
-		{
-			parseUserPrompt(messageContext, functionName); // Calls smartcreator_createoutline
-			if (runandreturn)
-			{
-				return;
-			}
-		}
+		parseUserPrompt(messageContext); // Calls smartcreator_createoutline
+		super.process(messageContext);
 	}
 
-	public LlmResponse parseUserPrompt(ChatMessageContext messageContext, String sectiontext)
+	public LlmResponse parseUserPrompt(ChatMessageContext messageContext)
 	{
 		Data usermessage = getMediaArchive().getCachedData("chatterbox", messageContext.getAgentMessage().get("replytoid"));
 
@@ -37,8 +28,9 @@ public class SmartCreatorParseUserPromptSkill extends BaseSkill
 
 		LlmResponse response = parseCreationPrompt(messageContext, prompt);
 
-		response.setRunSkillEnabled("chat_smartcreator_findmemory");
+		// response.setRunSkillEnabled("chat_smartcreator_findmemory");
 		messageContext.setLastResponse(response);
+
 		return response;
 	}
 

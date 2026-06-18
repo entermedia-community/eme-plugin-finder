@@ -36,7 +36,7 @@ public class SmartCreatorCreateOutlineSkill extends BaseSkill
 
 		Collection<String> parentIds = instructions.getEmbeddedParentIds();
 
-		LlmConnection llmconnection = getMediaArchive().getLlmConnection("thinking");
+		LlmConnection llmconnection = getMediaArchive().getLlmConnection("embedding");
 		Map payload = new HashMap();
 		payload.put("query", instructions.getOutlineCreatePrompt());
 

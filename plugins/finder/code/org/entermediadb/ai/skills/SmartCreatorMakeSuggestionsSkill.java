@@ -13,21 +13,11 @@ public class SmartCreatorMakeSuggestionsSkill extends BaseSkill
 	@Override
 	public void process(AgentContext inContext)
 	{
-		String functionName = inContext.getCurrentAgentEnable().getEnabledId();
-		boolean runandreturn = "chat_smartcreator_suggest".equals(functionName);
-		if (functionName == null || runandreturn)
-		{
-			makeSuggestions(inContext, inContext.getAiSmartCreatorSteps(), functionName);
-			if (runandreturn)
-			{
-				return;
-			}
-		}
-
-		super.process(inContext);
+		makeSuggestions(inContext, inContext.getAiSmartCreatorSteps());
+		// super.process(inContext);
 	}
 
-	public void makeSuggestions(AgentContext messageContext, AiSmartCreatorSteps instructions, String agentFn)
+	public void makeSuggestions(AgentContext messageContext, AiSmartCreatorSteps instructions)
 	{
 
 		// This was passed in from html data-context_playbackentitymoduleid="$module.getId()"
@@ -53,10 +43,10 @@ public class SmartCreatorMakeSuggestionsSkill extends BaseSkill
 		messageContext.setCurrentEntityModule(module);
 
 		LlmConnection llmconnection = getMediaArchive().getLlmConnection("thinking");
-		LlmResponse response = llmconnection.renderLocalAction(messageContext, agentFn);
+		LlmResponse response = llmconnection.renderLocalAction(messageContext, "chat_smartcreator_suggest");
 		messageContext.setWaitTime(null);
 		// This is for the chat UI to pass it back
-		response.setNextSkillEnabled("smartcreator_parse");
+		// response.setNextSkillEnabled("smartcreator_parse"); chat_smartcreator_parse_user_prompt
 		messageContext.setLastResponse(response);
 		return;
 	}

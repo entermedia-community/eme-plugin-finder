@@ -35,7 +35,7 @@ public class SmartCreatorMakeSectionsSkill extends BaseSkill
 	public void process(AgentContext inContext)
 	{
 		populateSectionsWithContents(inContext);
-		// super.process(inContext);
+		super.process(inContext);
 	}
 
 	public void populateSectionsWithContents(AgentContext messageContext)
