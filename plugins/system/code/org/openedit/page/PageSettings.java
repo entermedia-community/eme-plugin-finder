@@ -176,44 +176,41 @@ public class PageSettings
 
 	public String getInnerLayoutExcludeSelf(String inPath)
 	{
-		PageSettings parent = this;
-		PageSettings fallbackparent = getFallback();
-		while (parent != null)
-		{
-			if (parent.fieldInnerLayout != null) // now check the real parent
-			{
-				String fixed = replaceProperty(parent.fieldInnerLayout);
-				if (inPath == null || !inPath.equals(fixed))
-				{
-					return fixed;// parent.fieldInnerLayout;
-				}
-			}
-			if (fallbackparent != null) // first check the mirror site
-			{
-				PageSettings chain = fallbackparent;
-				int count = 0;
-				while (chain != null && count++ < 10)
-				{
-					if (chain.fieldInnerLayout != null)
-					{
-						String fixed = replaceProperty(chain.fieldInnerLayout);
-						if (inPath == null || !inPath.equals(fixed))
-						{
-							return fixed;// fallbackparent.fieldInnerLayout;
-						}
-					}
-					chain = chain.getFallback();
-				}
-				fallbackparent = fallbackparent.getParent(); // mirror site parent
-				if (fallbackparent == null)
-				{
-					fallbackparent = parent.getFallback();
-				}
 
+		// Find the first inner layout that is closest to the current page but not the same as the current
+		// page. This is used to prevent infinite loops when a page points to itself for inner layout
+		int steps = 0;
+		String innerlayout = null;
+		while (steps < 10) // prevent infinite loop
+		{
+			for (PageSettings fallbackParent : getFallbackParents())
+			{
+				// log.info("Fallback parent: " + fallbackParent.getPath());
+				PageSettings chain = findParentAt(fallbackParent, steps);
+				innerlayout = chain.getFieldInnerLayout();
+				if (innerlayout != null)
+				{
+					String fixed = replaceProperty(innerlayout);
+					if (inPath == null || !inPath.equals(fixed))
+					{
+						return fixed;
+					}
+				}
 			}
-			parent = parent.getParent();
+			steps++;
 		}
 		return null;
+	}
+
+	protected PageSettings findParentAt(PageSettings inSettings, int inSteps)
+	{
+		PageSettings parent = inSettings;
+		while (parent != null && inSteps > 0)
+		{
+			parent = parent.getParent();
+			inSteps--;
+		}
+		return parent;
 	}
 
 	public void setLayout(String layout)
