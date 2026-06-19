@@ -26,6 +26,13 @@ public class McpGenerator implements Generator
 	protected String fieldName;
 	private static final Log log = LogFactory.getLog(McpGenerator.class);
 
+	public McpGenerator() {}
+
+	public String getId()
+	{
+		return getName() + getClass().getName();
+	}
+
 	@Override
 	public void generate(WebPageRequest inReq, Page inPage, Output inOut) throws OpenEditException
 	{

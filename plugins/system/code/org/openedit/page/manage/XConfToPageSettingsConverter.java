@@ -500,13 +500,17 @@ public class XConfToPageSettingsConverter
 		// loop over and find any other sub-fallbacks and add them to the chain
 		List<PageSettings> fallBackParents = new ArrayList<PageSettings>();
 		addFallBackParents(inPageSettings, inPageSettings, fallBackParents);
+
+		sortByFolderName(fallBackParents);
+
 		// Collections.sort(fallBackParents, new XConfToPageSettingsConverter.PageSettingsPathComparator());
 		inPageSettings.setFallbackParents(fallBackParents);
 
 		for (PageSettings setting : fallBackParents)
 		{
 
-			log.info("inPageSettings: " + inPageSettings.getPath() + " setting: " + setting.getPath() + " inUrlPath: " + inUrlPath);
+			// log.info("inPageSettings: " + inPageSettings.getPath() + " setting: " + setting.getPath() + "
+			// inUrlPath: " + inUrlPath);
 
 			String alternativepath = findAlternativePath(inPageSettings, setting, inUrlPath);
 			if (alternativepath != null)
@@ -518,6 +522,19 @@ public class XConfToPageSettingsConverter
 		}
 		// PageSettings first = fallBackParents.get(0);
 		// inPageSettings.setFallBack(first);
+	}
+
+	public void sortByFolderName(List<PageSettings> fallBackParents)
+	{
+		if (fallBackParents.size() < 2)
+		{
+			return;
+		}
+		// Take the first record and sort everyone under that one by name. Put lower weighted path that have
+		// the world default and lower value
+		PageSettings first = fallBackParents.get(0);
+		Collections.sort(fallBackParents, new PageSettingsPathComparator(first.getPath()));
+
 	}
 
 	public String findAlternativePath(PageSettings inCurrentFallback, PageSettings inAlternativeFallback, PageSettings inCurrentPath)
@@ -616,41 +633,53 @@ public class XConfToPageSettingsConverter
 		return alternativepath;
 	}
 
-	protected void addFallBackParents(PageSettings inOriginal, PageSettings inNext, Collection<PageSettings> inFallBackParents)
-	{
-		PageSettings parent = inNext;
+	// //**
 
-		inFallBackParents.add(inNext);
-		while (inNext != null)
+	// Start on inOriginal /my/stuff/here.html /community/ /stuff/here.html
+
+	// /my/stuff -> /communit/stuff
+
+	// /communit/stuff -> /base/stuff
+	// */
+
+	protected void addFallBackParents(PageSettings inStartingPath, PageSettings inParent, Collection<PageSettings> inFallBackParents)
+	{
+		inFallBackParents.add(inParent);
+		PageProperty fallBackDir = findFallbackDirectory(inParent);
+		if (fallBackDir != null)
 		{
-			inNext = inNext.getParent();
-			if (inNext == null)
+			String nextpath = resolveFallbackPath(inStartingPath, inParent, fallBackDir);
+			if (nextpath != null)
 			{
-				log.info("No more parent pages for: " + inOriginal.getPath());
-				return;
-			}
-			PageProperty fallBackDir = (PageProperty) inNext.getFieldProperty("fallbackdirectory");
-			if (fallBackDir != null)
-			{
-				// String alternativepath = findAlternativePath(inOriginal, inNext, parent);
-				String alternativepath = resolveFallbackPath(inOriginal, fallBackDir);
-				if (alternativepath != null)
+				PageSettings otherxconf = getPageSettingsManager().getPageSettings(nextpath);
+				if (inFallBackParents.contains(otherxconf) == false)
 				{
-					PageSettings otherxconf = getPageSettingsManager().getPageSettings(alternativepath);
-					if (inFallBackParents.contains(otherxconf) == false)
-					{
-						addFallBackParents(inOriginal, otherxconf, inFallBackParents);
-					}
+					addFallBackParents(inStartingPath, otherxconf, inFallBackParents);
 				}
 			}
 		}
 	}
 
-	protected String resolveFallbackPath(PageSettings inCurrentBranch, PageProperty fallBackRootDir)
+	protected PageProperty findFallbackDirectory(PageSettings inNext)
+	{
+		while (inNext != null)
+		{
+			PageProperty fallBackDir = inNext.getFieldProperty("fallbackdirectory");
+			if (fallBackDir != null && fallBackDir.getValue() != null)
+			{
+				return fallBackDir;
+			}
+			inNext = inNext.getParent();
+		}
+		return null;
+	}
+
+	protected String resolveFallbackPath(PageSettings inStartingPath, PageSettings inCurrentBranch, PageProperty fallBackRootDir)
 	{
 		// e.g. /finder/find/components/_site.xconf -> /finder/find/
 
 		String targetFallbackRoot = fallBackRootDir.getValue(); // /community/default
+		targetFallbackRoot = inStartingPath.replaceProperty(targetFallbackRoot);
 
 		if ("NO_FALLBACK".equals(targetFallbackRoot))
 		{
@@ -679,10 +708,73 @@ public class XConfToPageSettingsConverter
 
 	class PageSettingsPathComparator implements java.util.Comparator<PageSettings>
 	{
-		public int compare(PageSettings inOne, PageSettings inTwo)
-		{
-			return inOne.getPath().compareTo(inTwo.getPath());
+		private String basePath;
+		private String rootfolder;;
+
+		public PageSettingsPathComparator(String basePath) {
+			this.basePath = basePath;
+			rootfolder = PathUtilities.extractRootDirectory(basePath);
+
 		}
 
+		protected String makePath(String[] paths, int i)
+		{
+			StringBuffer sb = new StringBuffer();
+			for (int j = 0; j <= i; j++)
+			{
+				sb.append(paths[j]);
+				if (j < i)
+				{
+					sb.append("/");
+				}
+			}
+			return sb.toString();
+		}
+
+		public int compare(PageSettings inOne, PageSettings inTwo)
+		{
+			// weight the paths that are closer to the current path higher. So if the base path is /a/b/c/d and
+			// we have fallbacks of /a/b/c, /a/b, and /a then we want to weight them in that order. We also want
+			// to weight any paths with the word default higher than those without it. So if we have
+
+			// openedit/ sub1 -> finder -> default
+			// openedit/ sub2 - > community
+
+			int weightOne = getWeight(inOne.getPath());
+			int weightTwo = getWeight(inTwo.getPath());
+			if (weightOne > weightTwo)
+			{
+				return 1;
+			}
+			if (weightOne < weightTwo)
+			{
+				return -1;
+			}
+			return 0;
+		}
+
+		private int getWeight(String path)
+		{
+			if (path.equals(basePath))
+			{
+				return 0; // same path should be lowest weight
+			}
+			int weight = 0;
+			if (path.startsWith("/finder")) // TODO: Change this to look in plugins or some xml file for the weighting
+			{
+				weight = 1000; // push it down
+			}
+			if (path.startsWith("/community"))
+			{
+				weight = 2000; // push it down
+			}
+
+			int countdefaults = path.split("default").length - 1;
+			weight += countdefaults * 1000; // default gets a big boost
+
+			// int distance = getPathDistance(basePath, path);
+			// weight += (100 - distance); // closer paths get a higher weight
+			return weight;
+		}
 	}
 }

@@ -1,12 +1,12 @@
+<pre>
+
 $pageManager.clearCache("/finder/find/views/modules/asset/results/default/thumbnails/small.html")
 #set($p = $pageManager.getPage("/finder/find/views/modules/asset/results/default/thumbnails/small.html", false))
-PAGE = $p.hashCode()
-STTING = $p.getPageSettings().hashCode()
+p.exists() = $p.exists()
+p.getPageSettings().getFallback() = $p.getPageSettings().getFallback() 
+p.getPageSettings().getAlternateContentPath() =  $p.getPageSettings().getAlternateContentPath() 
+p.getContentItem().getAbsolutePath() = $p.getContentItem().getAbsolutePath()
 
-PP
-$p.getPageSettings().getAlternateContentPath() XX
-$p.getContentItem().getAbsolutePath() YY
+p.getPageSettings().getFallbackParents() = $p.getPageSettings().getFallbackParents()
 
-$p.exists()
-$p.getPageSettings().getFallback()
-
+</pre>

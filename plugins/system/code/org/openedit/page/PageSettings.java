@@ -86,6 +86,7 @@ public class PageSettings
 	{
 		List finalList = new ArrayList();
 		int steps = 0;
+		Set ids = new HashSet<>();
 		while (steps < 10) // prevent infinite loop
 		{
 			for (PageSettings fallbackParent : getFallbackParents())
@@ -95,8 +96,11 @@ public class PageSettings
 				{
 					for (Generator generator : chain.fieldGenerators)
 					{
-						finalList.add(generator);
-
+						// if (!ids.contains(generator.getId()))
+						{
+							ids.add(generator.getId());
+							finalList.add(generator);
+						}
 					}
 				}
 			}
@@ -456,7 +460,7 @@ public class PageSettings
 		if (knownfallbacks == null)
 		{
 			knownfallbacks = new ArrayList<>(1);
-			knownfallbacks.add(getFallback());
+			knownfallbacks.add(this);
 		}
 		while (steps < 16) // prevent infinite loop
 		{

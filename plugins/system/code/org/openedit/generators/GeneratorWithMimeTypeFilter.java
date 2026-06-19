@@ -21,38 +21,47 @@ public class GeneratorWithMimeTypeFilter extends BaseGenerator
 
 	protected Generator fieldGenerator;
 	protected List fieldMimeTypes;
-	public GeneratorWithMimeTypeFilter(Generator inGen, String inTypes)
-	{
+
+	public GeneratorWithMimeTypeFilter(Generator inGen, String inTypes) {
 		setGenerator(inGen);
 		List types = Arrays.asList(inTypes.split(","));
 		setMimeTypes(types);
 	}
-	
+
+	@Override
+	public String getId()
+	{
+		return getGenerator().getId() + getMimeTypes().toString();
+	}
+
 	public void generate(WebPageRequest inContext, Page inPage, Output inOut) throws OpenEditException
 	{
-		getGenerator().generate(inContext,inPage, inOut);
+		getGenerator().generate(inContext, inPage, inOut);
 	}
 
 	public Generator getGenerator()
 	{
 		return fieldGenerator;
 	}
+
 	public void setGenerator(Generator inGenerator)
 	{
 		fieldGenerator = inGenerator;
 	}
+
 	public List getMimeTypes()
 	{
 		return fieldMimeTypes;
 	}
+
 	public void setMimeTypes(List inMimeTypes)
 	{
 		fieldMimeTypes = inMimeTypes;
 	}
-	
+
 	public boolean canGenerate(WebPageRequest inReq)
 	{
-		if( inReq == null)
+		if (inReq == null)
 		{
 			return false;
 		}
@@ -60,11 +69,11 @@ public class GeneratorWithMimeTypeFilter extends BaseGenerator
 		for (Iterator iter = getMimeTypes().iterator(); iter.hasNext();)
 		{
 			String mtype = (String) iter.next();
-			if ( mtype.equalsIgnoreCase(compareTo))
+			if (mtype.equalsIgnoreCase(compareTo))
 			{
 				return true;
 			}
-			
+
 		}
 		return false;
 	}

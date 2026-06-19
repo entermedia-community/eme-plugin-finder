@@ -8,11 +8,16 @@ import org.openedit.page.Page;
 public class FailGenerator implements Generator
 {
 	protected String fieldName;
-	
-	public FailGenerator(String inName)
+
+	public String getId()
 	{
+		return getName() + getClass().getName();
+	}
+
+	public FailGenerator(String inName) {
 		fieldName = inName;
 	}
+
 	public boolean canGenerate(WebPageRequest inReq)
 	{
 		return false;
@@ -34,6 +39,5 @@ public class FailGenerator implements Generator
 	}
 
 	public void setName(String inName)
-	{
-	}
+	{}
 }
