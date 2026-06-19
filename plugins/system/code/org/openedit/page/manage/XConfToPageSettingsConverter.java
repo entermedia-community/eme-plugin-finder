@@ -503,25 +503,26 @@ public class XConfToPageSettingsConverter
 
 		sortByFolderName(fallBackParents);
 
-		PageSettings first = fallBackParents.iterator().next();
-		inPageSettings.setFallBack(first);
 		// Collections.sort(fallBackParents, new XConfToPageSettingsConverter.PageSettingsPathComparator());
 		inPageSettings.setFallbackParents(fallBackParents);
 
-		// for (PageSettings setting : fallBackParents)
+		// if (fallBackParents.size() > 1)
 		// {
-
-		// // log.info("inPageSettings: " + inPageSettings.getPath() + " setting: " + setting.getPath() + "
-		// // inUrlPath: " + inUrlPath);
-
-		// String alternativepath = findAlternativePath(inPageSettings, setting, inUrlPath);
-		// if (alternativepath != null)
-		// {
-		// PageSettings otherxconf = getPageSettingsManager().getPageSettings(alternativepath);
-		// inPageSettings.setFallBack(otherxconf);
-		// break;
+		// PageSettings first = fallBackParents.get(1);
+		// // inPageSettings.setFallBack(first);
 		// }
-		// }
+
+		for (PageSettings setting : fallBackParents)
+		{
+
+			String alternativepath = findAlternativePath(inPageSettings, setting, inUrlPath);
+			if (alternativepath != null)
+			{
+				PageSettings otherxconf = getPageSettingsManager().getPageSettings(alternativepath);
+				inPageSettings.setFallBack(otherxconf);
+				break;
+			}
+		}
 		// PageSettings first = fallBackParents.get(0);
 		// inPageSettings.setFallBack(first);
 	}
@@ -562,13 +563,14 @@ public class XConfToPageSettingsConverter
 
 	public String findAlternativePath(PageSettings inOriginal, PageSettings inPageSettings, String inUrlPath)
 	{
-		if (inUrlPath.indexOf(".") == -1)
-		{
-			log.info("inOriginal: " + inOriginal.getPath() + " inPageSettings: " + inPageSettings.getPath() + " inUrlPath: " + inUrlPath);
-			log.info("+++++++++" + inUrlPath);
-			log.info("+++++++++");
-			return null;
-		}
+		// if (inUrlPath.indexOf(".") == -1)
+		// {
+		// log.info("inOriginal: " + inOriginal.getPath() + " inPageSettings: " + inPageSettings.getPath() +
+		// " inUrlPath: " + inUrlPath);
+		// log.info("+++++++++" + inUrlPath);
+		// log.info("+++++++++");
+		// return null;
+		// }
 		String fallBackValue = null;
 		// this is a catch 22. If we don't have a 1st level fallback set it might not look for second level
 		PageProperty fallBackDir = inPageSettings.getProperty("fallbackdirectory");
