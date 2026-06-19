@@ -505,6 +505,7 @@ public class XConfToPageSettingsConverter
 
 		for (PageSettings setting : fallBackParents)
 		{
+
 			String alternativepath = findAlternativePath(inPageSettings, setting, inUrlPath);
 			if (alternativepath != null)
 			{
@@ -512,6 +513,29 @@ public class XConfToPageSettingsConverter
 				inPageSettings.setFallBack(otherxconf);
 				break;
 			}
+		}
+		// PageSettings first = fallBackParents.get(0);
+		// inPageSettings.setFallBack(first);
+	}
+
+	public String findAlternativePath(PageSettings inCurrentFallback, PageSettings inAlternativeFallback, PageSettings inCurrentPath)
+	{
+		try
+		{
+			String alt = findAlternativePath(inCurrentFallback, inAlternativeFallback, inCurrentPath.getPath());
+			if (alt != null)
+			{
+				log.info("inCurrentPath: " + inCurrentPath.getPath() + " inCurrentFallback: " + inCurrentFallback.getPath() + " inAlternativeFallback: " + inAlternativeFallback.getPath()
+					+ " --> Alternative path: " + alt);
+				log.info("done");
+			}
+
+			return alt;
+		}
+		catch (Throwable e)
+		{
+			log.error("ERRRRRRROR: inCurrentPath: " + inCurrentPath.getPath() + " inCurrentFallback: " + inCurrentFallback.getPath() + " inAlternativeFallback: " + inAlternativeFallback.getPath());
+			return null;
 		}
 	}
 
@@ -585,7 +609,7 @@ public class XConfToPageSettingsConverter
 
 	protected void addFallBackParents(PageSettings inOriginal, PageSettings inNext, Collection<PageSettings> inFallBackParents)
 	{
-		String parenturl = inNext.getPath();
+		PageSettings parent = inNext;
 
 		inFallBackParents.add(inNext);
 		while (inNext != null)
@@ -598,14 +622,23 @@ public class XConfToPageSettingsConverter
 			PageProperty fallBackDir = (PageProperty) inNext.getFieldProperty("fallbackdirectory");
 			if (fallBackDir != null)
 			{
-				String alternativepath = findAlternativePath(inOriginal, inNext, parenturl);
-				if (alternativepath != null)
+				log.info("inOriginal: " + inOriginal.getPath() + " inNext: " + inNext.getPath() + " parent: " + parent);
+				try
 				{
-					PageSettings otherxconf = getPageSettingsManager().getPageSettings(alternativepath);
-					if (inFallBackParents.contains(otherxconf) == false)
+					String alternativepath = findAlternativePath(inOriginal, inNext, parent);
+					if (alternativepath != null)
 					{
-						addFallBackParents(inOriginal, otherxconf, inFallBackParents);
+						PageSettings otherxconf = getPageSettingsManager().getPageSettings(alternativepath);
+						if (inFallBackParents.contains(otherxconf) == false)
+						{
+							addFallBackParents(inOriginal, otherxconf, inFallBackParents);
+						}
 					}
+				}
+				catch (Throwable e)
+				{
+					log.error("inOriginal: " + inOriginal.getPath() + " inNext: " + inNext.getPath() + " parent: " + parent, e);
+					return;
 				}
 			}
 		}
