@@ -1,5 +1,12 @@
 $pageManager.clearCache("/finder/find/views/modules/asset/results/default/thumbnails/small.html")
 #set($p = $pageManager.getPage("/finder/find/views/modules/asset/results/default/thumbnails/small.html", false))
+PAGE = $p.hashCode()
+STTING = $p.getPageSettings().hashCode()
+
+PP
+$p.getPageSettings().getAlternateContentPath() XX
+$p.getContentItem().getAbsolutePath() YY
+
 $p.exists()
 $p.getPageSettings().getFallback()
 
