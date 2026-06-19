@@ -2,7 +2,7 @@
 
 <page>
 
-	<property name="fallbackdirectory">/finder/find</property>
+	<property name="fallbackdirectory">/community/default</property>
 	<property name="catalogid">system</property>
 	<property name="siteid">manager</property>
 	<property name="applicationid">manager</property>

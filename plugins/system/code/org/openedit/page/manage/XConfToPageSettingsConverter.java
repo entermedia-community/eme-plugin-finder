@@ -543,6 +543,13 @@ public class XConfToPageSettingsConverter
 
 	public String findAlternativePath(PageSettings inOriginal, PageSettings inPageSettings, String inUrlPath)
 	{
+		if (inUrlPath.indexOf(".") == -1)
+		{
+			log.info("inOriginal: " + inOriginal.getPath() + " inPageSettings: " + inPageSettings.getPath() + " inUrlPath: " + inUrlPath);
+			log.info("+++++++++" + inUrlPath);
+			log.info("+++++++++");
+			return null;
+		}
 		String fallBackValue = null;
 		// this is a catch 22. If we don't have a 1st level fallback set it might not look for second level
 		PageProperty fallBackDir = inPageSettings.getProperty("fallbackdirectory");
@@ -619,12 +626,14 @@ public class XConfToPageSettingsConverter
 			inNext = inNext.getParent();
 			if (inNext == null)
 			{
+				log.info("No more parent pages for: " + inOriginal.getPath());
 				return;
 			}
 			PageProperty fallBackDir = (PageProperty) inNext.getFieldProperty("fallbackdirectory");
 			if (fallBackDir != null)
 			{
-				String alternativepath = findAlternativePath(inOriginal, inNext, parent);
+				// String alternativepath = findAlternativePath(inOriginal, inNext, parent);
+				String alternativepath = resolveFallbackPath(inOriginal, fallBackDir);
 				if (alternativepath != null)
 				{
 					PageSettings otherxconf = getPageSettingsManager().getPageSettings(alternativepath);
@@ -635,6 +644,27 @@ public class XConfToPageSettingsConverter
 				}
 			}
 		}
+	}
+
+	protected String resolveFallbackPath(PageSettings inCurrentBranch, PageProperty fallBackRootDir)
+	{
+		// e.g. /finder/find/components/_site.xconf -> /finder/find/
+
+		String targetFallbackRoot = fallBackRootDir.getValue(); // /community/default
+
+		if ("NO_FALLBACK".equals(targetFallbackRoot))
+		{
+			return null;
+		}
+
+		String fallBackDefinitionRoot = fallBackRootDir.getPath(); // /finder/find/_site.xconf
+
+		fallBackDefinitionRoot = PathUtilities.extractDirectoryPath(fallBackDefinitionRoot); // /finder/find/
+
+		String endingPath = inCurrentBranch.getPath().substring(fallBackDefinitionRoot.length(), inCurrentBranch.getPath().length()); // /components/_site.xconf
+
+		String finalPath = targetFallbackRoot + endingPath;
+		return finalPath;
 	}
 
 	public FilterReader getFilterReader()
