@@ -866,11 +866,7 @@ jQuery(document).ready(function () {
 			url = options["contenturl"];
 			targetdiv = $("#" + targetdiv);
 		} else {
-			if (moduleid !== undefined) {
-				url = `${apphome}/views/modules/${moduleid}/components/sidebars/index.html`;
-			} else {
-				url = apphome + "/components/sidebars/index.html";
-			}
+			url = apphome + "/components/sidebars/index.html";
 			targetdiv = findClosest(toggler, "#" + targetdiv);
 		}
 

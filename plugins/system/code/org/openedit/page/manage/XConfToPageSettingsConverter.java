@@ -480,7 +480,7 @@ public class XConfToPageSettingsConverter
 		boolean fallbackcontentexists = getPageSettingsManager().getRepository().doesExist(alternativepath);
 		if (fallbackcontentexists)
 		{
-			log.info(original.hashCode());
+			// log.info(original.hashCode());
 			original.setAlternateContentPath(alternativepath);
 		}
 
