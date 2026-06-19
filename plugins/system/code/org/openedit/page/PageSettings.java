@@ -79,53 +79,24 @@ public class PageSettings
 			return getXConf().getPath();
 		}
 		return super.toString();
-
 	}
 
 	public List getGenerators()
 	{
-		// add top level parents last
-		List finalList = new ArrayList(4);
-
-		PageSettings parent = this;
-		PageSettings fallbackparent = getFallback();
-		while (parent != null)
+		List finalList = new ArrayList();
+		int steps = 0;
+		while (steps < 10) // prevent infinite loop
 		{
-			if (parent.fieldGenerators != null)
+			for (PageSettings fallbackParent : getFallbackParents())
 			{
-				finalList.addAll(parent.fieldGenerators);
-			}
-			if (fallbackparent != null) // first check the mirror site
-			{
-				PageSettings chain = fallbackparent;
-				int count = 0;
-				while (chain != null && count++ < 10)
+				PageSettings chain = findParentAt(fallbackParent, steps);
+				if (chain != null && chain.fieldGenerators != null)
 				{
-					if (chain.fieldGenerators != null)
-					{
-						finalList.addAll(chain.fieldGenerators);
-					}
-					chain = chain.getFallback();
+					finalList.addAll(0, chain.fieldGenerators);
 				}
-				fallbackparent = fallbackparent.getParent();
-				if (fallbackparent == null)
-				{
-					fallbackparent = parent.getFallback();
-				}
-
 			}
-			parent = parent.getParent();
+			steps++;
 		}
-		// For when the fall back tree is deeper than the url tree
-		while (fallbackparent != null)
-		{
-			if (fallbackparent.fieldGenerators != null)
-			{
-				finalList.addAll(fallbackparent.fieldGenerators);
-			}
-			fallbackparent = fallbackparent.getFallback();
-		}
-
 		return finalList;
 	}
 
