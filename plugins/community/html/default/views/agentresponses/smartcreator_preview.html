@@ -1,16 +1,31 @@
-#set($previewlink = "$applink/views/modules/${playbackentitymodule.getId()}/index.html")
+#set($previewlink = "$applink/views/modules/${playbackentitymodule.getId()}/editors/default/tabs/index.html")
 <p>
-  [[Here is a draft outline. Specify any numbers you want to remove or say yes/ok to continue]].
+  [[Created]] <a class="emdialog"
+  			data-dialogid="entitydialog"
+  			data-entityid="${playbackentity.getId()}"
+			data-parententityid="$entity.getId()" 
+			data-parententitymoduleid="$entitymodule.getId()"  
+  			href="$previewlink"><strong>#text($playbackentity)</strong></a> in 
+			
+			#set($previewlink = "$applink/views/modules/${entitymodule.getId()}/editors/listentities/tabs/index.html")
+			<a class="emdialog" 
+				data-dialogid="entitydialog"
+	  			data-entityid="${entity.getId()}"
+				data-entitymoduleviewid="${entitymodule.getId()}${playbackentitymodule.getId()}" 
+				href="$previewlink"><strong>#text($playbackentitymodule)</strong></a>
 </p>
-#ifnotnull($sections)
-<p class="m-0">Outlines:</p>
-<ul>
-  #foreach($section in $sections)
+<messageplain>[[Created]] #text($playbackentity) in #text($playbackentitymodule)</messageplain>
+
+<messageplain>[[Outline]]:</messageplain>
+<p class="m-0">[[Outline]]:</p>
+<ol>
+  #foreach($section in $confirmedoutline)
     <li>
-      ${section.name}
+      ${section}
+      <messageplain>${foreach.count}. ${section}</messageplain>
     </li>
   #end
-</ul>
+</ol>
 
 <div class="d-flex align-items">
   <a href="$applink/views/modules/${playbackentitymodule.getId()}/editors/listentities/tabs/index.html" class="emdialog me-3" data-dialogid="entitydialog" data-entityid="${playbackentity.getId()}" data-entitymoduleid="${playbackentitymodule.getId()}" data-entitymoduleviewid="${playbackentitymodule.getId()}smartcreator">
@@ -20,6 +35,3 @@
     <i class="bi bi-eye ns me-1"></i> [[View]]
   </a>
 </div>
-
-#end
-
