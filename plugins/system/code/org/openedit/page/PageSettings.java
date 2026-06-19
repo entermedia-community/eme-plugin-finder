@@ -136,34 +136,24 @@ public class PageSettings
 
 	public String getLayout()
 	{
-		PageSettings parent = this;
-		PageSettings fallbackparent = getFallback();
-		while (parent != null)
+		int steps = 0;
+		while (steps < 10) // prevent infinite loop
 		{
-			if (parent.fieldLayout != null) // now check the real parent
+			for (PageSettings fallbackParent : getFallbackParents())
 			{
-				return parent.fieldLayout;
-			}
-			if (fallbackparent != null) // first check the mirror site
-			{
-				PageSettings chain = fallbackparent;
-				int count = 0;
-				while (chain != null && count++ < 10)
+				// log.info("Fallback parent: " + fallbackParent.getPath());
+				PageSettings chain = findParentAt(fallbackParent, steps);
+				if (chain != null)
 				{
-					if (chain.fieldLayout != null)
+					String layout = chain.getFieldLayout();
+					if (layout != null)
 					{
-						return chain.fieldLayout;
+						String fixed = replaceProperty(layout);
+						return fixed;
 					}
-					chain = chain.getFallback();
 				}
-				fallbackparent = fallbackparent.getParent(); // mirror site parent
-				if (fallbackparent == null)
-				{
-					fallbackparent = parent.getFallback();
-				}
-
 			}
-			parent = parent.getParent();
+			steps++;
 		}
 		return null;
 	}
@@ -177,23 +167,24 @@ public class PageSettings
 	public String getInnerLayoutExcludeSelf(String inPath)
 	{
 
-		// Find the first inner layout that is closest to the current page but not the same as the current
-		// page. This is used to prevent infinite loops when a page points to itself for inner layout
+		// Find the first inner layout that is closest to the current page
 		int steps = 0;
-		String innerlayout = null;
 		while (steps < 10) // prevent infinite loop
 		{
 			for (PageSettings fallbackParent : getFallbackParents())
 			{
 				// log.info("Fallback parent: " + fallbackParent.getPath());
 				PageSettings chain = findParentAt(fallbackParent, steps);
-				innerlayout = chain.getFieldInnerLayout();
-				if (innerlayout != null)
+				if (chain != null)
 				{
-					String fixed = replaceProperty(innerlayout);
-					if (inPath == null || !inPath.equals(fixed))
+					String innerlayout = chain.getFieldInnerLayout();
+					if (innerlayout != null)
 					{
-						return fixed;
+						String fixed = replaceProperty(innerlayout);
+						if (inPath == null || !inPath.equals(fixed))
+						{
+							return fixed;
+						}
 					}
 				}
 			}
@@ -223,6 +214,7 @@ public class PageSettings
 		fieldInnerLayout = innerLayout;
 	}
 
+	// Not used
 	public List getFallBacks()
 	{
 		List finalList = new ArrayList();
@@ -248,120 +240,59 @@ public class PageSettings
 
 	public List getPageActions()
 	{
-		// add top level parents last
 		List finalList = new ArrayList();
-
-		PageSettings parent = this;
-		PageSettings fallbackparent = getFallback();
-		while (parent != null)
+		int steps = 0;
+		while (steps < 10) // prevent infinite loop
 		{
-			if (parent.fieldPageActions != null)
+			for (PageSettings fallbackParent : getFallbackParents())
 			{
-				finalList.addAll(0, parent.fieldPageActions);
-			}
-			if (fallbackparent != null) // first check the mirror site
-			{
-				PageSettings chain = fallbackparent;
-				int count = 0;
-				while (chain != null && count++ < 10)
+				PageSettings chain = findParentAt(fallbackParent, steps);
+				if (chain != null && chain.fieldPageActions != null)
 				{
-					if (chain.fieldPageActions != null)
-					{
-						finalList.addAll(0, chain.fieldPageActions);
-					}
-					chain = chain.getFallback();
+					finalList.addAll(0, chain.fieldPageActions);
 				}
-				fallbackparent = fallbackparent.getParent();
-				if (fallbackparent == null)
-				{
-					fallbackparent = parent.getFallback();
-				}
-
 			}
-			parent = parent.getParent();
+			steps++;
 		}
 		return finalList;
-
 	}
 
 	public List<Script> getScripts()
 	{
-		// add top level parents last
 		List finalList = new ArrayList();
-
-		PageSettings parent = this;
-		PageSettings fallbackparent = getFallback();
-
-		int parentcount = 0;
-
-		while (parent != null)
+		int steps = 0;
+		while (steps < 10) // prevent infinite loop
 		{
-			if (parent.fieldScripts != null)
+			for (PageSettings fallbackParent : getFallbackParents())
 			{
-				finalList.addAll(0, parent.fieldScripts);
-			}
-			if (fallbackparent != null) // first check the mirror site
-			{
-				PageSettings chain = fallbackparent;
-				int count = 0;
-				while (chain != null && count++ < 10)
+				PageSettings chain = findParentAt(fallbackParent, steps);
+				if (chain != null && chain.fieldScripts != null)
 				{
-					if (chain.fieldScripts != null)
-					{
-						finalList.addAll(0, chain.fieldScripts);
-					}
-					chain = chain.getFallback();
-				}
-				fallbackparent = fallbackparent.getParent();
-				if (fallbackparent == null)
-				{
-					fallbackparent = parent.getFallback();
+					finalList.addAll(0, chain.fieldScripts);
 				}
 			}
-			parent = parent.getParent();
-			parentcount++;
+			steps++;
 		}
 		return finalList;
 	}
 
 	public List<Style> getStyles()
 	{
-		// add top level parents last
 		List finalList = new ArrayList();
-
-		PageSettings parent = this;
-		PageSettings fallbackparent = getFallback();
-		int parentcount = 0;
-
-		while (parent != null)
+		int steps = 0;
+		while (steps < 10) // prevent infinite loop
 		{
-			if (parent.fieldStyles != null)
+			for (PageSettings fallbackParent : getFallbackParents())
 			{
-				finalList.addAll(0, parent.fieldStyles);
-			}
-			if (fallbackparent != null) // first check the mirror site
-			{
-				PageSettings chain = fallbackparent;
-				int count = 0;
-				while (chain != null && count++ < 10)
+				PageSettings chain = findParentAt(fallbackParent, steps);
+				if (chain != null && chain.fieldStyles != null)
 				{
-					if (chain.fieldStyles != null)
-					{
-						finalList.addAll(0, chain.fieldStyles);
-					}
-					chain = chain.getFallback();
-				}
-				fallbackparent = fallbackparent.getParent();
-				if (fallbackparent == null)
-				{
-					fallbackparent = parent.getFallback();
+					finalList.addAll(0, chain.fieldStyles);
 				}
 			}
-			parent = parent.getParent();
-			parentcount++;
+			steps++;
 		}
 		return finalList;
-
 	}
 
 	public void setPageActions(List pageActions)
@@ -372,37 +303,22 @@ public class PageSettings
 	public List getPathActions()
 	{
 		// add top level parents last
-		List finalList = new ArrayList(4);
-
-		PageSettings parent = this;
-		PageSettings fallbackparent = getFallback();
-		while (parent != null)
+		List finalList = new ArrayList();
+		int steps = 0;
+		while (steps < 10) // prevent infinite loop
 		{
-			if (parent.fieldPathActions != null)
+			for (PageSettings fallbackParent : getFallbackParents())
 			{
-				finalList.addAll(0, parent.fieldPathActions);
-			}
-			if (fallbackparent != null)
-			{
-				PageSettings chain = fallbackparent;
-				int count = 0;
-				while (chain != null && count++ < 10)
+				PageSettings chain = findParentAt(fallbackParent, steps);
+				if (chain != null && chain.fieldPathActions != null)
 				{
-					if (chain.fieldPathActions != null)
-					{
-						finalList.addAll(0, chain.fieldPathActions);
-					}
-					chain = chain.getFallback();
-				}
-				fallbackparent = fallbackparent.getParent();
-				if (fallbackparent == null)
-				{
-					fallbackparent = parent.getFallback();
+					finalList.addAll(0, chain.fieldPathActions);
 				}
 			}
-			parent = parent.getParent();
+			steps++;
 		}
-		return finalList; // oldest on bottom
+		return finalList;
+
 	}
 
 	protected int getDepth()
@@ -446,6 +362,7 @@ public class PageSettings
 		return getAllProperties(true);
 	}
 
+	// Not used much
 	public List getAllProperties(boolean inIncludeParents)
 	{
 		Set all = ListOrderedSet.decorate(new ArrayList());
@@ -503,6 +420,7 @@ public class PageSettings
 
 	}
 
+	// Not used much
 	public List getAllPropertyKeysWithPrefix(String inPrefix)
 	{
 		List all = new ArrayList();
@@ -557,54 +475,30 @@ public class PageSettings
 
 	public PageProperty getProperty(String inKey)
 	{
-		PageSettings parent = this;
-		PageSettings fallbackparent = getFallback();
-		while (parent != null)
+		int steps = 0;
+		Collection<PageSettings> knownfallbacks = getFallbackParents();
+		if (knownfallbacks == null)
 		{
-			if (parent.fieldProperties != null)
-			{
-				PageProperty val = parent.getFieldProperty(inKey);
-				if (val != null)
-				{
-					return val;
-				}
-			}
-			if (fallbackparent != null) // first check the mirror site
-			{
-				PageSettings chain = fallbackparent;
-				int count = 0;
-				while (chain != null && count++ < 10)
-				{
-					if (chain.fieldProperties != null)
-					{
-						PageProperty val = (PageProperty) chain.getFieldProperty(inKey);
-						if (val != null)
-						{
-							return val;
-						}
-					}
-					chain = chain.getFallback();
-				}
-				fallbackparent = fallbackparent.getParent();
-				if (fallbackparent == null)
-				{
-					fallbackparent = parent.getFallback();
-				}
-
-			}
-			parent = parent.getParent();
+			knownfallbacks = new ArrayList<>(1);
+			knownfallbacks.add(getFallback());
 		}
-		while (fallbackparent != null)
+		while (steps < 16) // prevent infinite loop
 		{
-			PageProperty val = fallbackparent.getFieldProperty(inKey);
-			if (val != null)
+			for (PageSettings fallbackParent : knownfallbacks)
 			{
-				return val;
+				PageSettings chain = findParentAt(fallbackParent, steps);
+				if (chain != null)
+				{
+					PageProperty val = chain.getFieldProperty(inKey);
+					if (val != null)
+					{
+						return val;
+					}
+				}
 			}
-			fallbackparent = fallbackparent.getFallback();
+			steps++;
 		}
 		return null;
-
 	}
 
 	public PageProperty getFieldProperty(String inKey)
@@ -654,37 +548,10 @@ public class PageSettings
 
 	}
 
+	// Does this even work? Seems slow
 	public boolean isCurrent()
 	{
-		PageSettings parent = this;
-		PageSettings fallbackparent = getFallback();
-		while (parent != null)
-		{
-			if (!parent.fieldIsCurrent()) // check the real parent
-			{
-				return false;
-			}
-			if (fallbackparent != null)
-			{
-				PageSettings chain = fallbackparent;
-				int count = 0;
-				while (chain != null && count++ < 10)
-				{
-					if (!chain.fieldIsCurrent())
-					{
-						return false;
-					}
-					chain = chain.getFallback();
-				}
-				fallbackparent = fallbackparent.getParent(); // mirror site parent
-				if (fallbackparent == null)
-				{
-					fallbackparent = parent.getFallback();
-				}
-
-			}
-			parent = parent.getParent();
-		}
+		// if (!chain.fieldIsCurrent())
 		return true;
 	}
 
@@ -730,11 +597,11 @@ public class PageSettings
 	{
 		try
 		{
-			String enc = getPageCharacterEncoding();
-			if (enc != null)
-			{
-				return new InputStreamReader(getXConf().getInputStream(), enc);
-			}
+			// String enc = getPageCharacterEncoding(); //speed up
+			// if (enc != null)
+			// {
+			// return new InputStreamReader(getXConf().getInputStream(), enc);
+			// }
 			return new InputStreamReader(getXConf().getInputStream(), "UTF-8");
 
 		}
@@ -935,62 +802,22 @@ public class PageSettings
 
 	public Permission getPermission(String inName)
 	{
-		return getPermission(inName, true);
-	}
-
-	public Permission getPermission(String inName, boolean includeself)
-	{
-		PageSettings parent = this;
-		PageSettings fallbackparent = getFallback();
-
-		if (!includeself)
+		int steps = 0;
+		while (steps < 10) // prevent infinite loop
 		{
-			parent = parent.getParent();
-			// if( fallbackparent != null)
-			// {
-			// fallbackparent = fallbackparent.getParent();
-			// if( fallbackparent == null)
-			// {
-			// fallbackparent = parent.getFallback();
-			// }
-			//
-			// }
-		}
-
-		while (parent != null)
-		{
-			if (parent.fieldPermissions != null)
+			for (PageSettings fallbackParent : getFallbackParents())
 			{
-				Permission per = findPermission(parent.fieldPermissions, inName);
-				if (per != null)
+				PageSettings chain = findParentAt(fallbackParent, steps);
+				if (chain != null && chain.fieldPermissions != null)
 				{
-					return per;
-				}
-			}
-			if (fallbackparent != null)
-			{
-				PageSettings chain = fallbackparent;
-				int count = 0;
-				while (chain != null && count++ < 10)
-				{
-					if (chain.fieldPermissions != null)
+					Permission per = findPermission(chain.fieldPermissions, inName);
+					if (per != null)
 					{
-						Permission per = findPermission(chain.fieldPermissions, inName);
-						if (per != null)
-						{
-							return per;
-						}
+						return per;
 					}
-					chain = chain.getFallback();
 				}
-				fallbackparent = fallbackparent.getParent();
-				if (fallbackparent == null)
-				{
-					fallbackparent = parent.getFallback();
-				}
-
 			}
-			parent = parent.getParent();
+			steps++;
 		}
 		return null;
 	}
@@ -1014,8 +841,8 @@ public class PageSettings
 	}
 
 	/**
-	 * Load up based on top level permissions being loaded first. If you override a top level one It
-	 * will be loaded out of order but only once
+	 * Lets remove permissions at the xconf level Load up based on top level permissions being loaded
+	 * first. If you override a top level one It will be loaded out of order but only once
 	 * 
 	 * @param includeself
 	 * @return
@@ -1034,14 +861,6 @@ public class PageSettings
 		if (!includeself)
 		{
 			parent = parent.getParent();
-			// if( fallbackparent != null)
-			// {
-			// fallbackparent = fallbackparent.getParent();
-			// if( fallbackparent == null)
-			// {
-			// fallbackparent = parent.getFallback();
-			// }
-			// }
 		}
 		while (parent != null)
 		{
@@ -1238,32 +1057,20 @@ public class PageSettings
 		List finalList = new ArrayList();
 		Set ids = new HashSet();
 
-		PageSettings parent = this;
-		PageSettings fallbackparent = getFallback();
-		while (parent != null)
+		int steps = 0;
+		while (steps < 10) // prevent infinite loop
 		{
-			addLoaders(ids, finalList, parent.fieldPageLoaders);
-			if (fallbackparent != null) // first check the mirror site
+			for (PageSettings fallbackParent : getFallbackParents())
 			{
-				PageSettings chain = fallbackparent;
-				int count = 0;
-				while (chain != null && count++ < 10)
+				PageSettings chain = findParentAt(fallbackParent, steps);
+				if (chain != null && chain.fieldPageLoaders != null)
 				{
 					addLoaders(ids, finalList, chain.fieldPageLoaders);
-					chain = chain.getFallback();
 				}
-				fallbackparent = fallbackparent.getParent();
-				if (fallbackparent == null)
-				{
-					fallbackparent = parent.getFallback();
-				}
-
 			}
-			parent = parent.getParent();
+			steps++;
 		}
-		// Collections.reverse(finalList);
 		return finalList;
-
 	}
 
 	private void addLoaders(Set hashset, List inFinalList, List<PageLoaderConfig> inPageLoaders)

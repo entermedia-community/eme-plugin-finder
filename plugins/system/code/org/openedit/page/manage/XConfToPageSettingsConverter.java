@@ -371,7 +371,7 @@ public class XConfToPageSettingsConverter
 		Element root = null;
 		try
 		{
-			root = fieldXmlUtil.getXml(inPageSettings.getReader(), inPageSettings.getPageCharacterEncoding());
+			root = fieldXmlUtil.getXml(inPageSettings.getReader(), "UTF-8");
 		}
 		catch (Exception e)
 		{

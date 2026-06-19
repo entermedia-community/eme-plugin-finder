@@ -55,7 +55,7 @@ public class PermissionModule extends BaseMediaModule
 
 	private Permission loadOrCreatePermission(PageSettings inSettings, String path, String inName)
 	{
-		Permission permission = inSettings.getPermission(inName, true);
+		Permission permission = inSettings.getPermission(inName);
 		if (permission == null || !permission.getPath().equals(path))
 		{
 			Permission per = new Permission();
