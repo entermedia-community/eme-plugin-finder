@@ -816,11 +816,6 @@ public class PageSettings
 		return null;
 	}
 
-	public List getPermissions()
-	{
-		return getPermissions(true);
-	}
-
 	/**
 	 * Lets remove permissions at the xconf level Load up based on top level permissions being loaded
 	 * first. If you override a top level one It will be loaded out of order but only once
@@ -828,77 +823,37 @@ public class PageSettings
 	 * @param includeself
 	 * @return
 	 */
-	public List getPermissions(boolean includeself)
+	public List getPermissions()
 	{
 		Map finalList = ListOrderedMap.decorate(new HashMap());
-		// Load each page in reverse then flip the entire list
-		// Child1 A B C -> Added C B A
-		// Parent1 X Y Z -> Added to end Z Y X
-		// flip list C B A Z Y X -> X Y Z A B C This is logical order for someone editing files by hand
 
-		PageSettings parent = this;
-		PageSettings fallbackparent = getFallback();
-
-		if (!includeself)
+		int steps = 0;
+		while (steps < 10) // prevent infinite loop
 		{
-			parent = parent.getParent();
-		}
-		while (parent != null)
-		{
-			if (parent.fieldPermissions != null)
+			for (PageSettings fallbackParent : getFallbackParents())
 			{
-				for (int i = parent.fieldPermissions.size() - 1; i >= 0; i--)
+				PageSettings chain = findParentAt(fallbackParent, steps);
+				if (chain != null && chain.fieldPermissions != null)
 				{
-					Permission per = (Permission) parent.fieldPermissions.get(i);
+					for (int i = chain.fieldPermissions.size() - 1; i >= 0; i--)
+					{
+						Permission per = (Permission) chain.fieldPermissions.get(i);
+						Permission old = (Permission) finalList.get(per.getName());
 
-					Permission old = (Permission) finalList.get(per.getName());
-
-					if (old == null)
-					{
-						finalList.put(per.getName(), per);
-					}
-					else
-					{
-						// Move the old value up to this location
-						finalList.remove(old.getName());
-						finalList.put(old.getName(), old);
-					}
-				}
-			}
-			if (fallbackparent != null)
-			{
-				PageSettings chain = fallbackparent;
-				int count = 0;
-				while (chain != null && count++ < 10)
-				{
-					if (chain.fieldPermissions != null)
-					{
-						for (int i = chain.fieldPermissions.size() - 1; i >= 0; i--)
+						if (old == null)
 						{
-							Permission per = (Permission) chain.fieldPermissions.get(i);
-							Permission old = (Permission) finalList.get(per.getName());
-							if (old == null)
-							{
-								finalList.put(per.getName(), per);
-							}
-							else
-							{
-								// Move the old value up to this location
-								finalList.remove(old.getName());
-								finalList.put(old.getName(), old);
-							}
+							finalList.put(per.getName(), per);
+						}
+						else
+						{
+							// Move the old value up to this location
+							finalList.remove(old.getName());
+							finalList.put(old.getName(), old);
 						}
 					}
-					chain = chain.getFallback();
 				}
-				fallbackparent = fallbackparent.getParent();
-				if (fallbackparent == null)
-				{
-					fallbackparent = parent.getFallback();
-				}
-
 			}
-			parent = parent.getParent();
+			steps++;
 		}
 		ArrayList all = new ArrayList(finalList.values());
 		Collections.reverse(all);

@@ -503,23 +503,25 @@ public class XConfToPageSettingsConverter
 
 		sortByFolderName(fallBackParents);
 
+		PageSettings first = fallBackParents.iterator().next();
+		inPageSettings.setFallBack(first);
 		// Collections.sort(fallBackParents, new XConfToPageSettingsConverter.PageSettingsPathComparator());
 		inPageSettings.setFallbackParents(fallBackParents);
 
-		for (PageSettings setting : fallBackParents)
-		{
+		// for (PageSettings setting : fallBackParents)
+		// {
 
-			// log.info("inPageSettings: " + inPageSettings.getPath() + " setting: " + setting.getPath() + "
-			// inUrlPath: " + inUrlPath);
+		// // log.info("inPageSettings: " + inPageSettings.getPath() + " setting: " + setting.getPath() + "
+		// // inUrlPath: " + inUrlPath);
 
-			String alternativepath = findAlternativePath(inPageSettings, setting, inUrlPath);
-			if (alternativepath != null)
-			{
-				PageSettings otherxconf = getPageSettingsManager().getPageSettings(alternativepath);
-				inPageSettings.setFallBack(otherxconf);
-				break;
-			}
-		}
+		// String alternativepath = findAlternativePath(inPageSettings, setting, inUrlPath);
+		// if (alternativepath != null)
+		// {
+		// PageSettings otherxconf = getPageSettingsManager().getPageSettings(alternativepath);
+		// inPageSettings.setFallBack(otherxconf);
+		// break;
+		// }
+		// }
 		// PageSettings first = fallBackParents.get(0);
 		// inPageSettings.setFallBack(first);
 	}
