@@ -505,6 +505,9 @@ public class XConfToPageSettingsConverter
 
 		for (PageSettings setting : fallBackParents)
 		{
+
+			log.info("inPageSettings: " + inPageSettings.getPath() + " setting: " + setting.getPath() + " inUrlPath: " + inUrlPath);
+
 			String alternativepath = findAlternativePath(inPageSettings, setting, inUrlPath);
 			if (alternativepath != null)
 			{
@@ -513,10 +516,40 @@ public class XConfToPageSettingsConverter
 				break;
 			}
 		}
+		// PageSettings first = fallBackParents.get(0);
+		// inPageSettings.setFallBack(first);
+	}
+
+	public String findAlternativePath(PageSettings inCurrentFallback, PageSettings inAlternativeFallback, PageSettings inCurrentPath)
+	{
+		try
+		{
+			String alt = findAlternativePath(inCurrentFallback, inAlternativeFallback, inCurrentPath.getPath());
+			if (alt != null)
+			{
+				log.info("inCurrentPath: " + inCurrentPath.getPath() + " inCurrentFallback: " + inCurrentFallback.getPath() + " inAlternativeFallback: " + inAlternativeFallback.getPath()
+					+ " --> Alternative path: " + alt);
+				log.info("done");
+			}
+
+			return alt;
+		}
+		catch (Throwable e)
+		{
+			log.error("ERRRRRRROR: inCurrentPath: " + inCurrentPath.getPath() + " inCurrentFallback: " + inCurrentFallback.getPath() + " inAlternativeFallback: " + inAlternativeFallback.getPath());
+			return null;
+		}
 	}
 
 	public String findAlternativePath(PageSettings inOriginal, PageSettings inPageSettings, String inUrlPath)
 	{
+		if (inUrlPath.indexOf(".") == -1)
+		{
+			log.info("inOriginal: " + inOriginal.getPath() + " inPageSettings: " + inPageSettings.getPath() + " inUrlPath: " + inUrlPath);
+			log.info("+++++++++" + inUrlPath);
+			log.info("+++++++++");
+			return null;
+		}
 		String fallBackValue = null;
 		// this is a catch 22. If we don't have a 1st level fallback set it might not look for second level
 		PageProperty fallBackDir = inPageSettings.getProperty("fallbackdirectory");
@@ -585,7 +618,7 @@ public class XConfToPageSettingsConverter
 
 	protected void addFallBackParents(PageSettings inOriginal, PageSettings inNext, Collection<PageSettings> inFallBackParents)
 	{
-		String parenturl = inNext.getPath();
+		PageSettings parent = inNext;
 
 		inFallBackParents.add(inNext);
 		while (inNext != null)
@@ -593,12 +626,14 @@ public class XConfToPageSettingsConverter
 			inNext = inNext.getParent();
 			if (inNext == null)
 			{
+				log.info("No more parent pages for: " + inOriginal.getPath());
 				return;
 			}
 			PageProperty fallBackDir = (PageProperty) inNext.getFieldProperty("fallbackdirectory");
 			if (fallBackDir != null)
 			{
-				String alternativepath = findAlternativePath(inOriginal, inNext, parenturl);
+				// String alternativepath = findAlternativePath(inOriginal, inNext, parent);
+				String alternativepath = resolveFallbackPath(inOriginal, fallBackDir);
 				if (alternativepath != null)
 				{
 					PageSettings otherxconf = getPageSettingsManager().getPageSettings(alternativepath);
@@ -609,6 +644,27 @@ public class XConfToPageSettingsConverter
 				}
 			}
 		}
+	}
+
+	protected String resolveFallbackPath(PageSettings inCurrentBranch, PageProperty fallBackRootDir)
+	{
+		// e.g. /finder/find/components/_site.xconf -> /finder/find/
+
+		String targetFallbackRoot = fallBackRootDir.getValue(); // /community/default
+
+		if ("NO_FALLBACK".equals(targetFallbackRoot))
+		{
+			return null;
+		}
+
+		String fallBackDefinitionRoot = fallBackRootDir.getPath(); // /finder/find/_site.xconf
+
+		fallBackDefinitionRoot = PathUtilities.extractDirectoryPath(fallBackDefinitionRoot); // /finder/find/
+
+		String endingPath = inCurrentBranch.getPath().substring(fallBackDefinitionRoot.length(), inCurrentBranch.getPath().length()); // /components/_site.xconf
+
+		String finalPath = targetFallbackRoot + endingPath;
+		return finalPath;
 	}
 
 	public FilterReader getFilterReader()
