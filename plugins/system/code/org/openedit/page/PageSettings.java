@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Set;
 import org.apache.commons.collections.map.ListOrderedMap;
 import org.apache.commons.collections.set.ListOrderedSet;
+import org.openedit.Generator;
 import org.openedit.OpenEditException;
 import org.openedit.config.Configuration;
 import org.openedit.config.Script;
@@ -38,7 +39,7 @@ public class PageSettings
 
 	protected String fieldLayout;
 	protected String fieldInnerLayout;
-	protected List fieldGenerators;
+	protected List<Generator> fieldGenerators;
 	protected ValuesMap fieldProperties;
 	protected List fieldPageActions;
 	protected List fieldScripts;
@@ -92,7 +93,11 @@ public class PageSettings
 				PageSettings chain = findParentAt(fallbackParent, steps);
 				if (chain != null && chain.fieldGenerators != null)
 				{
-					finalList.addAll(0, chain.fieldGenerators);
+					for (Generator generator : chain.fieldGenerators)
+					{
+						finalList.add(generator);
+
+					}
 				}
 			}
 			steps++;
@@ -523,6 +528,7 @@ public class PageSettings
 	public boolean isCurrent()
 	{
 		// if (!chain.fieldIsCurrent())
+
 		return true;
 	}
 

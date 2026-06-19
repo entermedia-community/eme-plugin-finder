@@ -6,7 +6,7 @@ jQuery(document).ready(function () {
 
 	function checkForPendingDownloads() {
 		$("#triggerpendingdownloads").remove();
-		var url = siteroot + "/" + mediadb + "/services/module/order/downloadqueue";
+		var url = siteroot + "/" + mediadb + "/services/module/order/downloadqueue.json";
 		jQuery.ajax({
 			dataType: "json",
 			url: url,

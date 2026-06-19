@@ -15,8 +15,9 @@ public class SmartCreatorParseUserPromptSkill extends BaseSkill
 	@Override
 	public void process(AgentContext inContext)
 	{
-		ChatMessageContext messageContext = (ChatMessageContext) createAgentContext(inContext, inContext.getCurrentAgentEnable());
-		// ChatMessageContext messageContext = (ChatMessageContext) inContext;
+		// ChatMessageContext messageContext = (ChatMessageContext) createAgentContext(inContext,
+		// inContext.getCurrentAgentEnable());
+		ChatMessageContext messageContext = (ChatMessageContext) inContext;
 		parseUserPrompt(messageContext); // Calls smartcreator_createoutline
 		super.process(messageContext);
 	}

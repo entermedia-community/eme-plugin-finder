@@ -403,8 +403,12 @@ public class ChatServer
 		chat.setValue("moduleid", values.getString("moduleid"));
 		chat.setValue("collectionid", values.getString("collectionid"));
 		chat.setValue("chatmessagestatus", "received");
-		chat.setValue("functionname", values.getString("functionname"));
-		chat.setValue("nextfunctionname", values.getString("nextfunctionname"));
+
+		String functionname = values.getString("functionname");
+		chat.setValue("functionname", functionname);
+
+		String nextfunctionname = values.getString("nextfunctionname");
+		chat.setValue("nextfunctionname", nextfunctionname);
 
 		String newmessage = values.getString("message");
 		chat.setValue("message", newmessage);
