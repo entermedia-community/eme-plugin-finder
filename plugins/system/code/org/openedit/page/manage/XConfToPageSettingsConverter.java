@@ -151,14 +151,14 @@ public class XConfToPageSettingsConverter
 		return currentPageAction;
 	}
 
-	protected void loadAlternateContentFile(PageSettings inPageConfig, String inAlternatePath)
-	{
-		if (inAlternatePath != null)
-		{
-			String path = PathUtilities.resolveRelativePath(inAlternatePath, inPageConfig.getPath());
-			inPageConfig.setAlternateContentPath(path);
-		}
-	}
+	// protected void loadAlternateContentFile(PageSettings inPageConfig, String inAlternatePath)
+	// {
+	// if (inAlternatePath != null)
+	// {
+	// String path = PathUtilities.resolveRelativePath(inAlternatePath, inPageConfig.getPath());
+	// inPageConfig.setAlternateContentPath(path);
+	// }
+	// }
 
 	protected void loadGenerators(PageSettings inPageConfig, Configuration inParentConfig) throws OpenEditException
 	{
@@ -337,84 +337,64 @@ public class XConfToPageSettingsConverter
 		return fieldPageSettingsManager;
 	}
 
-	public void setPageSettingsManager(PageSettingsManager inPageSettingsManager)
+	public void setPageSettingsManager(PageSettingsManager inPageSettingManager)
 	{
-		fieldPageSettingsManager = inPageSettingsManager;
+		fieldPageSettingsManager = inPageSettingManager;
 	}
 
 	/**
-	 * @param inPageSettings
+	 * @param inPageSetting
 	 * @param inUrlPath
 	 */
-	public void configure(PageSettings inPageSettings, String inUrlPath) throws OpenEditException
+	public void configureXConf(PageSettings inPageSetting, String inUrlPath) throws OpenEditException
 	{
-		boolean contentexists = getPageSettingsManager().getRepository().doesExist(inUrlPath);
-		boolean fileexists = inPageSettings.exists();
-		if (!fileexists)
+		boolean fileexists = inPageSetting.exists();
+
+		// xconf does not exist
+		if (fileexists)
 		{
-			loadFallBackDirectory(inPageSettings, inUrlPath, contentexists);
-			// loadOverrideDirectory( inPageSettings, inUrlPath );
-			loadAlternativeContent(inPageSettings, inUrlPath, contentexists);
-			//
-			String mime = inPageSettings.getPropertyValue("mimetype", null);
-			if (mime != null)
+			XconfConfiguration config = new XconfConfiguration();
+			Element root = null;
+			try
 			{
-				inPageSettings.setMimeType(mime);
+				root = fieldXmlUtil.getXml(inPageSetting.getReader(), "UTF-8");
 			}
-			return;
+			catch (Exception e)
+			{
+				log.error("Could not read: " + inUrlPath);
+				throw new OpenEditException(e + "path: " + inPageSetting.getPath(), e, inUrlPath);
+			}
+			config.populate(root);
+			inPageSetting.getProperties().putAll(loadProperties(config.getProperties()));
+			loadPermissionFilters(inPageSetting, config);
+			loadGenerators(inPageSetting, config);
+			loadLayout(inPageSetting, config.getLayout());
+			loadInnerLayout(inPageSetting, config.getInnerLayout());
+			List pagea = loadActions(inPageSetting, config.getPageActions());
+			inPageSetting.setPageActions(pagea);
+			List patha = loadActions(inPageSetting, config.getPathActions());
+			inPageSetting.setPathActions(patha);
+			inPageSetting.setScripts(loadScripts(inPageSetting, config.getScripts()));
+			inPageSetting.setStyles(loadStyles(inPageSetting, config.getStyles()));
+			List loaders = loadPageLoaders(inPageSetting, config.getPageLoaders());
+			inPageSetting.setPageLoaders(loaders);
 		}
-		if (log.isDebugEnabled())
+
+		loadFallBackDirectory(inPageSetting);
+		if (!inUrlPath.endsWith("xconf"))
 		{
-			log.info("Configure: " + inPageSettings.getPath());
+			loadAlternativeContent(inPageSetting, inUrlPath);
 		}
-		XconfConfiguration config = new XconfConfiguration();
-		Element root = null;
-		try
-		{
-			root = fieldXmlUtil.getXml(inPageSettings.getReader(), "UTF-8");
-		}
-		catch (Exception e)
-		{
-			log.error("Could not read: " + inUrlPath);
-			throw new OpenEditException(e + "path: " + inPageSettings.getPath(), e, inUrlPath);
-		}
-		config.populate(root);
-		inPageSettings.getProperties().putAll(loadProperties(config.getProperties()));
-		if (fileexists) // Reloads it here since it was not loaded above
-		{
-			loadFallBackDirectory(inPageSettings, inUrlPath, contentexists);
-			loadAlternativeContent(inPageSettings, inUrlPath, contentexists);
-		}
-		loadPermissionFilters(inPageSettings, config);
-		loadGenerators(inPageSettings, config);
-		loadLayout(inPageSettings, config.getLayout());
-		loadInnerLayout(inPageSettings, config.getInnerLayout());
-		// TODO: Move this to a module
-		// List pageActions = new ArrayList();
-		// pageActions.addAll( loadValues( config.getPageValues(), "PageValue." ) );
-		// pageActions.addAll( loadValues( config.getSessionValues(), "SessionValue.") );
-		List pagea = loadActions(inPageSettings, config.getPageActions());
-		inPageSettings.setPageActions(pagea);
-		List patha = loadActions(inPageSettings, config.getPathActions());
-		inPageSettings.setPathActions(patha);
-		inPageSettings.setScripts(loadScripts(inPageSettings, config.getScripts()));
-		inPageSettings.setStyles(loadStyles(inPageSettings, config.getStyles()));
-		List loaders = loadPageLoaders(inPageSettings, config.getPageLoaders());
-		inPageSettings.setPageLoaders(loaders);
-		// //turns out we need this for login-path and other places I am sure
-		// //If there are unkown tags in the xconf then set the user defined data field
-		if (config.hasChild("product") || config.hasChild("asset") || config.hasChild("blog")) // TODO: Do we use this anymore?
-		{
-			inPageSettings.setUserDefinedData(config);
-		}
-		String mime = inPageSettings.getPropertyValue("mimetype", null);
-		if (mime != null)
-		{
-			inPageSettings.setMimeType(mime);
-		}
+
+		// We never do this
+		// String mime = inPageSetting.getPropertyValue("mimetype", null);
+		// if (mime != null)
+		// {
+		// inPageSetting.setMimeType(mime);
+		// }
 	}
 
-	protected List<PageLoaderConfig> loadPageLoaders(PageSettings inPageSettings, List inPageLoaders)
+	protected List<PageLoaderConfig> loadPageLoaders(PageSettings inPageSetting, List inPageLoaders)
 	{
 		if (inPageLoaders.size() == 0)
 		{
@@ -432,65 +412,38 @@ public class XConfToPageSettingsConverter
 		return pageActions;
 	}
 
-	protected void loadAlternativeContent(PageSettings inPageSettings, String inUrlPath, boolean inContentexists) throws RepositoryException
+	protected void loadAlternativeContent(PageSettings inPageSetting, String inUrlPath) throws RepositoryException
 	{
-		inPageSettings.setOriginalyExistedContentPath(inContentexists);
-
-		// if (inUrlPath.endsWith("/"))
-		// {
-		// return;
-		// }
-
-		// Find the alternative content path if found someplace else
-		// String fallback = inPageSettings.getPropertyValueFixed("fallbackcontentpath");
-		// if( fallback != null)
-		// {
-		// fallback = PathUtilities.resolveRelativePath(fallback, inPageSettings.getPath());
-		// inPageSettings.setAlternateContentPath(fallback);
-		// }
-		if (!inContentexists)
+		// Look for some content to use. We always have at least our own xconf in here
+		for (PageSettings fallbackDirectory : inPageSetting.getFallbackParents())
 		{
-			// Look for some content to use
-			for (PageSettings fallbackDirectory : inPageSettings.getFallbackParents())
+			String alternativepath = fallbackDirectory.getPath();
+			// alternativepath = PathUtilities.extractDirectoryPath(alternativepath);
+			if (alternativepath.endsWith(".xconf"))
 			{
-				findContent(inPageSettings, inUrlPath, fallbackDirectory);
-				if (inPageSettings.getAlternateContentPath() != null)
-				{
-					break;
-				}
+				alternativepath = PathUtilities.extractDirectoryPath(alternativepath);
 			}
-		}
-	}
-
-	public void findContent(PageSettings original, String inUrlPath, PageSettings fallbackDirectory) throws RepositoryException
-	{
-		boolean isfolder = false;
-
-		if (original != null && original.getPath().endsWith("/_site.xconf") && !inUrlPath.endsWith("_site.xconf"))
-		{
-			isfolder = true;
-		}
-
-		String alternativepath = fallbackDirectory.getPath();
-		alternativepath = PathUtilities.extractDirectoryPath(alternativepath);
-		if (!isfolder)
-		{
 			alternativepath += "/" + PathUtilities.extractFileName(inUrlPath);
+			boolean fallbackcontentexists = getPageSettingsManager().getRepository().doesExist(alternativepath);
+			if (fallbackcontentexists)
+			{
+				// log.info(original.hashCode());
+				inPageSetting.setAlternateContentPath(alternativepath);
+				return;
+			}
+			inPageSetting.setOriginalyExistedContentPath(false);
 		}
-		boolean fallbackcontentexists = getPageSettingsManager().getRepository().doesExist(alternativepath);
-		if (fallbackcontentexists)
+		if (!inUrlPath.startsWith("/catalog") && inUrlPath.endsWith(".html"))
 		{
-			// log.info(original.hashCode());
-			original.setAlternateContentPath(alternativepath);
+			log.info("Content not found " + inUrlPath);
 		}
-
 	}
 
 	/**
-	 * @param inPageSettings
+	 * @param inPageSetting
 	 * @param inUrlPath
 	 */
-	protected void loadFallBackDirectory(PageSettings inPageSettings, String inUrlPath, boolean contentexists) throws OpenEditException
+	protected void loadFallBackDirectory(PageSettings inPageSetting) throws OpenEditException
 	{
 		// if( inUrlPath.isEmpty() || inUrlPath.equals("/_site.xconf") )
 		// {
@@ -498,33 +451,37 @@ public class XConfToPageSettingsConverter
 		// return;
 		// }
 		// loop over and find any other sub-fallbacks and add them to the chain
-		List<PageSettings> fallBackParents = new ArrayList<PageSettings>();
-		addFallBackParents(inPageSettings, inPageSettings, fallBackParents);
+		List<PageSettings> fallBackParents = new ArrayList<PageSettings>(6);
 
+		// Set this early so we resolve things as we go
+		inPageSetting.setFallbackParents(fallBackParents);
+
+		PageProperty nextfallBackDir = findFallbackDirectory(inPageSetting);
+		addFallBackParents(inPageSetting, inPageSetting, nextfallBackDir, fallBackParents);
 		sortByFolderName(fallBackParents);
 
 		// Collections.sort(fallBackParents, new XConfToPageSettingsConverter.PageSettingsPathComparator());
-		inPageSettings.setFallbackParents(fallBackParents);
+
+		// for (PageSettings setting : fallBackParents)
+		// {
+
+		// String alternativepath = findAlternativePath(inPageSetting, setting, inUrlPath);
+		// if (alternativepath != null)
+		// {
+		// PageSettings otherxconf = getPageSettingsManager().getPageSettings(alternativepath);
+		// inPageSetting.setFallBack(otherxconf);
+		// break;
+		// }
+		// }
 
 		// if (fallBackParents.size() > 1)
 		// {
 		// PageSettings first = fallBackParents.get(1);
-		// // inPageSettings.setFallBack(first);
+		// inPageSetting.setFallBack(first);
 		// }
 
-		for (PageSettings setting : fallBackParents)
-		{
-
-			String alternativepath = findAlternativePath(inPageSettings, setting, inUrlPath);
-			if (alternativepath != null)
-			{
-				PageSettings otherxconf = getPageSettingsManager().getPageSettings(alternativepath);
-				inPageSettings.setFallBack(otherxconf);
-				break;
-			}
-		}
 		// PageSettings first = fallBackParents.get(0);
-		// inPageSettings.setFallBack(first);
+		// inPageSetting.setFallBack(first);
 	}
 
 	public void sortByFolderName(List<PageSettings> fallBackParents)
@@ -540,126 +497,137 @@ public class XConfToPageSettingsConverter
 
 	}
 
-	public String findAlternativePath(PageSettings inCurrentFallback, PageSettings inAlternativeFallback, PageSettings inCurrentPath)
+	// public String findAlternativePath(PageSettings inCurrentFallback, PageSettings
+	// inAlternativeFallback, PageSettings inCurrentPath)
+	// {
+	// try
+	// {
+	// String alt = findAlternativePath(inCurrentFallback, inAlternativeFallback,
+	// inCurrentPath.getPath());
+	// if (alt != null)
+	// {
+	// log.info("inCurrentPath: " + inCurrentPath.getPath() + " inCurrentFallback: " +
+	// inCurrentFallback.getPath() + " inAlternativeFallback: " + inAlternativeFallback.getPath()
+	// + " --> Alternative path: " + alt);
+	// log.info("done");
+	// }
+
+	// return alt;
+	// }
+	// catch (Throwable e)
+	// {
+	// log.error("ERRRRRRROR: inCurrentPath: " + inCurrentPath.getPath() + " inCurrentFallback: " +
+	// inCurrentFallback.getPath() + " inAlternativeFallback: " + inAlternativeFallback.getPath());
+	// return null;
+	// }
+	// }
+
+	// public String findAlternativePath(PageSettings inOriginal, PageSettings inPageSetting, String
+	// inUrlPath)
+	// {
+	// // if (inUrlPath.indexOf(".") == -1)
+	// // {
+	// // log.info("inOriginal: " + inOriginal.getPath() + " inPageSetting: " + inPageSetting.getPath()
+	// +
+	// // " inUrlPath: " + inUrlPath);
+	// // log.info("+++++++++" + inUrlPath);
+	// // log.info("+++++++++");
+	// // return null;
+	// // }
+	// String fallBackValue = null;
+	// // this is a catch 22. If we don't have a 1st level fallback set it might not look for second
+	// level
+	// PageProperty fallBackDir = inPageSetting.getProperty("fallbackdirectory");
+	// String alternativepath = null;
+	// if (fallBackDir != null && fallBackDir.getValue() != null)
+	// {
+	// String fallbacksetpath = fallBackDir.getPath();
+	// fallBackValue = fallBackDir.getValue();
+	// // 1. First is looks in mattcatalog. But there we want to use another fallback
+	// // this might be using a variable. The value for this comes from the parent
+	// fallBackValue = inOriginal.replaceProperty(fallBackValue);
+	// fallBackValue = inOriginal.getParent().replaceProperty(fallBackValue);
+	// if (fallBackValue.equals("/"))
+	// {
+	// fallBackValue = "";
+	// }
+	// if (fallBackValue.endsWith("/"))
+	// {
+	// throw new OpenEditException("Fall back setting must not end in slash for " + inUrlPath);
+	// }
+	// if (fallBackValue.equals("NO_FALLBACK"))
+	// {
+	// return null;
+	// }
+	// // Lets support relative paths ../A -> ../B
+	// if (fallBackValue.contains(".."))
+	// {
+	// // Need to make sure we add back in the extra stuff
+	// String fbthisdir = PathUtilities.extractDirectoryPath(fallbacksetpath); // what level the path
+	// was defined
+	// String newfallBackValue = PathUtilities.buildRelative(fallBackValue, fbthisdir);
+	// // Need to add on any extra subdirectories or file parts
+	// String filepart = inUrlPath.substring(fbthisdir.length(), inUrlPath.length()); // Just want the
+	// end part
+	// if (!filepart.endsWith(".xconf"))
+	// {
+	// filepart = PathUtilities.extractPagePath(filepart) + ".xconf"; // Take off the index.html... Use
+	// index.xconf?
+	// }
+	// alternativepath = newfallBackValue + filepart; // end part might be a file name or _site.xconf
+	// }
+	// else
+	// {
+	// String thisdir = PathUtilities.extractDirectoryPath(fallbacksetpath); // what level the path was
+	// defined
+	// String filepart = inUrlPath.substring(thisdir.length(), inUrlPath.length());
+	// alternativepath = fallBackValue + filepart; // end part might be a file name or _site.xconf
+	// if (alternativepath.equals(inUrlPath))
+	// {
+	// // Now sure why this happens
+	// // log.debug(inUrlPath + " Cannot specify self as fallback directory");
+	// return null;
+	// }
+	// }
+	// // Only default the site.xconf May get infinite loops
+	// // if( inUrlPath.equals("/_site.xconf") || inUrlPath.startsWith("/system/") ||
+	// // inUrlPath.startsWith("/openedit/") )
+	// // if (inUrlPath.startsWith("/WEB-INF/base"))
+	// // {
+	// // // No fallback found.
+	// // return null;
+	// // }
+	// // else
+	// // {
+	// // alternativepath = "/WEB-INF/base" + inUrlPath;
+	// // }
+	// }
+	// return alternativepath;
+	// }
+
+	/**
+	 * These are xconfs that are found in various places in the fallback chain. They are used to find
+	 * content and properties to use if the current path does not have them. They are not used for
+	 * layout, generators, or permissions. They are only used for content and properties. They are also
+	 * used to find alternative content if the current path does not have any.
+	 * 
+	 * @param inStartingPath
+	 * @param inParent
+	 * @param inFallBackParents
+	 */
+	protected void addFallBackParents(PageSettings inVariableRosolver, PageSettings inParentPath, PageProperty fallBackDir, Collection<PageSettings> inFallBackParents)
 	{
-		try
-		{
-			String alt = findAlternativePath(inCurrentFallback, inAlternativeFallback, inCurrentPath.getPath());
-			if (alt != null)
-			{
-				log.info("inCurrentPath: " + inCurrentPath.getPath() + " inCurrentFallback: " + inCurrentFallback.getPath() + " inAlternativeFallback: " + inAlternativeFallback.getPath()
-					+ " --> Alternative path: " + alt);
-				log.info("done");
-			}
-
-			return alt;
-		}
-		catch (Throwable e)
-		{
-			log.error("ERRRRRRROR: inCurrentPath: " + inCurrentPath.getPath() + " inCurrentFallback: " + inCurrentFallback.getPath() + " inAlternativeFallback: " + inAlternativeFallback.getPath());
-			return null;
-		}
-	}
-
-	public String findAlternativePath(PageSettings inOriginal, PageSettings inPageSettings, String inUrlPath)
-	{
-		// if (inUrlPath.indexOf(".") == -1)
-		// {
-		// log.info("inOriginal: " + inOriginal.getPath() + " inPageSettings: " + inPageSettings.getPath() +
-		// " inUrlPath: " + inUrlPath);
-		// log.info("+++++++++" + inUrlPath);
-		// log.info("+++++++++");
-		// return null;
-		// }
-		String fallBackValue = null;
-		// this is a catch 22. If we don't have a 1st level fallback set it might not look for second level
-		PageProperty fallBackDir = inPageSettings.getProperty("fallbackdirectory");
-		String alternativepath = null;
-		if (fallBackDir != null && fallBackDir.getValue() != null)
-		{
-			String fallbacksetpath = fallBackDir.getPath();
-			fallBackValue = fallBackDir.getValue();
-			// 1. First is looks in mattcatalog. But there we want to use another fallback
-			// this might be using a variable. The value for this comes from the parent
-			fallBackValue = inOriginal.replaceProperty(fallBackValue);
-			fallBackValue = inOriginal.getParent().replaceProperty(fallBackValue);
-			if (fallBackValue.equals("/"))
-			{
-				fallBackValue = "";
-			}
-			if (fallBackValue.endsWith("/"))
-			{
-				throw new OpenEditException("Fall back setting must not end in slash for " + inUrlPath);
-			}
-			if (fallBackValue.equals("NO_FALLBACK"))
-			{
-				return null;
-			}
-			// Lets support relative paths ../A -> ../B
-			if (fallBackValue.contains(".."))
-			{
-				// Need to make sure we add back in the extra stuff
-				String fbthisdir = PathUtilities.extractDirectoryPath(fallbacksetpath); // what level the path was defined
-				String newfallBackValue = PathUtilities.buildRelative(fallBackValue, fbthisdir);
-				// Need to add on any extra subdirectories or file parts
-				String filepart = inUrlPath.substring(fbthisdir.length(), inUrlPath.length()); // Just want the end part
-				if (!filepart.endsWith(".xconf"))
-				{
-					filepart = PathUtilities.extractPagePath(filepart) + ".xconf"; // Take off the index.html... Use index.xconf?
-				}
-				alternativepath = newfallBackValue + filepart; // end part might be a file name or _site.xconf
-			}
-			else
-			{
-				String thisdir = PathUtilities.extractDirectoryPath(fallbacksetpath); // what level the path was defined
-				String filepart = inUrlPath.substring(thisdir.length(), inUrlPath.length());
-				alternativepath = fallBackValue + filepart; // end part might be a file name or _site.xconf
-				if (alternativepath.equals(inUrlPath))
-				{
-					// Now sure why this happens
-					// log.debug(inUrlPath + " Cannot specify self as fallback directory");
-					return null;
-				}
-			}
-			// Only default the site.xconf May get infinite loops
-			// if( inUrlPath.equals("/_site.xconf") || inUrlPath.startsWith("/system/") ||
-			// inUrlPath.startsWith("/openedit/") )
-			// if (inUrlPath.startsWith("/WEB-INF/base"))
-			// {
-			// // No fallback found.
-			// return null;
-			// }
-			// else
-			// {
-			// alternativepath = "/WEB-INF/base" + inUrlPath;
-			// }
-		}
-		return alternativepath;
-	}
-
-	// //**
-
-	// Start on inOriginal /my/stuff/here.html /community/ /stuff/here.html
-
-	// /my/stuff -> /communit/stuff
-
-	// /communit/stuff -> /base/stuff
-	// */
-
-	protected void addFallBackParents(PageSettings inStartingPath, PageSettings inParent, Collection<PageSettings> inFallBackParents)
-	{
-		inFallBackParents.add(inParent);
-		PageProperty fallBackDir = findFallbackDirectory(inParent);
+		inFallBackParents.add(inParentPath);
 		if (fallBackDir != null)
 		{
-			String nextpath = resolveFallbackPath(inStartingPath, inParent, fallBackDir);
+			// Get the path the the same location as the parent but in the fallback directory. Then check to see
+			// if that xconf has a fallback directory. If so, add it to the list and repeat.
+			String nextpath = resolveFallbackPath(inVariableRosolver, inParentPath, fallBackDir);
 			if (nextpath != null)
 			{
-				PageSettings otherxconf = getPageSettingsManager().getPageSettings(nextpath);
-				if (inFallBackParents.contains(otherxconf) == false)
-				{
-					addFallBackParents(inStartingPath, otherxconf, inFallBackParents);
-				}
+				PageSettings nextxconf = getPageSettingsManager().getPageSettings(nextpath);
+				PageProperty nextfallBackDir = findFallbackDirectory(nextxconf);
+				addFallBackParents(inVariableRosolver, nextxconf, nextfallBackDir, inFallBackParents);
 			}
 		}
 	}
@@ -678,23 +646,21 @@ public class XConfToPageSettingsConverter
 		return null;
 	}
 
-	protected String resolveFallbackPath(PageSettings inStartingPath, PageSettings inCurrentBranch, PageProperty fallBackRootDir)
+	protected String resolveFallbackPath(PageSettings inVariableRosolver, PageSettings inParentPath, PageProperty fallBackRootDir)
 	{
 		// e.g. /finder/find/components/_site.xconf -> /finder/find/
 
 		String targetFallbackRoot = fallBackRootDir.getValue(); // /community/default
-		targetFallbackRoot = inStartingPath.replaceProperty(targetFallbackRoot);
+		targetFallbackRoot = inVariableRosolver.replaceProperty(targetFallbackRoot);
 
 		if ("NO_FALLBACK".equals(targetFallbackRoot))
 		{
 			return null;
 		}
 
-		String fallBackDefinitionRoot = fallBackRootDir.getPath(); // /finder/find/_site.xconf
+		String fallBackDefinitionRoot = PathUtilities.extractDirectoryPath(fallBackRootDir.getPath()); // /finder/find/
 
-		fallBackDefinitionRoot = PathUtilities.extractDirectoryPath(fallBackDefinitionRoot); // /finder/find/
-
-		String endingPath = inCurrentBranch.getPath().substring(fallBackDefinitionRoot.length(), inCurrentBranch.getPath().length()); // /components/_site.xconf
+		String endingPath = inParentPath.getPath().substring(fallBackDefinitionRoot.length(), inParentPath.getPath().length()); // /components/_site.xconf
 
 		String finalPath = targetFallbackRoot + endingPath;
 		return finalPath;

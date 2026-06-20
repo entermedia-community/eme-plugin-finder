@@ -16,7 +16,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import org.apache.commons.collections.map.ListOrderedMap;
-import org.apache.commons.collections.set.ListOrderedSet;
 import org.openedit.Generator;
 import org.openedit.OpenEditException;
 import org.openedit.config.Configuration;
@@ -33,6 +32,8 @@ import org.openedit.util.PathUtilities;
  */
 public class PageSettings
 {
+	private static final int MAX_DEPTH = 25; // prevent infinite loops when looking up fallbacks
+
 	protected ContentItem fieldXConf;
 	protected Configuration fieldUserDefinedData;
 	protected long fieldModifiedTime;
@@ -87,7 +88,7 @@ public class PageSettings
 		List finalList = new ArrayList();
 		int steps = 0;
 		Set ids = new HashSet<>();
-		while (steps < 10) // prevent infinite loop
+		while (steps < 20) // prevent infinite loop
 		{
 			for (PageSettings fallbackParent : getFallbackParents())
 			{
@@ -117,7 +118,7 @@ public class PageSettings
 	public String getLayout()
 	{
 		int steps = 0;
-		while (steps < 10) // prevent infinite loop
+		while (steps < MAX_DEPTH) // prevent infinite loop
 		{
 			for (PageSettings fallbackParent : getFallbackParents())
 			{
@@ -149,7 +150,7 @@ public class PageSettings
 
 		// Find the first inner layout that is closest to the current page
 		int steps = 0;
-		while (steps < 10) // prevent infinite loop
+		while (steps < MAX_DEPTH) // prevent infinite loop
 		{
 			for (PageSettings fallbackParent : getFallbackParents())
 			{
@@ -194,20 +195,6 @@ public class PageSettings
 		fieldInnerLayout = innerLayout;
 	}
 
-	// Not used
-	public List getFallBacks()
-	{
-		List finalList = new ArrayList();
-
-		PageSettings fallbackparent = getFallback();
-		while (fallbackparent != null)
-		{
-			finalList.add(fallbackparent);
-			fallbackparent = fallbackparent.getFallback();
-		}
-		return finalList;
-	}
-
 	public String getParentFolder()
 	{
 		return PathUtilities.extractDirectoryName(getPath());
@@ -222,7 +209,7 @@ public class PageSettings
 	{
 		List finalList = new ArrayList();
 		int steps = 0;
-		while (steps < 10) // prevent infinite loop
+		while (steps < MAX_DEPTH) // prevent infinite loop
 		{
 			for (PageSettings fallbackParent : getFallbackParents())
 			{
@@ -241,7 +228,7 @@ public class PageSettings
 	{
 		List finalList = new ArrayList();
 		int steps = 0;
-		while (steps < 10) // prevent infinite loop
+		while (steps < MAX_DEPTH) // prevent infinite loop
 		{
 			for (PageSettings fallbackParent : getFallbackParents())
 			{
@@ -260,7 +247,7 @@ public class PageSettings
 	{
 		List finalList = new ArrayList();
 		int steps = 0;
-		while (steps < 10) // prevent infinite loop
+		while (steps < MAX_DEPTH) // prevent infinite loop
 		{
 			for (PageSettings fallbackParent : getFallbackParents())
 			{
@@ -285,7 +272,7 @@ public class PageSettings
 		// add top level parents last
 		List finalList = new ArrayList();
 		int steps = 0;
-		while (steps < 10) // prevent infinite loop
+		while (steps < MAX_DEPTH) // prevent infinite loop
 		{
 			for (PageSettings fallbackParent : getFallbackParents())
 			{
@@ -297,6 +284,7 @@ public class PageSettings
 			}
 			steps++;
 		}
+		// Collections.reverse(finalList);
 		return finalList;
 
 	}
@@ -337,122 +325,6 @@ public class PageSettings
 		return newmap;
 	}
 
-	public List getAllProperties()
-	{
-		return getAllProperties(true);
-	}
-
-	// Not used much
-	public List getAllProperties(boolean inIncludeParents)
-	{
-		Set all = ListOrderedSet.decorate(new ArrayList());
-		Set keys = new HashSet();
-		PageSettings parent = this;
-		PageSettings fallbackparent = getFallback();
-		while (parent != null)
-		{
-			if (parent.fieldProperties != null)
-			{
-				for (Iterator iterator = parent.fieldProperties.keySet().iterator(); iterator.hasNext();)
-				{
-					PageProperty prop = (PageProperty) parent.fieldProperties.get((String) iterator.next());
-					if (!keys.contains(prop.getName()))
-					{
-						all.add(prop);
-						keys.add(prop.getName());
-					}
-				}
-			}
-			if (fallbackparent != null) // first check the mirror site
-			{
-				PageSettings chain = fallbackparent;
-				int count = 0;
-				while (chain != null && count++ < 10)
-				{
-					if (chain.fieldProperties != null)
-					{
-						for (Iterator iterator = chain.fieldProperties.keySet().iterator(); iterator.hasNext();)
-						{
-							PageProperty prop = (PageProperty) chain.fieldProperties.get((String) iterator.next());
-							if (!keys.contains(prop.getName()))
-							{
-								all.add(prop);
-								keys.add(prop.getName());
-							}
-						}
-					}
-					chain = chain.getFallback();
-				}
-				fallbackparent = fallbackparent.getParent();
-				if (fallbackparent == null)
-				{
-					fallbackparent = parent.getFallback();
-				}
-
-			}
-			parent = parent.getParent();
-			if (!inIncludeParents)
-			{
-				break;
-			}
-		}
-		return new ArrayList(all);
-
-	}
-
-	// Not used much
-	public List getAllPropertyKeysWithPrefix(String inPrefix)
-	{
-		List all = new ArrayList();
-		PageSettings parent = this;
-		PageSettings fallbackparent = getFallback();
-		while (parent != null)
-		{
-			if (parent.fieldProperties != null)
-			{
-				for (Iterator iter = parent.fieldProperties.keySet().iterator(); iter.hasNext();)
-				{
-					String key = (String) iter.next();
-					if (key.startsWith(inPrefix))
-					{
-						key = key.substring(inPrefix.length());
-						all.add(key);
-					}
-				}
-			}
-			if (fallbackparent != null) // first check the mirror site
-			{
-				PageSettings chain = fallbackparent;
-				int count = 0;
-				while (chain != null && count++ < 10)
-				{
-					if (chain.fieldProperties != null)
-					{
-						for (Iterator iter = chain.fieldProperties.keySet().iterator(); iter.hasNext();)
-						{
-							String key = (String) iter.next();
-							if (key.startsWith(inPrefix))
-							{
-								key = key.substring(inPrefix.length());
-								all.add(key);
-							}
-						}
-					}
-					chain = chain.getFallback();
-				}
-				fallbackparent = fallbackparent.getParent();
-				if (fallbackparent == null)
-				{
-					fallbackparent = parent.getFallback();
-				}
-
-			}
-			parent = parent.getParent();
-		}
-		return all;
-
-	}
-
 	public PageProperty getProperty(String inKey)
 	{
 		int steps = 0;
@@ -462,7 +334,7 @@ public class PageSettings
 			knownfallbacks = new ArrayList<>(1);
 			knownfallbacks.add(this);
 		}
-		while (steps < 16) // prevent infinite loop
+		while (steps < MAX_DEPTH) // prevent infinite loop
 		{
 			for (PageSettings fallbackParent : knownfallbacks)
 			{
@@ -784,7 +656,7 @@ public class PageSettings
 	public Permission getPermission(String inName)
 	{
 		int steps = 0;
-		while (steps < 10) // prevent infinite loop
+		while (steps < MAX_DEPTH) // prevent infinite loop
 		{
 			for (PageSettings fallbackParent : getFallbackParents())
 			{

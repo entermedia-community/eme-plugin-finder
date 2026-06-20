@@ -551,15 +551,6 @@ public class ConvertInstructions
 		fieldProperties = inProperties;
 	}
 
-	public void addPageProperties(Page inPage)
-	{
-		for (Iterator iterator = inPage.getPageSettings().getAllProperties().iterator(); iterator.hasNext();)
-		{
-			PageProperty type = (PageProperty) iterator.next();
-			getProperties().put(type.getName(), type.getValue());
-		}
-	}
-
 	public void addPageValues(Map inPageMap)
 	{
 		for (Iterator iterator = inPageMap.keySet().iterator(); iterator.hasNext();)

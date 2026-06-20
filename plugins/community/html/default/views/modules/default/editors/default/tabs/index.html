@@ -1,4 +1,3 @@
-
 #if($ismulti)
 	##only show "data" views (rendertype)
 	#set($enttiyviews = $mediaarchive.query("view").exact("moduleid", $module.id).exact("systemdefined","false").exact("rendertype", "data").sort("orderingUp").named("view").search($context) )
@@ -109,12 +108,15 @@ $context.putPageValue("enttiyviews", $enttiyviews)
 		#end
 		<div class="entity-content tabtype$!rendertype overflow-x">
 		
+
+
 			#ifnull($entityviewdata)
 				[[Please select a tab for]] $entitymoduleviewid		
 			#end
 			
 			#ifnotnull($entityviewdata)
 				$context.putPageValue("viewdata", $entityviewdata)
+
 				$pages.include("${edithome}/tabs/rendertypes/${rendertype}.html", $context)
 			#end
 		</div>

@@ -156,8 +156,7 @@ public class DownloadZipGenerator extends BaseGenerator
 
 	private void populateInstructions(WebPageRequest inReq, ConvertInstructions ins, String catalogid, String assetid)
 	{
-		// TODO Auto-generated method stub
-		ins.addPageProperties(inReq.getPage());
+		ins.addPageValues(inReq.getPage().getProperties());
 		ins.addPageValues(inReq.getPageMap());
 		// ins.setSourceFile("original");
 

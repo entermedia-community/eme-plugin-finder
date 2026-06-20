@@ -269,43 +269,53 @@ public class WorkspaceManager
 
 	public String createModuleFallbacks(String appid, Data module, boolean force)
 	{
-		String mid = module.getId();
 		Page modulehome = getPageManager().getPage("/" + appid + "/views/modules/" + module.getId() + "/_site.xconf");
-
-		// TODO: Can we remove this one day?
 
 		Page settings = getPageManager().getPage("/" + appid + "/views/settings/modules/" + module.getId() + "/_site.xconf");
 		PageSettings homesettings = modulehome.getPageSettings();
+
+		boolean changed = false;
+
+		PageProperty fallbackprop = homesettings.getProperty("fallbackprop");
+		if (fallbackprop == null || !fallbackprop.getValue().equals("/${applicationid}/views/modules/default") || force)
+		{
+			fallbackprop = new PageProperty("fallbackproperty");
+			fallbackprop.setValue("/${applicationid}/views/modules/default");
+			homesettings.putProperty(fallbackprop);
+			changed = true;
+		}
+		PageProperty moduleprop = homesettings.getProperty("module");
+		if (moduleprop == null || !moduleprop.getValue().equals(module.getId()))
+		{
+			moduleprop = new PageProperty("module");
+			moduleprop.setValue(module.getId());
+			homesettings.putProperty(moduleprop);
+			changed = true;
+		}
 		PageSettings modulesettings = settings.getPageSettings();
-
-		Page parentfallback = getPageManager().getPage(modulehome.getPageSettings().getFallback().getPath());
-
-		if (parentfallback.exists() && parentfallback.getDirectoryName().equals(module.getId()) && !force) // mid.equals("asset")
-																											// ||
-																											// mid.equals("library")
-																											// ||
-																											// mid.equals("librarycollection")
-																											// ||
-																											// mid.equals("category"))
+		fallbackprop = modulesettings.getProperty("fallbackprop");
+		if (fallbackprop == null || !fallbackprop.getValue().equals("/${applicationid}/views/modules/default") || force)
 		{
-			homesettings.removeProperty("fallbackdirectory");
-			modulesettings.removeProperty("fallbackdirectory");
+			fallbackprop = new PageProperty("fallbackproperty");
+			fallbackprop.setValue("/${applicationid}/views/modules/default");
+			modulesettings.putProperty(fallbackprop);
+			changed = true;
 		}
-		else
+		moduleprop = modulesettings.getProperty("module");
+		if (moduleprop == null || !moduleprop.getValue().equals(module.getId()))
 		{
-			homesettings.setProperty("module", module.getId());
-			PageProperty prop = new PageProperty("fallbackdirectory");
-			prop.setValue("/${applicationid}/views/modules/default");
-			homesettings.putProperty(prop);
-
-			modulesettings.setProperty("module", module.getId());
-			prop = new PageProperty("fallbackdirectory");
-			prop.setValue("/${applicationid}/views/modules/settings/default");
-			modulesettings.putProperty(prop);
+			moduleprop = new PageProperty("module");
+			moduleprop.setValue(module.getId());
+			modulesettings.putProperty(moduleprop);
+			changed = true;
 		}
-		getPageManager().getPageSettingsManager().saveSetting(homesettings);
-		getPageManager().getPageSettingsManager().saveSetting(modulesettings);
-		return mid;
+
+		if (changed)
+		{
+			getPageManager().getPageSettingsManager().saveSetting(homesettings);
+			getPageManager().getPageSettingsManager().saveSetting(modulesettings);
+		}
+		return module.getId();
 	}
 
 	public void createMediaDbModule(String inCatalogId, Data inModule)
@@ -377,7 +387,7 @@ public class WorkspaceManager
 			Page home = getPageManager().getPage(settingspath);
 			PageSettings homesettings = home.getPageSettings();
 			homesettings.setProperty("module", inModule.getId());
-			PageProperty prop = new PageProperty("fallbackdirectory");
+			PageProperty prop = new PageProperty("fallbackprop");
 
 			// This might be an existing fallback
 			String parent = "/" + mediadb + "/services/module/default";
@@ -576,9 +586,9 @@ public class WorkspaceManager
 			PageSettings homesettings = getPageManager().getPageSettingsManager().getPageSettings("/" + inDestinationAppId + "/_site.xconf");
 			homesettings.setProperty("applicationid", inDestinationAppId);
 			homesettings.setProperty("catalogid", inAppcatalogid);
-			if (homesettings.getProperty("fallbackdirectory") == null)
+			if (homesettings.getProperty("fallbackprop") == null)
 			{
-				homesettings.setProperty("fallbackdirectory", "/emshare");
+				homesettings.setProperty("fallbackprop", "/emshare");
 			}
 			getPageManager().getPageSettingsManager().saveSetting(homesettings);
 
@@ -591,7 +601,7 @@ public class WorkspaceManager
 
 				PageSettings catsettings = getPageManager().getPageSettingsManager().getPageSettings("/" + inAppcatalogid + "/_site.xconf");
 				catsettings.setProperty("catalogid", inAppcatalogid);
-				catsettings.setProperty("fallbackdirectory", "/media/catalog");
+				catsettings.setProperty("fallbackprop", "/media/catalog");
 
 				getPageManager().getPageSettingsManager().saveSetting(catsettings);
 			}

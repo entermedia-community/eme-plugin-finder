@@ -48,6 +48,10 @@ public class PageSettingsManager
 
 	public PageSettings getPageSettings(String inPath) throws OpenEditException
 	{
+		if (inPath.endsWith("/"))
+		{
+			inPath = inPath + SITE_PATH;
+		}
 		PageSettings page = (PageSettings) getCacheManager().get(CACHE, inPath);
 		if (page != null)
 		{
@@ -93,6 +97,7 @@ public class PageSettingsManager
 	protected PageSettings createPageSettings(String inUrlPath) throws OpenEditException
 	{
 		// This managager deals with xconf files only
+
 		String xconfPath = inUrlPath;
 		xconfPath = toXconfPath(xconfPath);
 
@@ -128,7 +133,7 @@ public class PageSettingsManager
 			String mimeType = getMimeTypeMap().getPathMimeType(inUrlPath);
 			settings.setMimeType(mimeType);
 		}
-		getXconfReader().configure(settings, inUrlPath);
+		getXconfReader().configureXConf(settings, inUrlPath);
 		getCacheManager().put(CACHE, inUrlPath, settings);
 		return settings;
 	}

@@ -474,6 +474,7 @@
   <permission name="runaiinformatics">
     <userprofile name="runaiinformatics" value="true"/>
   </permission>
+  <path-action name="Admin.autoLogin"/>
   <path-action name="MediaArchiveModule.loadApplicationId"/>
   <path-action name="MediaArchiveModule.loadComponentHome"/>
   <path-action name="ProfileModule.loadUserProfile"/>

@@ -390,32 +390,6 @@ public class PermissionModule extends BaseMediaModule
 		return list;
 	}
 
-	public void loadPageProperties(WebPageRequest inReq) throws Exception
-	{
-		String path = inReq.getRequestParameter("editPath");
-		if (path == null)
-		{
-			log.error("editPath is required");
-			return;
-		}
-		PageSettings settings = getPageManager().getPageSettingsManager().getPageSettings(path);
-		List pageproperties = new ArrayList();
-		List props = settings.getAllProperties();
-		for (Iterator iterator = props.iterator(); iterator.hasNext();)
-		{
-			PageProperty property = (PageProperty) iterator.next();
-			if (property.getValue() != null)
-			{
-				if (property.getValue().equals("true") || property.getValue().equals("false"))
-				{
-					pageproperties.add(property);
-				}
-			}
-		}
-		inReq.putPageValue("pageproperties", pageproperties);
-
-	}
-
 	public void loadPermissionsByType(WebPageRequest inReq)
 	{
 		String catalogid = inReq.findPathValue("catalogid");

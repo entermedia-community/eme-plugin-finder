@@ -89,11 +89,12 @@ public class ConvertGenerator extends FileGenerator
 
 		// Find random params?
 		Map all = new HashMap(); // TODO: Get parent ones as well
-		for (Iterator iterator = inReq.getContentPage().getPageSettings().getAllProperties().iterator(); iterator.hasNext();)
-		{
-			PageProperty type = (PageProperty) iterator.next();
-			all.put(type.getName(), type.getValue());
-		}
+		// for (Iterator iterator = inReq.getContentPage().getPageSettings().getAllProperties().iterator();
+		// iterator.hasNext();)
+		// {
+		// PageProperty type = (PageProperty) iterator.next();
+		// all.put(type.getName(), type.getValue());
+		// }
 		all.putAll(inReq.getPageMap()); // these could be objects, needed?
 		Map args = inReq.getParameterMap();
 		extracted(inReq, archive, sourcePath, inPage, name, all, args, inOut);

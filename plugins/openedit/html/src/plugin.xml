@@ -22,6 +22,7 @@
 	</bean>
 
 
+
 	<bean id="blockingAdmintoolbarGenerator" class="org.entermediadb.asset.generators.AdminToolBarGenerator" >
 			<property name="headerPath"><value>/openedit/components/toolbar/admintoolbarselector.html</value></property>
 			<property name="search"><value>&lt;body</value></property>
@@ -29,4 +30,11 @@
 			<property name="moduleManager"><ref bean="moduleManager"/></property>
 			<property name="wraps"><ref bean="velocityGenerator"/></property>
 		</bean>
+
+	<bean id="testPageLoad"  class="org.openedit.TestPageLoad" >
+	</bean>
+
+	<bean id="TestModule"  class="org.openedit.modules.TestModule" >
+	</bean>
+
 </beans>

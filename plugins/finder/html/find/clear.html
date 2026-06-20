@@ -1,12 +1,19 @@
 <pre>
 
-$pageManager.clearCache("/finder/find/views/modules/asset/results/default/thumbnails/small.html")
-#set($p = $pageManager.getPage("/finder/find/views/modules/asset/results/default/thumbnails/small.html", false))
-p.exists() = $p.exists()
-p.getPageSettings().getFallback() = $p.getPageSettings().getFallback() 
-p.getPageSettings().getAlternateContentPath() =  $p.getPageSettings().getAlternateContentPath() 
-p.getContentItem().getAbsolutePath() = $p.getContentItem().getAbsolutePath()
+##set( $path = "/finder/find/views/modules/asset/results/default/thumbnails/small.html")
+#set( $path = "/finder/find/views/modules/entityasset/editors/listentities/tabs/rendertypes/data.html")
+##set( $path = "/finder/find/views/modules/asset/components/sidebars/index.html" )
+$pageManager.clearCache($path)
+#set($p = $pageManager.getPage($path,false) )
 
-p.getPageSettings().getFallbackParents() = $p.getPageSettings().getFallbackParents()
+Path: <a href="http://localhost.com:8080/$path">$path</a>
+
+p.exists() = $p.exists()
+
+INCLUDE
+$p.getPageSettings().getPath() = $p.getPageSettings().getPath()
+$p.getPageSettings().getGenerators() 
+
+$pages.include($path, $context)
 
 </pre>

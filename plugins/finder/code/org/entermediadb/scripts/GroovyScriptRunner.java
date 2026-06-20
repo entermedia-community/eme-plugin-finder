@@ -191,7 +191,7 @@ public class GroovyScriptRunner implements ScriptRunner
 		Page proot = getPageManager().getPage(inPackageRoot);
 		List folders = new ArrayList();
 		folders.add(proot.getContentItem().getAbsolutePath() + "/");
-		for (Object parent : proot.getPageSettings().getFallBacks())
+		for (PageSettings parent : proot.getPageSettings().getFallbackParents())
 		{
 			String path = ((PageSettings) parent).getPath();
 			path = path.replace("/_site.xconf", "");
