@@ -1,7 +1,3 @@
-#ifnull($user)
-	<link rel="stylesheet" type="text/css" href="/authentication/authentication.css" />
-	<script type="text/javascript" src="/authentication/authentication.js"></script>
-#end
 #foreach( $style in $pageManager.getStylePathsFor($content) )
 <link rel="stylesheet" type="text/css" href="$style" />
 #end
@@ -17,9 +13,12 @@ $pages.include("/${applicationid}/components/captureclick/init.html")
 
 #if( $desktop)
 <script>if (typeof module === 'object') { window.module = module; module = undefined; }</script>
+#end
 <script type="text/javascript" src="/${applicationid}/components/javascript/jquery-core/jquery-4.0.0.min.js" onload="if (!window.jQuery)  window.$ = window.jQuery = module.exports;"></script>
-#else
-<script type="text/javascript" src="/${applicationid}/components/javascript/jquery-core/jquery-4.0.0.min.js" onload="if (!window.jQuery)  window.$ = window.jQuery = module.exports;"></script>
+
+#ifnull($user)
+	<link rel="stylesheet" type="text/css" href="/authentication/authentication.css" />
+	<script type="text/javascript" src="/authentication/authentication.js"></script>
 #end
 
 <script type="text/javascript" src="/${applicationid}/components/javascript/jquery-core/jquery-migrate-4.0.1.js"></script>
