@@ -30,7 +30,7 @@ public class ImagemagickTranscoder extends BaseTranscoder
 
 		if (fieldPathToProfile == null)
 		{
-			Page profile = getPageManager().getPage("/components/conversions/tinysRGB.icc");
+			Page profile = getPageManager().getPage("/community/default/components/conversions/tinysRGB.icc");
 			fieldPathToProfile = profile.getContentItem().getAbsolutePath();
 		}
 		return fieldPathToProfile;
@@ -40,7 +40,7 @@ public class ImagemagickTranscoder extends BaseTranscoder
 	{
 		if (fieldPathToCMYKProfile == null)
 		{
-			Page profile = getPageManager().getPage("/components/conversions/USWebCoatedSWOP.icc");
+			Page profile = getPageManager().getPage("/community/default/components/conversions/USWebCoatedSWOP.icc");
 			fieldPathToCMYKProfile = profile.getContentItem().getAbsolutePath();
 		}
 		return fieldPathToCMYKProfile;
@@ -110,17 +110,16 @@ public class ImagemagickTranscoder extends BaseTranscoder
 				com.add(0, "sRGB");
 				com.add(0, "-colorspace");
 			}
-			else
-				if ("jpg".equals(ext)) // Found JPGS with incorrect profile for CMYK
+			else if ("jpg".equals(ext)) // Found JPGS with incorrect profile for CMYK
+			{
+				if (asset.get("colorspace") != null && asset.get("colorspace").equals("4"))
 				{
-					if (asset.get("colorspace") != null && asset.get("colorspace").equals("4"))
-					{
-						com.add(0, getPathCMYKProfile());
-						com.add(0, "-profile");
-
-					}
+					com.add(0, getPathCMYKProfile());
+					com.add(0, "-profile");
 
 				}
+
+			}
 
 			Collection needsDensity = Arrays.asList("pdf", "gddoc", "gdsheet", "gdslide", "gddraw", "eps", "ai");
 
@@ -454,18 +453,17 @@ public class ImagemagickTranscoder extends BaseTranscoder
 			 */
 
 		}
+		else if ("svg".equals(ext)) // add svg support; include transparency
+		{
+			com.add("-background");
+			com.add("transparent");
+			com.add("-flatten");
+		}
 		else
-			if ("svg".equals(ext)) // add svg support; include transparency
-			{
-				com.add("-background");
-				com.add("transparent");
-				com.add("-flatten");
-			}
-			else
-			{
-				setValue("background", null, inStructions, com);
-				setValue("layers", null, inStructions, com);
-			}
+		{
+			setValue("background", null, inStructions, com);
+			setValue("layers", null, inStructions, com);
+		}
 	}
 
 	protected List<String> createCommand(ConvertInstructions inStructions)

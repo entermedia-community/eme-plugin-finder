@@ -26,7 +26,7 @@ public class CMYKTranscoder extends BaseTranscoder
 	{
 		if (fieldPathToProfile == null)
 		{
-			Page profile = getPageManager().getPage("/components/conversions/conversions/tinysRGB.icc");
+			Page profile = getPageManager().getPage("/community/default/components/conversions/conversions/tinysRGB.icc");
 			fieldPathToProfile = profile.getContentItem().getAbsolutePath();
 		}
 		return fieldPathToProfile;
@@ -36,7 +36,7 @@ public class CMYKTranscoder extends BaseTranscoder
 	{
 		if (fieldPathToCMYKProfile == null)
 		{
-			Page profile = getPageManager().getPage("/components/conversions/USWebCoatedSWOP.icc");
+			Page profile = getPageManager().getPage("/community/default/components/conversions/USWebCoatedSWOP.icc");
 			fieldPathToCMYKProfile = profile.getContentItem().getAbsolutePath();
 		}
 		return fieldPathToCMYKProfile;
