@@ -10,7 +10,7 @@
 
 	<path-action name="AgentModule.loadAgentContext" />
 
-	<property name="chatterboxhome">${edithome}/chatterbox</property>
+	<property name="chatterboxhomeX">${edithome}/chatterbox</property>
 
 	<property name="channeltype">agentchat</property>
 

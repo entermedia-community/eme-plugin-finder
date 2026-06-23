@@ -1,5 +1,5 @@
 #ifnull($chatterboxhome)
-	#set($chatterboxhome = $page.chatterboxhome)
+	#set($chatterboxhome = "${edithome}/chatterbox")
 #end
 $context.putPageValue("chatterboxhome", $chatterboxhome)
 

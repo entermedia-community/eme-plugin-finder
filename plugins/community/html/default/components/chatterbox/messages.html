@@ -1,4 +1,5 @@
-#set($chatterboxhome = $page.chatterboxhome)
+##set($chatterboxhome = $page.chatterboxhome)
+#set($chatterboxhome = "${edithome}/chatterbox")
 $context.putPageValue("chatterboxhome", $chatterboxhome)
 
 #set($channel = $context.getRequestParameter("channel"))

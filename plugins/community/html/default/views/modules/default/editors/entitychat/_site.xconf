@@ -8,7 +8,7 @@
 
 	<path-action name="ChatModule.loadChatChannel" />
 
-	<property name="chatterboxhome">${edithome}/chatterbox</property>
+	<property name="chatterboxhomeX">${edithome}/chatterbox</property>
 
 	<property name="channeltype">agententitychat</property>
 

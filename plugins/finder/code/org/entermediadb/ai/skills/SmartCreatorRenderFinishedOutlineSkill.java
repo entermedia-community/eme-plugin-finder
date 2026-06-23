@@ -3,6 +3,7 @@ package org.entermediadb.ai.skills;
 import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.BaseSkill;
 import org.entermediadb.ai.creator.AiSmartCreatorSteps;
+import org.entermediadb.ai.llm.AgentEnabled;
 import org.entermediadb.ai.llm.LlmConnection;
 import org.entermediadb.ai.llm.LlmResponse;
 
@@ -12,6 +13,7 @@ public class SmartCreatorRenderFinishedOutlineSkill extends BaseSkill
 	public void process(AgentContext inContext)
 	{
 		renderFinishedOutline(inContext, inContext.getAiSmartCreatorSteps());
+
 		// super.process(inContext);
 	}
 
@@ -24,6 +26,9 @@ public class SmartCreatorRenderFinishedOutlineSkill extends BaseSkill
 		LlmResponse response = llmconnection.renderLocalAction(messageContext, "chat_smartcreator_renderfinishedoutline");
 		messageContext.setWaitTime(null);
 		messageContext.setLastResponse(response);
+
+		AgentEnabled skillEnabled = messageContext.getCurrentAgentEnable();
+		messageContext.fireStatusComplete(skillEnabled);
 	}
 
 }

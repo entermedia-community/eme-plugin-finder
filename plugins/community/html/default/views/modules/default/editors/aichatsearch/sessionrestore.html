@@ -1,1 +1,4 @@
-$pages.include("./index.html")
+
+#set( $edithome = "$apphome/views/modules/${module.id}/editors/aichatsearch")	
+
+$pages.include("${edithome}/index.html", $context)

@@ -332,6 +332,7 @@ jQuery(document).ready(function () {
 					chatMsg.html(message.message);
 				}
 
+				$(existing).data("functionname", message.functionname);
 				$(existing).data("nextfunctionname", message.nextfunctionname);
 			}
 

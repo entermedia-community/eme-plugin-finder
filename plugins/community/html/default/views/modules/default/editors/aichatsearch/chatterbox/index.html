@@ -1,5 +1,6 @@
-#set($chatterboxhome = $page.chatterboxhome)
+#set($chatterboxhome = "${edithome}/chatterbox")
 $context.putPageValue("chatterboxhome", $chatterboxhome)
+
 #set($moduleid = $module.getId())
 #ifnull($moduleid)
 	#set($moduleid = $page.module) 
