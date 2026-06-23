@@ -837,12 +837,11 @@ public class AssistantManager extends BaseAiManager implements SkillStatusListen
 				id = "fieldsonly_welcome_" + module.getId();
 				messagehandler = "entityCreationSkill";
 			}
-			else
-				if (method.equals("smartcreator"))
-				{
-					id = "smartcreator_welcome_" + module.getId();
-					messagehandler = "smartCreatorSkill";
-				}
+			else if (method.equals("smartcreator"))
+			{
+				id = "smartcreator_welcome_" + module.getId();
+				messagehandler = "smartCreatorSkill";
+			}
 
 			Data exists = getMediaArchive().getData("aifunction", id);
 			if (exists != null)
@@ -1076,6 +1075,7 @@ public class AssistantManager extends BaseAiManager implements SkillStatusListen
 			functionMessageUpdate.put("messageid", agentmessage.getId());
 			functionMessageUpdate.put("message", agentmessage.get("message"));
 			functionMessageUpdate.put("nextfunctionname", nextFunctionName);
+			functionMessageUpdate.put("functionname", inAgentEnabled.getEnabledId());
 
 			ChatServer server = (ChatServer) getMediaArchive().getBean("chatServer");
 			server.broadcastMessage(functionMessageUpdate);
