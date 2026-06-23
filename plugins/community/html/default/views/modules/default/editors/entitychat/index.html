@@ -1,7 +1,7 @@
 
 #set($channeltype = "agententitychat")
 $context.putPageValue("channeltype", $channeltype)
-
+$context.putPageValue("edithome", $edithome)
 <div id="${edithomeid}" 
 	class="editdiv entity-tab-content entity-tab-chatterbox aichatsearch" 
 	data-edithome="${edithome}"
@@ -12,7 +12,7 @@ $context.putPageValue("channeltype", $channeltype)
 	data-url=""
 	data-channeltype="$!{channeltype}"
 >
-$pages.include("./sessionhistory.html", $context)
+$pages.include("${edithome}/sessionhistory.html", $context)
 
-$pages.include("./chatterbox/index.html", $context)
+$pages.include("${edithome}/chatterbox/index.html", $context)
 </div>

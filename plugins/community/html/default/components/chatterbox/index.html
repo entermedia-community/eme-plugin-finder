@@ -1,5 +1,6 @@
-#set($chatterboxhome = $page.chatterboxhome)
+#set($chatterboxhome = "${edithome}/chatterbox")
 $context.putPageValue("chatterboxhome", $chatterboxhome)
+
 #set($moduleid = $module.getId())
 #ifnull($moduleid)
 	#set($moduleid = $page.module) 
@@ -34,7 +35,6 @@ $context.putPageValue("chatterboxhome", $chatterboxhome)
 	data-user="$!{user.id}" 
 	data-catalogid="$!{catalogid}"
 	data-broadcastall="false">
-	
 		$pages.include("${chatterboxhome}/messages.html", $context)
 
 		#if($cansendchat)
