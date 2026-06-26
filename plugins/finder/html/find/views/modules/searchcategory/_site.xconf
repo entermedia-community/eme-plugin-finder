@@ -2,4 +2,5 @@
 
 <page>
   <property name="fallbackdirectory">/${applicationid}/views/modules/default</property>
+  <property name="module">searchcategory</property>
 </page>
