@@ -275,10 +275,10 @@ public class WorkspaceManager
 
 		boolean changed = false;
 
-		PageProperty fallbackprop = homesettings.getProperty("fallbackprop");
+		PageProperty fallbackprop = homesettings.getProperty("fallbackdirectory");
 		if (fallbackprop == null || !fallbackprop.getValue().equals("/${applicationid}/views/modules/default") || force)
 		{
-			fallbackprop = new PageProperty("fallbackproperty");
+			fallbackprop = new PageProperty("fallbackdirectory");
 			fallbackprop.setValue("/${applicationid}/views/modules/default");
 			homesettings.putProperty(fallbackprop);
 			changed = true;
@@ -292,10 +292,10 @@ public class WorkspaceManager
 			changed = true;
 		}
 		PageSettings modulesettings = settings.getPageSettings();
-		fallbackprop = modulesettings.getProperty("fallbackprop");
+		fallbackprop = modulesettings.getProperty("fallbackdirectory");
 		if (fallbackprop == null || !fallbackprop.getValue().equals("/${applicationid}/views/settings/modules/default") || force)
 		{
-			fallbackprop = new PageProperty("fallbackproperty");
+			fallbackprop = new PageProperty("fallbackdirectory");
 			fallbackprop.setValue("/${applicationid}/views/settings/modules/default");
 			modulesettings.putProperty(fallbackprop);
 			changed = true;
