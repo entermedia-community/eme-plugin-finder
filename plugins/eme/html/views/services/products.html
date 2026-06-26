@@ -19,7 +19,8 @@
 </div>
 
 <div class="services-grid mt-4">
-  
+  #set($products = $mediaarchive.query("collectiveproduct").exact("emeprofile", $emeprofile.id).search())
+  $products
   <div class="services-card">
     <div class="services-card-header">
       <div class="services-avatar">SV</div>
@@ -36,73 +37,5 @@
       </a>
     </div>
   </div>
-  
-  <div class="services-card">
-    <div class="services-card-header">
-      <div class="services-avatar">SV</div>
-      <div class="services-meta">
-        <div class="services-name">Spacious Family Villa</div>
-        <div class="services-url">Tierra Sagrada</div>
-      </div>
-    </div>
-    <p class="services-desc">A bright and airy 4-bedroom villa located just 15 minutes from major theme parks. Features a private heated pool, a fun game room, and a large fenced backyard. Perfect for large families or groups looking for comfort, space, and convenience.</p>
-    <div class="services-footer">
-      <span class="services-tag tag-dcategory">House Rental</span> 
-      <a href="#" class="services-cta" target="_blank" rel="noopener">
-        <i class="bi bi-chat me-1"></i> [[View]]
-      </a>
-    </div>
-  </div>
-  
-  <div class="services-card">
-    <div class="services-card-header">
-      <div class="services-avatar">SV</div>
-      <div class="services-meta">
-        <div class="services-name">Spacious Family Villa</div>
-        <div class="services-url">Tierra Sagrada</div>
-      </div>
-    </div>
-    <p class="services-desc">A bright and airy 4-bedroom villa located just 15 minutes from major theme parks. Features a private heated pool, a fun game room, and a large fenced backyard. Perfect for large families or groups looking for comfort, space, and convenience.</p>
-    <div class="services-footer">
-      <span class="services-tag tag-dcategory">House Rental</span> 
-      <a href="#" class="services-cta" target="_blank" rel="noopener">
-        <i class="bi bi-chat me-1"></i> [[View]]
-      </a>
-    </div>
-  </div>
-  
-  <div class="services-card">
-    <div class="services-card-header">
-      <div class="services-avatar">SV</div>
-      <div class="services-meta">
-        <div class="services-name">Spacious Family Villa</div>
-        <div class="services-url">Tierra Sagrada</div>
-      </div>
-    </div>
-    <p class="services-desc">A bright and airy 4-bedroom villa located just 15 minutes from major theme parks. Features a private heated pool, a fun game room, and a large fenced backyard. Perfect for large families or groups looking for comfort, space, and convenience.</p>
-    <div class="services-footer">
-      <span class="services-tag tag-dcategory">House Rental</span> 
-      <a href="#" class="services-cta" target="_blank" rel="noopener">
-        <i class="bi bi-chat me-1"></i> [[View]]
-      </a>
-    </div>
-  </div>
-  
-  <div class="services-card">
-    <div class="services-card-header">
-      <div class="services-avatar">SV</div>
-      <div class="services-meta">
-        <div class="services-name">Spacious Family Villa</div>
-        <div class="services-url">Tierra Sagrada</div>
-      </div>
-    </div>
-    <p class="services-desc">A bright and airy 4-bedroom villa located just 15 minutes from major theme parks. Features a private heated pool, a fun game room, and a large fenced backyard. Perfect for large families or groups looking for comfort, space, and convenience.</p>
-    <div class="services-footer">
-      <span class="services-tag tag-dcategory">House Rental</span> 
-      <a href="#" class="services-cta" target="_blank" rel="noopener">
-        <i class="bi bi-chat me-1"></i> [[View]]
-      </a>
-    </div>
-  </div> 
    
 </div>

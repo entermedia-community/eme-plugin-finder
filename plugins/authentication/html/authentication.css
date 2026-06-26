@@ -66,10 +66,11 @@
 .loginbox .form-control {
 	background: var(--auth-input-bg);
 	border: 1px solid var(--auth-border);
-	border-radius: 9px;
-	color: var(--auth-text);
+	border-radius: 9px !important;
+	color: var(--auth-text) !important;
 	font-size: 0.95rem;
-	padding: 0.75rem 1rem;
+	height: 46px !important;
+	padding: 0.75rem 1rem !important;
 	transition:
 		border-color 0.18s,
 		box-shadow 0.18s;
@@ -115,7 +116,7 @@
 	margin-bottom: 1rem;
 }
 .loginbox .btn-primary:hover {
-	background: var(--auth-accent-h);
+	background: var(--auth-accent-h) !important;
 }
 .loginbox .btn-primary:active {
 	transform: scale(0.98);

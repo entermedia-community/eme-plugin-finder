@@ -9,7 +9,12 @@
 
 <div class="sidebar-section-btn" style="background-color: #f2f2f2;">
   <span class="d-flex align-items-center gap-2">
-    <i class="bi bi-folder2-open sect-icon"></i> #text($librarycol)
+    #ifnotnull($librarycol)
+      <i class="bi bi-folder2-open sect-icon"></i> #text($librarycol)
+    #end
+    #ifnotnull($emeprofile)
+      <i class="bi bi-person-circle sect-icon"></i> #text($emeprofile)'s Data
+    #end
   </span> 
 </div>
 

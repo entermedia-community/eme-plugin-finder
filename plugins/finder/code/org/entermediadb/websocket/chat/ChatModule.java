@@ -24,15 +24,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.entermediadb.ai.assistant.AssistantManager;
-import org.entermediadb.ai.llm.LlmConnection;
 import org.entermediadb.asset.Asset;
 import org.entermediadb.asset.MediaArchive;
 import org.entermediadb.asset.modules.BaseMediaModule;
-import org.entermediadb.scripts.ScriptLogger;
 import org.openedit.Data;
 import org.openedit.MultiValued;
 import org.openedit.WebPageRequest;
@@ -41,6 +37,7 @@ import org.openedit.data.Searcher;
 import org.openedit.hittracker.HitTracker;
 import org.openedit.hittracker.ListHitTracker;
 import org.openedit.profile.UserProfile;
+import org.openedit.users.User;
 import org.openedit.util.DateStorageUtil;
 
 public class ChatModule extends BaseMediaModule
@@ -689,8 +686,11 @@ public class ChatModule extends BaseMediaModule
 					// By user
 					currentchannel = (MultiValued) channelsearcher.query().exact("user", inReq.getUserName()).missing("dataid").after("refreshdate", now.getTime()).sort("refreshdateDown").searchOne();
 				}
-
-				channelname = inReq.getUser().getName();
+				User chatuser = inReq.getUser();
+				if (chatuser != null)
+				{
+					channelname = chatuser.getName();
+				}
 			}
 		}
 

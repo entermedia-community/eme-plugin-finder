@@ -537,7 +537,9 @@ public class AdminModule extends BaseMediaModule
 			{
 				sendTo = inReq.getRequest().getHeader("REFERER");
 			}
-			if (sendTo != null && !sendTo.contains("authentication") && sendTo.startsWith(inReq.getSiteRoot()) && (sendTo.endsWith("html") || sendTo.endsWith("jpg")))
+			String siteRoot = inReq.getSiteRoot();
+
+			if (sendTo != null && !sendTo.contains("authentication") && siteRoot != null && sendTo.startsWith(siteRoot) && (sendTo.endsWith("html") || sendTo.endsWith("jpg")))
 			{ // the original page someone might have
 				// been on
 				inReq.putSessionValue("fullOriginalEntryPage", sendTo);
@@ -995,7 +997,7 @@ public class AdminModule extends BaseMediaModule
 		// getCookieEncryption().removeCookie(inReq, "JSESSIONID"); // Added this to try and logout of all
 		// the sub-domains
 
-		String referrer = inReq.getRequestParameter("editingPath");
+		String referrer = inReq.findPathValue("logoutredirect");
 		if (referrer != null && !referrer.startsWith("http"))
 		{
 			Page epath = getPageManager().getPage(referrer);
@@ -1007,6 +1009,10 @@ public class AdminModule extends BaseMediaModule
 		if (referrer != null)
 		{
 			inReq.redirect(referrer);
+		}
+		else
+		{
+			inReq.redirect("/index.html");
 		}
 	}
 

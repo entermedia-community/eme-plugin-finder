@@ -12359,3 +12359,6 @@ a.action-link:hover {
 	color: #626b7a;
 	letter-spacing: 1px;
 }
+.eme-avatar img {
+	border-radius: 50%;
+}

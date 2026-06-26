@@ -445,7 +445,7 @@ public abstract class BaseConversionManager implements ConversionManager
 			{
 				ConvertInstructions instructions = createInstructions(asset);
 				instructions.setForce(true);
-				Page profile = getMediaArchive().getPageManager().getPage("/system/commonbase/components/conversions/ProPhoto.icc");
+				Page profile = getMediaArchive().getPageManager().getPage("/community/default/components/conversions/ProPhoto.icc");
 				instructions.setImageProfile(profile);
 				instructions.setInputFile(originalDocument);
 				instructions.setProperty("skipprofile", "true");

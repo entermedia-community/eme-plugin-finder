@@ -2,10 +2,10 @@
 
 <page>
 
-  <property name="loginroot">/system/commonbase/authentication</property>
-	
+	<property name="loginroot">/${applicationid}/authentication</property>
+
 	<permission name="view">
 		<boolean value="true" />
 	</permission>
-	
+
 </page>

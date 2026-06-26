@@ -133,7 +133,7 @@ public class ImageConversionManager extends BaseConversionManager
 	 * if (profiledescip.contains("ProPhoto")) {
 	 * 
 	 * Page profile = getMediaArchive().getPageManager().getPage(
-	 * "/system/commonbase/components/conversions/ProPhoto.icc");
+	 * "/community/default/components/conversions/ProPhoto.icc");
 	 * 
 	 * return profile;
 	 * 
