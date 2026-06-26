@@ -43,6 +43,7 @@ import org.openedit.page.Page;
 import org.openedit.repository.ContentItem;
 import org.openedit.users.User;
 import org.openedit.util.PathUtilities;
+import org.openedit.util.URLUtilities;
 
 public class EntityModule extends BaseMediaModule
 {
@@ -1930,7 +1931,19 @@ public class EntityModule extends BaseMediaModule
 			emesearcher.saveData(emeprofile);
 		}
 
-		inReq.redirect('/' + user.getScreenName());
+		Searcher teamsearcher = mediaArchive.getSearcher("librarycollection");
+		Data team = teamsearcher.query().exact("emeprofile", emeprofile.getId()).searchOne();
+		if (team == null)
+		{
+			team = teamsearcher.createNewData();
+			team.setValue("emeprofile", emeprofile.getId());
+			team.setName(user.getName() + "'s Team");
+			String urlname = URLUtilities.dash(user.getScreenName() + " Team");
+			team.setValue("urlname", urlname);
+			teamsearcher.saveData(team);
+		}
+
+		inReq.redirect('/' + team.get("urlname"));
 
 	}
 
