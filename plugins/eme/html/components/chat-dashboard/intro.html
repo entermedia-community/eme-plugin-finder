@@ -3,7 +3,10 @@
     <div class="row g-5">
 
       <div class="col-auto">
-        <img src="/${applicationid}/theme/images/profile.jpeg" alt="Shakil Ahmmed" class="avatar rounded-circle" />
+        #set($asset = $mediaarchive.getAsset($emeprofile.primarymedia))
+        $context.putPageValue("asset", $asset)
+        $context.putPageValue("imagesize", "image200x200")
+        $pages.include("/${applicationid}/views/modules/asset/results/default/thumbnails/image.html",$context) 
       </div>
 
       <div class="col">
@@ -68,6 +71,6 @@
   </div>
 </section>
 
-$pages.include("/${applicationid}/views/services/index2.html", $context)
+$pages.include("/${applicationid}/views/services/products.html", $context)
 
 
