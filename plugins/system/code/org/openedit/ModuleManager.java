@@ -122,9 +122,9 @@ public class ModuleManager implements BeanLoaderAware, ShutdownList
 				log.error("404 on " + error.getPathWithError());
 			}
 			else
-				if (cause instanceof OpenEditException)
+				if (cause instanceof RuntimeException)
 				{
-					throw (OpenEditException) cause;
+					throw (RuntimeException) cause;
 				}
 				else
 					if (inAction != null)
