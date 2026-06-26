@@ -1938,9 +1938,21 @@ public class EntityModule extends BaseMediaModule
 			team = teamsearcher.createNewData();
 			team.setValue("emeprofile", emeprofile.getId());
 			team.setName(user.getName() + "'s Team");
-			String urlname = URLUtilities.dash(user.getScreenName() + " Team");
+			String urlname = user.getScreenName() + "-Team";
 			team.setValue("urlname", urlname);
 			teamsearcher.saveData(team);
+		}
+
+		Searcher usercollectionsearcher = mediaArchive.getSearcher("librarycollectionusers");
+		Data usercollection = usercollectionsearcher.query().exact("collectionid", team.getId()).exact("followeruser", user.getId()).exact("ontheteam", true).searchOne();
+		if (usercollection == null)
+		{
+			usercollection = usercollectionsearcher.createNewData();
+			usercollection.setValue("collectionid", team.getId());
+			usercollection.setValue("followeruser", user.getId());
+			usercollection.setValue("ontheteam", true);
+			usercollection.setValue("teamroles", "0");
+			usercollectionsearcher.saveData(usercollection);
 		}
 
 		inReq.redirect('/' + team.get("urlname"));

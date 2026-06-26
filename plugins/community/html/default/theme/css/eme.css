@@ -718,6 +718,10 @@
 	box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
 }
 
+.add-product {
+	max-width: 1200px;
+	margin: 0 auto;
+}
 .services-grid {
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));

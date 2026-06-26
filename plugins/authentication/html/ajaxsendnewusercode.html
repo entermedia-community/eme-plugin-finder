@@ -67,6 +67,9 @@
 					id="loginemail"
 					type="email"
 					name="email"
+					#ifnotnull($email)
+						value="$email"
+					#end
 					placeholder="[[Enter your email address]]"
 					class="form-control required grabfocus"
 					autocomplete="email"

@@ -18,24 +18,43 @@
   </div>
 </div>
 
+<div class="add-product pt-3">
+  <a href="${apphome}/views/modules/collectiveproduct/editors/listentities/tabs/index.html"
+    class="chip emdialog"
+    data-dialogid="entitypickeraddnew"
+    data-dialogwidth="1400"
+    data-hidefooter="true"
+    data-includeeditcontext="true"
+    data-autosetformtargetdiv="editdiv"
+    data-entitymoduleviewid="collectiveproductaddnew"
+    edit="true"
+    addnew="true"
+    title="[[Create New Product/Service]]">
+    <i class="bi bi-plus me-1"></i>
+    <span>Add Product/Service</span>
+  </a>
+</div>
+
 <div class="services-grid mt-4">
   #set($products = $mediaarchive.query("collectiveproduct").exact("emeprofile", $emeprofile.id).search())
-  $products
-  <div class="services-card">
-    <div class="services-card-header">
-      <div class="services-avatar">SV</div>
-      <div class="services-meta">
-        <div class="services-name">Spacious Family Villa</div>
-        <div class="services-url">Tierra Sagrada</div>
+  #foreach($product in $products)
+    <div class="services-card">
+      <div class="services-card-header">
+        <div class="services-avatar">@</div>
+        <div class="services-meta">
+          <div class="services-name">#text($product)</div>
+          <div class="services-url">#text($emeprofile)</div>
+        </div>
+      </div>
+      <p class="services-desc">$product.productdescription</p>
+      <div class="services-footer">
+        #set($searchcategory = $mediaarchive.getCachedData("searchcategory", $product.searchcategory))
+        <span class="services-tag tag-dcategory">#text($searchcategory)</span> 
+        <a href="#" class="services-cta" target="_blank" rel="noopener">
+          <i class="bi bi-chat me-1"></i> [[View]]
+        </a>
       </div>
     </div>
-    <p class="services-desc">A bright and airy 4-bedroom villa located just 15 minutes from major theme parks. Features a private heated pool, a fun game room, and a large fenced backyard. Perfect for large families or groups looking for comfort, space, and convenience.</p>
-    <div class="services-footer">
-      <span class="services-tag tag-dcategory">House Rental</span> 
-      <a href="#" class="services-cta" target="_blank" rel="noopener">
-        <i class="bi bi-chat me-1"></i> [[View]]
-      </a>
-    </div>
-  </div>
+  #end
    
 </div>
