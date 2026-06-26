@@ -3,5 +3,5 @@
 <page>
   <property name="module">smartorganizer</property>
   <property name="searchtype">smartorganizer</property>
-	<property name="fallbackdirectory">/${applicationid}/views/settings/modules/default</property>
+  <property name="fallbackdirectory">/${applicationid}/services/module/default</property>
 </page>

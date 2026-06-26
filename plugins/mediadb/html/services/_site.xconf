@@ -1,8 +1,6 @@
 <page>
 	<inner-layout />
 
-	<property name="fallbackdirectory">/finder/find/services</property>
-
 	<path-action name="MediaArchiveModule.loadApplicationId" />
 	<path-action name="Admin.autoLogin" alltypes="true"/>
 	<path-action name="ProfileModule.loadUserProfile" alltypes="true" />

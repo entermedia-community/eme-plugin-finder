@@ -2,6 +2,6 @@
 
 <page>
   <property name="fallbackdirectory">/${applicationid}/views/settings/modules/default</property>
-  <property name="fallbackproperty">/${applicationid}/views/settings/modules/default</property>
+  <property name="fallbackdirectory">/${applicationid}/views/settings/modules/default</property>
   <property name="module">entityassetpage</property>
 </page>
