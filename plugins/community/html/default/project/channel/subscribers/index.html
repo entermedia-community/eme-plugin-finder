@@ -24,6 +24,13 @@
 				
 				#if($followeruser && $followeruser.enabled == "true")
 					#set( $userlink = "$!apphome/users/index.html?id=${followeruser.getId()}")
+					
+					#set( $emeprofile = $mediaarchive.query("emeprofile").exact("owner", $followeruser.getId()).searchOne() )
+
+					#ifnotnull($emeprofile)
+						#set( $userlink = "$!{siteroot}/profiles/${emeprofile.urlname}" )
+					#end
+
 					#set( $userimageurl = $mediaarchive.asLinkToUserProfile($followeruser) )
 					
 					#if(!$userimageurl)
