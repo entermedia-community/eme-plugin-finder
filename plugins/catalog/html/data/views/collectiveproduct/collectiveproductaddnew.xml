@@ -2,15 +2,10 @@
 
 <properties beanname="dataSearcher">
 
-	<property id="producttype" />
 	<property id="name" />
 	<property id="productdescription" />
+	<property id="producttype" />
 	<property id="currencytype" />
 	<property id="productprice" />
-	<property id="paymentstatus" />
-	<property id="recurring" />
-	<property id="recurringperiod" />
-	<property id="nextbillon" />
-	
-	<property id="sentto" />
+	<property id="searchcategory" />
 </properties>

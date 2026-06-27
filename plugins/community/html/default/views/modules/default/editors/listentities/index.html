@@ -22,7 +22,7 @@
 		#ifnull($hits)
 			$pages.include("${searchhome}/searchinclude.html",$context)
 		#end
-		
+
 		#ifnotnull($hits)	
 			$pages.include("${searchhome}/index.html",$context)   ##This hits came from default/index.xconf
 		#end
