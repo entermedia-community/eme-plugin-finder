@@ -276,7 +276,7 @@ public class WorkspaceManager
 
 		boolean changed = false;
 
-		if (changeValue(homesettings, "fallbackdirectory", "/${applicationid}/views/settings/modules/default", force))
+		if (changeValue(homesettings, "fallbackdirectory", "/${applicationid}/views/modules/default", force))
 		{
 			changed = true;
 		}
