@@ -2,6 +2,5 @@
 
 <page>
   <property name="fallbackdirectory">/${applicationid}/views/settings/modules/default</property>
-  <property name="fallbackdirectory">/${applicationid}/views/settings/modules/default</property>
   <property name="module">bankaccount</property>
 </page>

@@ -2,7 +2,7 @@
 
 <page>
   
-  <property name="fallbackdirectory">/community/default/views/settings/modules/default</property>
+  <property name="fallbackdirectory">/${applicationid}/views/settings/modules/default</property>
 
   <property name="module">asset</property>
   

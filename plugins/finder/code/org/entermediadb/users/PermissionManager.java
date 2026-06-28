@@ -583,7 +583,6 @@ public class PermissionManager implements CatalogEnabled
 	public void queuePermissionCheck(MultiValued inModule)
 	{
 		MediaArchive archive = getMediaArchive();
-		log.info("Checkiog permissions on " + inModule);
 
 		Category rootcat = archive.getEntityManager().loadDefaultFolderForModule(inModule, null);
 
@@ -650,9 +649,9 @@ public class PermissionManager implements CatalogEnabled
 		{
 			inModule.setValue("permissionsupdateddate", new Date());
 			archive.saveData("module", inModule);
+			archive.fireSharedMediaEvent("entities/checkpermissionhistory"); // handleModulePermissionsUpdated()
 
 		}
-		archive.fireSharedMediaEvent("entities/checkpermissionhistory"); // handleModulePermissionsUpdated()
 	}
 
 	public void handleModulePermissionsUpdated()

@@ -239,11 +239,12 @@ public class WorkspaceManager
 				Searcher settingsmenumodule = getSearcherManager().getSearcher(catalogid, "settingsmenumodule");
 				settingsmenumodule.reIndexAll();
 			}
-			else if (verify)
-			{
-				// Merge
+			else
+				if (verify)
+				{
+					// Merge
 
-			}
+				}
 
 			String templte3 = "/" + catalogid + "/data/lists/settingsmodulepermissionsdefault.xml";
 			String path3 = "/WEB-INF/data/" + catalogid + "/lists/settingsmodulepermissions" + module.getId() + ".xml";
@@ -275,37 +276,22 @@ public class WorkspaceManager
 
 		boolean changed = false;
 
-		PageProperty fallbackprop = homesettings.getProperty("fallbackdirectory");
-		if (fallbackprop == null || !fallbackprop.getValue().equals("/${applicationid}/views/modules/default") || force)
+		if (changeValue(homesettings, "fallbackdirectory", "/${applicationid}/views/settings/modules/default", force))
 		{
-			fallbackprop = new PageProperty("fallbackdirectory");
-			fallbackprop.setValue("/${applicationid}/views/modules/default");
-			homesettings.putProperty(fallbackprop);
 			changed = true;
 		}
-		PageProperty moduleprop = homesettings.getProperty("module");
-		if (moduleprop == null || !moduleprop.getValue().equals(module.getId()))
+		if (changeValue(homesettings, "module", module.getId(), force))
 		{
-			moduleprop = new PageProperty("module");
-			moduleprop.setValue(module.getId());
-			homesettings.putProperty(moduleprop);
 			changed = true;
 		}
+
 		PageSettings modulesettings = settings.getPageSettings();
-		fallbackprop = modulesettings.getProperty("fallbackdirectory");
-		if (fallbackprop == null || !fallbackprop.getValue().equals("/${applicationid}/views/settings/modules/default") || force)
+		if (changeValue(modulesettings, "fallbackdirectory", "/${applicationid}/views/settings/modules/default", force))
 		{
-			fallbackprop = new PageProperty("fallbackdirectory");
-			fallbackprop.setValue("/${applicationid}/views/settings/modules/default");
-			modulesettings.putProperty(fallbackprop);
 			changed = true;
 		}
-		moduleprop = modulesettings.getProperty("module");
-		if (moduleprop == null || !moduleprop.getValue().equals(module.getId()))
+		if (changeValue(modulesettings, "module", module.getId(), force))
 		{
-			moduleprop = new PageProperty("module");
-			moduleprop.setValue(module.getId());
-			modulesettings.putProperty(moduleprop);
 			changed = true;
 		}
 
@@ -315,6 +301,23 @@ public class WorkspaceManager
 			getPageManager().getPageSettingsManager().saveSetting(modulesettings);
 		}
 		return module.getId();
+	}
+
+	boolean changeValue(PageSettings homesettings, String inKey, String inValue, boolean force)
+	{
+		PageProperty prop = homesettings.getProperty(inKey);
+		if (prop == null)
+		{
+			prop = new PageProperty(inKey);
+			force = true;
+		}
+		if (force || !inValue.equals(prop.getValue()))
+		{
+			prop.setValue(inValue);
+			homesettings.putProperty(prop);
+			return true;
+		}
+		return false;
 	}
 
 	public void createMediaDbModule(String inCatalogId, Data inModule)
@@ -791,25 +794,26 @@ public class WorkspaceManager
 				Element xml = saveDataToXml(module);
 				root.add(xml);
 			}
-			else if ("table".equals(customization.get("customizationtype")))
-			{
-				String path = "/WEB-INF/data/" + inCatalogId + "/fields/" + searchtype + ".xml";
-				if (getPageManager().getRepository().doesExist(path))
+			else
+				if ("table".equals(customization.get("customizationtype")))
 				{
-					pageZipUtil.zip(path, finalZip);
-					path = "/WEB-INF/data/" + inCatalogId + "/fields/" + searchtype + "/";
+					String path = "/WEB-INF/data/" + inCatalogId + "/fields/" + searchtype + ".xml";
 					if (getPageManager().getRepository().doesExist(path))
 					{
 						pageZipUtil.zip(path, finalZip);
+						path = "/WEB-INF/data/" + inCatalogId + "/fields/" + searchtype + "/";
+						if (getPageManager().getRepository().doesExist(path))
+						{
+							pageZipUtil.zip(path, finalZip);
+						}
+					}
+					exportData(archive, searchtype, finalZip);
+					String xml = "/WEB-INF/data/" + inCatalogId + "/lists/" + searchtype + ".xml";
+					if (getPageManager().getRepository().doesExist(xml))
+					{
+						pageZipUtil.zip(xml, finalZip);
 					}
 				}
-				exportData(archive, searchtype, finalZip);
-				String xml = "/WEB-INF/data/" + inCatalogId + "/lists/" + searchtype + ".xml";
-				if (getPageManager().getRepository().doesExist(xml))
-				{
-					pageZipUtil.zip(xml, finalZip);
-				}
-			}
 
 			pageZipUtil.addTozip(root.asXML(), "/customizations/" + searchtype + ".xml", finalZip);
 		}
