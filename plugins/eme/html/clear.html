@@ -1,27 +1,25 @@
-<html>
+
 <p style="max-width: 1000px; ">
 
 ##set( $path = "/finder/find/views/modules/asset/results/default/thumbnails/small.html")
 #set( $path = "/finder/find/views/modules/entityasset/editors/listentities/tabs/rendertypes/data.html")
 ##set( $path = "/finder/find/views/modules/asset/components/sidebars/index.html" )
-<br>
+
 #set( $path = "/eme/views/modules/default/editors/fullscreenchat/chatterbox/index.html")
 $pageManager.clearCache($path)
 #set($p = $pageManager.getPage($path,false) )
-<br>
-p.getPageSettings().getFallbackParents()  = $p.getPageSettings().getFallbackParents() 
-<br>
+
+#foreach($path in $p.getPageSettings().getFallbackParents())
+$path <br>
+#end
 Path: <a href="http://localhost.com:8080/$path">$path</a>
-<br>
+
 p.exists() = $p.exists()
-<br>
+
 INCLUDE
-<br>
 $p.getPageSettings().getPath() = $p.getPageSettings().getPath()
-<br>
 $p.getPageSettings().getGenerators() 
-<br>
-##$pages.include($path, $context)
+
+$pages.include($path, $context)
 
 </p>
-</html>

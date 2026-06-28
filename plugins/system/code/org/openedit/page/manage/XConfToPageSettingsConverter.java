@@ -7,10 +7,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
@@ -490,10 +492,32 @@ public class XConfToPageSettingsConverter
 		{
 			return;
 		}
-		// Take the first record and sort everyone under that one by name. Put lower weighted path that have
-		// the world default and lower value
 		PageSettings first = fallBackParents.get(0);
-		Collections.sort(fallBackParents, new PageSettingsPathComparator(first.getPath()));
+
+		// Make ones that have no fallback directory go to the bottom of the list
+		// Loop over the list and see who falls back to who. If one falls back to another then it should be
+		// higher in the list. If one has no fallback directory then it should be at the bottom of the list.
+		// Set<PageSettings> remainingFallbacks = new HashSet<PageSettings>(fallBackParents);
+		// remainingFallbacks.remove(first);
+		// while( remainingFallbacks.size() > 1)
+		// {
+		// PageSettings testing = remainingFallbacks.iterator().next();
+		// for (PageSettings remaining: remainingFallbacks)
+		// {
+		// PageProperty fallBackDir = findFallbackDirectory(testing);
+		// if (fallBackDir == null)
+		// {
+		// remainingFallbacks.remove(testing);
+		// }
+		// }
+
+		// }
+
+		// Collections.sort(fallBackParents, new PageSettingsPathComparator(first.getPath()));
+
+		Collections.sort(fallBackParents, new FallBackRootsComparator(first));
+
+		Collections.reverse(fallBackParents);
 
 	}
 
@@ -676,75 +700,90 @@ public class XConfToPageSettingsConverter
 		fieldFilterReader = inFilterReader;
 	}
 
-	class PageSettingsPathComparator implements java.util.Comparator<PageSettings>
+	class FallBackRootsComparator implements java.util.Comparator<PageSettings>
 	{
-		private String basePath;
-		private String rootfolder;;
+		PageSettings topPageSettings;
 
-		public PageSettingsPathComparator(String basePath) {
-			this.basePath = basePath;
-			rootfolder = PathUtilities.extractRootDirectory(basePath);
-
+		public FallBackRootsComparator(PageSettings topPageSettings) {
+			this.topPageSettings = topPageSettings;
 		}
 
-		protected String makePath(String[] paths, int i)
+		// community/default/components vs finder/find/components/_site.xconf
+		public int compare(PageSettings inFirst, PageSettings inSecond)
 		{
-			StringBuffer sb = new StringBuffer();
-			for (int j = 0; j <= i; j++)
-			{
-				sb.append(paths[j]);
-				if (j < i)
-				{
-					sb.append("/");
-				}
-			}
-			return sb.toString();
-		}
-
-		public int compare(PageSettings inOne, PageSettings inTwo)
-		{
-			// weight the paths that are closer to the current path higher. So if the base path is /a/b/c/d and
-			// we have fallbacks of /a/b/c, /a/b, and /a then we want to weight them in that order. We also want
-			// to weight any paths with the word default higher than those without it. So if we have
-
-			// openedit/ sub1 -> finder -> default
-			// openedit/ sub2 - > community
-
-			int weightOne = getWeight(inOne.getPath());
-			int weightTwo = getWeight(inTwo.getPath());
-			if (weightOne > weightTwo)
+			// See if one page settings has any fallbacks to the other one
+			if (checkIsParent(inFirst, inSecond))
 			{
 				return 1;
 			}
-			if (weightOne < weightTwo)
+			if (checkIsParent(inSecond, inFirst))
 			{
 				return -1;
 			}
 			return 0;
+
 		}
 
-		private int getWeight(String path)
+		// Is the second a child of the first? If so it should be lower in the list
+		protected boolean checkIsParent(PageSettings inStartingPoint, PageSettings inUnown)
 		{
-			if (path.equals(basePath))
+			for (PageSettings fallback : inStartingPoint.getFallbackParents())
 			{
-				return 0; // same path should be lowest weight
+				PageSettings folder = fallback;
+				while (folder != null)
+				{
+					PageProperty fallbackdir = findFallbackDirectory(folder);
+					if (fallbackdir != null)
+					{
+						String path = resolveFallbackPath(topPageSettings, folder, fallbackdir);
+						if (path == null) // this folder has no
+						{
+							return false;
+						}
+						if (path.equals(inUnown.getPath()))
+						{
+							return true;
+						}
+						/// TODO: also Check all the parents paths of second
+					}
+					folder = folder.getParent();
+				}
 			}
-			int weight = 0;
-			if (path.startsWith("/finder")) // TODO: Change this to look in plugins or some xml file for the weighting
-			{
-				weight = 1000; // push it down
-			}
-			if (path.startsWith("/community"))
-			{
-				weight = 2000; // push it down
-			}
-
-			int countdefaults = path.split("default").length - 1;
-			weight += countdefaults * 1000; // default gets a big boost
-
-			// int distance = getPathDistance(basePath, path);
-			// weight += (100 - distance); // closer paths get a higher weight
-			return weight;
+			return false;
 		}
+		/*
+		 * class PageSettingsPathComparator implements java.util.Comparator<PageSettings> { private String
+		 * basePath; private String rootfolder;;
+		 * 
+		 * public PageSettingsPathComparator(String basePath) { this.basePath = basePath; rootfolder =
+		 * PathUtilities.extractRootDirectory(basePath);
+		 * 
+		 * }
+		 * 
+		 * protected String makePath(String[] paths, int i) { StringBuffer sb = new StringBuffer(); for (int
+		 * j = 0; j <= i; j++) { sb.append(paths[j]); if (j < i) { sb.append("/"); } } return sb.toString();
+		 * }
+		 * 
+		 * public int compare(PageSettings inOne, PageSettings inTwo) { // weight the paths that are closer
+		 * to the current path higher. So if the base path is /a/b/c/d and // we have fallbacks of /a/b/c,
+		 * /a/b, and /a then we want to weight them in that order. We also want // to weight any paths with
+		 * the word default higher than those without it. So if we have
+		 * 
+		 * // openedit/ sub1 -> finder -> default // openedit/ sub2 - > community
+		 * 
+		 * int weightOne = getWeight(inOne.getPath()); int weightTwo = getWeight(inTwo.getPath()); if
+		 * (weightOne > weightTwo) { return 1; } if (weightOne < weightTwo) { return -1; } return 0; }
+		 * 
+		 * private int getWeight(String path) { if (path.equals(basePath)) { return 0; // same path should
+		 * be lowest weight } int weight = 0; if (path.startsWith("/finder")) // TODO: Change this to look
+		 * in plugins or some xml file for the weighting { weight = 1000; // push it down } if
+		 * (path.startsWith("/community")) { weight = 2000; // push it down }
+		 * 
+		 * int countdefaults = path.split("default").length - 1; weight += countdefaults * 1000; // default
+		 * gets a big boost
+		 * 
+		 * // int distance = getPathDistance(basePath, path); // weight += (100 - distance); // closer paths
+		 * get a higher weight return weight; } }
+		 */
 	}
 }
