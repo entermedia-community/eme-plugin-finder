@@ -1,9 +1,11 @@
 #ifnotnull($emeprofile)
   #set($entitymodule = $emeprofile)
+  #set($moduleid = "emeprofile")
 #end
 #ifnull($entitymodule)
   #ifnotnull($librarycol)
     #set($entitymodule = $librarycol)
+    #set($moduleid = "librarycollection")
   #end
 #end
 
@@ -19,8 +21,8 @@
 </div>
 
 <div class="py-2" id="sbFilesBody">
-  #set($enttiyviews = $mediaarchive.query("view").exact("moduleid", $module.id).exact("systemdefined","false").sort("orderingUp").named("view").search($context) )
-
+  #set($enttiyviews = $mediaarchive.query("view").exact("moduleid", $moduleid).exact("systemdefined","false").sort("orderingUp").named("view").search($context) )
+  
   #foreach($entityview in $enttiyviews)
 
     #set( $viewdata = $mediaarchive.getCachedData("view", $entityview.id))
