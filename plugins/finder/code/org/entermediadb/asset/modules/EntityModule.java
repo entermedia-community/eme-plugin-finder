@@ -1928,6 +1928,7 @@ public class EntityModule extends BaseMediaModule
 			emeprofile = emesearcher.createNewData();
 			emeprofile.setValue("urlname", user.getScreenName());
 			emeprofile.setValue("name", user.getName());
+			emeprofile.setValue("owner", user.getId());
 			emesearcher.saveData(emeprofile);
 		}
 
