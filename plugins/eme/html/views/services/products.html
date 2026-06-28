@@ -22,6 +22,7 @@
   <a href="${apphome}/views/services/addproduct.html"
     class="chip emdialog"
     data-dialogid="productaddnew"
+    data-emeprofileid="$emeprofile.id"
     title="[[Create New Product/Service]]">
     <i class="bi bi-plus me-1"></i>
     <span>Add Product/Service</span>
@@ -42,10 +43,21 @@
       <p class="services-desc">$product.productdescription</p>
       <div class="services-footer">
         #set($searchcategory = $mediaarchive.getCachedData("searchcategory", $product.searchcategory))
-        <span class="services-tag tag-dcategory">#text($searchcategory)</span> 
-        <a href="#" class="services-cta" target="_blank" rel="noopener">
-          <i class="bi bi-chat me-1"></i> [[View]]
-        </a>
+        <span class="services-tag tag-dcategory">#text($searchcategory)</span>
+        <div class="d-flex gap-1">
+          <a href="#" class="services-cta" target="_blank" rel="noopener">
+            <i class="bi bi-chat me-1"></i> [[View]]
+          </a>
+          #if($user.id == $emeprofile.owner)
+            <a href="${apphome}/views/services/editproduct.html"
+              class="services-cta emdialog"
+              data-dialogid="productedit"
+              data-id="$product.id"
+              data-emeprofileid="$emeprofile.id">
+              <i class="bi bi-pencil-square me-1"></i> [[Edit]]
+            </a>
+          #end
+        </div>
       </div>
     </div>
   #end

@@ -1,4 +1,8 @@
 #set($emeprofileid = $context.getRequestParameter("emeprofileid") )
+#set( $collectiveproductid = $context.getRequestParameter("id") )
+#ifnotnull( $collectiveproductid )
+	#set( $collectiveproduct = $mediaarchive.query("collectiveproduct").exact("id", $collectiveproductid).exact("emeprofile", $emeprofileid).searchOne() )
+#end
 
 <form name="emeprofileform" id="emeprofileform" class="ajaxform autocloseform" action="/${applicationid}/components/chat-dashboard/intro-save.html" method="post">
 
@@ -11,6 +15,12 @@
 
 	<input type="hidden" name="field" value="owner" />
 	<input type="hidden" name="owner.value" value="$user.getId()" />
+
+	#ifnotnull( $collectiveproduct )
+		$context.putPageValue("data", $collectiveproduct)
+		<input type="hidden" name="id" value="$collectiveproduct.id" />
+	#end
+
 
   #set( $searcher = $mediaarchive.getSearcher("collectiveproduct") )
   $context.putPageValue("searcher", $searcher)
