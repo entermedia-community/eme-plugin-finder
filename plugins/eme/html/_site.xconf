@@ -101,10 +101,8 @@
   <property name="themeid">defaulttheme</property>
   <property name="hitsname">hits</property>
   <property name="allowguestregistration">false</property>
-  <property name="edithome">/${applicationid}/views/modules/asset/editors/default</property>
   <property name="makeversion">false</property>
   <property name="catalogid">catalog</property>
-  <property name="searchhome">/${applicationid}/views/modules/asset/results/default</property>
   <property name="systemfromemailname">EnterMedia</property>
   <property name="shownav">true</property>
   <inner-layout>/${applicationid}/theme/layouts/applicationcontent.html</inner-layout>
