@@ -38,14 +38,13 @@ $context.putPageValue("chatterboxhome", $chatterboxhome)
 	data-catalogid="$!{catalogid}"
 	data-broadcastall="false">
 
+	## $pages.include("${chatterboxhome}/messages.html", $context)
 
-	$pages.include("${chatterboxhome}/messages.html", $context)
-
-	$pages.include("${chatterboxhome}/scenariopicker.html", $context)
+	## $pages.include("${chatterboxhome}/scenariopicker.html", $context)
 
 
 	#if($cansendchat)
-		$pages.include("${chatterboxhome}/editarea.html", $context)				
+		## $pages.include("${chatterboxhome}/editarea.html", $context)				
 	#end
 
 </div>
