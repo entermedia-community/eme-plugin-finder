@@ -2,7 +2,7 @@
 
 <page>
 
-  <property name="fallbackdirectory">/finder/find</property>  <!-- added to individual folders to avoid load all css/js finder stuff -->
+  <property name="fallbackdirectory">/community/default</property>  <!-- added to individual folders to avoid load all css/js finder stuff -->
 
   <generator name="velocityGenerator" mimetypes="text/html"/>
   <generator name="velocityGenerator" mimetypes="text/json"/>
@@ -33,7 +33,7 @@
   <path-action name="MediaArchiveModule.loadApplicationId" />
 
   <!-- Bootstrap CSS (JS included @ includes.html) -->
-  <style id="bootstrap-css" href="/${applicationid}/components/javascript/bootstrap/4.5.3/css/bootstrap.min.css" />
+  <style id="bootstrap-css" href="/${applicationid}/components/javascript/bootstrap/5.3.8/css/bootstrap.min.css" />
   <style id="fontawesome-css" href="/${applicationid}/components/javascript/bootstrap/fonts/css/fontawesome-all.min.css" />
 
   <!-- OpenEdit -->

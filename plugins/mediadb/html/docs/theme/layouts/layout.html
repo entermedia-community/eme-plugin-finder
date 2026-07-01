@@ -22,18 +22,17 @@
     $pages.include("/${applicationid}/docs/theme/layouts/header.html")
     <div class="container-fluid">
       <div class="row">
-        <div class="col-md-2 sidebar">
+        <div class="col-md-3 sidebar">
           #set($searcher = $mediaarchive.getSearcher("endpoint"))
           #set($sections  = $mediaarchive.getList("docsection"))
           #set($sectionid  = $context.getRequestParameter("section"))
    
           #foreach($section in $sections)
             <div class="card">
-              <div class="card-header" id="collapseListGroup${section.id}">
+              <div class="card-header" id="collapseListGroup">
                 <h5 class="mb-0">
-                  <a data-toggle="collapse"
+                  <a data-bs-toggle="collapse"
                     href="#collapseListGroup${section.id}"
-                    data-target="#collapseListGroup${section.id}"
                     #if($sectionid == $sectionid) aria-expanded="true" #else aria-expanded="false" #end
                   >
                     #set($sec = $!mediaarchive.getCachedData("docsection", $section.getId()))
@@ -60,7 +59,7 @@
             </div>
           #end
         </div>
-        <div class="col-md-10">
+        <div class="col-md-9">
 			    $pages.includeContent()          
         </div>
       </div>

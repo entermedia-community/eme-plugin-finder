@@ -5224,7 +5224,6 @@ table.greytxt {
 .eml-tab-content,
 .eml-full-content {
 	background: var(--light-bg);
-	padding: 20px;
 }
 
 .metadatainput .select2 {
