@@ -55,7 +55,6 @@ public class PageSettings
 
 	protected boolean fieldModified = false;
 	protected String fieldMimeType;
-	protected PageSettings fieldFallBack;
 	protected PageSettings fieldParent;
 	protected String fieldDefaultLanguage;
 
@@ -384,20 +383,6 @@ public class PageSettings
 	public void setFallbackParents(Collection<PageSettings> inFallbackParents)
 	{
 		fieldgetFallbackParents = inFallbackParents;
-	}
-
-	public PageSettings getFallback()
-	{
-		return fieldFallBack;
-	}
-
-	/**
-	 * @param inParent
-	 */
-	public void setFallBack(PageSettings inParent)
-	{
-		fieldFallBack = inParent;
-
 	}
 
 	// Does this even work? Seems slow

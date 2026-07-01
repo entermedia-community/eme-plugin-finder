@@ -4,4 +4,5 @@
   <property name="fallbackdirectory">/mediadb/services/module/default</property>
   <property name="module">projectstatus</property>
   <property name="searchtype">projectstatus</property>
+  <property name="fallbackprop">/mediadb/services/module/projectstatus</property>
 </page>
