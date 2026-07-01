@@ -16,6 +16,7 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -24,7 +25,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openedit.OpenEditException;
@@ -33,7 +33,6 @@ import org.openedit.WebPageRequest;
 import org.openedit.cache.CacheManager;
 import org.openedit.config.Script;
 import org.openedit.config.Style;
-import org.openedit.generators.VelocityGenerator;
 import org.openedit.page.Page;
 import org.openedit.page.PageSettings;
 import org.openedit.repository.CompoundRepository;
@@ -184,14 +183,15 @@ public class PageManager
 				}
 			}
 		}
-		else if (multipleLang)
-		{
-			Page translated = getPage(rootdir + inPath, inCheckCurrent);
-			if (translated.exists())
+		else
+			if (multipleLang)
 			{
-				foundPage = translated;
+				Page translated = getPage(rootdir + inPath, inCheckCurrent);
+				if (translated.exists())
+				{
+					foundPage = translated;
+				}
 			}
-		}
 		if (foundPage == null)
 		{
 			return inPage;
@@ -242,15 +242,16 @@ public class PageManager
 				// if the fullpath alternative has been added then we need to blow away this page and its settings
 				reloadPage = true;
 			}
-			else if (!inCheckDates)
-			{
-				firePageRequested(page);
-				return page;
-			}
 			else
-			{
-				reloadPage = true;
-			}
+				if (!inCheckDates)
+				{
+					firePageRequested(page);
+					return page;
+				}
+				else
+				{
+					reloadPage = true;
+				}
 		}
 		synchronized (getCacheManager())
 		{ // lock down the config until we can configure the thing
@@ -605,9 +606,9 @@ public class PageManager
 		return getChildrenPaths(inUrl);
 	}
 
-	public List getChildrenPaths(String inPath, boolean inIncludeFallBack)
+	public List<String> getChildrenPaths(String inPath, boolean inIncludeFallBack)
 	{
-		List all = getRepository().getChildrenNames(inPath);
+		List<String> all = getRepository().getChildrenNames(inPath);
 		if (inIncludeFallBack)
 		{
 			Set<String> names = new HashSet<String>();
@@ -620,10 +621,10 @@ public class PageManager
 				}
 			}
 			PageSettings settings = getPageSettingsManager().getPageSettings(inPath);
-			settings = settings.getFallback();
-			while (settings != null)
+			Collection<PageSettings> fallbacks = settings.getFallbackParents();
+			for (PageSettings fallback : fallbacks)
 			{
-				String dirparent = PathUtilities.extractDirectoryPath(settings.getPath());
+				String dirparent = PathUtilities.extractDirectoryPath(fallback.getPath());
 				if (dirparent.equals("/WEB-INF/base"))
 				{
 					settings = null; // Stop here
@@ -639,7 +640,6 @@ public class PageManager
 							all.add(morepath);
 						}
 					}
-					settings = settings.getFallback();
 				}
 			}
 		}

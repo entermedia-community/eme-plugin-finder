@@ -393,8 +393,8 @@ public class WorkspaceManager
 
 			// This might be an existing fallback
 			String parent = "/" + mediadb + "/services/module/default";
-			PageSettings fallback = homesettings.getFallback();
-			do
+			Collection<PageSettings> fallbacks = homesettings.getFallbackParents();
+			for (PageSettings fallback : fallbacks)
 			{
 				String path = fallback.getParentPath();
 				if (getPageManager().getRepository().doesExist(path) && !path.endsWith("default"))
@@ -403,8 +403,7 @@ public class WorkspaceManager
 					parent = path;
 					break;
 				}
-				fallback = fallback.getFallback();
-			} while (fallback != null);
+			}
 			prop.setValue(parent);
 			homesettings.putProperty(prop);
 			prop = new PageProperty("searchtype");

@@ -4,6 +4,7 @@
   <property name="fallbackdirectory">/mediadb/services/module/default</property>
   <property name="module">asset</property>
   <property name="searchtype">asset</property>
+  <property name="fallbackprop">/mediadb/services/module/asset</property>
   <permission name="download">
     <userprofile name="download" value="true"/>
   </permission>

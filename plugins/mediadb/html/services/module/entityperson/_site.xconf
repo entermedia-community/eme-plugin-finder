@@ -4,4 +4,5 @@
   <property name="fallbackdirectory">/mediadb/services/module/default</property>
   <property name="module">entityperson</property>
   <property name="searchtype">entityperson</property>
+  <property name="fallbackprop">/mediadb/services/module/entityperson</property>
 </page>

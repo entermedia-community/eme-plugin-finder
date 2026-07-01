@@ -4,4 +4,5 @@
   <property name="fallbackdirectory">/mediadb/services/module/default</property>
   <property name="module">collectiveincome</property>
   <property name="searchtype">collectiveincome</property>
+  <property name="fallbackprop">/mediadb/services/module/collectiveincome</property>
 </page>
