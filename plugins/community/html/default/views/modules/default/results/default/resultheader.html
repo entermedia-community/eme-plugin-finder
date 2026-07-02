@@ -141,7 +141,14 @@ $context.putPageValue("enableactions", $enableactions)
 							data-hidefooter="true"
 							data-includeeditcontext="true"
 							data-autosetformtargetdiv="editdiv"
-							data-entitymoduleviewid="${module.id}general"
+							##data-parentmoduleid="$entitymodule.id"
+							##data-parententityid="$entity.id"
+							#ifnotnull( $entityviewdata )
+								data-entitymoduleviewid="$!{entityviewdata.getId()}"
+							#end
+							#ifnull( $entityviewdata )
+								data-entitymoduleviewid="${module.id}general"
+							#end	
 							title="[[Create New]] #text($module)">
 							<span class="mbl-hidden">[[Create New]]</span></a>
 						#end
