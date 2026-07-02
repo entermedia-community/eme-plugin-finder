@@ -21,10 +21,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.Writer;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Properties;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.velocity.VelocityContext;
@@ -71,8 +69,21 @@ public class VelocityGenerator extends BaseGenerator implements Generator
 			if (!Boolean.parseBoolean(vir))
 			{
 				log.info("Missing: " + inPage.getPath());
-				throw new ContentNotAvailableException("Missing: " + inPage.getPath(), inPage.getPath());
-
+				if (inContext.getContentPage() == inPage)
+				{
+					throw new ContentNotAvailableException("Missing: " + inPage.getPath(), inPage.getPath());
+				}
+				// TODO: include 404 page
+				try
+				{
+					inOut.getWriter().write("Missing: " + inPage.getPath());
+				}
+				catch (IOException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				return;
 			}
 			else
 			{
