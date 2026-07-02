@@ -4,7 +4,8 @@
 		"userid": "$user.id"
 	},
 	"results": [
-    #foreach($message in $messages) #if( ${foreach.count} != 1 ), #end
+    #foreach($message in $messages) 
+      #if( ${foreach.count} != 1 ), #end
       {
         "playbackentityid": #jesc($channel.playbackentityid),
         "channel": #jesc($message.channel),
