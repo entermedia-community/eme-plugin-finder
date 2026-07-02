@@ -313,7 +313,7 @@ public class UserProfileManager
 			if (userprofile.hasPermission("viewsettings"))
 			{
 				Searcher msearcher = mediaArchive.getSearcher("module");
-				SearchQuery mainquery = msearcher.query().all().sort("ordering").sort("name").getQuery();
+				SearchQuery mainquery = msearcher.query().all().sort("name").sort("name").getQuery();
 				SearchQuery securityfilter = msearcher.query()
 					.or()
 					.match("securityenabled", "false")
@@ -336,12 +336,12 @@ public class UserProfileManager
 			}
 			else
 			{
-				QueryBuilder builder = mediaArchive.query("module").or().exact("securityenabled", false).orgroup("viewgroups", user.getGroups()).match("viewusers", inUserName);
+				QueryBuilder builder = mediaArchive.query("module").or().exact("securityenabled", false).orgroup("viewgroups", user.getGroups()).match("viewusers", inUserName).sort("name");
 				if (userprofile.getSettingsGroup() != null)
 				{
 					builder.match("viewroles", userprofile.getSettingsGroup().getId());
 				}
-				builder.sort("ordering");
+				builder.sort("name");
 				HitTracker modules = builder.search();
 				// log.info(modules.size() + " for " + modules.getSearchQuery().toQuery());
 				userprofile.setModules(new ArrayList(modules));
