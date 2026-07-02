@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.entermediadb.ai.AgentContext;
+import org.entermediadb.ai.llm.BaseAgentContext;
 import org.entermediadb.asset.Asset;
 import org.entermediadb.asset.MediaArchive;
 import org.entermediadb.asset.modules.BaseMediaModule;
@@ -725,6 +727,81 @@ public class ChatModule extends BaseMediaModule
 		inReq.putPageValue("currentchannel", currentchannel);
 
 		inReq.putPageValue("createnew", false);
+	}
+
+	public void loadUserChannels(WebPageRequest inReq)
+	{
+		MediaArchive archive = getMediaArchive(inReq);
+		Searcher channelsearcher = archive.getSearcher("channel");
+		Collection channels = channelsearcher.query().exact("user", inReq.getUserName()).sort("refreshdateDown").search();
+		inReq.putPageValue("userchannels", channels);
+	}
+
+	public void loadChannelChat(WebPageRequest inReq)
+	{
+		MediaArchive archive = getMediaArchive(inReq);
+		String channelid = inReq.getRequestParameter("channelid");
+		if (channelid == null)
+		{
+			return;
+		}
+		AgentContext agentContext = (AgentContext) archive.getCacheManager().get("agentContext", channelid);
+
+		Searcher searcher = archive.getSearcher("agentcontext");
+
+		if (agentContext == null)
+		{
+			agentContext = (AgentContext) searcher.query().exact("channel", channelid).searchOne();
+			if (agentContext == null)
+			{
+				agentContext = new BaseAgentContext();
+			}
+
+			Data channel = archive.getCachedData("channel", channelid);
+			if (channel == null)
+			{
+				return;
+			}
+
+			agentContext.setValue("channel", channel.getId());
+			String entitymoduleid = channel.get("searchtype");
+			if (channel.get("dataid") != null)
+			{
+				agentContext.setValue("entityid", channel.get("dataid"));
+				agentContext.setValue("entitymoduleid", entitymoduleid);
+			}
+			agentContext.setChannel(channel);
+
+			searcher.saveData(agentContext);
+
+		}
+
+		String sortby = inReq.findActionValue("sortorder");
+		if (sortby == null)
+		{
+			sortby = "dateDown";
+		}
+
+		QueryBuilder builder = archive.query("chatterbox");
+
+		builder.named("messagesthitracker").exact("channel", agentContext.getChannel().getId()).not("messagetype", "system").sort(sortby);
+
+		UserProfile prof = inReq.getUserProfile();
+		if (prof != null)
+		{
+			Collection blocked = prof.getValues("blockedusers");
+			if (blocked != null && !blocked.isEmpty())
+			{
+				builder.notgroup("user", blocked);
+			}
+		}
+
+		HitTracker results = builder.search(inReq);
+		if (results != null)
+		{
+			results.setHitsPerPage(20);
+			inReq.putPageValue("messages", results);
+		}
 	}
 
 }

@@ -18,6 +18,7 @@ import org.entermediadb.asset.modules.BaseMediaModule;
 import org.entermediadb.asset.upload.FileUpload;
 import org.entermediadb.asset.upload.FileUploadItem;
 import org.entermediadb.asset.upload.UploadRequest;
+import org.entermediadb.websocket.chat.ChatManager;
 import org.entermediadb.websocket.chat.ChatServer;
 import org.entermediadb.webui.tree.CategoryCollectionCache;
 import org.openedit.Data;
@@ -368,13 +369,13 @@ public class ProjectModule extends BaseMediaModule
 
 		inReq.putPageValue("userpost", userpost);
 
-		//Metadata
+		// Metadata
 		String title = userpost.getName();
 		Data project = getMediaArchive(inReq).getCachedData("librarycollection", userpost.get("librarycollection"));
 		if (project != null)
 		{
 			title = title + " - " + project.getName();
-		}	
+		}
 		inReq.putPageValue("meta_title", title);
 
 		String postimage = userpost.get("primarymedia");
@@ -386,20 +387,18 @@ public class ProjectModule extends BaseMediaModule
 		}
 
 		String posturl = userpost.get("urlname");
-		if (posturl != null) {
+		if (posturl != null)
+		{
 			Data community = getMediaArchive(inReq).getCachedData("communitytagcategory", project.get("communitytagcategory"));
-			if (community != null) {
-				posturl = community.get("externaldomain") + 
-							"/" + 
-							project.get("urlname") + 
-							"/blog/" + 
-							posturl;
+			if (community != null)
+			{
+				posturl = community.get("externaldomain") + "/" + project.get("urlname") + "/blog/" + posturl;
 				inReq.putPageValue("meta_url", posturl);
-			} 
-			
+			}
+
 		}
 
-		//Todo: Better use a excerpt or summary field for clean text.
+		// Todo: Better use a excerpt or summary field for clean text.
 		String postdescription = userpost.get("maincontent");
 		if (postdescription != null)
 		{
@@ -410,7 +409,6 @@ public class ProjectModule extends BaseMediaModule
 			}
 			inReq.putPageValue("meta_description", postdescription);
 		}
-		
 
 	}
 
@@ -2105,6 +2103,96 @@ public class ProjectModule extends BaseMediaModule
 			inReq.putPageValue("totalsbycurrency", totals);
 		}
 
+	}
+
+	public void getRecentProjects(WebPageRequest inReq)
+	{
+		ChatManager chatmanager = (ChatManager) getMediaArchive(inReq).getBean("chatManager");
+
+		User user = inReq.getUser();
+
+		Collection<MultiValued> messages = (Collection<MultiValued>) inReq.getPageValue("messages");
+
+		Collection<Map<String, Object>> recentprojects = new ArrayList<Map<String, Object>>();
+
+		if (messages == null || messages.isEmpty())
+		{
+			inReq.putPageValue("recentprojects", recentprojects);
+			return;
+		}
+
+		for (MultiValued message : messages)
+		{
+			MultiValued collectiveproject = (MultiValued) getMediaArchive(inReq).getCachedData("collectiveproject", message.get("channel"));
+
+			LibraryCollection project = (LibraryCollection) getMediaArchive(inReq).getCachedData("librarycollection", collectiveproject.get("parentcollectionid"));
+
+			MultiValued community = (MultiValued) getMediaArchive(inReq).getCachedData("communitytagcategory", project.get("communitytagcategory"));
+
+			User otherPerson = chatmanager.getOtherChatUser(project, user);
+
+			String name = project.get("name");
+			String thumbUrl = "/theme/images/OI_flower.png";
+			if (otherPerson != null)
+			{
+				name = otherPerson.getScreenName();
+
+				String userThumb = getMediaArchive(inReq).asLinkToUserProfile(user);
+				if (userThumb != null)
+				{
+					thumbUrl = userThumb;
+				}
+				else
+				{
+					thumbUrl = "/theme/images/user.svg";
+				}
+			}
+			else
+			{
+				String assetportrait = project.get("assetportrait");
+				if (assetportrait != null)
+				{
+					Asset portrait = getMediaArchive(inReq).getAsset(assetportrait);
+					if (portrait != null)
+					{
+						thumbUrl = getMediaArchive(inReq).asLinkToPreview(assetportrait, "image200x200");
+					}
+				}
+			}
+
+			Map<String, Object> projectDetails = new HashMap<>();
+			projectDetails.put("thumb", thumbUrl);
+
+			projectDetails.put("id", project.get("id"));
+			projectDetails.put("name", name);
+
+			String projectUrl = project.get("urlname");
+			if (projectUrl != null)
+			{
+				projectDetails.put("projecturl", projectUrl);
+			}
+
+			String msg = message.get("message");
+			if (msg != null)
+			{
+				projectDetails.put("message", URLUtilities.escapeMessage(msg, 26, true));
+			}
+
+			boolean ownmessage = false;
+
+			User messageUser = getMediaArchive(inReq).getUser(message.get("user"));
+			if (messageUser != null && messageUser.getId().equals(user.getId()))
+			{
+				ownmessage = true;
+			}
+
+			projectDetails.put("ownmessage", ownmessage);
+			projectDetails.put("date", message.get("date"));
+
+			recentprojects.add(projectDetails);
+		}
+
+		inReq.putPageValue("recentprojects", recentprojects);
 	}
 
 }

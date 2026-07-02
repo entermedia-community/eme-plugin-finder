@@ -935,13 +935,45 @@ public class AdminModule extends BaseMediaModule
 		{
 			account = account.toLowerCase();
 		}
-		String password = inReq.getRequestParameter("password");
+
 		UserManager userManager = getUserManager(inReq);
-		User user = userManager.getUser(account);
-		Boolean ok = false;
+		User user = null;
+
+		String templogincode = inReq.getRequestParameter("templogincode");
+
+		if (templogincode != null)
+		{
+			String allow = inReq.getPage().get("allowguestregistration");
+			if (allow == null)
+			{
+				log.error("allowguestregistration must be set to login with temp codes");
+			}
+			else
+			{
+				String email = inReq.getRequestParameter("email");
+				if (email == null)
+				{
+					log.info("No user id or email found " + account);
+					inReq.putPageValue("oe-exception", "No user id or email found");
+					inReq.putPageValue("commandSucceeded", "nouser");
+					return;
+				}
+				user = userManager.getUserByEmail(email);
+			}
+		}
+
+		String password = inReq.getRequestParameter("password");
+		if (user == null && password != null && account != null)
+		{
+			user = userManager.getUser(account);
+		}
+	
 		if (user != null)
 		{
 			AuthenticationRequest aReq = userManager.createAuthenticationRequest(inReq, password, user);
+
+			aReq.putProperty("templogincode", templogincode);
+
 			if (userManager.authenticate(aReq))
 			{
 				String md5 = getCookieEncryption().getPasswordMd5(user.getPassword());
