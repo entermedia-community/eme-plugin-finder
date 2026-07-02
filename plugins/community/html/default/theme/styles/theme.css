@@ -2945,7 +2945,7 @@ a.col-resize i {
 	position: absolute;
 	top: 0;
 	left: 32px;
-	width: 305px;
+	width: 300px;
 }
 
 .col-left {
@@ -5245,6 +5245,7 @@ table.greytxt {
 .eml-tab-content,
 .eml-full-content {
 	background: var(--light-bg);
+	padding:20px;
 }
 
 .metadatainput .select2 {
