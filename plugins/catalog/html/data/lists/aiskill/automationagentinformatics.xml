@@ -97,7 +97,7 @@
       </name>
    </data>
 
-   <!-- Automatically embed aitutorials -->
+   <!-- Automatically embed aitutorial -->
    <data id="aitutorialsEmbedding" bean="embeddingSkill" searchtype="aitutorial" contextbean="informaticsContext" enabled="true" agenttype="taskagent" ordering="800">
       <name>
          <language id="en"><![CDATA[Tutorials Embedding]]></language>
