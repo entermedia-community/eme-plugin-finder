@@ -42,7 +42,12 @@ $pages.include("$apphome/views/modules/${module.id}/editors/entitysubmodules/add
 
 		<input name="save" type="hidden" value="true" />
 		<input name="id" type="hidden" value="$!id" />
-			
+
+		#ifnotnull($fieldexternalid )
+		<input type="hidden" name="field" value="$fieldexternalid" />
+		<input type="hidden" name="${fieldexternalid}.value" value='$fieldexternalvalue'/>
+		#end
+
 		$context.putPageValue("viewid", $viewid)
 		#set($detailviewercolumns = 2)
 		
@@ -57,12 +62,7 @@ $pages.include("$apphome/views/modules/${module.id}/editors/entitysubmodules/add
 </div>
 
 
-
-#ifnull($entitymoduleviewid) 
-	#set($entitymoduleviewid = $context.getRequestParameter("entitymoduleviewid"))
-	
-#end
-#set($viewdata = $mediaarchive.getCachedData("view",$entitymoduleviewid))
+#set($viewdata = $mediaarchive.getCachedData("view","${module.id}addnew"))
 #set($aiaction = "$apphome/views/modules/${module.id}/editors/contentcreatorchild/finish.html")
   <div class="bg-white createnewtoggle" style="display: none;" >
     <form	class="ajaxform autocloseform checkCloseDialog"
@@ -74,7 +74,6 @@ $pages.include("$apphome/views/modules/${module.id}/editors/entitysubmodules/add
 			data-toasterror="[[Failed to create]] #text($submodule)">
 			<input type="hidden" name="entitymoduleviewid.value" value='$entitymoduleviewdata.id'/>
 			<input type="hidden" name="field" value="entitymoduleviewid" />
-			
 			<input type="hidden" name="entityid.value" value='$entity.id'/>
 			<input type="hidden" name="field" value="entityid" />
 			
