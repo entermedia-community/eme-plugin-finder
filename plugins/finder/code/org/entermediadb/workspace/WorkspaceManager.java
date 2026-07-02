@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -24,7 +23,6 @@ import org.dom4j.Element;
 import org.elasticsearch.action.bulk.BulkProcessor;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.Requests;
-import org.entermediadb.ai.Schema;
 import org.entermediadb.asset.MediaArchive;
 import org.entermediadb.elasticsearch.ElasticNodeManager;
 import org.entermediadb.elasticsearch.SearchHitData;
@@ -32,7 +30,6 @@ import org.json.simple.JSONObject;
 import org.openedit.Data;
 import org.openedit.MultiValued;
 import org.openedit.OpenEditException;
-import org.openedit.WebPageRequest;
 import org.openedit.data.PropertyDetail;
 import org.openedit.data.PropertyDetails;
 import org.openedit.data.PropertyDetailsArchive;
@@ -53,7 +50,6 @@ import org.openedit.util.ZipUtil;
 import org.openedit.xml.ElementData;
 import org.openedit.xml.XmlArchive;
 import org.openedit.xml.XmlFile;
-
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -311,7 +307,12 @@ public class WorkspaceManager
 			prop = new PageProperty(inKey);
 			force = true;
 		}
-		if (force || !inValue.equals(prop.getValue()))
+		String propvalue = prop.getValue();
+		if (propvalue != null && propvalue.startsWith("/community/default/"))
+		{
+			return false; // Don't override if fallback to community defaults, because they have custom views
+		}
+		if (force || !inValue.equals(propvalue))
 		{
 			prop.setValue(inValue);
 			homesettings.putProperty(prop);
