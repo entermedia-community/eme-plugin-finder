@@ -20,7 +20,7 @@
 			title="[[Sort by]] #text( $detail.name )">
 					
 			<div id="$detail.id" assethitssessionid="$hits.getSessionId()"  > 
-					#text( $detail.name )
+					#text( $detail )
 					#if ($sortby.startsWith($detail.getId()))
 		 				#if($sortby.endsWith("Up"))
 		 					#set($sorticon="up")
