@@ -64,7 +64,7 @@
     </name>
   </property>
 
-  <property id="keywordsai" viewtype="tageditor" keyword="true" defaultoperation="andgroup" index="true" stored="true" editable="false" filter="true" aicreationcommand="A comma separated list of relevant search keywords associated with the image. Avoid using generic keywords like 'human', 'person', 'animal', 'object', etc. If people are visible, include their gender and ethnicity when clearly identifiable. Do not use existing keywords given in the query.">
+  <property id="keywordsai" viewtype="tageditor" keyword="true" defaultoperation="andgroup" index="true" stored="true" editable="false" filter="true" aicreationcommand="A comma separated list of relevant search keywords associated with the image. Avoid using generic keywords like 'human', 'person', 'animal', 'object', etc. If people are visible, include their gender and ethnicity when clearly identifiable. Do not use existing keywords given in the query. Generate keywords in the same language as the content.">
     <name>
       <language id="de"><![CDATA[AI Tags]]></language>
       <language id="en"><![CDATA[AI Tags]]></language>
