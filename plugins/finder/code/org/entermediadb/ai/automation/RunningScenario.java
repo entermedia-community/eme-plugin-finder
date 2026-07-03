@@ -93,21 +93,23 @@ public class RunningScenario extends BaseMediaObject implements CatalogEnabled
 			// we determine we dont need to do anything.
 			return false;
 		}
-		else if ("runskill".equals(response.getOperationState()))
-		{
-			String runskill = response.getRunSkillEnabled();
-			runProcess(runskill, inContext);
-			return false;
-		}
-		else if ("needuserinput".equals(response.getOperationState()))
-		{
-			// fire complete shoudl have sent it back to the user
-			return false;
-		}
 		else
-		{
-			log.info("No status from " + inContext.getCurrentScenario() + " running " + inSkillEnabled.getEnabledId());
-		}
+			if ("runskill".equals(response.getOperationState()))
+			{
+				String runskill = response.getRunSkillEnabled();
+				runProcess(runskill, inContext);
+				return false;
+			}
+			else
+				if ("needuserinput".equals(response.getOperationState()))
+				{
+					// fire complete shoudl have sent it back to the user
+					return false;
+				}
+				else
+				{
+					log.info("No status from " + inContext.getCurrentScenario() + " running " + inSkillEnabled.getEnabledId());
+				}
 		return true;
 	}
 
@@ -122,6 +124,12 @@ public class RunningScenario extends BaseMediaObject implements CatalogEnabled
 			return false;
 		}
 		return runProcess(enabled, inContext);
+	}
+
+	public AgentEnabled findEnabled(String inEnabledId)
+	{
+		AgentEnabled found = findEnabled(getEnabledAgents(), inEnabledId);
+		return found;
 	}
 
 	public AgentEnabled findEnabled(Collection<AgentEnabled> agents, String inEnabledId)

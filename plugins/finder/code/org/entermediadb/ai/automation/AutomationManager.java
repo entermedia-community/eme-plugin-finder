@@ -2,7 +2,6 @@ package org.entermediadb.ai.automation;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -10,9 +9,8 @@ import java.util.List;
 import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.entermediadb.ai.Skill;
-import org.entermediadb.ai.BaseAiManager;
 import org.entermediadb.ai.AgentContext;
+import org.entermediadb.ai.BaseAiManager;
 import org.entermediadb.ai.llm.AgentEnabled;
 import org.entermediadb.ai.llm.BaseAgentContext;
 import org.entermediadb.ai.llm.LlmConnection;
@@ -23,6 +21,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.openedit.Data;
 import org.openedit.MultiValued;
+import org.openedit.OpenEditException;
 import org.openedit.data.ValuesMap;
 import org.openedit.event.WebEvent;
 import org.openedit.event.WebEventListener;
@@ -113,6 +112,11 @@ public class AutomationManager extends BaseAiManager implements WebEventListener
 
 	public void runScenario(String inId, AgentContext inContext)
 	{
+		runScenario(inId, inContext, null);
+	}
+
+	public void runScenario(String inId, AgentContext inContext, String inEnabledSkillId)
+	{
 		RunningScenario running = (RunningScenario) getMediaArchive().getBean("runningscenario", false);
 		running.setId(inId);
 
@@ -123,25 +127,20 @@ public class AutomationManager extends BaseAiManager implements WebEventListener
 		addContext(inId, inContext);
 		inContext.setCurrentScenario(running);
 
-		// Lock it
-		inContext.setValue("lastrunstart", new Date());
-		// running.getScenarioData().setValue("lastrunstart", new Date()); // ? needed/
-		// running.getScenarioData().setValue("isrunning", true);
+		AgentEnabled enabled = null;
 
-		Collection<AgentEnabled> enabled = running.getEnabledAgents();
+		if (inEnabledSkillId != null)
+		{
+			enabled = running.findEnabled(inEnabledSkillId);
+			if (enabled == null)
+			{
+				throw new OpenEditException("Could not find enabled agent " + inEnabledSkillId + " for scenario " + inId);
+			}
+			inContext.setCurrentAgentEnable(enabled);
+		}
+		enabled = inContext.getCurrentAgentEnable();
+		running.runProcess(enabled, inContext);
 
-		if (enabled == null || enabled.isEmpty())
-		{
-			log.info("No enabled agents for scenario " + inId);
-			return;
-		}
-		AgentEnabled runskill = inContext.getCurrentAgentEnable();
-		if (runskill == null)
-		{
-			runskill = enabled.iterator().next();
-			inContext.setCurrentAgentEnable(runskill);
-		}
-		running.runProcess(runskill, inContext);
 	}
 
 	public Map<String, MultiValued> getAllPositions()
