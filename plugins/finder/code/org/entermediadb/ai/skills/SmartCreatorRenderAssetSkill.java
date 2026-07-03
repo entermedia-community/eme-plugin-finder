@@ -1,18 +1,8 @@
 package org.entermediadb.ai.skills;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import org.entermediadb.ai.BaseSkill;
-import org.entermediadb.ai.informatics.InformaticsContext;
 import org.entermediadb.ai.AgentContext;
-import org.openedit.Data;
+import org.entermediadb.ai.BaseSkill;
 import org.openedit.MultiValued;
-import org.openedit.hittracker.HitTracker;
 
 public class SmartCreatorRenderAssetSkill extends BaseSkill
 {

@@ -2811,6 +2811,11 @@
 			<ref bean="moduleManager" />
 		</property>
 	</bean>
+	<bean id="smartCreatorCreateQuestionsSkill" class="org.entermediadb.ai.skills.SmartCreatorCreateQuestionsSkill" scope="prototype">
+		<property name="moduleManager">
+			<ref bean="moduleManager" />
+		</property>
+	</bean>
 	<bean id="smartCreatorRenderAssetSkill" class="org.entermediadb.ai.skills.SmartCreatorRenderAssetSkill" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />

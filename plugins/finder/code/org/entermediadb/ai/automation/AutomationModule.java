@@ -118,7 +118,7 @@ public class AutomationModule extends BaseMediaModule
 		context.setScriptLogger(logger);
 		context.put("webpagerequest", inReq);
 
-		String currentskkillenabled = inReq.getRequestParameter("skillenabledid");
+		String currentskkillenabled = inReq.findValue("skillenabledid");
 
 		manager.runScenario(id, context, currentskkillenabled);
 	}

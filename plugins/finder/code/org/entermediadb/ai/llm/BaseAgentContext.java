@@ -365,6 +365,11 @@ public class BaseAgentContext extends BaseData implements CatalogEnabled, AgentC
 		getRootContext().getContext().put(inKey, inValue);
 	}
 
+	public void putContextValues(Map inValues)
+	{
+		getRootContext().getContext().putAll(inValues);
+	}
+
 	// public JSONObject getArguments() {
 	// return arguments;
 	// }

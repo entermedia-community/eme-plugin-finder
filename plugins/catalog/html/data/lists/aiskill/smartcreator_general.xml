@@ -1,7 +1,7 @@
 <records>
 
 
-   <data id="smartCreatorRenderFinishedOutlineSkill" bean="smartCreatorRenderFinishedOutlineSkill" contextbean="chatMessageContext"  agenttype="remoteagent" ordering="10">
+   <data id="smartCreatorRenderFinishedOutlineSkill" bean="smartCreatorRenderFinishedOutlineSkill" contextbean="chatMessageContext" agenttype="remoteagent" ordering="10">
       <name>
          <![CDATA[Smart Creator Render Finished Outline]]>
       </name>
@@ -55,6 +55,12 @@
    <data id="smartcreator_createsections" bean="smartCreatorMakeSectionsSkill" enabled="true" agenttype="taskagent" ordering="10">
       <name>
          <language id="en"><![CDATA[Smart Creator: Create Sections]]></language>
+      </name>
+   </data>
+
+   <data id="smartcreator_createquestions" bean="smartCreatorCreateQuestionsSkill" enabled="true" agenttype="taskagent" ordering="10">
+      <name>
+         <language id="en"><![CDATA[Smart Creator: Create Questions]]></language>
       </name>
    </data>
 

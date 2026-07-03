@@ -26,7 +26,7 @@
       <language id="en"><![CDATA[Option (D)]]></language>
     </name>
   </property>
-  <property id="mcqoptions" type="list" index="true" editable="true" stored="true">Correct Option
+  <property id="correctoption" type="list" listid="mcqoptions" index="true" editable="true" stored="true">Correct Option
     <name>
       <language id="en"><![CDATA[Correct Option]]></language>
     </name>
