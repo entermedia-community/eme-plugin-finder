@@ -11487,7 +11487,7 @@ a.action-link:hover {
 	align-items: flex-start;
 	padding: 8px;
 	border: var(--1px-light);
-	margin-bottom: 24px;
+	margin: 0 4px 8px;
 	border-radius: 4px;
 	cursor: pointer;
 	position: relative;
