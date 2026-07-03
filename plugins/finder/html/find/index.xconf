@@ -5,6 +5,8 @@
 
 	<property name="modulesearchclearfilters">true</property>
 
+	<page-loader loader="finderPages" />
+
 
 	<inner-layout>/${applicationid}/theme/layouts/applicationcontent.html</inner-layout>
 

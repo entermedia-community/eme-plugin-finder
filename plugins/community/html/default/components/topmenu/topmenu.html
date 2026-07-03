@@ -16,14 +16,14 @@
 											#set($url = $content.replaceProperty($link.getValue("custompath")))
 									#end
 									
-									#if($link.toplevelentity == $moduleid )
+									#if($link.toplevelentity == $module.id )
 										#set($topmenuselected = $link.getId() )
 									#end						
 									
 									#if($link.get("submenu"))
 										#foreach($s in $submenu)
-										$s.entity == $moduleid
-											#if($s.entity == $moduleid)
+										$s.entity == $module.id
+											#if($s.entity == $module.id)
 												#set($topmenuselected = $s.parentsection)
 												#set($submenuselected = $s.entity )
 												#set($submenu = $link.getValue("submenu"))
@@ -32,8 +32,7 @@
 										
 									#end
 									
-
-									<li > 
+									<li >
 										<a href="$url" 
 											class="ajax activelistener #if( $topmenuselected == $link.getId()) active#end" 
 											data-targetdiv="applicationcontent" 
