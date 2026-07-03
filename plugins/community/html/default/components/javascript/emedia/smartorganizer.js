@@ -1485,7 +1485,7 @@ $(document).ready(function () {
 						(node) =>
 							node.composite === parentId && node.cssClass === "folderLabel",
 					);
-					if (parentNode && parentNode.userData.moduleid) {
+					if (parentNode && parentNode.userData?.moduleid) {
 						var childNode = json.find(
 							(node) =>
 								node.composite === childId && node.cssClass === "folderLabel",
@@ -1493,7 +1493,7 @@ $(document).ready(function () {
 
 						if (childNode) {
 							let parents = childNode.userData.parents;
-							if (parents.indexOf(parentNode.userData.moduleid) === -1) {
+							if (parents.indexOf(parentNode.userData?.moduleid) === -1) {
 								childNode.userData.parents = [
 									...parents,
 									parentNode.userData.moduleid,
@@ -1846,7 +1846,7 @@ $(document).ready(function () {
 				}
 				var moduleids = [];
 				for (var i = 0; i < json.length; i++) {
-					var moduleid = json[i].userData.moduleid;
+					var moduleid = json[i].userData?.moduleid;
 					if (moduleid) {
 						moduleids.push(moduleid);
 					}

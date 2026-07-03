@@ -286,6 +286,7 @@ public class PageManager
 	protected Page createPage(String inPath) throws OpenEditException
 	{
 		PageSettings settings = getPageSettingsManager().getPageSettings(inPath);
+
 		Page page = new Page(inPath, settings);
 		populatePage(page);
 		return page;
@@ -300,10 +301,25 @@ public class PageManager
 	protected ContentItem getContentRevision(Page inPage) throws RepositoryException
 	{
 		String path = inPage.getPath();
-		if (inPage.getAlternateContentPath() != null) // TODO: This should be done in the settings object
+		if (inPage.getAlternateContentPath() != null)
 		{
 			path = inPage.getAlternateContentPath();
 		}
+		else
+			if (inPage.getPath().endsWith("/"))
+			{
+				// Check all the fallback dirs
+				Collection<PageSettings> fallbacks = inPage.getPageSettings().getFallbackParents();
+				for (PageSettings fallback : fallbacks)
+				{
+					String dirparent = PathUtilities.extractDirectoryPath(fallback.getPath());
+					if (getRepository().doesExist(dirparent))
+					{
+						path = dirparent;
+						break;
+					}
+				}
+			}
 		ContentItem revision = getRepository().getStub(path);
 		return revision;
 	}

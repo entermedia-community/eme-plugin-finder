@@ -41,7 +41,11 @@ $(document).ready(function () {
 	lQuery(".add-sectioncontent").livequery("click", function (e) {
 		e.preventDefault();
 		e.stopImmediatePropagation();
-		var toBeUpdated = $(this)
+		var section = $(this).closest(".creator-section-title");
+		var index = section.index();
+		var target = section.data("target");
+		var childsection = $(target);
+		var toBeUpdated = childsection
 			.closest(".creator-section")
 			.nextAll(".creator-section");
 		$(this).runAjax(function () {
@@ -49,6 +53,14 @@ $(document).ready(function () {
 				var currentOrder = $(this).data("ordering");
 				$(this).data("ordering", currentOrder + 1);
 				$(this).attr("data-ordering", currentOrder + 1);
+			});
+			$("#smart-section-nav").runAjax(function () {
+				var nextSection = $("#smart-section-nav .creator-section-title").eq(
+					index + 1,
+				);
+				if (nextSection.length > 0) {
+					nextSection.trigger("click");
+				}
 			});
 		});
 	});
@@ -59,8 +71,11 @@ $(document).ready(function () {
 
 		var section = $(this).closest(".creator-section-content");
 		var dataType = "componentcontent";
-		if (!section.length > 0) {
-			section = $(this).closest(".creator-section");
+		let childsection = null;
+		if (!section.length || section.length === 0) {
+			section = $(this).closest(".creator-section-title");
+			var target = section.data("target");
+			childsection = $(target);
 			dataType = "componentsection";
 		}
 
@@ -83,6 +98,7 @@ $(document).ready(function () {
 				},
 				success: function () {
 					section.remove();
+					childsection.remove();
 				},
 			});
 		} else if (action === "move-up" || action === "move-down") {
@@ -94,6 +110,7 @@ $(document).ready(function () {
 
 			if (action === "move-up") {
 				var target = section.prev();
+				var childtarget = childsection ? childsection.prev() : null;
 				if (!target.length) return;
 				var target_id = target.data("dataid");
 				var target_order = target.data("ordering");
@@ -109,6 +126,9 @@ $(document).ready(function () {
 					},
 					success: function () {
 						target.before(section);
+						if (childtarget) {
+							childtarget.before(childsection);
+						}
 						$(section).data("ordering", target_order);
 						$(section).attr("data-ordering", target_order);
 						$(target).data("ordering", source_order);
@@ -117,6 +137,7 @@ $(document).ready(function () {
 				});
 			} else {
 				var target = section.next();
+				var childtarget = childsection ? childsection.next() : null;
 				if (!target.length) return;
 				var target_id = target.data("dataid");
 				var target_order = target.data("ordering");
@@ -132,6 +153,9 @@ $(document).ready(function () {
 					},
 					success: function () {
 						target.after(section);
+						if (childtarget) {
+							childtarget.after(childsection);
+						}
 						$(section).data("ordering", target_order);
 						$(section).attr("data-ordering", target_order);
 						$(target).data("ordering", source_order);

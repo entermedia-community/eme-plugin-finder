@@ -44,7 +44,7 @@ echo "sudo docker stop -t 60 $INSTANCE && sudo docker start $INSTANCE" > ${SCRIP
 echo "sudo docker logs -f --tail 500 $INSTANCE"  > ${SCRIPTROOT}/logs.sh
 echo "sudo docker exec -it $INSTANCE bash"  > ${SCRIPTROOT}/bash.sh
 echo "sudo bash $SCRIPTROOT/eme-docker-init.sh $SITE $NODENUMBER" > ${SCRIPTROOT}/rebuild.sh
-echo 'sudo docker exec -it -u 0 '$INSTANCE' /usr/share/eme-lib/resources/docker/eme-docker-update.sh $1 $2' > ${SCRIPTROOT}/update.sh
+echo 'sudo docker exec -it -u 0 '$INSTANCE' /usr/share/eme-lib/resources/docker/scripts/update.sh $1 $2' > ${SCRIPTROOT}/update.sh
 
 
 sudo docker run -t -d \

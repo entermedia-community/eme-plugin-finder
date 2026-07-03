@@ -1,19 +1,25 @@
 <html>
 <p style="max-width: 1000px; ">
+#set( $path = "/finder/catalog/data/lists/catalogsettings/")
 
-#set( $path = "/finder/find/views/modules/asset/results/category/search.html")
+##set( $path = "/finder/find/views/modules/asset/results/category/search.html")
 ##set( $path = "/finder/find/views/modules/entityasset/editors/listentities/tabs/rendertypes/data.html")
 ##set( $path = "/finder/find/views/modules/asset/components/sidebars/index.html" )
 <br>
 ##set( $path = "/eme/views/modules/default/editors/fullscreenchat/chatterbox/index.html")
+
+<h3>$path</h3>
 $pageManager.clearCache($path)
 #set($p = $pageManager.getPage($path,false) )
+
+Exists = $p.exists()
+
 <br>
 p.getPageSettings().getFallbackParents()  = $p.getPageSettings().getFallbackParents() 
 <br>
 Path: <a href="http://localhost.com:8080/$path">$path</a>
 <br>
-p.exists() = $p.exists()
+
 <br>
 INCLUDE
 <br>
