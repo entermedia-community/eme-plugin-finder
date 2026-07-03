@@ -6,7 +6,10 @@
   [[What]] $creatortype [[subject you would like to create?]]
 </h5>
 
-#set($semantictopics = $entity.getValues("semantictopics"))
+#ifnull($semantictopics)
+  #set($semantictopics = $entity.getValues("semantictopics"))
+#end
+
 #ifnotnull($semantictopics)
   <p class="mb-1">
     [[Here are some suggestions]]:

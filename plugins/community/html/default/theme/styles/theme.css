@@ -1021,7 +1021,6 @@ select.form-control:focus {
 	width: 240px;
 }
 
-
 .asset-menu li a {
 	color: #626b7a;
 }
@@ -1314,7 +1313,7 @@ a.categorypathlink:hover,
 	display: none;
 }
 
-.sidebar-list > li:hover a.action{
+.sidebar-list > li:hover a.action {
 	display: inline-block;
 }
 
@@ -1329,7 +1328,6 @@ a.categorypathlink:hover,
 	font-weight: bold;
 	background: var(--light-hover);
 }
-
 
 .sidebar-list > li.current > a.action::before {
 	content: "";
@@ -1353,7 +1351,6 @@ a.categorypathlink:hover,
 	font-size: 14px;
 	color: #888;
 }
-
 
 .emsettingslist li:hover {
 	color: var(--default-text);
@@ -5245,7 +5242,7 @@ table.greytxt {
 .eml-tab-content,
 .eml-full-content {
 	background: var(--light-bg);
-	padding:20px;
+	padding: 20px;
 }
 
 .metadatainput .select2 {
@@ -11799,8 +11796,9 @@ a.action-link:hover {
 }
 
 .title-actions .action-btn-group {
-	background-color: #f1f1fe;
+	background-color: white;
 	margin: 0 8px 0 0;
+	border: 1px solid #cfcfcf;
 }
 
 .title-actions.action-btn-container {
@@ -11809,6 +11807,7 @@ a.action-link:hover {
 	bottom: 16px;
 	z-index: 1;
 	justify-content: flex-end;
+	margin-bottom: -52px;
 }
 
 .creator-section-content .action-btn-container {

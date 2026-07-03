@@ -1,9 +1,10 @@
 <div class="creator-navigation"
   id="smart-section-nav" 
-  data-url="$apphome/views/modules/${module.id}/editors/smartcreator/section-nav-reload.html" 
+  data-url="$siteroot$applink/views/modules/${module.id}/editors/smartcreator/section-nav.html" 
   data-playbackentityid="${playbackentity.id}"
   data-playbackentitymoduleid="${playbackentitymodule.id}"
-  data-targetdiv="smart-section-nav">
+  data-targetdiv="smart-section-nav"
+  data-oemaxlevel="1">
   <div class="collapse collapse-horizontal #if($componentsections.size() > 1) show #end" id="collapseSmartCreator">
     <div class="d-flex flex-column p-1" style="width: 280px;">
       #foreach($componentsection in $componentsections)

@@ -1,5 +1,7 @@
 package org.entermediadb.ai.skills;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.BaseSkill;
 import org.entermediadb.ai.creator.AiSmartCreatorSteps;
@@ -37,6 +39,28 @@ public class SmartCreatorMakeSuggestionsSkill extends BaseSkill
 
 		MultiValued entity = (MultiValued) getMediaArchive().getCachedData(entitymoduleid, entityid);
 		messageContext.addContext("entity", entity);
+
+		Collection<String> semantictopics = entity.getValues("semantictopics");
+		if (semantictopics == null || semantictopics.isEmpty())
+		{
+			// pull semantic topics from entityassets views
+			Collection<Data> entityassets = getMediaArchive().getSearcher("entityasset").query().exact(entitymoduleid, entityid).search();
+
+			for (Data entityasset : entityassets)
+			{
+				Collection<String> entityassettopics = entityasset.getValues("semantictopics");
+				if (entityassettopics != null)
+				{
+					semantictopics.addAll(entityassettopics);
+				}
+				if (semantictopics.size() >= 5)
+				{
+					break;
+				}
+			}
+		}
+
+		messageContext.addContext("semantictopics", semantictopics);
 
 		messageContext.setCurrentEntity(entity);
 
