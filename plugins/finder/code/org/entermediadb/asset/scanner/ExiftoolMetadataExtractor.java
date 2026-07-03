@@ -364,261 +364,241 @@ public class ExiftoolMetadataExtractor extends MetadataExtractor
 						log.warn("Could not parse ImageSize string: " + value);
 					}
 				}
-				else
-					if ("ImageWidth".equals(key))
+				else if ("ImageWidth".equals(key))
+				{
+					if (inAsset.getInt("width") == 0 && StringUtils.isNumeric(value))
 					{
-						if (inAsset.getInt("width") == 0 && StringUtils.isNumeric(value))
+						float wide = Float.parseFloat(value);
+						inAsset.setProperty("width", String.valueOf(Math.round(wide)));
+					}
+				}
+				else if ("ImageHeight".equals(key))
+				{
+
+					if (inAsset.getInt("height") == 0 && StringUtils.isNumeric(value))
+					{
+						float height = Float.parseFloat(value);
+						inAsset.setProperty("height", String.valueOf(Math.round(height)));
+					}
+				}
+				else if ("ViewBox".equals(key))
+				{
+					if (inAsset.getInt("width") == 0)
+					{
+						String[] dims = value.split(" ");
+						if (dims.length == 4)
 						{
-							float wide = Float.parseFloat(value);
+							float wide = Float.parseFloat(dims[2]);
+							float height = Float.parseFloat(dims[3]);
 							inAsset.setProperty("width", String.valueOf(Math.round(wide)));
+							inAsset.setProperty("height", String.valueOf(Math.round(height)));
+
+							/*
+							 * int wide = Integer.parseInt(dims[2]); int height = Integer.parseInt(dims[3]);
+							 * inAsset.setValue("width", wide); inAsset.setValue("height", height);
+							 */
 						}
 					}
-					else
-						if ("ImageHeight".equals(key))
-						{
+				}
+				else if ("MaxPageSizeW".equals(key))
+				{
+					if (inAsset.get("width") == null)
+					{
+						float wide = Float.parseFloat(value);
+						wide = wide * 72f;
+						inAsset.setProperty("width", String.valueOf(Math.round(wide)));
+					}
+				}
+				else if ("MaxPageSizeH".equals(key))
+				{
+					if (inAsset.get("height") == null)
+					{
+						float height = Float.parseFloat(value);
+						height = height * 72f;
+						inAsset.setProperty("height", String.valueOf(Math.round(height)));
+					}
+				}
+				else if ("PageCount".equals(key))
+				{
+					inAsset.setProperty("pages", value);
+				}
+				else if ("Duration".equals(key) || "SendDuration".equals(key))
+				{
+					try
+					{
+						inAsset.setProperty("duration", value);
+						value = processDuration(value);
+						inAsset.setProperty("length", value);
+					}
+					catch (Exception e)
+					{
+						log.warn("Could not parse file length: " + value);
+					}
+				}
+				// else if("Subject".equals(key))
+				// {
+				// String[] kwords = value.split(",");
+				// for( String kword : kwords )
+				// {
+				// inAsset.addKeyword(kword.trim());
+				// }
+				// }
+				else if ("FileType".equals(key) || "FileFormat".equals(key))
+				{
+					if (inAsset.getProperty("fileformat") == null)
+					{
+						String mediatype = inArchive.getMediaRenderType(value.toLowerCase());
 
-							if (inAsset.getInt("height") == 0 && StringUtils.isNumeric(value))
-							{
-								float height = Float.parseFloat(value);
-								inAsset.setProperty("height", String.valueOf(Math.round(height)));
-							}
+						if (!mediatype.equals("default"))
+						{
+							inAsset.setProperty("fileformat", value.toLowerCase());
 						}
-						else
-							if ("ViewBox".equals(key))
+					}
+					inAsset.setProperty("detectedfileformat", value.toLowerCase());
+				}
+				else if ("Subject".equals(key) || "Keyword".equals(key) || "Keywords".equals(key))
+				{
+					String[] kwords = value.split(",");
+					for (String kword : kwords)
+					{
+						inAsset.addKeyword(kword.trim());
+					}
+				}
+				else if ("ThumbnailImage".equals(key))
+				{
+					inAsset.setProperty("hasthumbnail", "true");
+				}
+				else if ("VideoFrameRate".equals(key))
+				{
+					inAsset.setProperty("framerate", roundFrameRate(value));
+				}
+				else if ("ColorSpace".equals(key))
+				{
+					if ("65535".equals(value) || "-1".equals(value))
+					{
+						// not valid
+						continue;
+					}
+					inAsset.setProperty("colorspace", value);
+				}
+				else if ("ProfileDescription".equals(key))
+				{
+					inAsset.setProperty("colorprofiledescription", value);
+				}
+				else if ("PhotometricInterpretation".equals(key))
+				{
+					if ("5".equalsIgnoreCase(value))
+					{
+						inAsset.setProperty("colorspace", "4");
+					}
+				}
+				else if ("ColorMode".equals(key) || "ColorComponents".equals(key) || "ColorSpaceData".equals(key) || "SwatchGroupsColorantsMode".equals(key) || "SwatchColorantMode".equals(key))
+				{
+					if (value != null)
+					{
+						value = value.toLowerCase();
+						if ("CMYK".equalsIgnoreCase(value) || "4".equalsIgnoreCase(value) || value.contains("cmyk"))
+						{
+							inAsset.setProperty("colorspace", "4");
+						}
+						else if ("ColorMode".equals(key))
+						{
+							// ? useful
+						}
+
+					}
+				}
+				else if ("GPSLatitude".equals(key))
+				{
+					lat = value;
+					// inAsset.setProperty("position_lat", value);
+				}
+				else if ("GPSLongitude".equals(key))
+				{
+					lng = value;
+					// inAsset.setProperty("position_lng", value);
+				}
+				// else if (getTextFields().contains(key))
+				// {
+				// foundtextvalues = true;
+				// }
+				else
+				{
+					PropertyDetail property = details.getDetailByExternalId(key);
+
+					if (property == null)
+					{
+						continue;
+					}
+					else if (property.isDate())
+					{
+						// Date dateValue = externalFormat.parse(value);
+						// value = value + " -0000"; //added offset of 0 since that seems to be the
+						// default
+						// TODO: Should we clean up dates on their way in? Right now it uses a close
+						// format but not the
+						// perfect format
+						value = DateStorageUtil.getStorageUtil().checkFormat(value);
+						inAsset.setProperty(property.getId(), value);
+					}
+					else if (property.isList() || property.isMultiValue()) // || property.isDataType("number")
+					{
+						m = p.matcher(input);
+						if (m.find())
+						{
+							Searcher searcher = inArchive.getSearcherManager().getSearcher(property.getListCatalogId(), property.getListId());
+							HitTracker found = inArchive.getCachedSearch(searcher.query().exact("name", value).hitsPerPage(1));
+							Data lookup = (Data) found.first();
+							if (lookup != null)
 							{
-								if (inAsset.getInt("width") == 0)
-								{
-									String[] dims = value.split(" ");
-									if (dims.length == 4)
-									{
-										int wide = Integer.parseInt(dims[2]);
-										int height = Integer.parseInt(dims[3]);
-										inAsset.setValue("width", wide);
-										inAsset.setValue("height", height);
-									}
-								}
+								inAsset.setProperty(property.getId(), lookup.getId());
+								continue;
+							}
+							else if (Boolean.parseBoolean(property.get("autocreatefromexif")))
+							{
+								lookup = searcher.createNewData();
+								lookup.setName(value);
+								// lookup.setId(searcher.nextId());
+								searcher.saveData(lookup, null);
+								inAsset.setProperty(property.getId(), lookup.getId());
 							}
 							else
-								if ("MaxPageSizeW".equals(key))
+							{
+								value = value.replace("]", "");
+								value = value.replace("[", "");
+								String[] values = value.split(",");
+								if (values.length == 1)
 								{
-									if (inAsset.get("width") == null)
-									{
-										float wide = Float.parseFloat(value);
-										wide = wide * 72f;
-										inAsset.setProperty("width", String.valueOf(Math.round(wide)));
-									}
+
+									inAsset.setProperty(property.getId(), value);
 								}
 								else
-									if ("MaxPageSizeH".equals(key))
-									{
-										if (inAsset.get("height") == null)
-										{
-											float height = Float.parseFloat(value);
-											height = height * 72f;
-											inAsset.setProperty("height", String.valueOf(Math.round(height)));
-										}
-									}
-									else
-										if ("PageCount".equals(key))
-										{
-											inAsset.setProperty("pages", value);
-										}
-										else
-											if ("Duration".equals(key) || "SendDuration".equals(key))
-											{
-												try
-												{
-													inAsset.setProperty("duration", value);
-													value = processDuration(value);
-													inAsset.setProperty("length", value);
-												}
-												catch (Exception e)
-												{
-													log.warn("Could not parse file length: " + value);
-												}
-											}
-											// else if("Subject".equals(key))
-											// {
-											// String[] kwords = value.split(",");
-											// for( String kword : kwords )
-											// {
-											// inAsset.addKeyword(kword.trim());
-											// }
-											// }
-											else
-												if ("FileType".equals(key) || "FileFormat".equals(key))
-												{
-													if (inAsset.getProperty("fileformat") == null)
-													{
-														String mediatype = inArchive.getMediaRenderType(value.toLowerCase());
-
-														if (!mediatype.equals("default"))
-														{
-															inAsset.setProperty("fileformat", value.toLowerCase());
-														}
-													}
-													inAsset.setProperty("detectedfileformat", value.toLowerCase());
-												}
-												else
-													if ("Subject".equals(key) || "Keyword".equals(key) || "Keywords".equals(key))
-													{
-														String[] kwords = value.split(",");
-														for (String kword : kwords)
-														{
-															inAsset.addKeyword(kword.trim());
-														}
-													}
-													else
-														if ("ThumbnailImage".equals(key))
-														{
-															inAsset.setProperty("hasthumbnail", "true");
-														}
-														else
-															if ("VideoFrameRate".equals(key))
-															{
-																inAsset.setProperty("framerate", roundFrameRate(value));
-															}
-															else
-																if ("ColorSpace".equals(key))
-																{
-																	if ("65535".equals(value) || "-1".equals(value))
-																	{
-																		// not valid
-																		continue;
-																	}
-																	inAsset.setProperty("colorspace", value);
-																}
-																else
-																	if ("ProfileDescription".equals(key))
-																	{
-																		inAsset.setProperty("colorprofiledescription", value);
-																	}
-																	else
-																		if ("PhotometricInterpretation".equals(key))
-																		{
-																			if ("5".equalsIgnoreCase(value))
-																			{
-																				inAsset.setProperty("colorspace", "4");
-																			}
-																		}
-																		else
-																			if ("ColorMode".equals(key) || "ColorComponents".equals(key) || "ColorSpaceData".equals(key)
-																				|| "SwatchGroupsColorantsMode".equals(key) || "SwatchColorantMode".equals(key))
-																			{
-																				if (value != null)
-																				{
-																					value = value.toLowerCase();
-																					if ("CMYK".equalsIgnoreCase(value) || "4".equalsIgnoreCase(value) || value.contains("cmyk"))
-																					{
-																						inAsset.setProperty("colorspace", "4");
-																					}
-																					else
-																						if ("ColorMode".equals(key))
-																						{
-																							// ? useful
-																						}
-
-																				}
-																			}
-																			else
-																				if ("GPSLatitude".equals(key))
-																				{
-																					lat = value;
-																					// inAsset.setProperty("position_lat", value);
-																				}
-																				else
-																					if ("GPSLongitude".equals(key))
-																					{
-																						lng = value;
-																						// inAsset.setProperty("position_lng", value);
-																					}
-																					// else if (getTextFields().contains(key))
-																					// {
-																					// foundtextvalues = true;
-																					// }
-																					else
-																					{
-																						PropertyDetail property = details.getDetailByExternalId(key);
-
-																						if (property == null)
-																						{
-																							continue;
-																						}
-																						else
-																							if (property.isDate())
-																							{
-																								// Date dateValue = externalFormat.parse(value);
-																								// value = value + " -0000"; //added offset of 0 since that seems to be the
-																								// default
-																								// TODO: Should we clean up dates on their way in? Right now it uses a close
-																								// format but not the
-																								// perfect format
-																								value = DateStorageUtil.getStorageUtil().checkFormat(value);
-																								inAsset.setProperty(property.getId(), value);
-																							}
-																							else
-																								if (property.isList() || property.isMultiValue()) // || property.isDataType("number")
-																								{
-																									m = p.matcher(input);
-																									if (m.find())
-																									{
-																										Searcher searcher = inArchive.getSearcherManager()
-																											.getSearcher(property.getListCatalogId(), property.getListId());
-																										HitTracker found =
-																											inArchive.getCachedSearch(searcher.query().exact("name", value).hitsPerPage(1));
-																										Data lookup = (Data) found.first();
-																										if (lookup != null)
-																										{
-																											inAsset.setProperty(property.getId(), lookup.getId());
-																											continue;
-																										}
-																										else
-																											if (Boolean.parseBoolean(property.get("autocreatefromexif")))
-																											{
-																												lookup = searcher.createNewData();
-																												lookup.setName(value);
-																												// lookup.setId(searcher.nextId());
-																												searcher.saveData(lookup, null);
-																												inAsset.setProperty(property.getId(), lookup.getId());
-																											}
-																											else
-																											{
-																												value = value.replace("]", "");
-																												value = value.replace("[", "");
-																												String[] values = value.split(",");
-																												if (values.length == 1)
-																												{
-
-																													inAsset.setProperty(property.getId(), value);
-																												}
-																												else
-																												{
-																													ArrayList arrayList = new ArrayList(Arrays.asList(values));
-																													inAsset.setValue(property.getId(), arrayList);
-																												}
-																											}
-																									}
-																								}
-																								else
-																									if (property.isMultiLanguage())
-																									{
-																										LanguageMap map = new LanguageMap();
-																										if (value.contains("{"))
-																										{
-																											Map object = (Map) new JsonSlurper().parseText(value);
-																											map.putAll(object);
-																										}
-																										else
-																										{
-																											map.setText("en", value);
-																										}
-																										inAsset.setValue(property.getId(), map);
-																									}
-																									else
-																									{
-																										saveValue(inAsset, property.getId(), value);
-																									}
-																					}
+								{
+									ArrayList arrayList = new ArrayList(Arrays.asList(values));
+									inAsset.setValue(property.getId(), arrayList);
+								}
+							}
+						}
+					}
+					else if (property.isMultiLanguage())
+					{
+						LanguageMap map = new LanguageMap();
+						if (value.contains("{"))
+						{
+							Map object = (Map) new JsonSlurper().parseText(value);
+							map.putAll(object);
+						}
+						else
+						{
+							map.setText("en", value);
+						}
+						inAsset.setValue(property.getId(), map);
+					}
+					else
+					{
+						saveValue(inAsset, property.getId(), value);
+					}
+				}
 			}
 		}
 

@@ -121,7 +121,7 @@ public class ImagemagickTranscoder extends BaseTranscoder
 
 			}
 
-			Collection needsDensity = Arrays.asList("pdf", "gddoc", "gdsheet", "gdslide", "gddraw", "eps", "ai");
+			Collection needsDensity = Arrays.asList("pdf", "gddoc", "gdsheet", "gdslide", "gddraw", "eps", "ai", "svg");
 
 			// be aware ImageMagick writes to a tmp file with a larger version of the file
 			// before it
@@ -160,9 +160,10 @@ public class ImagemagickTranscoder extends BaseTranscoder
 					if (width < outputw)
 					{
 						// for small input files we want to scale up the density
-						float density = ((float) outputw / (float) width) * 300f;
-						density = Math.max(density, defaultdensity);
-						density = Math.min(density, 900);
+						float densityratio = (float) outputw / (float) width;
+						float density = 100f * densityratio;
+						density = Math.max(density, 100);
+						density = Math.min(density, 600);
 						String val = String.valueOf(Math.round(density));
 						com.add(0, val);
 						com.add(0, "-density");
