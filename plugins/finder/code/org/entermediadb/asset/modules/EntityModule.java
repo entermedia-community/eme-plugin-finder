@@ -1397,12 +1397,12 @@ public class EntityModule extends BaseMediaModule
 		String moduleid = inPageRequest.findPathValue("module"); // Submodule
 		MediaArchive archive = getMediaArchive(inPageRequest);
 		String pickedid = inPageRequest.getRequestParameter("id");
-		MultiValued data = (MultiValued) inPageRequest.getPageValue("data");
-		if (data == null)
+		MultiValued pickedrow = (MultiValued) inPageRequest.getPageValue("data");
+		if (pickedrow == null)
 		{
-			data = (MultiValued) archive.getData(moduleid, pickedid);
+			pickedrow = (MultiValued) archive.getData(moduleid, pickedid);
 		}
-		if (data != null)
+		if (pickedrow != null)
 		{
 			String entitytype = inPageRequest.getRequestParameter("entitymoduleid"); // Parent Module
 			String entityid = inPageRequest.getRequestParameter("entityid");
@@ -1427,26 +1427,29 @@ public class EntityModule extends BaseMediaModule
 			{
 				if (detail.isMultiValue())
 				{
-					data.addValue(renderexternalid, entityid);
+					pickedrow.addValue(renderexternalid, entityid);
 				}
 				else
 				{
-					data.setValue(renderexternalid, entityid);
+					pickedrow.setValue(renderexternalid, entityid);
 				}
 			}
-			// Copy the custom permissions
+			// Copy the custom permissions? Is there a better way?
 			String[] types = {"customusers", "customgroups", "customroles", "editorusers", "editorroles", "editorgroups"};
 			for (int i = 0; i < types.length; i++)
 			{
-				data.setValue(types[i], entity.getValue(types[i]));
+				pickedrow.addValue(types[i], entity.getValue(types[i]));
 			}
-			data.setValue("securityalwaysvisible", entity.getValue("securityalwaysvisible"));
-
-			searcher.saveData(data);
+			if (!pickedrow.getBoolean("securityalwaysvisible"))
+			{
+				pickedrow.setValue("securityalwaysvisible", entity.getValue("securityalwaysvisible"));
+			}
+			searcher.saveData(pickedrow);
 		}
 
 	}
 
+	// Called from adddnewsave.html
 	public void saveSubModule(WebPageRequest inReq) throws Exception
 	{
 		MediaArchive archive = getMediaArchive(inReq);
