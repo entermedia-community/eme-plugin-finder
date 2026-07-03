@@ -503,14 +503,14 @@ public class PropertyDetailsArchive implements CatalogEnabled
 				beanName = "folderSearcher";
 			}
 			else
-				if (getPageManager().getPage(islists).exists())
+				if (getPageManager().getPage(isDatafolder).exists())
 				{
-					beanName = "listSearcher";
+					beanName = "folderSearcher";
 				}
 				else
-					if (getPageManager().getPage(isDatafolder).exists())
+					if (getPageManager().getPage(islists).exists())
 					{
-						beanName = "folderSearcher";
+						beanName = "listSearcher";
 					}
 					else
 						if (getPageManager().getPage(isDatalists).exists())
