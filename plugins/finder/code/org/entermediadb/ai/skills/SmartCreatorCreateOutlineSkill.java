@@ -11,7 +11,6 @@ import org.entermediadb.ai.creator.AiSmartCreatorSteps;
 import org.entermediadb.ai.llm.LlmConnection;
 import org.entermediadb.ai.llm.LlmResponse;
 import org.json.simple.JSONObject;
-import org.openedit.MultiValued;
 
 public class SmartCreatorCreateOutlineSkill extends BaseSkill
 {
