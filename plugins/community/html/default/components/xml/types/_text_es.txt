@@ -1,5 +1,21 @@
 #
-#Fri Mar 27 15:49:36 EDT 2015
-Over=encima
+#Fri Jul 03 17:14:57 CST 2026
+Add=A\u00F1adir
+Add\ New=A\u00F1adir nuevo
+Add\ a\ Language=A\u00F1adir un idioma
+Choose=Elige
+Creates\ Translations\ for\ Missing\ Languages=Crea traducciones para los idiomas que faltan
 Enter\ a\ Custom\ Range=Introduzca una Serie personalizada
-
+Missing\ Languages=Idiomas faltantes
+New=Nuevo
+No\ values\ found=No se encontraron valores
+Over=encima
+Overwrite\ All=Sobrescribir todo
+Remove=Eliminar
+Select=Seleccionar
+Translate=Traducir
+Translating...=Traduciendo...
+Wrong\ format=Formato incorrecto
+from=desde
+limit\ reached=L\u00EDmite alcanzado
+to=a

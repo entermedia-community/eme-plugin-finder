@@ -1,3 +1,5 @@
 #
-#Fri Jul 03 16:16:21 CST 2026
+#Fri Jul 03 17:14:40 CST 2026
+Open=Abrir.
 Pick=Elige
+View=Vista

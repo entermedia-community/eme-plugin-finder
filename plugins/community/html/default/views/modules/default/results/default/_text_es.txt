@@ -1,5 +1,5 @@
 #
-#Fri Jul 03 16:16:12 CST 2026
+#Fri Jul 03 17:10:39 CST 2026
 Add\ Column=A\u00F1adir columna
 Add\ New\ Record=A\u00F1adir nuevo registro
 Add\ To\ Category=A\u00F1adir a la categor\u00EDa
@@ -22,6 +22,7 @@ Export\ reults\ to\ CSV=Exportar resultados a CSV
 Folders=Carpetas
 Import\ from\ YouTube=Importar desde YouTube
 Multi\ edit\ selected\ items=Edici\u00F3n m\u00FAltiple de elementos seleccionados
+No\ results\ found=No se encontraron resultados
 Page=P\u00E1gina
 Records=Registros
 Records\ Using\ IDs=Registros usando identificador

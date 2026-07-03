@@ -1,5 +1,5 @@
 #
-#Fri Jul 03 16:16:28 CST 2026
+#Fri Jul 03 17:10:39 CST 2026
 After=Despu\u00E9s
 Before=Antes
 Between=Entre
@@ -12,6 +12,7 @@ Customize\ Summary\ Contents=Personaliza el contenido del resumen
 Default=Por defecto
 Description=Descripci\u00F3n
 False=Falso
+Filter\ not\ applicable=Filtro no aplicable
 Related\ Entity=Entidad relacionada
 Reloaded\ Results=Resultados recargados
 Searching\ for=Buscando
