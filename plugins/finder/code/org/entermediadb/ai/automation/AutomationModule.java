@@ -129,8 +129,12 @@ public class AutomationModule extends BaseMediaModule
 
 		inReq.putPageValue("agentid", agentEnabledData.getId());
 		inReq.putPageValue("scenarioid", agentEnabledData.get("automationscenario"));
-
-		Data agent = archive.query("aiskill").exact("id", agentEnabledData.get("aiskill")).searchOne();
+		String aiskillid = agentEnabledData.get("aiskill");
+		if (aiskillid == null)
+		{
+			return;
+		}
+		Data agent = archive.query("aiskill").exact("id", aiskillid).searchOne();
 
 		agentEnabledData.setValue("agenttype", agent.get("agenttype"));
 
