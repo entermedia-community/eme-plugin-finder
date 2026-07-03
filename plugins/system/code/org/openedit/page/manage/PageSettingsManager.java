@@ -56,7 +56,6 @@ public class PageSettingsManager
 		if (page != null)
 		{
 			if (page.isCurrent()) // This is slow but is only run in the initial creation. After that it is seldom run since pages are
-									// cached
 			{
 				return page;
 			}
