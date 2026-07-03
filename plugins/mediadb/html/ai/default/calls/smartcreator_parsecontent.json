@@ -3,7 +3,7 @@
 	"messages": [
 		{
 			"role": "system",
-			"content":  "You are a language expert that take a text and categorize each section into an array that contains either a header, a paragraph, a bulleted list or a numbered list. Keep the markdown format in the content."
+			"content":  "[[You are a language expert that take a text and categorize each section into an array that contains either a header, a paragraph, a bulleted list or a numbered list. Keep the markdown format in the content.]]"
 		},
     {
       "role": "user",

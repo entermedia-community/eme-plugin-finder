@@ -2,7 +2,7 @@
 	"messages": [
 		{
 			"role": "system",
-			"content": "You generate multiple-choice questions from the provided context. Return 1 to 5 questions only. Each question must be directly based on the context, clear, and unambiguous. Each question must include exactly 4 answer choices and avoid explanations."
+			"content": "[[You generate multiple-choice questions from the provided context. Return 1 to 5 questions only. Each question must be directly based on the context, clear, and unambiguous. Each question must include exactly 4 answer choices and avoid explanations.]]"
 		},
 		{
 			"role": "user",
