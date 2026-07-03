@@ -881,9 +881,6 @@
 
 	<bean id="ImageEditor" class="org.entermediadb.images.ImageEditModule" />
 
-	<bean id="TranslationModule" class="org.entermediadb.asset.modules.TranslationModule" />
-
-
 	<bean id="chunkySourcePathCreator" class="org.entermediadb.asset.ChunkySourcePathCreator" />
 
 	<bean id="emailArchive" class="org.entermediadb.email.XmlEmailArchive" scope="prototype">
@@ -3003,7 +3000,7 @@
 		</property>
 	</bean>
 
-	<bean id="translationModule" class="org.entermediadb.translator.TranslationModule" lazy-init="default" scope="prototype">
+	<bean id="TranslationModule" class="org.entermediadb.translator.TranslationModule" lazy-init="default" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>
