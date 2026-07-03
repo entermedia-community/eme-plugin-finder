@@ -22,9 +22,11 @@ import org.json.simple.JSONObject;
 import org.openedit.Data;
 import org.openedit.MultiValued;
 import org.openedit.OpenEditException;
+import org.openedit.WebPageRequest;
 import org.openedit.data.ValuesMap;
 import org.openedit.event.WebEvent;
 import org.openedit.event.WebEventListener;
+import org.openedit.users.User;
 import org.openedit.util.JSONParser;
 
 /**
@@ -110,12 +112,25 @@ public class AutomationManager extends BaseAiManager implements WebEventListener
 		runScenario(inId, context);
 	}
 
-	public void runScenario(String inId, AgentContext inContext)
+	public void runScenario(String id, Map parameterMap, User user, WebPageRequest inReq, String currentskkillenabled, ScriptLogger logger)
 	{
-		runScenario(inId, inContext, null);
+	    RunningScenario running = (RunningScenario) getMediaArchive().getBean("runningscenario", false);
+		running.setId(id);
+
+		running.createAgentContext(null, null)
+		if (inContext.getId() == null)
+		{
+			inContext.setId(inCrementId());
+		}
+		addContext(inId, inContext);
+		inContext.setCurrentScenario(running);
+
+		AgentEnabled enabled = inContext.getCurrentAgentEnable();
+		running.runProcess(enabled, inContext);
+
 	}
 
-	public void runScenario(String inId, AgentContext inContext, String inEnabledSkillId)
+	public void runScenario(String inId, AgentContext inContext)
 	{
 		RunningScenario running = (RunningScenario) getMediaArchive().getBean("runningscenario", false);
 		running.setId(inId);
@@ -127,18 +142,7 @@ public class AutomationManager extends BaseAiManager implements WebEventListener
 		addContext(inId, inContext);
 		inContext.setCurrentScenario(running);
 
-		AgentEnabled enabled = null;
-
-		if (inEnabledSkillId != null)
-		{
-			enabled = running.findEnabled(inEnabledSkillId);
-			if (enabled == null)
-			{
-				throw new OpenEditException("Could not find enabled agent " + inEnabledSkillId + " for scenario " + inId);
-			}
-			inContext.setCurrentAgentEnable(enabled);
-		}
-		enabled = inContext.getCurrentAgentEnable();
+		AgentEnabled enabled = inContext.getCurrentAgentEnable();
 		running.runProcess(enabled, inContext);
 
 	}
