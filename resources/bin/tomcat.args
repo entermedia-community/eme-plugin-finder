@@ -1,3 +1,4 @@
+-Dappname=$APPNAME
 -XX:+ShowCodeDetailsInExceptionMessages
 -Dcatalina.home=$EMELIB/tomcat/
 -Dcatalina.base=$EMSERVER/tomcat

@@ -11,15 +11,15 @@ if [ "$CMD" = "version" ]; then
     exit 0
 fi
 
-TARGET="$2"
+APPNAME="$2"
 
-if [ -z "$TARGET" ]; then
-    echo "No target path specified"
+if [ -z "$APPNAME" ]; then
+    echo "No target path specified. Specify full path target."
     exit 1
 fi
 
-mkdir -p "$TARGET"
-cd  "$TARGET"
+mkdir -p "$APPNAME"
+cd  "$APPNAME"
 # Resolve EMELIB: prefer sibling eme-lib, then env var, then system default
 
 #Make a function that I can pass in the number of levels to go up for the relative path and it return ../.. etc
@@ -92,66 +92,66 @@ case "$CMD" in
     else
         GROUPID="$USERID"
     fi
-    echo "**** Starting server from: $TARGET"
+    echo "**** Starting server from: $APPNAME"
 
-    if [ ! -d "$TARGET" ]; then
-        sudo mkdir -p "$TARGET"
+    if [ ! -d "$APPNAME" ]; then
+        sudo mkdir -p "$APPNAME"
     fi    
     #check ownership of target, if not owned by current user, change ownership to current user
-    if [ "$(stat -c '%u:%g' "$TARGET")" != "$USERID:$GROUPID" ]; then
-        echo "Changing ownership of $TARGET to $USERID:$GROUPID"
-        sudo chown "$USERID:$GROUPID" "$TARGET"
+    if [ "$(stat -c '%u:%g' "$APPNAME")" != "$USERID:$GROUPID" ]; then
+        echo "Changing ownership of $APPNAME to $USERID:$GROUPID"
+        sudo chown "$USERID:$GROUPID" "$APPNAME"
     fi  
 
-    TARGET="$(cd "$TARGET" && pwd)"
+    APPNAME="$(cd "$APPNAME" && pwd)"
 
     #$USER is the user running the container
 
-    if [ ! -d "$TARGET/tomcat" ]; then
+    if [ ! -d "$APPNAME/tomcat" ]; then
         # Copy tomcat conf and webapp templates from eme-lib deploy
         # Create directory structure
-        mkdir -p "$TARGET/tomcat" "$TARGET/tomcat/conf" "$TARGET/tomcat/logs" "$TARGET/tomcat/webapps" "$TARGET/tomcat/work"
-        cp -rn "$EMELIB/tomcat/conf/." "$TARGET/tomcat/conf/" 2>/dev/null || true
-        cp -rpn "$EMELIB/tomcat/bin" "$TARGET/tomcat/" 2>/dev/null || true
-        echo "export CATALINA_BASE=\"$TARGET/tomcat\"" >>"$TARGET/tomcat/bin/setenv.sh"
-        sudo chown -R $USERID:$GROUPID "$TARGET/tomcat" 
-        #chmod 755 "$TARGET/tomcat/bin/*.sh"
+        mkdir -p "$APPNAME/tomcat" "$APPNAME/tomcat/conf" "$APPNAME/tomcat/logs" "$APPNAME/tomcat/webapps" "$APPNAME/tomcat/work"
+        cp -rn "$EMELIB/tomcat/conf/." "$APPNAME/tomcat/conf/" 2>/dev/null || true
+        cp -rpn "$EMELIB/tomcat/bin" "$APPNAME/tomcat/" 2>/dev/null || true
+        echo "export CATALINA_BASE=\"$APPNAME/tomcat\"" >>"$APPNAME/tomcat/bin/setenv.sh"
+        sudo chown -R $USERID:$GROUPID "$APPNAME/tomcat" 
+        #chmod 755 "$APPNAME/tomcat/bin/*.sh"
     fi
 
 
-    if [ ! -L "$TARGET/webapp/_site.xconf" ]; then
-        mkdir -p "$TARGET/webapp/WEB-INF/"
-        ln -nsf "$(get_relative_emelib 2)/resources/webapp/_site.xconf" "$TARGET/webapp/_site.xconf"
-        sudo chown -R $USERID:$GROUPID "$TARGET/webapp"
+    if [ ! -L "$APPNAME/webapp/_site.xconf" ]; then
+        mkdir -p "$APPNAME/webapp/WEB-INF/"
+        ln -nsf "$(get_relative_emelib 2)/resources/webapp/_site.xconf" "$APPNAME/webapp/_site.xconf"
+        sudo chown -R $USERID:$GROUPID "$APPNAME/webapp"
     fi
 
-    if [ ! -f "$TARGET/webapp/WEB-INF/web.xml" ]; then
-          cp -rp "$EMELIB/resources/webapp/WEB-INF/web.xml" "$TARGET/webapp/WEB-INF/web.xml"
+    if [ ! -f "$APPNAME/webapp/WEB-INF/web.xml" ]; then
+          cp -rp "$EMELIB/resources/webapp/WEB-INF/web.xml" "$APPNAME/webapp/WEB-INF/web.xml"
     fi
 
-    if [ ! -f "$TARGET/webapp/WEB-INF/node.xml" ]; then
-          cp -rp "$EMELIB/resources/webapp/WEB-INF/node.xml" "$TARGET/webapp/WEB-INF/node.xml"
+    if [ ! -f "$APPNAME/webapp/WEB-INF/node.xml" ]; then
+          cp -rp "$EMELIB/resources/webapp/WEB-INF/node.xml" "$APPNAME/webapp/WEB-INF/node.xml"
     fi
 
-    if [ ! -L "$TARGET/webapp/WEB-INF/bin" ]; then
-        ln -nsf "$(get_relative_emelib 3)/resources/webapp/WEB-INF/bin" "$TARGET/webapp/WEB-INF/bin"
+    if [ ! -L "$APPNAME/webapp/WEB-INF/bin" ]; then
+        ln -nsf "$(get_relative_emelib 3)/resources/webapp/WEB-INF/bin" "$APPNAME/webapp/WEB-INF/bin"
     fi
 
- #   sudo chown ${USERID}:${GROUPID} "$TARGET/webapp/"
-    if [ ! -L "$TARGET/data" ]; then
+ #   sudo chown ${USERID}:${GROUPID} "$APPNAME/webapp/"
+    if [ ! -L "$APPNAME/data" ]; then
         mkdir -p "./webapp/WEB-INF/data"
         ln -nsf "./webapp/WEB-INF/data" "./data" 
-        sudo chown -R $USERID:$GROUPID "$TARGET/data"
+        sudo chown -R $USERID:$GROUPID "$APPNAME/data"
     fi
 
-    if [ ! -d "$TARGET/data/system" ]; then
-         mkdir -p "$TARGET/webapp/WEB-INF/data/system/"
-         cp -rp "$EMELIB/plugins/system/defaultdata/." "$TARGET/webapp/WEB-INF/data/system/"
-         sudo chown -R $USERID:$GROUPID "$TARGET/webapp/WEB-INF/data/system/"
+    if [ ! -d "$APPNAME/data/system" ]; then
+         mkdir -p "$APPNAME/webapp/WEB-INF/data/system/"
+         cp -rp "$EMELIB/plugins/system/defaultdata/." "$APPNAME/webapp/WEB-INF/data/system/"
+         sudo chown -R $USERID:$GROUPID "$APPNAME/webapp/WEB-INF/data/system/"
     fi
 
     # symbolically link users plugins to webapp first!
-    for plugin in "$TARGET/plugins"/*/; do
+    for plugin in "$APPNAME/plugins"/*/; do
         pluginname="$(basename "$plugin")"
         if [ -d "${plugin}html" ]; then
             if [ ! -L "../webapp/$pluginname" ]; then
@@ -167,12 +167,12 @@ case "$CMD" in
 
         if [ -d "${plugin}html" ]; then
             ##if its an invalid symbolic link then remove it and create a new one
-            echo "Adding plugin: $TARGET/webapp/$pluginname"
-            if [ -L "$TARGET/webapp/$pluginname" ]; then
-                echo "Removing invalid symbolic link: $TARGET/webapp/$pluginname"
-                rm "$TARGET/webapp/$pluginname"
+            echo "Adding plugin: $APPNAME/webapp/$pluginname"
+            if [ -L "$APPNAME/webapp/$pluginname" ]; then
+                echo "Removing invalid symbolic link: $APPNAME/webapp/$pluginname"
+                rm "$APPNAME/webapp/$pluginname"
             fi
-            ln -nsf "$(get_relative_emelib 2)/plugins/${pluginname}/html"  "$TARGET/webapp/$pluginname"
+            ln -nsf "$(get_relative_emelib 2)/plugins/${pluginname}/html"  "$APPNAME/webapp/$pluginname"
         fi
     done
 
@@ -182,20 +182,20 @@ case "$CMD" in
 
     # Write VSCode configs
 
-    mkdir -p "$TARGET/.vscode"
-    sed -e "s|\$JAVA_HOME|$JAVA_HOME|g" "$EMELIB/resources/editor-configs/settings.json" > "$TARGET/.vscode/settings.json"
+    mkdir -p "$APPNAME/.vscode"
+    sed -e "s|\$JAVA_HOME|$JAVA_HOME|g" "$EMELIB/resources/editor-configs/settings.json" > "$APPNAME/.vscode/settings.json"
 
-    sed -e "s|\$EMSERVER_NAME|$EMSERVER_NAME|g" "$EMELIB/resources/editor-configs/launch.json" > "$TARGET/.vscode/launch.json"
-    printf "// Do not edit this file unless you know what you are doing\n" | cat - "$TARGET/.vscode/launch.json" > "$TARGET/.vscode/temp" && mv "$TARGET/.vscode/temp" "$TARGET/.vscode/launch.json"
+    sed -e "s|\$EMSERVER_NAME|$EMSERVER_NAME|g" "$EMELIB/resources/editor-configs/launch.json" > "$APPNAME/.vscode/launch.json"
+    printf "// Do not edit this file unless you know what you are doing\n" | cat - "$APPNAME/.vscode/launch.json" > "$APPNAME/.vscode/temp" && mv "$APPNAME/.vscode/temp" "$APPNAME/.vscode/launch.json"
 
-    cp "$EMELIB/resources/editor-configs/formatter.xml" "$TARGET/formatter.xml"
+    cp "$EMELIB/resources/editor-configs/formatter.xml" "$APPNAME/formatter.xml"
 
-    sed -e "s|\$EMELIB|$EMELIB|g" -e "s|\$EMSERVER|$EMSERVER|g" "$EMELIB/resources/editor-configs/eme.code-workspace" > "$TARGET/$EMSERVER_NAME.code-workspace"
+    sed -e "s|\$EMELIB|$EMELIB|g" -e "s|\$EMSERVER|$EMSERVER|g" "$EMELIB/resources/editor-configs/eme.code-workspace" > "$APPNAME/$EMSERVER_NAME.code-workspace"
 
     if command -v code >/dev/null 2>&1; then
-        code "$TARGET/$EMSERVER_NAME.code-workspace" && echo "Launching VS Code, press F5 to start your server" && exit 0
+        code "$APPNAME/$EMSERVER_NAME.code-workspace" && echo "Launching VS Code, press F5 to start your server" && exit 0
     else
-        echo "VS Code 'code' command not found. Open $TARGET/$EMSERVER_NAME.code-workspace manually."
+        echo "VS Code 'code' command not found. Open $APPNAME/$EMSERVER_NAME.code-workspace manually."
     fi
 
 
@@ -216,10 +216,10 @@ case "$CMD" in
     fi  
 
     # Java @argfile does not expand shell variables, so expand them here
-    EXPANDED_ARGS=$( mktemp $TARGET/tomcat/work/tomcat-args.XXXXXX)
+    EXPANDED_ARGS=$( mktemp $APPNAME/tomcat/work/tomcat-args.XXXXXX)
     sudo chmod 600 "$EXPANDED_ARGS"
     trap " rm -f $EXPANDED_ARGS" EXIT
-     sed -e "s|\$EMELIB|$EMELIB|g" -e "s|\$EMSERVER|$EMSERVER|g" "$ARGS_TEMPLATE" > "$EXPANDED_ARGS"
+     sed -e "s|\$EMELIB|$EMELIB|g" -e "s|\$EMSERVER|$EMSERVER|g" -e "s|\$APPNAME|$APPNAME|g" "$ARGS_TEMPLATE" > "$EXPANDED_ARGS"
 
     JAVA="$JAVA_HOME/bin/java"
 
@@ -229,15 +229,17 @@ case "$CMD" in
     #  "$JAVA" "@$EXPANDED_ARGS" org.apache.catalina.startup.Bootstrap start 
 
     
-    CATALINA_BASE="$TARGET/tomcat"
+    CATALINA_BASE="$APPNAME/tomcat"
     export CATALINA_BASE
     #SIGTERM-handler
     term_handler() {
+        
         pid=$(pgrep -f "$CATALINA_BASE/conf/logging.properties")
+        echo "SIGTERM received, shutting down Tomcat (PID: $pid)"
         if [[ ! -z $pid ]]; then
             if [ $pid -ne 0 ]; then
                 echo "Deployment shutdown start"
-                 sh -c "$TARGET/tomcat/bin/catalina.sh stop"
+                 sh -c "$APPNAME/tomcat/bin/catalina.sh stop"
                 kill -SIGTERM "$catalinapid"
                 while [ -e /proc/$pid ]; do
                     printf .
@@ -245,6 +247,7 @@ case "$CMD" in
                 done
             fi
         fi
+        echo "Tomcat shutdown complete, exiting (143)"
         exit 143 # 128 + 15 -- SIGTERM
     }
 
