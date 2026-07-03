@@ -21,10 +21,10 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.openedit.Data;
 import org.openedit.MultiValued;
-import org.openedit.OpenEditException;
 import org.openedit.data.ValuesMap;
 import org.openedit.event.WebEvent;
 import org.openedit.event.WebEventListener;
+import org.openedit.profile.UserProfile;
 import org.openedit.util.JSONParser;
 
 /**
@@ -110,12 +110,35 @@ public class AutomationManager extends BaseAiManager implements WebEventListener
 		runScenario(inId, context);
 	}
 
-	public void runScenario(String inId, AgentContext inContext)
+	public void runScenario(String id, UserProfile inUserProfile, Map inContextMap, String currentskkillenabled, ScriptLogger logger)
 	{
-		runScenario(inId, inContext, null);
+		RunningScenario running = (RunningScenario) getMediaArchive().getBean("runningscenario", false);
+		running.setId(id);
+
+		AgentEnabled enabled = null;
+		if (currentskkillenabled != null)
+		{
+			enabled = running.findEnabled(currentskkillenabled);
+		}
+		else
+		{
+			enabled = running.getEnabledAgents().iterator().next();
+		}
+
+		AgentContext inContext = running.createAgentContext(enabled);
+		inContext.putContextValues(inContextMap);
+		inContext.setScriptLogger(logger);
+		inContext.setUserProfile(inUserProfile);
+		if (inContext.getId() == null)
+		{
+			inContext.setId(inCrementId());
+		}
+		addContext(id, inContext);
+		runScenario(running, inContext);
+
 	}
 
-	public void runScenario(String inId, AgentContext inContext, String inEnabledSkillId)
+	public void runScenario(String inId, AgentContext inContext)
 	{
 		RunningScenario running = (RunningScenario) getMediaArchive().getBean("runningscenario", false);
 		running.setId(inId);
@@ -125,22 +148,21 @@ public class AutomationManager extends BaseAiManager implements WebEventListener
 			inContext.setId(inCrementId());
 		}
 		addContext(inId, inContext);
+		runScenario(running, inContext);
+
+	}
+
+	public void runScenario(RunningScenario running, AgentContext inContext)
+	{
 		inContext.setCurrentScenario(running);
 
-		AgentEnabled enabled = null;
-
-		if (inEnabledSkillId != null)
+		AgentEnabled enabled = inContext.getCurrentAgentEnable();
+		if (enabled == null)
 		{
-			enabled = running.findEnabled(inEnabledSkillId);
-			if (enabled == null)
-			{
-				throw new OpenEditException("Could not find enabled agent " + inEnabledSkillId + " for scenario " + inId);
-			}
+			enabled = running.getEnabledAgents().iterator().next();
 			inContext.setCurrentAgentEnable(enabled);
 		}
-		enabled = inContext.getCurrentAgentEnable();
 		running.runProcess(enabled, inContext);
-
 	}
 
 	public Map<String, MultiValued> getAllPositions()

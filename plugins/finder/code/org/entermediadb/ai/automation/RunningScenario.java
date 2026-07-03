@@ -223,6 +223,28 @@ public class RunningScenario extends BaseMediaObject implements CatalogEnabled
 		return Agent;
 	}
 
+	public AgentContext createAgentContext(AgentEnabled inEnabled)
+	{
+		return createAgentContext(null, inEnabled);
+	}
+
+	public AgentContext createAgentContext(AgentContext inParentContext, AgentEnabled inEnabled)
+	{
+		String contextbeanname = inEnabled.getAgentData().get("contextbean");
+
+		if (contextbeanname == null)
+		{
+			contextbeanname = "baseAgentContext";
+		}
+		AgentContext childContext = (AgentContext) getMediaArchive().getBean(contextbeanname, false);
+		childContext.setCurrentAgentEnable(inEnabled);
+		if (inParentContext != null)
+		{
+			childContext.setParentContext(inParentContext);
+		}
+		return childContext;
+	}
+
 	private void addContextValues(AgentEnabled inAgentEnabled)
 	{
 		MultiValued automationEnabledData = (MultiValued) inAgentEnabled.getAutomationEnabledData();
@@ -238,5 +260,4 @@ public class RunningScenario extends BaseMediaObject implements CatalogEnabled
 			inAgentEnabled.setExtraContextValues(json);
 		}
 	}
-
 }

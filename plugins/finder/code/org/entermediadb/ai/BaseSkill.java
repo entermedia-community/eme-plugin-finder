@@ -16,20 +16,6 @@ public class BaseSkill extends BaseAiManager implements Skill, CatalogEnabled
 	public void processend(AgentContext inContext)
 	{}
 
-	public AgentContext createAgentContext(AgentContext inParentContext, AgentEnabled inEnabled)
-	{
-		String contextbeanname = inEnabled.getAgentData().get("contextbean");
-
-		if (contextbeanname == null)
-		{
-			contextbeanname = "baseAgentContext";
-		}
-		AgentContext childContext = (AgentContext) getMediaArchive().getBean(contextbeanname, false);
-		childContext.setCurrentAgentEnable(inEnabled);
-		childContext.setParentContext(inParentContext);
-		return childContext;
-	}
-
 	/**
 	 * This is the main process method that will be called by the agent to keep processing the children.
 	 */
@@ -43,7 +29,7 @@ public class BaseSkill extends BaseAiManager implements Skill, CatalogEnabled
 
 		for (AgentEnabled agentEnabled : children)
 		{
-			AgentContext childContext = createAgentContext(inContext, agentEnabled);
+			AgentContext childContext = inContext.getCurrentScenario().createAgentContext(inContext, agentEnabled);
 
 			agentEnabled.getAgent().processstart(childContext);
 			inContext.getCurrentScenario().runProcess(agentEnabled, childContext);

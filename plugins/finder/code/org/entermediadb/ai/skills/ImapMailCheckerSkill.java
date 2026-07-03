@@ -34,7 +34,7 @@ public class ImapMailCheckerSkill extends ToolsCallingSkill
 
       inContext.info("Found " + messages.size() + " new messages");
 
-      AgentContext subContext = createAgentContext(inContext, currentEnabled);
+      AgentContext subContext = inContext.getCurrentScenario().createAgentContext(inContext, currentEnabled);
 
       String agentid = currentEnabled.getAgentData().getId();
       try
