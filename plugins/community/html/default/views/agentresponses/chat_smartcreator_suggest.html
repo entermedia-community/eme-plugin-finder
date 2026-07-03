@@ -6,19 +6,28 @@
   [[What]] $creatortype [[subject you would like to create?]]
 </h5>
 
-#ifnull($semantictopics)
-  #set($semantictopics = $entity.getValues("semantictopics"))
+#if($semantictopics.isEmpty())
+  #set($suggestedtopic = $entity.getName())
+  #set($none = $semantictopics.add($suggestedtopic))
 #end
 
-#ifnotnull($semantictopics)
+#if(!$semantictopics.isEmpty())
   <p class="mb-1">
     [[Here are some suggestions]]:
   </p>
+  
+  
   <ul>
     #foreach($topic in $semantictopics)
+
+      #set($fixedtopic = "Create a brief outline for a $creatortype about $topic. For each outline topic, create a summary with a header, and paragraphs + lists (where necessary). Provide examples if applicable.")
+      
+
+     #set($fixedtopic = $translationManager.emediaTranslate("en", $context.getLocale(), $fixedtopic))
+
       <li class="autoprefixchatmsg"
         style="text-transform: capitalize;"
-        data-prefix="Create a brief outline for a $creatortype about $topic. For each outline topic, create a summary with a header, and paragraphs + lists (where necessary). Provide examples if applicable."
+        data-prefix="${fixedtopic}"
         data-functionname="chat_smartcreator_parse_user_prompt"
       >
       <span>$topic</span>

@@ -8,7 +8,7 @@ public class SmartCreatorRenderAssetSkill extends BaseSkill
 {
 	public SmartCreatorPlaybackSkill getSmartCreatorSkill()
 	{
-		SmartCreatorPlaybackSkill manager = (SmartCreatorPlaybackSkill) getMediaArchive().getBean("SmartCreatorPlaybackSkill");
+		SmartCreatorPlaybackSkill manager = (SmartCreatorPlaybackSkill) getMediaArchive().getBean("smartCreatorPlaybackSkill");
 		return manager;
 	}
 

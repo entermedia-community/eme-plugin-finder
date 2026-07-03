@@ -6,8 +6,9 @@
 	<property name="hitsname">hits</property>
 
 	<property name="searchhomename">agentresponse</property>
+
 	<property name="searchhome">/${applicationid}/views/modules/${module}/results/agentresponse</property>
 
-	
+	<path-action name="TranslationModule.loadTranslationManager" />
 
 </page>
