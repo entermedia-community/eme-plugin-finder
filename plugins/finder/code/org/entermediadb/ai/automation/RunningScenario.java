@@ -245,4 +245,19 @@ public class RunningScenario extends BaseMediaObject implements CatalogEnabled
 		return childContext;
 	}
 
+	private void addContextValues(AgentEnabled inAgentEnabled)
+	{
+		MultiValued automationEnabledData = (MultiValued) inAgentEnabled.getAutomationEnabledData();
+		String text = automationEnabledData.get("contextvalues");
+		if (text == null && inAgentEnabled.getAgentData() != null)
+		{
+			text = inAgentEnabled.getAgentData().get("contextvalues");
+		}
+		if (text != null)
+		{
+			JSONParser fieldJsonParser = new JSONParser();
+			JSONObject json = (JSONObject) fieldJsonParser.parse(text);
+			inAgentEnabled.setExtraContextValues(json);
+		}
+	}
 }
