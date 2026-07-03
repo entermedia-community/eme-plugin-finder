@@ -1,7 +1,8 @@
 #
-#Fri Jul 03 17:10:39 CST 2026
+#Fri Jul 03 17:26:14 CST 2026
 Add\ Column=A\u00F1adir columna
 Add\ New\ Record=A\u00F1adir nuevo registro
+Add\ To=A\u00F1adir a
 Add\ To\ Category=A\u00F1adir a la categor\u00EDa
 Are\ you\ sure\ you\ want\ to\ reset\ all\ columns?=\u00BFEst\u00E1s seguro de que deseas restablecer todas las columnas?
 Assign=Asignar
@@ -10,12 +11,15 @@ Bulk\ Import\ YouTube\ Video\ or\ Playlist=Importaci\u00F3n masiva de videos o l
 Bulk\ Upload\ from\ Files=Carga masiva desde archivos
 Change\ to\ Column\ View=Cambiar a la vista de columnas
 Change\ to\ Table\ View=Cambiar a la vista de tabla
+Copies\ files\ and\ metadata\ to=Copia archivos y metadatos a
+Copying\ selected\ files\ and\ metadata\ to=Copiar archivos y metadatos seleccionados a
 Create\ New=Crear nuevo
 Delete=Eliminar
 Delete\ items?=\u00BFEliminar elementos?
 Delete\ selected\ items=Eliminar los elementos seleccionados
 Deselect\ all\ results=Deseleccionar todos los resultados
 Drag\ columns\ to\ move\ them=Arrastre las columnas para moverlas
+Error\ while\ copying\ files\ and\ metadata\ to=Error al copiar archivos y metadatos a
 Export=Exportar
 Export\ results\ to\ CSV\ (Friendly)=Exportar resultados a CSV (Amistoso)
 Export\ reults\ to\ CSV=Exportar resultados a CSV
@@ -40,5 +44,6 @@ Select\ Only\ This\ Page=Seleccione solo esta p\u00E1gina
 Select\ this\ page\ of\ results=Seleccione esta p\u00E1gina de resultados
 Sort=Ordenar
 Sort\ Results=Ordenar resultados
+Successfully\ copied\ files\ and\ metadata\ to=Archivos y metadatos copiados con \u00E9xito a
 Summary=Resumen
 Upload\ Spreadsheet=Subir la hoja de c\u00E1lculo
