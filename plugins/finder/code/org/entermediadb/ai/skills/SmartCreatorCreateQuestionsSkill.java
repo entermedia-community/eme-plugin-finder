@@ -50,29 +50,74 @@ public class SmartCreatorCreateQuestionsSkill extends BaseSkill
 		LlmConnection llmconnection = getMediaArchive().getLlmConnection("thinking");
 		Searcher questionsearcher = getMediaArchive().getSearcher("entityquestion");
 
+		Collection<Data> questionstosave = new ArrayList<Data>();
+
+		int ordering = 0;
 		for (Data section : componentsSection)
 		{
 			String sectionid = section.getId();
 			Searcher contentSearcher = getMediaArchive().getSearcher("componentcontent");
 			Collection<Data> componentcontents = contentSearcher.query().exact("componentsectionid", sectionid).search();
 
-			String content = "";
+			String contextcontent = "";
+
 			for (Data componentcontent : componentcontents)
 			{
-				content += componentcontent.get("content");
+				String orderingStr = componentcontent.get("ordering");
+				if (orderingStr != null)
+				{
+					try
+					{
+						ordering = Math.max(ordering, Integer.parseInt(orderingStr));
+					}
+					catch (NumberFormatException e)
+					{
+						log.warn("Invalid ordering value: " + orderingStr, e);
+					}
+				}
+				String componenttype = componentcontent.get("componenttype");
+				if ("asset".equals(componenttype))
+				{
+					// TODO: We could also include the asset description or other metadata here if needed
+					continue;
+				}
+				if ("mcq".equals(componenttype))
+				{
+					continue;
+				}
+				contextcontent += componentcontent.get("content");
 			}
 
-			inContext.putContextValue("content", content);
+			if (contextcontent.trim().length() == 0)
+			{
+				log.info("Skipping section because it has no content: " + sectionid);
+				// TODO: Use embedding server to use just the section title to generate questions
+				continue;
+			}
+
+			inContext.putContextValue("contextcontent", contextcontent);
 			LlmResponse response = llmconnection.callStructure(inContext, "smartcreator_questions");
 			JSONObject rawResponse = response.getMessageStructured();
 			Collection<Map> questions = (Collection<Map>) rawResponse.get("questions");
 
-			int ordering = componentcontents.size();
 			for (Map questionmap : questions)
 			{
 				String questiontext = (String) questionmap.get("question");
 				List<String> choices = (List<String>) questionmap.get("choices");
-				int correctindex = (int) questionmap.get("correct_answer_index");
+				Object correct_answer_index = questionmap.get("correct_answer_index");
+				Integer correctindex = null;
+				if (correct_answer_index instanceof Long)
+				{
+					correctindex = ((Long) correct_answer_index).intValue();
+				}
+				else if (correct_answer_index instanceof String)
+				{
+					correctindex = Integer.parseInt((String) correct_answer_index);
+				}
+				if (correctindex == null)
+				{
+					continue;
+				}
 
 				if (questiontext == null || questiontext.trim().length() == 0 || choices == null || choices.size() < 4 || correctindex < 0 || correctindex >= choices.size())
 				{
@@ -87,15 +132,39 @@ public class SmartCreatorCreateQuestionsSkill extends BaseSkill
 					question.setValue(QUESTION_CHOICES[i], choices.get(i));
 				}
 				question.setValue("correctoption", QUESTION_CHOICES[correctindex]);
-				questionsearcher.saveData(question, inContext.getUserProfile());
 
-				Data componentSection = contentSearcher.createNewData();
-				componentSection.setValue("componenttype", "mcq");
-				componentSection.setValue("questionid", question.getId());
-				componentSection.setValue("modificationdate", new Date());
-				componentSection.setValue("componentsectionid", sectionid);
-				componentSection.setValue("ordering", ordering++);
-				contentSearcher.saveData(componentSection, inContext.getUserProfile());
+				questionstosave.add(question);
+			}
+		}
+
+		if (questionstosave.size() > 0)
+		{
+			questionsearcher.saveAllData(questionstosave, null);
+
+			Collection<Data> componentstosave = new ArrayList<Data>();
+			Searcher contentSearcher = getMediaArchive().getSearcher("componentcontent");
+
+			for (Data question : questionstosave)
+			{
+				String sectionid = (String) inContext.getContextValue("sectionid");
+				if (sectionid == null)
+				{
+					log.warn("No section ID found in context for question: " + question.getId());
+					continue;
+				}
+
+				Data componentContent = contentSearcher.createNewData();
+				componentContent.setValue("componenttype", "mcq");
+				componentContent.setValue("questionid", question.getId());
+				componentContent.setValue("modificationdate", new Date());
+				componentContent.setValue("componentsectionid", sectionid);
+				componentContent.setValue("ordering", ordering++);
+
+				componentstosave.add(componentContent);
+			}
+			if (componentstosave.size() > 0)
+			{
+				contentSearcher.saveAllData(componentstosave, null);
 			}
 		}
 	}
