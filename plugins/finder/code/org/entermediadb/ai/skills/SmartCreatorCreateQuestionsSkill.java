@@ -50,6 +50,9 @@ public class SmartCreatorCreateQuestionsSkill extends BaseSkill
 		LlmConnection llmconnection = getMediaArchive().getLlmConnection("thinking");
 		Searcher questionsearcher = getMediaArchive().getSearcher("entityquestion");
 
+		Collection<Data> questionstosave = new ArrayList<Data>();
+
+		int ordering = 0;
 		for (Data section : componentsSection)
 		{
 			String sectionid = section.getId();
@@ -57,7 +60,7 @@ public class SmartCreatorCreateQuestionsSkill extends BaseSkill
 			Collection<Data> componentcontents = contentSearcher.query().exact("componentsectionid", sectionid).search();
 
 			String contextcontent = "";
-			int ordering = 0;
+
 			for (Data componentcontent : componentcontents)
 			{
 				String orderingStr = componentcontent.get("ordering");
@@ -129,7 +132,26 @@ public class SmartCreatorCreateQuestionsSkill extends BaseSkill
 					question.setValue(QUESTION_CHOICES[i], choices.get(i));
 				}
 				question.setValue("correctoption", QUESTION_CHOICES[correctindex]);
-				questionsearcher.saveData(question, inContext.getUserProfile());
+
+				questionstosave.add(question);
+			}
+		}
+
+		if (questionstosave.size() > 0)
+		{
+			questionsearcher.saveAllData(questionstosave, null);
+
+			Collection<Data> componentstosave = new ArrayList<Data>();
+			Searcher contentSearcher = getMediaArchive().getSearcher("componentcontent");
+
+			for (Data question : questionstosave)
+			{
+				String sectionid = (String) inContext.getContextValue("sectionid");
+				if (sectionid == null)
+				{
+					log.warn("No section ID found in context for question: " + question.getId());
+					continue;
+				}
 
 				Data componentContent = contentSearcher.createNewData();
 				componentContent.setValue("componenttype", "mcq");
@@ -137,7 +159,12 @@ public class SmartCreatorCreateQuestionsSkill extends BaseSkill
 				componentContent.setValue("modificationdate", new Date());
 				componentContent.setValue("componentsectionid", sectionid);
 				componentContent.setValue("ordering", ordering++);
-				contentSearcher.saveData(componentContent, inContext.getUserProfile());
+
+				componentstosave.add(componentContent);
+			}
+			if (componentstosave.size() > 0)
+			{
+				contentSearcher.saveAllData(componentstosave, null);
 			}
 		}
 	}
