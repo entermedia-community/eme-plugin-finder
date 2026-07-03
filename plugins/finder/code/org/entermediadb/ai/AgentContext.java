@@ -154,4 +154,6 @@ public interface AgentContext extends Data
 
 	public void fireStatusComplete(AgentEnabled inAgentEnabled);
 
+	void putContextValues(Map params);
+
 }

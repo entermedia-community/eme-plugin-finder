@@ -24,7 +24,7 @@
 			<language id="en"><![CDATA[(D)]]></language>
 		</name>
 	</property>
-	<property id="mcqoptions">Correct Option
+	<property id="correctoption">Correct Option
 		<name>
 			<language id="en"><![CDATA[Correct Option]]></language>
 		</name>

@@ -15,7 +15,6 @@ import org.entermediadb.ai.assistant.AssistantManager;
 import org.entermediadb.ai.creator.AiSmartCreatorSteps;
 import org.entermediadb.ai.llm.LlmConnection;
 import org.entermediadb.ai.llm.LlmResponse;
-import org.entermediadb.asset.MediaArchive;
 import org.entermediadb.markdown.MarkdownUtil;
 import org.json.simple.JSONObject;
 import org.openedit.Data;
