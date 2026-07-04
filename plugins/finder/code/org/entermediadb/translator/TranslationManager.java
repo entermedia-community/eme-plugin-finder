@@ -23,6 +23,7 @@ import org.openedit.OpenEditException;
 import org.openedit.data.PropertyDetail;
 import org.openedit.hittracker.HitTracker;
 import org.openedit.modules.translations.LanguageMap;
+import com.google.gson.JsonObject;
 
 public class TranslationManager extends BaseAiManager implements CatalogEnabled
 {
@@ -143,14 +144,46 @@ public class TranslationManager extends BaseAiManager implements CatalogEnabled
 		combined.putAll(eMediaTranslations);
 
 		return combined;
+	}
 
+	public String emediaTranslate(String inSourceLang, String targetLang, String text)
+	{
+		Collection<String> targetLangs = new ArrayList<String>();
+		targetLangs.add(targetLang);
+		JSONObject translated = emediaTranslate(inSourceLang, targetLangs, text);
+		Collection translatedValues = translated.values();
+		if (translatedValues == null || translatedValues.isEmpty())
+		{
+			log.error("Can not Translate from " + inSourceLang + " to " + targetLang + " for text: " + text);
+			return text;
+		}
+		JSONArray values = (JSONArray) translatedValues.iterator().next();
+		String value = (String) values.get(0);
+		return value;
+	}
+
+	public JSONObject emediaTranslate(String inSourceLang, Collection<String> targetLangs, String text)
+	{
+		JSONObject payload = new JSONObject();
+
+		JSONArray contents = new JSONArray();
+		contents.add(text);
+
+		payload.put("q", contents);
+		payload.put("source", inSourceLang);
+
+		LlmConnection connection = getMediaArchive().getLlmConnection("translate");
+		log.info("Translating " + text + " from " + inSourceLang + " to " + targetLangs + " in server: " + connection.getServerRoot());
+
+		JSONObject eMediaTranslations = eMediaTranslate(connection, payload, targetLangs);
+		return eMediaTranslations;
 	}
 
 	public JSONObject eMediaTranslate(LlmConnection connection, JSONObject payload, Collection<String> targetLangs)
 	{
 
 		JSONArray targets = new JSONArray();
-		targets.addAll(targetLangs);
+		targets.addAll(findAvailableLanguages(targetLangs));
 		payload.put("target", targets);
 
 		LlmResponse resp = connection.callJson("/translate", payload);
@@ -237,11 +270,10 @@ public class TranslationManager extends BaseAiManager implements CatalogEnabled
 			{
 				altLang = "zh";
 			}
-			else
-				if (lang.equals("zh-Hant") || lang.equals("zh_TW"))
-				{
-					altLang = "zht";
-				}
+			else if (lang.equals("zh-Hant") || lang.equals("zh_TW"))
+			{
+				altLang = "zht";
+			}
 			JSONArray fieldTranslations = (JSONArray) translations.get(lang);
 			if (fieldTranslations == null)
 			{
@@ -260,6 +292,50 @@ public class TranslationManager extends BaseAiManager implements CatalogEnabled
 
 		return results;
 
+	}
+
+	public Collection<String> findAvailableLanguages(Collection<String> targetLangs)
+	{
+		Collection<String> availableTargets = Arrays.asList("en,es,fr,de,ar,pt,bn,hi,ur,ru,zh,zht,sw".split(","));
+		Collection<String> response = new ArrayList();
+
+		if (targetLangs == null)
+		{
+			targetLangs = new ArrayList();
+		}
+
+		for (Iterator iterator = targetLangs.iterator(); iterator.hasNext();)
+		{
+			String code = (String) iterator.next();
+
+			if ("zh-Hans".equals(code))
+			{
+				code = "zh";
+			}
+			else if ("zh_TW".equals(code))
+			{
+				code = "zht";
+			}
+			for (Iterator iterator2 = availableTargets.iterator(); iterator2.hasNext();)
+			{
+				String available = (String) iterator2.next();
+				if ("zh-Hans".equals(available))
+				{
+					response.add("zh");
+				}
+				else if ("zh_TW".equals(available))
+				{
+					response.add("zht");
+				}
+				else if (code.contains(available))
+				{
+					response.add(available);
+				}
+
+			}
+
+		}
+		return response;
 	}
 
 	public void translateDataFields(Map<String, String> inConfig, Collection<MultiValued> inRecordsToTranslate, Collection<PropertyDetail> inDetailsfields, String inSourceLang, Collection<String> targetLangs)
@@ -294,11 +370,10 @@ public class TranslationManager extends BaseAiManager implements CatalogEnabled
 			{
 				code = "zh";
 			}
-			else
-				if ("zh_TW".equals(code))
-				{
-					code = "zht";
-				}
+			else if ("zh_TW".equals(code))
+			{
+				code = "zht";
+			}
 			if (availableTargets.contains(code))
 			{
 				targetLangs.add(code);

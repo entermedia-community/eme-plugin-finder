@@ -46,13 +46,18 @@ public class SmartCreatorMakeSuggestionsSkill extends BaseSkill
 			// pull semantic topics from entityassets views
 			Collection<Data> entityassets = getMediaArchive().getSearcher("entityasset").query().exact(entitymoduleid, entityid).search();
 
+			semantictopics = new ArrayList<String>();
+
 			for (Data entityasset : entityassets)
 			{
 				Collection<String> entityassettopics = entityasset.getValues("semantictopics");
-				if (entityassettopics != null)
+				if (entityassettopics == null || entityassettopics.isEmpty())
 				{
-					semantictopics.addAll(entityassettopics);
+					continue;
 				}
+
+				semantictopics.addAll(entityassettopics);
+
 				if (semantictopics.size() >= 5)
 				{
 					break;

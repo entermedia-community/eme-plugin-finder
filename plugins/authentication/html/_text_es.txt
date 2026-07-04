@@ -1,7 +1,8 @@
 #
-#Wed Feb 11 18:04:15 CST 2026
+#Fri Jul 03 16:15:30 CST 2026
 App\ Key=Clave de la aplicaci\u00F3n
 Are\ you\ having\ trouble\ logging\ in\ or\ have\ a\ question?=\u00BFTiene problemas para iniciar sesi\u00F3n o tiene alguna pregunta?
+Back=Atr\u00E1s
 Back\ to\ Login\ page=Volver a la p\u00E1gina de inicio de sesi\u00F3n
 Do\ you\ have\ any\ questions?=\u00BFTiene usted alguna pregunta?
 Email\ or\ Username=Correo electr\u00F3nico o nombre de usuario
@@ -10,6 +11,9 @@ Enter\ six\ digit\ login\ code=Ingrese el c\u00F3digo de inicio de sesi\u00F3n d
 Enter\ you\ email\ address=Ingrese su direcci\u00F3n de correo electr\u00F3nico
 Enter\ your\ Email\ Address=Ingrese su direcci\u00F3n de correo electr\u00F3nico
 Enter\ your\ email\ address=Introduzca su direcci\u00F3n de correo electr\u00F3nico
+Enter\ your\ email\ address\ or\ username=Ingrese su direcci\u00F3n de correo electr\u00F3nico o nombre de usuario
+Enter\ your\ password=Ingrese su contrase\u00F1a
+Enter\ your\ two\ factor\ authenticator\ code=Ingrese su c\u00F3digo de autenticaci\u00F3n de dos factores
 Error\ please\ contact\ an\ Administrator=Error por favor contacte a un Administrador
 Forgotten\ your\ password?=Olvidaste tu contrase\u00F1a?
 If\ you\ haven't\ yet\ generated\ a\ two\ factor\ key,\ click\ here=Si a\u00FAn no ha generado una clave de dos factores, haga clic aqu\u00ED
@@ -36,10 +40,13 @@ Please\ check\ your\ email=Por favor revise su correo electr\u00F3nico
 Please\ contact\ and\ Administrator=Por favor, p\u00F3ngase en contacto con un administrador.
 Please\ enter\ your\ password=Por favor, introduzca su contrase\u00F1a
 Send\ Key=Enviar Clave
+Sign\ in=Inicia sesi\u00F3n.
+Sign\ in\ /\ Sign\ up=Iniciar sesi\u00F3n / Registrarse
 Sign-in=Iniciar sesi\u00F3n
 Sign-in\ with=Inicie sesi\u00F3n con
 Sign-up=Inscribirse
 To\ create\ a\ new\ account,\ please\ contact=Para crear una nueva cuenta, por favor cont\u00E1ctenos
+Two\ Factor\ Authenticator\ Code=C\u00F3digo de autenticaci\u00F3n de dos factores
 Two\ Factor\ Authenticator\ Key=Clave de autenticaci\u00F3n de dos factores
 Username\ and\ Password=Nombre de usuario y contrase\u00F1a
 Welcome\!\ Please\ enter\ your\ email\ and\ password\:=\u00A1Bienvenido\! 
