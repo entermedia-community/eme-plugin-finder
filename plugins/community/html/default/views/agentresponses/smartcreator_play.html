@@ -3,6 +3,7 @@
   data-playbackentityid="${playbackentity.id}"
   data-playbackentitymoduleid="${playbackentitymodule.id}">
   <h5>${selectedsection.name}</h5>
+  <messageplain>${selectedsection.name}</messageplain>
   
   <div class="creator-content soft-scrollbar">
     #set($componentcontents = $mediaarchive.query("componentcontent").exact("componentsectionid", $selectedsection.id).sort("ordering").search())
