@@ -1073,7 +1073,11 @@ public class AssistantManager extends BaseAiManager implements SkillStatusListen
 			functionMessageUpdate.put("user", "agent");
 			functionMessageUpdate.put("channel", agentmessage.get("channel"));
 			functionMessageUpdate.put("messageid", agentmessage.getId());
-			functionMessageUpdate.put("message", agentmessage.get("message"));
+			if (messageplain == null)
+			{
+				messageplain = "New message";
+			}
+			functionMessageUpdate.put("message", messageplain);
 			functionMessageUpdate.put("nextfunctionname", nextFunctionName);
 			functionMessageUpdate.put("functionname", inAgentEnabled.getEnabledId());
 

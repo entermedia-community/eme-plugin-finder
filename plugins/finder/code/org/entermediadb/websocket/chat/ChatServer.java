@@ -164,7 +164,12 @@ public class ChatServer
 		inMap.put("date", DateStorageUtil.getStorageUtil().getJsonFormat().format(date));
 		inMap.put("messageid", inData.getId());
 		inMap.put("command", "messageremoved");
-		inMap.put("message", inData.get("message"));
+		String message = (String) inData.get("messageplain");
+		if (message == null)
+		{
+			message = (String) inData.get("message");
+		}
+		inMap.put("message", message);
 		broadcastMessage(inCatalogId, inMap);
 	}
 
@@ -181,7 +186,12 @@ public class ChatServer
 		inMap.put("date", DateStorageUtil.getStorageUtil().getJsonFormat().format(date));
 		inMap.put("messageid", inData.getId());
 		inMap.put("command", "messagereceived");
-		inMap.put("message", inData.get("message"));
+		String message = inData.get("messageplain");
+		if (message == null)
+		{
+			message = inData.get("message");
+		}
+		inMap.put("message", message);
 		broadcastMessage(inCatalogId, inMap);
 	}
 

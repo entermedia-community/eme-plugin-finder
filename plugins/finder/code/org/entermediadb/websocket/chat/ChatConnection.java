@@ -256,79 +256,78 @@ public class ChatConnection extends Endpoint implements MessageHandler.Partial<S
 				// String channelid = String.valueOf(map.get("channel"));
 				// setChannelId(channelid);
 			}
-			else
-				if ("messagereceived".equals(command) || "notify".equals(command))
+			else if ("messagereceived".equals(command) || "notify".equals(command))
+			{
+
+				Data chat = getChatServer().saveMessage(map); // <-----
+
+				String catalogid = (String) map.get("catalogid");
+				MediaArchive archive = (MediaArchive) getModuleManager().getBean(catalogid, "mediaArchive");
+
+				/*
+				 * if(map.get("entityid")!=null) { entityid = (String) map.get("entityid").toString(); } if
+				 * (entityid == null && map.get("collectionid") != null) { entityid = (String)
+				 * map.get("collectionid").toString(); }
+				 * 
+				 * String moduleid = null; if(map.get("moduleid")!=null) { moduleid = (String)
+				 * map.get("moduleid").toString(); } if (moduleid == null) { moduleid = "librarycollection";
+				 * //Legacy }
+				 * 
+				 * // Get project name and save as topic for notification if(moduleid != null) { Data entity =
+				 * archive.getCachedData(moduleid, entityid); if (entity != null) { String topic = entity.getName();
+				 * map.put("topic", topic);
+				 * 
+				 * } }
+				 */
+
+				// Get first name
+				Object userval = map.get("user");
+				String userid = null;
+				if (userval != null)
 				{
-
-					Data chat = getChatServer().saveMessage(map); // <-----
-																	// --------SAVE-----------------------------------SAVE!!!!
-
-					String content = chat.get("message");
-					String catalogid = (String) map.get("catalogid");
-					MediaArchive archive = (MediaArchive) getModuleManager().getBean(catalogid, "mediaArchive");
-
-					/*
-					 * if(map.get("entityid")!=null) { entityid = (String) map.get("entityid").toString(); } if
-					 * (entityid == null && map.get("collectionid") != null) { entityid = (String)
-					 * map.get("collectionid").toString(); }
-					 * 
-					 * String moduleid = null; if(map.get("moduleid")!=null) { moduleid = (String)
-					 * map.get("moduleid").toString(); } if (moduleid == null) { moduleid = "librarycollection";
-					 * //Legacy }
-					 * 
-					 * // Get project name and save as topic for notification if(moduleid != null) { Data entity =
-					 * archive.getCachedData(moduleid, entityid); if (entity != null) { String topic = entity.getName();
-					 * map.put("topic", topic);
-					 * 
-					 * } }
-					 */
-
-					// Get first name
-					Object userval = map.get("user");
-					String userid = null;
-					if (userval != null)
-					{
-						userid = userval.toString();
-					}
-					User auser = archive.getUser(userid);
-					String name = auser.getFirstName();
-					if (name == null)
-					{
-						name = "";
-					}
-					map.put("name", name);
-					map.put("message", content);
-
-					getChatServer().broadcastMessage(catalogid, map);
-					archive.fireDataEvent(auser, "chatterbox", "messagereceived", chat);
-
+					userid = userval.toString();
 				}
-				else
-					if ("messageremoved".equals(command))
-					{
-						getChatServer().broadcastMessage(map);
-					}
-					else
-						if ("approveasset".equals(command))
-						{
+				User auser = archive.getUser(userid);
+				String name = auser.getFirstName();
+				if (name == null)
+				{
+					name = "";
+				}
+				map.put("name", name);
+				String messageplain = chat.get("messageplain");
+				if (messageplain == null)
+				{
+					messageplain = chat.get("message");
+				}
+				map.put("message", messageplain);
 
-							getChatServer().approveAsset(map);
-							getChatServer().broadcastMessage(map);
+				getChatServer().broadcastMessage(catalogid, map);
+				archive.fireDataEvent(auser, "chatterbox", "messagereceived", chat);
 
-						}
-						else
-							if ("rejectasset".equals(command))
-							{
+			}
+			else if ("messageremoved".equals(command))
+			{
+				getChatServer().broadcastMessage(map);
+			}
+			else if ("approveasset".equals(command))
+			{
 
-								getChatServer().rejectAsset(map);
-								getChatServer().broadcastMessage(map);
+				getChatServer().approveAsset(map);
+				getChatServer().broadcastMessage(map);
 
-							}
-							else
-							{
-								getChatServer().broadcastMessage(map);
+			}
+			else if ("rejectasset".equals(command))
+			{
 
-							}
+				getChatServer().rejectAsset(map);
+				getChatServer().broadcastMessage(map);
+
+			}
+			else
+			{
+				getChatServer().broadcastMessage(map);
+
+			}
 
 		}
 		catch (Exception e)
