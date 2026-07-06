@@ -1,8 +1,9 @@
 function receivePushNotification(event) {
-	console.log("push received");
-
-	const message = event.data.text();
-	const title = message.name + " in " + message.topic;
+	let title = "New Message";
+	try {
+		const message = JSON.parse(event.data.text());
+		title = message.name + " in " + message.topic;
+	} catch {}
 
 	const options = {
 		//data: url,

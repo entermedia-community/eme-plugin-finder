@@ -201,30 +201,29 @@ jQuery(document).ready(function () {
 			chatConnection = new WebSocket(`wss://${location.host}${url}`);
 		} else {
 			chatConnection = new WebSocket(`ws://${location.host}${url}`);
-			// console.log(new Date().toISOString(), "Chat initialized with ws");
 		}
 
 		chatConnection.addEventListener("message", function (event) {
-			// console.info(new Date().toISOString(), "Received message");
-
 			$(window).trigger("ajaxsocketautoreload");
 			const message = JSON.parse(event.data);
+			if (!message) return;
+
 			const channelId = message.channel;
 			const chatterbox = $(`div.chatterbox[data-channel="${channelId}"]`);
 
-			if (message && chatterbox.length === 1 && document.hasFocus()) {
-				//Channel on the screen no need to notify
-
+			if (chatterbox.length === 1) {
+				// Channel on the screen, update the UI with the new message
 				channelUpdateMessage(chatterbox, message);
 
-				return;
+				if (document.hasFocus()) {
+					// User in the same tab, no need to show notification
+					return;
+				}
 			}
 
-			registerServiceWorker();
+			// registerServiceWorker();
 
-			/*Check if you are the sender, play sound and notify. "message.topic != message.user" checks for private chat*/
 			if (message.user !== userid) {
-				console.log(`Got a message: ${document.hasFocus()}`);
 				function showNotification() {
 					console.log("Showing notification...");
 					let header = "New Message";
@@ -266,12 +265,12 @@ jQuery(document).ready(function () {
 					});
 				} else {
 					console.log(
-						`Notification Browser permission:${Notification.permission}`,
+						`Notification Browser permission: ${Notification.permission}`,
 					);
-					customToast(message.message, {
-						positive: true,
-						autohide: false,
-					});
+					// customToast(message.message, {
+					// 	positive: true,
+					// 	autohide: false,
+					// });
 				}
 			}
 		});
