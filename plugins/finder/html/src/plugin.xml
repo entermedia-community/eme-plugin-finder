@@ -2678,6 +2678,18 @@
 			<ref bean="moduleManager" />
 		</property>
 	</bean>
+	
+	<bean id="questionsMakeSuggestionsSkill" class="org.entermediadb.ai.skills.QuestionsMakeSuggestionsSkill" scope="prototype">
+		<property name="moduleManager">
+			<ref bean="moduleManager" />
+		</property>
+	</bean>
+
+	<bean id="questionsAskSkill" class="org.entermediadb.ai.skills.QuestionsAskSkill" scope="prototype">
+		<property name="moduleManager">
+			<ref bean="moduleManager" />
+		</property>
+	</bean>
 
 	<bean id="tutorialsManager" class="org.entermediadb.ai.assistant.TutorialsManager" scope="prototype">
 		<property name="moduleManager">
