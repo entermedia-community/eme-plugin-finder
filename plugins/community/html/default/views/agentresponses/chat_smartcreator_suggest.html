@@ -2,9 +2,11 @@
 <p class="m-0">
   [[Welcome to]] $creatortype [[creation wizard]].
 </p>
+<messageplain>[[Welcome to]] $creatortype [[creation wizard]].</messageplain>
 <h5 class="mb-2">
   [[What]] $creatortype [[subject you would like to create?]]
 </h5>
+<messageplain>[[What]] $creatortype [[subject you would like to create?]]</messageplain>
 
 #if($semantictopics.isEmpty())
   #set($suggestedtopic = $entity.getName())
@@ -15,8 +17,7 @@
   <p class="mb-1">
     [[Here are some suggestions]]:
   </p>
-  
-  
+  <messageplain>[[Here are some suggestions]]:</messageplain>
   <ul>
     #foreach($topic in $semantictopics)
 
@@ -31,6 +32,7 @@
         data-functionname="chat_smartcreator_parse_user_prompt"
       >
       <span>$topic</span>
+      <messageplain>$topic</messageplain>
     </li>
     #end
   </ul> 
