@@ -12,6 +12,6 @@
 
 	<property name="chatterboxhomeX">${edithome}/chatterbox</property>
 
-	<property name="channeltype">agentchat</property>
+	<property name="channeltype">agententitychat</property>
 
 </page>
