@@ -235,12 +235,11 @@ public class WorkspaceManager
 				Searcher settingsmenumodule = getSearcherManager().getSearcher(catalogid, "settingsmenumodule");
 				settingsmenumodule.reIndexAll();
 			}
-			else
-				if (verify)
-				{
-					// Merge
+			else if (verify)
+			{
+				// Merge
 
-				}
+			}
 
 			String templte3 = "/" + catalogid + "/data/lists/settingsmodulepermissionsdefault.xml";
 			String path3 = "/WEB-INF/data/" + catalogid + "/lists/settingsmodulepermissions" + module.getId() + ".xml";
@@ -267,7 +266,6 @@ public class WorkspaceManager
 	{
 		Page modulehome = getPageManager().getPage("/" + appid + "/views/modules/" + module.getId() + "/_site.xconf");
 
-		Page settings = getPageManager().getPage("/" + appid + "/views/settings/modules/" + module.getId() + "/_site.xconf");
 		PageSettings homesettings = modulehome.getPageSettings();
 
 		boolean changed = false;
@@ -281,6 +279,7 @@ public class WorkspaceManager
 			changed = true;
 		}
 
+		Page settings = getPageManager().getPage("/" + appid + "/views/settings/modules/" + module.getId() + "/_site.xconf");
 		PageSettings modulesettings = settings.getPageSettings();
 		if (changeValue(modulesettings, "fallbackdirectory", "/${applicationid}/views/settings/modules/default", force))
 		{
@@ -299,26 +298,28 @@ public class WorkspaceManager
 		return module.getId();
 	}
 
-	boolean changeValue(PageSettings homesettings, String inKey, String inValue, boolean force)
+	boolean changeValue(PageSettings inSettings, String inKey, String inValue, boolean force)
 	{
-		PageProperty prop = homesettings.getProperty(inKey);
-		if (prop == null)
+		PageProperty prop = inSettings.getProperty(inKey);
+		if (prop != null && !force)
 		{
-			prop = new PageProperty(inKey);
-			force = true;
+			String propvalue = prop.getValue();
+			if (propvalue != null && propvalue.startsWith("/community/default/"))
+			{
+				return false; // Don't override if fallback to community defaults, because they have custom views
+			}
+			if (inValue.equals(propvalue))
+			{
+				return false;
+
+			}
 		}
-		String propvalue = prop.getValue();
-		if (propvalue != null && propvalue.startsWith("/community/default/"))
-		{
-			return false; // Don't override if fallback to community defaults, because they have custom views
-		}
-		if (force || !inValue.equals(propvalue))
-		{
-			prop.setValue(inValue);
-			homesettings.putProperty(prop);
-			return true;
-		}
-		return false;
+
+		prop = new PageProperty(inKey); // Don't ever update existing properties
+		prop.setValue(inValue);
+		inSettings.putProperty(prop);
+		return true;
+
 	}
 
 	public void createMediaDbModule(String inCatalogId, Data inModule)
@@ -794,26 +795,25 @@ public class WorkspaceManager
 				Element xml = saveDataToXml(module);
 				root.add(xml);
 			}
-			else
-				if ("table".equals(customization.get("customizationtype")))
+			else if ("table".equals(customization.get("customizationtype")))
+			{
+				String path = "/WEB-INF/data/" + inCatalogId + "/fields/" + searchtype + ".xml";
+				if (getPageManager().getRepository().doesExist(path))
 				{
-					String path = "/WEB-INF/data/" + inCatalogId + "/fields/" + searchtype + ".xml";
+					pageZipUtil.zip(path, finalZip);
+					path = "/WEB-INF/data/" + inCatalogId + "/fields/" + searchtype + "/";
 					if (getPageManager().getRepository().doesExist(path))
 					{
 						pageZipUtil.zip(path, finalZip);
-						path = "/WEB-INF/data/" + inCatalogId + "/fields/" + searchtype + "/";
-						if (getPageManager().getRepository().doesExist(path))
-						{
-							pageZipUtil.zip(path, finalZip);
-						}
-					}
-					exportData(archive, searchtype, finalZip);
-					String xml = "/WEB-INF/data/" + inCatalogId + "/lists/" + searchtype + ".xml";
-					if (getPageManager().getRepository().doesExist(xml))
-					{
-						pageZipUtil.zip(xml, finalZip);
 					}
 				}
+				exportData(archive, searchtype, finalZip);
+				String xml = "/WEB-INF/data/" + inCatalogId + "/lists/" + searchtype + ".xml";
+				if (getPageManager().getRepository().doesExist(xml))
+				{
+					pageZipUtil.zip(xml, finalZip);
+				}
+			}
 
 			pageZipUtil.addTozip(root.asXML(), "/customizations/" + searchtype + ".xml", finalZip);
 		}
