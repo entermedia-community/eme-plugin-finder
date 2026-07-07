@@ -2386,11 +2386,10 @@ public class MediaArchive implements CatalogEnabled
 		{
 			findItems(path, children);
 		}
-		else
-			if (item.exists())
-			{
-				children.add(item);
-			}
+		else if (item.exists())
+		{
+			children.add(item);
+		}
 		return children;
 	}
 
@@ -3436,7 +3435,7 @@ public class MediaArchive implements CatalogEnabled
 
 	public boolean aiImageCreationAvailable(WebPageRequest inReq)
 	{
-		LlmConnection imagecreation = getLlmConnection("creation_image_create");
+		LlmConnection imagecreation = getLlmConnection("createimage");
 		if (imagecreation != null)
 		{
 			if (imagecreation.getApiKey() != null)
