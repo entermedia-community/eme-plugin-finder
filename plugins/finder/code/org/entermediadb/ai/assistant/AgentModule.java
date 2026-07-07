@@ -180,7 +180,7 @@ public class AgentModule extends BaseMediaModule
 				currentscenarioid = "chat_detection";
 			}
 		}
-		if (agentContext.getCurrentScenario() == null || !currentscenarioid.equals(agentContext.getCurrentScenario().getId()))
+		if (agentContext.getCurrentScenario() == null || currentscenarioid == null || !currentscenarioid.equals(agentContext.getCurrentScenario().getId()))
 		{
 			// Scenario changed. Clear the context and start over.
 			RunningScenario running = (RunningScenario) getMediaArchive(inReq).getBean("runningscenario", false);
@@ -197,11 +197,10 @@ public class AgentModule extends BaseMediaModule
 			}
 
 		}
-		else
-			if (functionname != null)
-			{
-				firesystemmessage = true;
-			}
+		else if (functionname != null)
+		{
+			firesystemmessage = true;
+		}
 
 		if (!firesystemmessage)
 		{

@@ -222,8 +222,14 @@ public class AssistantManager extends BaseAiManager implements SkillStatusListen
 			// agentContext.get("currentscenario"));
 			// agentContext.setCurrentScenario(currentscenario);
 
-			searcher.saveData(agentContext);
-			archive.getCacheManager().put("agentContext", inChannelId, agentContext);
+			String currentScenario = agentContext.get("currentscenario");
+			if (currentScenario != null)
+			{
+				RunningScenario running = (RunningScenario) getMediaArchive().getBean("runningscenario", false);;
+				running.setId(currentScenario);
+				agentContext.setCurrentScenario(running);
+			}
+
 		}
 		return agentContext;
 	}
@@ -1077,7 +1083,8 @@ public class AssistantManager extends BaseAiManager implements SkillStatusListen
 			{
 				messageplain = "New message";
 			}
-			functionMessageUpdate.put("message", messageplain);
+			functionMessageUpdate.put("message", updatedMessage);
+			functionMessageUpdate.put("messageplain", messageplain);
 			functionMessageUpdate.put("nextfunctionname", nextFunctionName);
 			functionMessageUpdate.put("functionname", inAgentEnabled.getEnabledId());
 
