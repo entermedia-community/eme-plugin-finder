@@ -1,12 +1,10 @@
 #set($chatterboxhome = "${edithome}/chatterbox")
+
 $context.putPageValue("chatterboxhome", $chatterboxhome)
 
 #set($moduleid = $module.getId())
 #ifnull($moduleid)
 	#set($moduleid = $page.module) 
-#end
-#ifnull($collectionid)
-	#set($collectionid = $librarycol.getId()) 
 #end
 
 #ifnull($cansendchat)
@@ -26,7 +24,6 @@ $context.putPageValue("chatterboxhome", $chatterboxhome)
 
 <div class='chatterbox #if($cansendchat == "false") chatterbox-readonly#end'
 	#ifnotnull($entity)data-entityid="$!entity.id"#end
-	#ifnotnull($collectionid)data-collectionid="$!collectionid"#end  
 	data-moduleid="$!moduleid"
 	data-renderurl="${chatterboxhome}/index.html" 
 	data-chatterboxhome="${chatterboxhome}"
@@ -41,7 +38,6 @@ $context.putPageValue("chatterboxhome", $chatterboxhome)
 	$pages.include("${chatterboxhome}/messages.html", $context)
 
 	$pages.include("${chatterboxhome}/scenariopicker.html", $context)
-
 
 	#if($cansendchat)
 		$pages.include("${chatterboxhome}/editarea.html", $context)				
