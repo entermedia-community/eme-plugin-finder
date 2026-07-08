@@ -100,7 +100,7 @@ public void init()
 	if (community != null) {
 		templatemail.setSubject(community.getName() + ": Added to Team"); //TODO: Translate
 	}
-	
+
 	Map objects = new HashMap();
 	String entermediakey = archive.userManager.getEnterMediaKey(teamuser);
 	objects.put("entermediakey",entermediakey);
@@ -108,6 +108,7 @@ public void init()
 	objects.put("teamuser",teamuser);
 	
 	objects.put("librarycol", librarycol);
+	objects.put("project", librarycol);
 	objects.put("apphome", context.getPageValue("apphome"));
 	objects.put("applink", context.getPageValue("applink"));
 	objects.put("siteroot", getSiteRoot());
