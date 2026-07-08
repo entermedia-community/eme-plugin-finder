@@ -22,12 +22,14 @@
 			#end
 
 			#set($theme = $mediaarchive.getCachedData("theme", $themeid))
+			
 			#ifnotnull($emeprofile)
 				<a class="personal-brand text-decoration-none d-flex align-items-center" href="$homeurl" title="$text($emeprofile)" style="height: var(--themed-logo-height);">
 					EME #text($emeprofile)
 				</a>
 			#end
-			#ifnull($emeprofile)
+			
+			#ifnull($user)
 				<a class="personal-brand text-decoration-none d-flex align-items-center" href="$homeurl" title="[[EME]]" style="height: var(--themed-logo-height);">
 					#ifnotnull($category)
 						#set( $assetid = $category.findValue("headercategoryimage") )
@@ -52,8 +54,9 @@
 					$sitetitle
 				</a>
 			#end
-			#if($module.id != "emeprofile")
-				<i class="bi bi-chevron-right text-muted mx-2" style="font-size:1rem;"></i>
+			
+			#if($module.id != "modulesearch")
+				##<i class="bi bi-chevron-right text-muted mx-2" style="font-size:1rem;"></i>
 				<span class="top-breadcrumb">
 					#text($module)
 				</span>
