@@ -4,21 +4,20 @@
   </span> 
 </div>
 
-<div class="py-2" id="sbFilesBody">
+<div class="py-2" id="sbFilesBody"> 
   #set($sectionid = $context.getRequestParameter("section"))
   #set($topmenuselected = $sectionid)
 
-  <a href="/${emeprofile.urlname}" 
-    class="ajax activelistener file-row #if( $topmenuselected == $link.getId()) active#end" 
-    data-targetdiv="applicationcontent" 
-    data-oemaxlevel="3" 
-    data-updateurl="true"
-    data-scrolltotop="true"
+  $pages.include("/${applicationid}/users/sidebarprojectslist.html", $context)
+
+  <a href="/projects/add/addnew.html" 
+    class="emdialog activelistener file-row #if( $topmenuselected == $link.getId()) active#end" 
+    
     title="[[Chat with]] ${emeprofile.getName()}">
     <i class="bi bi-plus-lg module-icon f-icon"></i>
     <span class="f-name">[[Add New]]</span>
   </a> 
-
+#*
   <a href="$apphome/views/modules/entityasset/index.html" 
     class="ajax activelistener file-row #if( $topmenuselected == $link.getId()) active#end" 
     data-targetdiv="applicationcontent" 
@@ -41,6 +40,6 @@
     <i class="bi bi-gear-fill module-icon f-icon"></i>
     <span class="f-name">[[Settings]]</span>
   </a>
-
+*#
 
 </div>
