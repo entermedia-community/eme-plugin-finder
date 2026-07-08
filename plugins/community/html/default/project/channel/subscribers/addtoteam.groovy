@@ -100,6 +100,10 @@ public void init()
 	if (community != null) {
 		templatemail.setSubject(community.getName() + ": Added to Team"); //TODO: Translate
 	}
+	else 
+	{
+		templatemail.setSubject("Added to Team " + librarycol.getName()); //TODO: Translate
+	}
 
 	Map objects = new HashMap();
 	String entermediakey = archive.userManager.getEnterMediaKey(teamuser);
