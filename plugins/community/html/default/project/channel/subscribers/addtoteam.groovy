@@ -87,16 +87,20 @@ public void init()
 	Data librarycol = archive.getCachedData("librarycollection", collectionid);
 	Data community = archive.getCachedData("communitytagcategory", librarycol.get("communitytagcategory"));
 	
-	if (librarycol == null || community == null)
+	if (librarycol == null)
 		{
-			log.error("No Collection: " + librarycol + " or Community:" + community);
+			log.error("No Collection: " + librarycol);
 			return;
 		}
 	
 	log.info("Sending notification to: " + teamuser);
 
 	WebEmail templatemail = archive.createSystemEmail(teamuser, template);
-	templatemail.setSubject(community.getName() + ": Added to Team"); //TODO: Translate
+
+	if (community != null) {
+		templatemail.setSubject(community.getName() + ": Added to Team"); //TODO: Translate
+	}
+	
 	Map objects = new HashMap();
 	String entermediakey = archive.userManager.getEnterMediaKey(teamuser);
 	objects.put("entermediakey",entermediakey);
