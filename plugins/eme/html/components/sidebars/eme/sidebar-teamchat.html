@@ -16,6 +16,12 @@
       #set( $community = $mediaarchive.getCachedData("communitytag",$project.communitytag))
       #set( $otherperson =  $chatManager.getOtherChatUser($project,$user) )
 
+      #if($project.urlname)
+        #set($projectlink = "$!{community.externaldomain}/${project.urlname}/chat/index.html")
+      #else
+        #set($projectlink = "/project/chat/index.html?collectionid=${project.id}")
+      #end	
+
       <a href="${projectlink}" title="[[Messages on]] ${project}" class="session-row">
         #ifnotnull($otherperson)
           $context.putPageValue("chatuser",$otherperson)
@@ -31,11 +37,7 @@
           <img class="session-thumb" src="$link" alt="[[Project]] ${project}">
         #end
         <div class="flex-grow-1">
-          #if($project.urlname)
-            #set($projectlink = "$!{community.externaldomain}/${project.urlname}/chat/index.html")
-          #else
-            #set($projectlink = "/project/chat/index.html?collectionid=${project.id}")
-          #end	
+          
         
             #ifnotnull($otherperson)
               <b>  $otherperson.getScreenName() </b>
