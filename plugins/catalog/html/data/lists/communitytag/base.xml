@@ -2,7 +2,7 @@
 
 <root> 
 
- <data id="default" primaryimagepath="/theme/images/logos/oilogo.svg" externaldomain="http://localhost.com:8080" 
+ <data id="default" primaryimagepath="/theme/images/logos/oilogo.svg" externaldomain="" 
   > 
     <name> 
       <language id="en"><![CDATA[EME Server]]></language> 
