@@ -13,7 +13,7 @@
     #foreach( $message in $messages )
       #set( $topic = $mediaarchive.getCachedData("collectiveproject",$message.channel))
       #set( $project = $mediaarchive.getCachedData("librarycollection",$topic.parentcollectionid))
-      #set( $community = $mediaarchive.getCachedData("communitytagcategory",$project.communitytagcategory))
+      #set( $community = $mediaarchive.getCachedData("communitytag",$project.communitytag))
       #set( $otherperson =  $chatManager.getOtherChatUser($project,$user) )
 
       <a href="${projectlink}" title="[[Messages on]] ${project}" class="session-row">
