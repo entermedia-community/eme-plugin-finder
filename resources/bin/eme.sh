@@ -145,8 +145,8 @@ case "$CMD" in
     fi
 
     if [ ! -d "$APPNAME/data/system" ]; then
-         mkdir -p "$APPNAME/webapp/WEB-INF/data/system/"
-         cp -rp "$EMELIB/plugins/system/defaultdata/." "$APPNAME/webapp/WEB-INF/data/system/"
+         #mkdir -p "$APPNAME/webapp/WEB-INF/data/system/"
+         cp -rp "$EMELIB/plugins/system/defaultdata" "$APPNAME/webapp/WEB-INF/data/system"
          sudo chown -R $USERID:$GROUPID "$APPNAME/webapp/WEB-INF/data/system/"
     fi
 
