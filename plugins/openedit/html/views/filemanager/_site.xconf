@@ -33,8 +33,8 @@
   	</permission>
 
 
-	<link rel="stylesheet" href="${themeprefix}/entermedia/styles/dtree.css" />
-	<link rel="stylesheet" href="${themeprefix}/entermedia/styles/filemanager/tools.css" />
+	<link rel="stylesheet" href="/${applicationid}/theme/entermedia/styles/dtree.css" />
+	<link rel="stylesheet" href="/${applicationid}/theme/entermedia/styles/filemanager/tools.css" />
 	<script type="text/javascript" src="/${applicationid}/javascript/validateandedit.js"> </script>
 	<script type="text/javascript" src="/${applicationid}/components/javascript/oepopup.js"> </script>
 

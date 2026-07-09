@@ -416,7 +416,7 @@ public class UpdateModule extends BaseMediaModule
 		skin.setValue("/themes/" + name);
 		topsettings.putProperty(skin);
 
-		topsettings.setInnerLayout("${themeprefix}/layouts/layout.html");
+		topsettings.setInnerLayout("/${applicationid}/theme/layouts/layout.html");
 		getPageManager().getPageSettingsManager().saveSetting(topsettings);
 		inReq.putPageValue("layoutname", name);
 

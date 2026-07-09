@@ -52,7 +52,7 @@
   <property name="themeid">theme</property>
   <path-action name="ThemeModule.loadCurrentTheme" />
 
-  <property name="errorpage">${themeprefix}/layouts/errorpage.html</property>
+  <property name="errorpage">/${applicationid}/theme/layouts/errorpage.html</property>
 
   <inner-layout>/${applicationid}/theme/layouts/applicationcontent.html</inner-layout>
 

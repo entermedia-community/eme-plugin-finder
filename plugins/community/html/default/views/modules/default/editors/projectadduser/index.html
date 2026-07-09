@@ -1,0 +1,21 @@
+
+<div id="$edithomeid" 
+	class="editdiv pickerresults genericpicker" 
+	data-edithome="${edithome}"
+	data-edithomeid="${edithomeid}"
+>
+	<div class="clickableresultlist"
+		data-oemaxlevel="1"
+		data-url="${edithome}/actions/savepick.html"
+		data-targetdiv="clickableresultlist" 
+	>	
+		<div class="overflow-y">
+			
+			#set($searchhome = "$apphome/views/modules/user/results/projectadduser")
+			$context.putPageValue("searchhome", $searchhome)
+			$context.putPageValue("module","user")
+			$pages.include("${searchhome}/searchinclude.html",$context)
+		</div>
+	</div>
+
+</div>

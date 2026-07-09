@@ -4,7 +4,7 @@
 	<property name="openeditid">openedit/components</property>
 	
 	<style id="openedit" href="/openedit/components/html/theme/style.css" />
-	<inner-layout>/${themeprefix}/layouts/innerlayout.html</inner-layout>
+	<inner-layout>//${applicationid}/theme/layouts/innerlayout.html</inner-layout>
 	
 	<generator mimetypes="text/html" name="velocityGenerator"/>
 		<path-action bean="pageManager" name="PageValue.loadPageVariable"/>
