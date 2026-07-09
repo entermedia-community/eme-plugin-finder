@@ -197,10 +197,7 @@ public class ThemeModule extends BaseMediaModule
 		{
 			inReq.putPageValue("currenttheme", theme);
 		}
-		else
-		{
-			log.error("Could not find theme: " + themeid);
-		}
+
 		inReq.putPageValue("themeid", themeid);
 		String appid = inReq.findValue("applicationid");
 		inReq.putPageValue("themeprefix", "/" + appid + "/" + themeid);
