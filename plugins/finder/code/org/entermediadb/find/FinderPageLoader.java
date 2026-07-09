@@ -106,7 +106,7 @@ public class FinderPageLoader implements PageLoader, CatalogEnabled
 		if (firstmenupath != null)
 		{
 			RightPage right = new RightPage();
-			// right.putParam("communitytagcategory" , first.getId());
+			// right.putParam("communitytag" , first.getId());
 			String[] parts = firstmenupath.split("[?]");
 			if (parts.length > 1)
 			{

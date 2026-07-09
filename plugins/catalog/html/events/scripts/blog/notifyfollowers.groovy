@@ -86,7 +86,7 @@ public void notifyfollowers(String userpostid, String collectionid)
 	} 
 	
 	Data collection = archive.getCachedData("librarycollection", collectionid);
-	Data community = archive.getCachedData("communitytagcategory", collection.get("communitytagcategory"));
+	Data community = archive.getCachedData("communitytag", collection.get("communitytag"));
 	
 	Data blogpost = archive.getCachedData("userpost", userpostid);
 	

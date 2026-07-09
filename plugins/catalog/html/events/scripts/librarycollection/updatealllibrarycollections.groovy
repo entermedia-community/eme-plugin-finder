@@ -13,9 +13,9 @@ public void init() {
 	HitTracker all = mediaArchive.query("librarycollection").exact("collectiontype", "1").search();
 	all.each {
 		Data librarycol = it;
-		if(librarycol.get("communitytagcategory") == null) {
+		if(librarycol.get("communitytag") == null) {
 		
-		librarycol.setValue("communitytagcategory", "oi" );
+		librarycol.setValue("communitytag", "oi" );
 		librarycol.setValue("communitytag", "oicommunity" );
 		mediaArchive.getSearcher("librarycollection").saveData(librarycol, null);
 	    log.info("saving library $librarycol");

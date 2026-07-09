@@ -249,15 +249,9 @@ L
     </name>
   </property> 
 
-  <property id="communitytagcategory" index="true" stored="true" editable="true" filter="true"  datatype="list"  type="list">
+  <property id="communitytag" legacy="communitytagcategory" index="true" stored="true" editable="true" filter="true"  datatype="list"  type="list">
     <name>
       <language id="en"><![CDATA[Community]]></language>
-    </name>
-  </property> 
-  
-  <property id="communitytag" index="true" stored="true" editable="true" viewtype="multiselect" filter="true"  datatype="list"  type="list">
-    <name>
-      <language id="en"><![CDATA[Sub Category]]></language>
     </name>
   </property> 
   

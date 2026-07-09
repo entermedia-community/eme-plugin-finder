@@ -3,7 +3,7 @@
 <properties> 
   <property id="name"/>  
   <property id="collectivedescription"/>  
-  <property id="communitytagcategory" />
+  <property id="communitytag" />
   <property id="communitytag" />
     <property id="owner" /> 
   

@@ -1292,14 +1292,14 @@ public class ProjectManager implements CatalogEnabled
 				if (communitytagcategories != null)
 				{
 					Collection comunities = Arrays.asList(communitytagcategories.split(","));
-					collectionquery.addOrsGroup("communitytagcategory", comunities	);
+					collectionquery.addOrsGroup("communitytag", comunities);
 				}
-				else 
+				else
 				{
-					String communitytagcategory = inReq.findPathValue("communitytagcategory");
+					String communitytagcategory = inReq.findPathValue("communitytag");
 					if (communitytagcategory != null)
 					{
-						collectionquery.addExact("communitytagcategory", communitytagcategory);
+						collectionquery.addExact("communitytag", communitytagcategory);
 					}
 				}
 
@@ -1694,26 +1694,24 @@ public class ProjectManager implements CatalogEnabled
 			newEvent.setData(message);
 			inMessageinputs.pop();
 		}
+		else if (message == null)
+		{
+			newEvent.setType("userupload");
+			newEvent.setData(upload);
+			inInputUploads.pop();
+		}
+		else if (DateStorageUtil.getStorageUtil().newerThan(upload.getDate("uploaddate"), message.getDate("date")))
+		{
+			newEvent.setType("userupload");
+			newEvent.setData(upload);
+			inInputUploads.pop();
+		}
 		else
-			if (message == null)
-			{
-				newEvent.setType("userupload");
-				newEvent.setData(upload);
-				inInputUploads.pop();
-			}
-			else
-				if (DateStorageUtil.getStorageUtil().newerThan(upload.getDate("uploaddate"), message.getDate("date")))
-				{
-					newEvent.setType("userupload");
-					newEvent.setData(upload);
-					inInputUploads.pop();
-				}
-				else
-				{
-					newEvent.setType("chatterbox");
-					newEvent.setData(message);
-					inMessageinputs.pop();
-				}
+		{
+			newEvent.setType("chatterbox");
+			newEvent.setData(message);
+			inMessageinputs.pop();
+		}
 		inCombinedEvents.add(newEvent);
 	}
 

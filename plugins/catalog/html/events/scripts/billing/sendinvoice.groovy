@@ -247,7 +247,7 @@ private void sendinvoiceEmail(MediaArchive mediaArchive, String contact, Data in
 	
 	//String appid = mediaArchive.getCatalogSettingValue("events_billing_notify_invoice_appid");
 
-	Data community = mediaArchive.getData("communitytagcategory", librarycol.get("communitytagcategory"));
+	Data community = mediaArchive.getData("communitytag", librarycol.get("communitytag"));
 	if (community == null) {
 		log.error("Missing Community Tag for Project: " + librarycol);
 		return;

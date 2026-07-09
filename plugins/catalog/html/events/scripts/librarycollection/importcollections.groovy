@@ -27,7 +27,7 @@ public void init()
 		"query": {
 		  "terms": [
 			{
-			  "field": "communitytagcategory",
+			  "field": "communitytag",
 			  "operation": "exact",
 			  "value": "3"
 			}

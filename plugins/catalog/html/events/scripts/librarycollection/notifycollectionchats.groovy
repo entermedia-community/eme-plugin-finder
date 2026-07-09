@@ -29,11 +29,11 @@ public void init()
 	
 	
 	//Get Communities
-	HitTracker communities = mediaArchive.query("communitytagcategory").search();
+	HitTracker communities = mediaArchive.query("communitytag").search();
 	for (Data community in communities) 
 	{
 		//get Projects in this communiy
-		HitTracker collections = mediaArchive.query("librarycollection").exact("communitytagcategory", community.getId()).search();
+		HitTracker collections = mediaArchive.query("librarycollection").exact("communitytag", community.getId()).search();
 		for (Data collection in collections) 
 		{
 			//GET community app from this

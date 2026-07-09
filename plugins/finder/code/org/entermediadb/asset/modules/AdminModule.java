@@ -689,11 +689,10 @@ public class AdminModule extends BaseMediaModule
 		{
 			user = userManager.getUser(account);
 		}
-		else
-			if (email != null)
-			{
-				userManager.getUserByEmail(email);
-			}
+		else if (email != null)
+		{
+			userManager.getUserByEmail(email);
+		}
 		Boolean ok = false;
 		if (user != null)
 		{
@@ -967,7 +966,7 @@ public class AdminModule extends BaseMediaModule
 		{
 			user = userManager.getUser(account);
 		}
-	
+
 		if (user != null)
 		{
 			AuthenticationRequest aReq = userManager.createAuthenticationRequest(inReq, password, user);
@@ -1180,11 +1179,10 @@ public class AdminModule extends BaseMediaModule
 			{
 				path = path.substring(0, path.length() - 1);
 			}
-			else
-				if (!inReq.getPath().equals(path))
-				{
-					inReq.redirect(path);
-				}
+			else if (!inReq.getPath().equals(path))
+			{
+				inReq.redirect(path);
+			}
 		}
 	}
 
@@ -1386,13 +1384,6 @@ public class AdminModule extends BaseMediaModule
 				getUserManager(inReq).saveUser(user);
 			}
 		}
-	}
-
-	public String getTheme(WebPageRequest inReq) throws Exception
-	{
-		String theme = inReq.findValue("themeprefix");
-		inReq.putPageValue("themeprefix", theme);
-		return theme;
 	}
 
 	protected Page findWelcomePage(Page inDirectory) throws OpenEditException

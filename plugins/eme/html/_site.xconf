@@ -1,21 +1,68 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <page>
-  <property name="themeid">defaulttheme</property>
+  
   <property name="catalogid">catalog</property>
   <property name="applicationid">eme</property>
   <property name="fallbackdirectory">/community/default</property>
   <property name="findroot">/site/blockfind</property>
   <property name="sidebarcomponent">eme</property>
+  <property name="communityhome">/${siteid}/eme</property> <!-- TODO: delete? -->
+  <property name="searchtypeFromRequest">true</property>
+  <property name="profilemanagerid">${catalogid}</property>
+  <property name="thumbsize">thumb</property>
+  <property name="recentactivityid">${parentapplicationid}</property>
+  <property name="section">home</property>
+  <property name="oetextfilter">translation</property>
+  <property name="title">eMediaWorkspace</property>
+  <property name="bs">4</property>
+  <property name="enableprofilefilters">true</property>
+  <property name="collectionroot">/${applicationid}/views/modules/librarycollection/media</property>
+  <property name="fallbackdirectory">/community/default</property>
+  <property name="login-path">/${applicationid}/authentication/nopermissions.html</property>
+  <property name="applicationid">eme</property>
+  <property name="editable">false</property>
+  
+  <property name="hitsname">hits</property>
+  <property name="allowguestregistration">false</property>
+  <property name="makeversion">false</property>
+  <property name="catalogid">catalog</property>
+  <property name="systemfromemailname">EnterMedia</property>
+  <property name="shownav">true</property>
+  
 
-
-  <property name="communityhome">/${siteid}/eme</property>
-  <property name="communitytagcategory">eme</property>
   <page-loader loader="projectLoader" />
+  <path-action name="Admin.autoLogin"/>
+  <path-action name="MediaArchiveModule.loadApplicationId"/>
+  <path-action name="MediaArchiveModule.loadComponentHome"/>
+  <path-action name="ProfileModule.loadUserProfile"/>
+  <path-action name="MediaArchiveModule.loadModule"/>
+  <path-action name="UserProfileModule.loadSideBarWidth"/>
+  <path-action name="DesktopModule.loadDesktop"/>
+  <path-action name="DataEditModule.loadEditHome"/>
+  <path-action name="DataEditModule.loadSearchHome"/>
+  <path-action alltypes="true" name="MediaArchiveModule.getMediaArchive"/>
+  <path-action name="PageValue.loadPageVariable" allowduplicates="true" bean="searcherManager"/>
+  <path-action name="PageValue.loadPageVariable" allowduplicates="true" bean="userManager"/>
+  <path-action name="SessionValue.loadSessionVariable" bean="moduleManager"/>
+  <path-action name="Admin.loadPermissions"/>
+  <path-action name="Admin.loadPermissionFinder"/>
+  <path-action name="Admin.allowViewing"/>
+  <path-action name="TranslationModule.loadBrowserLanguage"/>
+  <path-action name="FinderModule.loadAppsMenu"/>
+  <path-action name="PageValue.loadPageVariable" allowduplicates="true" bean="inflector"/>
 
+  <property name="communitytag">default</property>
+  <path-action name="ProjectModule.loadCommunityTag"/>
+
+  <property name="themeid">theme</property>
+  <path-action name="ThemeModule.loadCurrentTheme" />
+  
   <path-action name="FinderModule.loadTopMenu" />
 
   <property name="allowguestregistration">true</property>
+
+  <inner-layout>/${applicationid}/theme/layouts/applicationcontent.html</inner-layout>
 
   <permission name="view">
     <boolean value="true"/>
@@ -81,31 +128,8 @@
   <script defer="true" src="/${applicationid}/components/javascript/chart/Chart.bundle.js" id="chartjs"/>
   <script src="/${applicationid}/components/javascript/jquery.cuepoint.js" id="jscuepoint"/>
   <script src="/${applicationid}/views/modules/asset/editor/closedcaptions/closedcaptions.js" id="jsclosedcaptions"/>
-  <property name="searchtypeFromRequest">true</property>
-  <property name="profilemanagerid">${catalogid}</property>
-  <property name="thumbsize">thumb</property>
-  <property name="recentactivityid">${parentapplicationid}</property>
-  <property name="homelink">http://entermediadb.org/</property>
-  <property name="section">home</property>
-  <property name="oetextfilter">translation</property>
-  <property name="title">eMediaWorkspace</property>
-  <property name="bs">4</property>
-  <property name="enableprofilefilters">true</property>
-  <property name="collectionroot">/${applicationid}/views/modules/librarycollection/media</property>
-  <property name="fallbackdirectory">/community/default</property>
-  <property name="themeprefix">/${applicationid}/theme</property>
-  <property name="login-path">/${applicationid}/authentication/nopermissions.html</property>
-  <property name="applicationid">eme</property>
-  <property name="editable">false</property>
-  <property name="errorpage">${themeprefix}/layouts/errorpage.html</property>
-  <property name="themeid">defaulttheme</property>
-  <property name="hitsname">hits</property>
-  <property name="allowguestregistration">false</property>
-  <property name="makeversion">false</property>
-  <property name="catalogid">catalog</property>
-  <property name="systemfromemailname">EnterMedia</property>
-  <property name="shownav">true</property>
-  <inner-layout>/${applicationid}/theme/layouts/applicationcontent.html</inner-layout>
+  
+
   <permission name="quicksearch">
     <userprofile name="quicksearch" value="true"/>
   </permission>
@@ -493,23 +517,5 @@
   <permission name="runaiinformatics">
     <userprofile name="runaiinformatics" value="true"/>
   </permission>
-  <path-action name="Admin.autoLogin"/>
-  <path-action name="MediaArchiveModule.loadApplicationId"/>
-  <path-action name="MediaArchiveModule.loadComponentHome"/>
-  <path-action name="ProfileModule.loadUserProfile"/>
-  <path-action name="MediaArchiveModule.loadModule"/>
-  <path-action name="UserProfileModule.loadSideBarWidth"/>
-  <path-action name="DesktopModule.loadDesktop"/>
-  <path-action name="DataEditModule.loadEditHome"/>
-  <path-action name="DataEditModule.loadSearchHome"/>
-  <path-action alltypes="true" name="MediaArchiveModule.getMediaArchive"/>
-  <path-action name="PageValue.loadPageVariable" allowduplicates="true" bean="searcherManager"/>
-  <path-action name="PageValue.loadPageVariable" allowduplicates="true" bean="userManager"/>
-  <path-action name="SessionValue.loadSessionVariable" bean="moduleManager"/>
-  <path-action name="Admin.loadPermissions"/>
-  <path-action name="Admin.loadPermissionFinder"/>
-  <path-action name="Admin.allowViewing"/>
-  <path-action name="TranslationModule.loadBrowserLanguage"/>
-  <path-action name="FinderModule.loadAppsMenu"/>
-  <path-action name="PageValue.loadPageVariable" allowduplicates="true" bean="inflector"/>
+  
 </page>

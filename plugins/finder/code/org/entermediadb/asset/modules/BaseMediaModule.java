@@ -102,10 +102,10 @@ public class BaseMediaModule extends BaseModule
 				{
 					siteroot = site.getSiteRootDynamic();
 				}
-				String communitytagcategory = inReq.findPathValue("communitytagcategory");
+				String communitytagcategory = inReq.findPathValue("communitytag");
 				if (communitytagcategory != null)
 				{
-					Data community = archive.getCachedData("communitytagcategory", communitytagcategory);
+					Data community = archive.getCachedData("communitytag", communitytagcategory);
 					if (community != null)
 					{
 						siteroot = community.get("externaldomain");

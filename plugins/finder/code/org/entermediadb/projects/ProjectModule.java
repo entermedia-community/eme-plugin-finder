@@ -389,7 +389,7 @@ public class ProjectModule extends BaseMediaModule
 		String posturl = userpost.get("urlname");
 		if (posturl != null)
 		{
-			Data community = getMediaArchive(inReq).getCachedData("communitytagcategory", project.get("communitytagcategory"));
+			Data community = getMediaArchive(inReq).getCachedData("communitytag", project.get("communitytag"));
 			if (community != null)
 			{
 				posturl = community.get("externaldomain") + "/" + project.get("urlname") + "/blog/" + posturl;
@@ -1410,43 +1410,22 @@ public class ProjectModule extends BaseMediaModule
 
 	public void loadCommunityTag(WebPageRequest inReq)
 	{
+		// Todo: Base on siteroot
 		if (inReq.getPageValue("communitytag") != null)
 		{
 			return;
 		}
-		URLUtilities util = (URLUtilities) inReq.getPageValue(PageRequestKeys.URL_UTILITIES);
-		String subdomain = util.buildRoot();
-		if (subdomain != null)
+		String communitytagid = inReq.findPathValue("communitytag");
+
+		if (communitytagid == null)
 		{
-			String[] parts = subdomain.split("\\.");
-			if (parts.length > 2)
-			{
-				String tag = parts[0].toLowerCase();
-				tag = tag.substring(tag.lastIndexOf("/") + 1);
-				MediaArchive archive = getMediaArchive(inReq);
-				Data data = (Data) archive.getCacheManager().get("communitytag", tag);
-				if (data == null)
-				{
-					data = archive.query("communitytag").exact("subdomain", tag).searchOne();
-					if (data == null)
-					{
-						data = CacheManager.NULLDATA;
-					}
-					else
-					{
-						HitTracker collections = archive.query("librarycollection").exact("communitytag", data.getId()).search(inReq);
-						inReq.putPageValue("communityprojects", collections);
-						archive.getCacheManager().put("communityprojects", tag, collections);
-					}
-					archive.getCacheManager().put("communitytag", tag, data);
-				}
-				if (data != CacheManager.NULLDATA)
-				{
-					inReq.putPageValue("communitytag", data);
-					Collection communityprojects = (Collection) archive.getCacheManager().get("communityprojects", tag);
-					inReq.putPageValue("communityprojects", communityprojects);
-				}
-			}
+			return;
+		}
+		MediaArchive archive = getMediaArchive(inReq);
+		Data communitytag = archive.getCachedData("communitytag", communitytagid);
+		if (communitytag != null)
+		{
+			inReq.putPageValue("communitytag", communitytag);
 		}
 	}
 
@@ -1470,11 +1449,10 @@ public class ProjectModule extends BaseMediaModule
 			}
 
 		}
-		else
-			if (messageid != null)
-			{
-				ids.add(messageid);
-			}
+		else if (messageid != null)
+		{
+			ids.add(messageid);
+		}
 
 		if (ids.size() < 1)
 		{
@@ -2127,7 +2105,7 @@ public class ProjectModule extends BaseMediaModule
 
 			LibraryCollection project = (LibraryCollection) getMediaArchive(inReq).getCachedData("librarycollection", collectiveproject.get("parentcollectionid"));
 
-			MultiValued community = (MultiValued) getMediaArchive(inReq).getCachedData("communitytagcategory", project.get("communitytagcategory"));
+			MultiValued community = (MultiValued) getMediaArchive(inReq).getCachedData("communitytag", project.get("communitytag"));
 
 			User otherPerson = chatmanager.getOtherChatUser(project, user);
 
