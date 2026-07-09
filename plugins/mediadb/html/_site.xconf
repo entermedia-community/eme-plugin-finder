@@ -24,6 +24,9 @@
 
   <property name="title">MediaDB</property>
 
+  <property name="communitytag">default</property>
+  <path-action name="ProjectModule.loadCommunityTag"/>
+
   <path-action name="MediaArchiveModule.loadApplicationId" />
   <path-action name="MediaArchiveModule.loadComponentHome" />
 
