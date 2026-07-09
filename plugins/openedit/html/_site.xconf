@@ -70,7 +70,7 @@
 	<script id="entermedia" src="/${applicationid}/components/javascript/tabs.js"></script>
 
 
-<permission name="view">
+	<permission name="view">
 		<or>
 			<group id="administrators"/>
 		</or>

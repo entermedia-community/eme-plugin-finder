@@ -9,36 +9,36 @@
 	
 	
 	
-					<input type="hidden" name="loginokpage" value="/index.html"/>
+			<input type="hidden" name="loginokpage" value="/index.html"/>
+			
+			<h2 class="form-signin-heading">Please sign in</h2>
+			#if($user)
+			<p>[[You are logged in as]] $user</p>		
+		#end
+			$!request.getAttribute( "oe-exception")
+			#if ( $context.getPageValue("oe-exception") )
 		
-        <h2 class="form-signin-heading">Please sign in</h2>
-        #if($user)
-		<p>[[You are logged in as]] $user</p>		
-	#end
-         $!request.getAttribute( "oe-exception")
-		#if ( $context.getPageValue("oe-exception") )
-    
-    	<div class="alert alert-danger">
-    	 <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-    	
-    	$context.getPageValue("oe-exception")
-    	
-    	</div>
-    #end
-        <input type="text" name="accountname" class="form-control" placeholder="Email address" autofocus>
-        <input type="password" name="password" class="form-control" placeholder="Password">
-        <!-- 
-        <label class="checkbox">
-          <input type="checkbox" value="remember-me"> Remember me
-        </label>
-         -->
-    
-      
-      		<p class="note"><a href="$home$content.loginroot/sendpassword.html">[[Forgotten your password?]]</a></p>
-            		
+			<div class="alert alert-danger">
+			<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+			
+			$context.getPageValue("oe-exception")
+			
+			</div>
+		#end
+			<input type="text" name="accountname" class="form-control mb-2" placeholder="Email address" autofocus>
+			<input type="password" name="password" class="form-control" placeholder="Password">
+			<!-- 
+			<label class="checkbox">
+			<input type="checkbox" value="remember-me"> Remember me
+			</label>
+			-->
+		
+		
+				<p class="note"><a href="$home$content.loginroot/sendpassword.html">[[Forgotten your password?]]</a></p>
+						
 
-      
-        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+		
+			<button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
       </form>
 </div>
     </div> <!-- /container -->
