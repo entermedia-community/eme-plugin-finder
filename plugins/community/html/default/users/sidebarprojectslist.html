@@ -21,7 +21,7 @@
 #foreach( $ohit in $collections )
 
 	#set( $project = $mediaarchive.getCachedData("librarycollection",$ohit.getId()))
-	#set( $projectcommunity = $mediaarchive.getCachedData("communitytagcategory",$project.communitytagcategory))
+	#set( $projectcommunity = $mediaarchive.getCachedData("communitytag",$project.communitytag))
 	#if($project.urlname)
 	#set($hitprojectlink = "$!{projectcommunity.externaldomain}/${project.urlname}")
 	#else

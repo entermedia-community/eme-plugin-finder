@@ -101,7 +101,7 @@
 	  <tbody>
 		#foreach($rental in $rentals)
 			#set( $project = $mediaarchive.getCachedData("librarycollection",$rental.collectionid) )
-			#set( $projectcommunity = $mediaarchive.getCachedData("communitytagcategory",$project.communitytagcategory))
+			#set( $projectcommunity = $mediaarchive.getCachedData("communitytag",$project.communitytag))
 			#if( $project ) 
 				#set($hitprojectlink = "$!{projectcommunity.externaldomain}/${project.urlname}")
 			#end

@@ -122,7 +122,7 @@ public class InvoiceModule extends BaseMediaModule
 	{
 		MediaArchive mediaArchive = getMediaArchive(inReq);
 
-		Data communitytagcategory = (Data) inReq.getPageValue("communitytagcategory");
+		Data communitytagcategory = (Data) inReq.getPageValue("communitytag");
 
 		HitTracker collections = mediaArchive.query("librarycollection").exact("communityid", communitytagcategory.getId()).search();
 

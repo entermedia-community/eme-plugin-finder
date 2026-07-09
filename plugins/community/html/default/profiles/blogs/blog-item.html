@@ -2,7 +2,7 @@
   #set( $librarycol = $mediaarchive.getData("librarycollection",$userpost.librarycollection) )
 #end
 
-#set( $community = $mediaarchive.getCachedData("communitytagcategory", $librarycol.communitytagcategory))
+#set( $community = $mediaarchive.getCachedData("communitytag", $librarycol.communitytag))
 
 #if($librarycol.urlname)
 	#set($projectlink = "$!{community.externaldomain}/${librarycol.urlname}")

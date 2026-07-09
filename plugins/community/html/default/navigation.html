@@ -3,24 +3,24 @@
   #set( $usersidebarhidden = 'false')
 #end
 
-#if($communitytagcategory)
-  #if($communitytagcategory.primaryimagepathwide)
-    #set($headerbg = "$applink${communitytagcategory.primaryimagepathwide}")
+#if($communitytag)
+  #if($communitytag.primaryimagepathwide)
+    #set($headerbg = "$applink${communitytag.primaryimagepathwide}")
   #end
 #end
 
 #set($homelink = "${communitylink}/home/proposals/index.html")
 
 #set ($action = $content.collectivesection)
-#if( $communitytagcategory)
+#if( $communitytag)
 <nav class="navbar sticky-top navbar-expand community-nav #ifnotnull($navbgdark) bg-black #end ">
   <div class="container">
-    <a href="$!{communitytagcategory.externaldomain}">
-      <img src="${apphome}${communitytagcategory.primaryimagepath}" class="me-3" style="height:50px;width: auto;" />
+    <a href="$!{communitytag.externaldomain}">
+      <img src="${apphome}${communitytag.primaryimagepath}" class="me-3" style="height:50px;width: auto;" />
     </a>
-    <a href="$!{communitytagcategory.externaldomain}"> 
+    <a href="$!{communitytag.externaldomain}"> 
       <h3 class="text-white my-1 me-3">
-        #text($communitytagcategory)
+        #text($communitytag)
       </h3>
     </a>
     <div class="d-flex align-items-center justify-content-center ms-auto">
@@ -29,7 +29,7 @@
 				$pages.include("${apphome}/components/quicksearch/navbar.html")
 			</li>
         <li class="nav-item  #if($action == 'community') active #end">
-                <a class="nav-link" href="$!{communitytagcategory.externaldomain}">[[Home]]</a>
+                <a class="nav-link" href="$!{communitytag.externaldomain}">[[Home]]</a>
         </li>
         <li class="nav-item #if($action == 'blog') active #end">
           <a class="nav-link" href="$!{communitylink}/blogs">[[Blog]]</a>
@@ -68,7 +68,7 @@
   <nav class="navbar sticky-top navbar-expand-lg" id="superNav">
     <div class="container flex-nowrap"> 
       <a class="navbar-brand"  href="${communitylink}/index.html" title="Open Institute">
-        <img src="$!{communitytagcategory.externaldomain}/theme/images/oi-logo-w.png" alt="Open Institute" class="me-2" />
+        <img src="$!{communitytag.externaldomain}/theme/images/oi-logo-w.png" alt="Open Institute" class="me-2" />
       </a>
       $pages.include("$apphome/components/quicksearch/navbar.html")	
       <div class="d-flex"> 

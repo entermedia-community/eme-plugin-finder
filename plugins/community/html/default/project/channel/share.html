@@ -13,7 +13,7 @@
 	#set($thumburl = $mediaarchive.asLinkToPreview($asset,"image1200x628.jpg") )
 	
 	
-	#set( $community = $mediaarchive.getCachedData("communitytagcategory", $librarycol.communitytagcategory))
+	#set( $community = $mediaarchive.getCachedData("communitytag", $librarycol.communitytag))
 
 	#if($librarycol.urlname)
 		#set($projectlink = "$!{community.externaldomain}/${librarycol.urlname}")

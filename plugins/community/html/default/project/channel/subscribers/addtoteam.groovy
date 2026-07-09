@@ -85,7 +85,7 @@ public void init()
 	String template = apphome + "/theme/emails/collection-add-teammember.html";
 	
 	Data librarycol = archive.getCachedData("librarycollection", collectionid);
-	Data community = archive.getCachedData("communitytagcategory", librarycol.get("communitytagcategory"));
+	Data community = archive.getCachedData("communitytag", librarycol.get("communitytag"));
 	
 	if (librarycol == null)
 		{
@@ -93,7 +93,6 @@ public void init()
 			return;
 		}
 	
-	log.info("Sending notification to: " + teamuser);
 
 	WebEmail templatemail = archive.createSystemEmail(teamuser, template);
 
@@ -119,7 +118,7 @@ public void init()
 	objects.put("apphome", apphome);
 	objects.put("community",community);
 		
-	//log.info("Sending welcome email  " + teamuserid);
+	log.info("Sending add to Project email  " + teamuserid);
 	
 	templatemail.send(objects);
 			

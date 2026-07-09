@@ -38,7 +38,7 @@
                           #if($showcollections )
 						  
 						 	#set( $project= $!mediaarchive.getCachedData("librarycollection", $hit.collectionid) )
-		  					#set( $community = $mediaarchive.getCachedData("communitytagcategory",$project.communitytagcategory))
+		  					#set( $community = $mediaarchive.getCachedData("communitytag",$project.communitytag))
 		  					#if($project.urlname)
 		  						#set($projectlink = "$!{community.externaldomain}/${project.urlname}/goals/priorities")
 		  					#else

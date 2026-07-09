@@ -26,12 +26,12 @@ public class OpenInstituteModule extends BaseMediaModule
 		LibraryCollection col = (LibraryCollection) inReq.getPageValue("librarycol");
 		if (col != null)
 		{
-			Collection all = col.getValues("communitytagcategory");
+			Collection all = col.getValues("communitytag");
 			if (all != null && !all.isEmpty())
 			{
 				String communitytagcategory = (String) all.iterator().next();
-				Data data = getMediaArchive(inReq).getCachedData("communitytagcategory", communitytagcategory);
-				inReq.putPageValue("communitytagcategory", data);
+				Data data = getMediaArchive(inReq).getCachedData("communitytag", communitytagcategory);
+				inReq.putPageValue("communitytag", data);
 			}
 		}
 	}
@@ -60,7 +60,7 @@ public class OpenInstituteModule extends BaseMediaModule
 	public Data loadCommunityTagByDomain(WebPageRequest inReq)
 	{
 		MediaArchive archive = getMediaArchive(inReq);
-		Collection tags = archive.getList("communitytagcategory");
+		Collection tags = archive.getList("communitytag");
 		String url = inReq.getSiteRoot();
 		for (Iterator iterator = tags.iterator(); iterator.hasNext();)
 		{
@@ -68,7 +68,7 @@ public class OpenInstituteModule extends BaseMediaModule
 			String domain = tag.get("externaldomain");
 			if (domain != null && url.contains(domain))
 			{
-				inReq.putPageValue("communitytagcategory", tag);
+				inReq.putPageValue("communitytag", tag);
 				return tag;
 			}
 		}
@@ -78,15 +78,15 @@ public class OpenInstituteModule extends BaseMediaModule
 	public void loadCommunityTagFolder(WebPageRequest inReq)
 	{
 		MediaArchive archive = getMediaArchive(inReq);
-		String tagid = inReq.findPathValue("communitytagcategory");
+		String tagid = inReq.findPathValue("communitytag");
 		Data tag = null;
 		if (tagid != null)
 		{
-			tag = archive.getCachedData("communitytagcategory", tagid);
+			tag = archive.getCachedData("communitytag", tagid);
 		}
 		if (tag != null)
 		{
-			inReq.putPageValue("communitytagcategory", tag);
+			inReq.putPageValue("communitytag", tag);
 			String siteid = inReq.findPathValue("siteid");
 
 			String communityhome = "/" + siteid + tag.get("templatepath");
@@ -109,11 +109,11 @@ public class OpenInstituteModule extends BaseMediaModule
 	public Data loadCommunityTagCategory(WebPageRequest inReq)
 	{
 		MediaArchive archive = getMediaArchive(inReq);
-		String communitytagcategory = inReq.getRequestParameter("communitytagcategory");
+		String communitytagcategory = inReq.getRequestParameter("communitytag");
 		Data tag = null;
 		if (communitytagcategory != null)
 		{
-			tag = archive.getCachedData("communitytagcategory", communitytagcategory);
+			tag = archive.getCachedData("communitytag", communitytagcategory);
 		}
 		if (tag == null)
 		{
@@ -123,13 +123,13 @@ public class OpenInstituteModule extends BaseMediaModule
 				String tagid = data.get("domaincommunityid");
 				if (tagid != null)
 				{
-					tag = archive.getCachedData("communitytagcategory", tagid);
+					tag = archive.getCachedData("communitytag", tagid);
 				}
 			}
 		}
 		if (tag != null)
 		{
-			inReq.putPageValue("communitytagcategory", tag);
+			inReq.putPageValue("communitytag", tag);
 			inReq.putPageValue("communitytagcategoryid", tag.getId());
 		}
 		return tag;
@@ -137,13 +137,13 @@ public class OpenInstituteModule extends BaseMediaModule
 
 	public void loadCommunityBlog(WebPageRequest inReq)
 	{
-		Data tag = (Data) inReq.getPageValue("communitytagcategory");
+		Data tag = (Data) inReq.getPageValue("communitytag");
 		if (tag == null)
 		{
 			tag = loadCommunityTagByDomain(inReq);
 		}
 
-		Collection collections = getMediaArchive(inReq).query("librarycollection").exact("communitytagcategory", tag).search(inReq);
+		Collection collections = getMediaArchive(inReq).query("librarycollection").exact("communitytag", tag).search(inReq);
 
 		QueryBuilder builder = getMediaArchive(inReq).query("userupload");
 

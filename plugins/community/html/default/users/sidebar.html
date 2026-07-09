@@ -25,7 +25,7 @@ data-ajaxpath="$communitylink/users/sidebar.html?appsection=$!appsection&oemaxle
 			#foreach( $message in $messages )
 				#set( $topic = $mediaarchive.getCachedData("collectiveproject",$message.channel))
 				#set( $project = $mediaarchive.getCachedData("librarycollection",$topic.parentcollectionid))
-				#set( $community = $mediaarchive.getCachedData("communitytagcategory",$project.communitytagcategory))
+				#set( $community = $mediaarchive.getCachedData("communitytag",$project.communitytag))
 				#set( $otherperson =  $chatManager.getOtherChatUser($project,$user) )
 				
 			  <div class="d-flex messageselection #if($selectedproject==$project.id) current #end pb-1">
