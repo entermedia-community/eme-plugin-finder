@@ -14,7 +14,7 @@
 /finder/find/theme/styles/pages/mediaplayer.css
 /finder/find/theme/styles/pages/results.css
 /finder/find/theme/styles/dropdown.css
-/finder/find/theme/defaulttheme/custom.css
+/finder/find/theme/custom.css
 /finder/find/components/javascript/ckeditor5/ckeditor5.css
 
 

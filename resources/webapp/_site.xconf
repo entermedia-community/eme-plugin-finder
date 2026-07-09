@@ -24,7 +24,6 @@
 	<property name="referredgroup">media</property>
 
 	<path-action name="Admin.checkExist" alltypes="true" />
-	<path-action name="Admin.getTheme" />
 
 	<property name="allopathrequestactions">true</property>
 

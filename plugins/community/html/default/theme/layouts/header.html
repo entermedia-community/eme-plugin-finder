@@ -15,20 +15,10 @@
 				#end
 			#end
 
-			#ifnotnull($user)
-				#set($themeid = $userprofile.getValue("themeid") ) 
-			#end
-
-			#ifnull($themeid)
-				#set($themeid = $content.get("themeid") )
-			#end	
-			
 			#ifnull($logourl)
-				#set( $logourl = "$!{siteroot}$themeprefix/$themeid/logo.png")
-				
-				#set($theme = $mediaarchive.getCachedData("theme", $themeid))
-				#set($logowidth = $theme.logowidth)
-				#set($logoheight = $theme.logoheight)
+				#set($logourl = "$!{apphome}/${currenttheme.id}/logo.png")
+				#set($logowidth = $currenttheme.logowidth)
+				#set($logoheight = $currenttheme.logoheight)
 			#end
 			
 			#ifnotnull($logourl)

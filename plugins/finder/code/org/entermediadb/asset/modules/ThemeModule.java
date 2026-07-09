@@ -29,7 +29,7 @@ import org.openedit.util.URLUtilities;
 public class ThemeModule extends BaseMediaModule
 {
 	private static final Log log = LogFactory.getLog(ThemeModule.class);
-	
+
 	protected RequestUtils fieldRequestUtils;
 	protected SearcherManager fieldSearcherManager;
 
@@ -43,23 +43,7 @@ public class ThemeModule extends BaseMediaModule
 		fieldRequestUtils = inRequestUtils;
 	}
 
-	public void saveCSS(WebPageRequest inReq) throws Exception
-	{
-		saveAllCustomThemes(inReq);
-
-		String appid = inReq.findValue("applicationid");
-		PageSettings xconf = getPageManager().getPageSettingsManager().getPageSettings("/" + appid + "/_site.xconf");
-		Data theme = loadTheme(inReq);
-		if (theme != null)
-		{
-			xconf.setProperty("themeid", theme.getId()); // Default
-
-			getPageManager().getPageSettingsManager().saveSetting(xconf);
-			getPageManager().clearCache();
-		}
-	}
-
-	protected void saveAllCustomThemes(WebPageRequest inReq) throws UnsupportedEncodingException
+	public void saveAllCustomThemes(WebPageRequest inReq) throws UnsupportedEncodingException
 	{
 		MediaArchive archive = getMediaArchive(inReq);
 		// Process all the themes
@@ -81,9 +65,9 @@ public class ThemeModule extends BaseMediaModule
 			Page page = getPageManager().getPage(inputfile);
 
 			WebPageRequest req = getRequestUtils().createPageRequest(page, inReq.getRequest(), inReq.getResponse(), inReq.getUser(), (URLUtilities) inReq.getPageValue(PageRequestKeys.URL_UTILITIES));
-			String outputfile = "/" + appid + "/theme/" + theme.getId() + "/custom.css";
+			String outputfile = "/" + appid + "/" + theme.getId() + "/custom.css";
 			ContentItem outputcContentItem = getPageManager().getContent(outputfile);
-			//getPageManager().putPage(outputpage);
+			// getPageManager().putPage(outputpage);
 			// loadTheme(req);
 			req.putPageValue("theme", theme);
 			req.putPageValue("mediaarchive", archive);
@@ -108,7 +92,6 @@ public class ThemeModule extends BaseMediaModule
 			{
 				log.error("Error saving theme css", e);
 			}
-
 
 		}
 	}
@@ -188,6 +171,41 @@ public class ThemeModule extends BaseMediaModule
 		return theme;
 	}
 
+	public void loadCurrentTheme(WebPageRequest inReq)
+	{
+		MediaArchive archive = getMediaArchive(inReq);
+
+		String themeid = null;
+		if (inReq.getUserProfile() != null)
+		{
+			themeid = inReq.getUserProfile().get("themeid");
+		}
+		if (themeid == null)
+		{
+			themeid = inReq.findPathValue("themeid");
+		}
+		if (themeid != null && "defaulttheme".equals(themeid))
+		{
+			themeid = null;
+		}
+		if (themeid == null)
+		{
+			themeid = "theme";
+		}
+		Data theme = archive.getCachedData("theme", themeid);
+		if (theme != null)
+		{
+			inReq.putPageValue("currenttheme", theme);
+		}
+		else
+		{
+			log.error("Could not find theme: " + themeid);
+		}
+		inReq.putPageValue("themeid", themeid);
+		String appid = inReq.findValue("applicationid");
+		inReq.putPageValue("themeprefix", "/" + appid + "/" + themeid);
+	}
+
 	public void changeTheme(WebPageRequest inReq)
 	{
 		String appid = inReq.findValue("applicationid");
@@ -200,7 +218,8 @@ public class ThemeModule extends BaseMediaModule
 
 		try
 		{
-			saveCSS(inReq);
+
+			saveAllCustomThemes(inReq);
 		}
 		catch (Exception e)
 		{
