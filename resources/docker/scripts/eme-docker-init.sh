@@ -97,6 +97,8 @@ echo "Review the following URL to get the full TZ list"
 echo "https://en.wikipedia.org/wiki/List_of_tz_database_time_zones"
 echo "Default time zone(TZ) will be US Eastern time"
 
+
+
 set -e
 # Run Create Docker Instance, add Mounted HotFolders as needed
 docker run -t -d \
@@ -112,9 +114,9 @@ docker run -t -d \
 	-e GROUPID=$GROUPID \
 	-e CLIENT_NAME=$SITE \
 	-e INSTANCE_PORT=$NODENUMBER \
-	-v ${ENDPOINT}/:/usr/share/eme-instance \
+	-v ${ENDPOINT}/:/usr/share/eme-server \
 	$DOCKERPROJECT/$DOCKERIMAGE:$BRANCH \
-	/usr/bin/eme dockerstart /usr/share/eme-instance
+	/usr/bin/eme dockerstart /usr/share/eme-server
 
 # Fix /etc/resolv.conf to independently reflect Cloudflare and Google DNS
 

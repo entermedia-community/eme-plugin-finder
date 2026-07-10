@@ -95,7 +95,8 @@ case "$CMD" in
     echo "**** Starting server from: $APPNAME"
 
     if [ ! -d "$APPNAME" ]; then
-        sudo mkdir -p "$APPNAME"
+        #sudo mkdir -p "$APPNAME"
+        git clone -b main --depth 1  https://github.com/entermedia-community/eme-server.git $APPNAME
     fi    
     #check ownership of target, if not owned by current user, change ownership to current user
     if [ "$(stat -c '%u:%g' "$APPNAME")" != "$USERID:$GROUPID" ]; then
@@ -104,7 +105,11 @@ case "$CMD" in
     fi  
 
     APPNAME="$(cd "$APPNAME" && pwd)"
-
+   
+    if [ ! -d "$APPNAME/eme-lib" ]; then
+        git submodule add -b main --depth 1  https://github.com/entermedia-community/eme-lib.git eme-lib
+    fi
+    
     #$USER is the user running the container
 
     if [ ! -d "$APPNAME/tomcat" ]; then
