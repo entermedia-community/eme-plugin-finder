@@ -11,8 +11,6 @@ ENV JAVA_HOME=/usr/lib/jvm/default-java
 
 ARG CACHE_BREAKER=1
 
-RUN apt-get update && apt-get install git
-
 #RUN mkdir -p /usr/share/ && wget --output-document=/usr/share/eme-lib.tar.gz --no-cache -q http://192.229.4.120:8080/eme-lib.tar.gz && \
 
 #RUN  mkdir -p /usr/share/ && wget --output-document=/usr/share/eme-lib.tar.gz --no-cache -q https://dev.entermediadb.org/jenkins/view/EM12/job/eme-lib/lastSuccessfulBuild/artifact/deploy/eme-lib.tar.gz && \
