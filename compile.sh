@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+cd "$SCRIPT_DIR" || exit 1
+
 mkdir -p bin && \
 find plugins/system/code plugins/openedit/code \
 	-type f \( -name '*.xml' -o -name '*.properties' \) \
