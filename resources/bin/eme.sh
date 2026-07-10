@@ -111,7 +111,7 @@ case "$CMD" in
     fi
 
     #Compile the eme-lib if it has not been compiled yet
-    cd eme-lib && ./compile.sh
+    ./compile.sh
     
     #$USER is the user running the container
 
