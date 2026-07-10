@@ -1,7 +1,0 @@
-<page>
-
-	<property name="searchhomename">default</property>
-	<property name="searchhomeid">${module}${searchhomename}</property>
-
-
-</page>

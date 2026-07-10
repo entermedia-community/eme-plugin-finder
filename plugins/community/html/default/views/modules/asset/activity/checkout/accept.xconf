@@ -1,5 +1,0 @@
-<page>
-	<path-action name="OrderModule.getApproverUser" />	
-	<inner-layout>/${applicationid}/theme/layouts/dialoglayout.html</inner-layout>
-
-</page>

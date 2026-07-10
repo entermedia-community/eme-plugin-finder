@@ -1,5 +1,0 @@
-<page>
-
-	<page-action name="EntityModule.getEntity"/>
-	<property name="fallbackdirectory">/${applicationid}/views/modules/default/editors/aichatsearch/chatterbox</property>
-</page>

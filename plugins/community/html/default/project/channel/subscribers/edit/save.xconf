@@ -1,7 +1,0 @@
-<page>
-	
-	<path-action name="DataEditModule.saveData" >
-			<searchtype>librarycollectionusers</searchtype>
-    </path-action>		   
-	<inner-layout />
-</page>

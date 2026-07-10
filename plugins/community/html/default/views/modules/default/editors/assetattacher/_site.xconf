@@ -1,7 +1,0 @@
-<page>
-
-
-	<property name="edithomename">assetattacher</property>
-	<property name="fallbackdirectory">/${applicationid}/views/modules/default/editors/default</property>
-
-</page>

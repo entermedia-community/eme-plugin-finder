@@ -1,4 +1,0 @@
-<page>
-<path-action name="ContentModule.setSocialMediaProfile"/>
-<path-action name="ContentModule.loadPostizIntegrations"/>
-</page>

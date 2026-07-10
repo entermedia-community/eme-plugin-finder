@@ -1,4 +1,0 @@
-#
-#Fri Jul 03 17:27:39 CST 2026
-Add\ another\ field=A\u00F1adir otro campo
-Edit\ For\ All\ Users=Editar para todos los usuarios

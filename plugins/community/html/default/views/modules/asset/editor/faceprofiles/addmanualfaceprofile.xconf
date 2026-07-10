@@ -1,4 +1,0 @@
-<page>
-	<path-action name="FaceProfileModule.addManualFaceProfile" />
-	<inner-layout />
-</page>

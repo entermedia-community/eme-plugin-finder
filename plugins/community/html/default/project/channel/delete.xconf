@@ -1,6 +1,0 @@
-<page>
-	<path-action name="DataEditModule.deleteData">
- 		<searchtype>userpost</searchtype>
- 	</path-action>
-
-</page>

@@ -1,5 +1,0 @@
-#
-#Fri Jul 03 17:09:57 CST 2026
-Add\ Sub-Folder=A\u00F1adir subcarpeta
-Collapse\ Tree=Colapsar el \u00E1rbol
-Folders=Carpetas

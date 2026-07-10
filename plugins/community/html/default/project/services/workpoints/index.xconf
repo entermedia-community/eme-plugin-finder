@@ -1,6 +1,0 @@
-<page>
-	
-	
-	<path-action name="TaskModule.loadDashboardWeekly"/>
-	<property name="appsection">completed</property>
-</page>
