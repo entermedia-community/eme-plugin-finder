@@ -1,9 +1,0 @@
-<records>
-
-  <data id="publishing" ordering="50" scenarioicon="broadcast" enabled="true" isvisible="true" connectedtop="publishlabel" chatenabled="false">
-    <name>
-      <language id="en"><![CDATA[Publish To Socials]]></language>
-    </name>
-  </data>
-
-</records>

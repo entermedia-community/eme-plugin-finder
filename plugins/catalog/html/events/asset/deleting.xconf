@@ -1,6 +1,0 @@
-<page>
-
-	<path-action name="EntityModule.assetDeletingHandler" alltypes="true"  />
-
-
-</page>

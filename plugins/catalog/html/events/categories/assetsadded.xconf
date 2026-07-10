@@ -1,6 +1,0 @@
-<page>
-	<property name="eventname">Assets Added to Category</property>	
-	<property name="eventdescription">Used by entitmanager to log asset uploads</property>
-	<path-action name="EntityModule.handleAssetsAddedToCategory" />
-		
-</page>

@@ -1,8 +1,0 @@
-<page>
-	<property name="eventname">Publish Assets</property>	
-	<property name="delay">50</property>
-	<property name="period">5m</property>
-	<path-action name="PublishModule.checkQueue" />
-	
-	
-</page>
