@@ -109,6 +109,9 @@ case "$CMD" in
     if [ ! -d "$APPNAME/eme-lib" ]; then
         git submodule add -b main --depth 1  https://github.com/entermedia-community/eme-lib.git eme-lib
     fi
+
+    #Compile the eme-lib if it has not been compiled yet
+    cd eme-lib && ./compile.sh
     
     #$USER is the user running the container
 
