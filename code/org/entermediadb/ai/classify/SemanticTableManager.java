@@ -447,15 +447,14 @@ public class SemanticTableManager extends BaseAiManager implements CatalogEnable
 			{
 				f = (Double) floatobj;
 			}
+			else if (floatobj instanceof Float)
+			{
+				f = (Double) floatobj;
+			}
 			else
-				if (floatobj instanceof Float)
-				{
-					f = (Double) floatobj;
-				}
-				else
-				{
-					f = Double.parseDouble(floatobj.toString());
-				}
+			{
+				f = Double.parseDouble(floatobj.toString());
+			}
 			floats.add(f);
 		}
 		return floats;
