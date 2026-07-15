@@ -2678,7 +2678,7 @@
 			<ref bean="moduleManager" />
 		</property>
 	</bean>
-	
+
 	<bean id="questionsMakeSuggestionsSkill" class="org.entermediadb.ai.skills.QuestionsMakeSuggestionsSkill" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
@@ -3042,6 +3042,17 @@
 		</property>
 	</bean>
 
+	<bean id="TopicModule" class="org.entermediadb.topic.TopicModule" lazy-init="default">
+		<property name="moduleManager">
+			<ref bean="moduleManager" />
+		</property>
+	</bean>
+
+	<bean id="topicManager" class="org.entermediadb.topic.TopicManager" lazy-init="default" scope="prototype">
+		<property name="moduleManager">
+			<ref bean="moduleManager" />
+		</property>
+	</bean>
 
 
 	<bean id="cssutils" class="org.openedit.util.CSSUtils" />

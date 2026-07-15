@@ -1,0 +1,31 @@
+package org.entermediadb.topic;
+
+import org.entermediadb.ai.BaseAiManager;
+import org.openedit.WebPageRequest;
+
+public class TopicModule extends BaseAiManager
+{
+	public TopicManager getTopicManager()
+	{
+		return (TopicManager) getMediaArchive().getBean("topicManager");
+	}
+
+	public void getUserTopics(WebPageRequest inReq)
+	{
+		TopicManager topicManager = getTopicManager();
+		topicManager.getUserTopics(inReq);
+	}
+
+	public void getTopicTutorials(WebPageRequest inReq)
+	{
+		TopicManager topicManager = getTopicManager();
+		topicManager.getTopicTutorials(inReq);
+	}
+
+	public void loadTutorial(WebPageRequest inReq)
+	{
+		TopicManager topicManager = getTopicManager();
+		topicManager.loadTutorial(inReq);
+	}
+
+}
