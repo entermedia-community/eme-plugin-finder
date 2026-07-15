@@ -39,36 +39,27 @@ public class SmartCreatorCreateQuestionsSkill extends BaseSkill
 		String playbackentitymoduleid = (String) inContext.getContextValue("playbackentitymoduleid");
 		String playbackentityid = (String) inContext.getContextValue("playbackentityid");
 
-		Collection<Data> componentsSection =
-			getMediaArchive().getSearcher("componentsection").query().exact("playbackentitymoduleid", playbackentitymoduleid).exact("playbackentityid", playbackentityid).search();
+		Searcher sectionSearcher = getMediaArchive().getSearcher("componentsection");
+		Searcher componentSearcher = getMediaArchive().getSearcher("componentcontent");
+		Searcher questionSearcher = getMediaArchive().getSearcher("entityquestion");
+
+		Collection<Data> componentsSection = sectionSearcher.query().exact("playbackentitymoduleid", playbackentitymoduleid).exact("playbackentityid", playbackentityid).search();
 
 		LlmConnection llmconnection = getMediaArchive().getLlmConnection("thinking");
 
-		Searcher questionSearcher = getMediaArchive().getSearcher("entityquestion");
-		Searcher contentSearcher = getMediaArchive().getSearcher("componentcontent");
-
-		int ordering = 0;
 		for (Data section : componentsSection)
 		{
 			String sectionid = section.getId();
-			Collection<Data> componentcontents = contentSearcher.query().exact("componentsectionid", sectionid).search();
+			Collection<Data> componentcontents = componentSearcher.query().exact("componentsectionid", sectionid).sort("ordering").search();
 
 			String contextcontent = "";
 
+			int ordering = 2;
 			for (Data componentcontent : componentcontents)
 			{
-				String orderingStr = componentcontent.get("ordering");
-				if (orderingStr != null)
-				{
-					try
-					{
-						ordering = Math.max(ordering, Integer.parseInt(orderingStr));
-					}
-					catch (NumberFormatException e)
-					{
-						log.warn("Invalid ordering value: " + orderingStr, e);
-					}
-				}
+				componentcontent.setValue("ordering", ordering);
+				ordering++;
+
 				String componenttype = componentcontent.get("componenttype");
 				if ("asset".equals(componenttype))
 				{
@@ -81,6 +72,8 @@ public class SmartCreatorCreateQuestionsSkill extends BaseSkill
 				}
 				contextcontent += componentcontent.get("content");
 			}
+
+			componentSearcher.saveAllData(componentcontents, null);
 
 			if (contextcontent.trim().length() == 0)
 			{
@@ -128,13 +121,13 @@ public class SmartCreatorCreateQuestionsSkill extends BaseSkill
 				question.setValue("correctoption", QUESTION_CHOICES[correctindex]);
 				questionSearcher.saveData(question);
 
-				Data componentContent = contentSearcher.createNewData();
+				Data componentContent = componentSearcher.createNewData();
 				componentContent.setValue("componenttype", "mcq");
 				componentContent.setValue("questionid", question.getId());
 				componentContent.setValue("modificationdate", new Date());
 				componentContent.setValue("componentsectionid", sectionid);
-				componentContent.setValue("ordering", ordering++);
-				contentSearcher.saveData(componentContent);
+				componentContent.setValue("ordering", 1);
+				componentSearcher.saveData(componentContent);
 			}
 		}
 	}
