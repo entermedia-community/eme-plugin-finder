@@ -19,18 +19,65 @@ public class TopicManager extends BaseMediaModule
 		Collection<MultiValued> topics = mediaArchive.query("entitytopic").all().search();
 
 		String userid = inReq.getUser().getId();
-		Collection<MultiValued> usertopics = new ArrayList<>();
+		Collection<Map<String, Object>> data = new ArrayList<>();
+
 		for (MultiValued topic : topics)
 		{
+			Map<String, Object> topicmap = new HashMap<>();
+
 			Collection<String> assignedto = topic.getValues("assignedto");
 			if (assignedto != null && assignedto.contains(userid))
 			{
+				topicmap.put("topic", topic);
+
 				Collection<MultiValued> tutorials = mediaArchive.query("entitytutorial").exact("entitytopic", topic.getId()).search();
-				topic.setValue("tutorials", tutorials != null ? tutorials.size() : 0);
-				usertopics.add(topic);
+				if (tutorials == null)
+				{
+					tutorials = new ArrayList<>();
+				}
+
+				topicmap.put("tutorials", tutorials.size());
+
+				double beginnerProgress = 0;
+				double competentProgress = 0;
+				double expertProgress = 0;
+
+				for (MultiValued tutorial : tutorials)
+				{
+					MultiValued progress = (MultiValued) mediaArchive.query("tutorialprogress").exact("entitytutorial", tutorial.getId()).exact("user", inReq.getUser().getId()).searchOne();
+
+					if (progress == null)
+					{
+						continue;
+					}
+
+					Double bp = progress.getDouble("beginnerprogress");
+					if (bp != null)
+					{
+						beginnerProgress += bp;
+					}
+					Double cp = progress.getDouble("competentprogress");
+					if (cp != null)
+					{
+						competentProgress += cp;
+					}
+					Double ep = progress.getDouble("expertprogress");
+					if (ep != null)
+					{
+						expertProgress += ep;
+					}
+				}
+
+				Map<String, Double> progressMap = new HashMap<>();
+				progressMap.put("beginnerprogress", beginnerProgress / tutorials.size());
+				progressMap.put("competentprogress", competentProgress / tutorials.size());
+				progressMap.put("expertprogress", expertProgress / tutorials.size());
+
+				topicmap.put("progress", progressMap);
+				data.add(topicmap);
 			}
 		}
-		inReq.putPageValue("usertopics", usertopics);
+		inReq.putPageValue("data", data);
 	}
 
 	public void getTopicTutorials(WebPageRequest inReq)
@@ -40,14 +87,15 @@ public class TopicManager extends BaseMediaModule
 
 		Collection<MultiValued> alltutorials = mediaArchive.query("entitytutorial").exact("entitytopic", topicid).search();
 
-		Collection<Map<String, MultiValued>> data = new ArrayList<>();
+		Collection<Map<String, Object>> data = new ArrayList<>();
 
 		for (MultiValued tutorial : alltutorials)
 		{
-			Map<String, MultiValued> tutorialmap = new HashMap<>();
+			Map<String, Object> tutorialmap = new HashMap<>();
 			tutorialmap.put("tutorial", tutorial);
 			MultiValued progress = (MultiValued) mediaArchive.query("tutorialprogress").exact("entitytutorial", tutorial.getId()).exact("user", inReq.getUser().getId()).searchOne();
-			tutorialmap.put("progress", progress);
+			Map<String, Double> progressMap = createProgressMap(progress);
+			tutorialmap.put("progress", progressMap);
 			data.add(tutorialmap);
 		}
 		inReq.putPageValue("data", data);
@@ -62,7 +110,8 @@ public class TopicManager extends BaseMediaModule
 		inReq.putPageValue("tutorial", tutorial);
 
 		MultiValued progress = (MultiValued) mediaArchive.query("tutorialprogress").exact("entitytutorial", tutorial.getId()).exact("user", inReq.getUser().getId()).searchOne();
-		inReq.putPageValue("progress", progress);
+		Map<String, Double> progressMap = createProgressMap(progress);
+		inReq.putPageValue("progress", progressMap);
 
 		Collection<MultiValued> sections =
 			mediaArchive.query("componentsection").exact("playbackentitymoduleid", "entitytutorial").exact("playbackentityid", tutorial.getId()).sort("ordering").search();
@@ -85,6 +134,37 @@ public class TopicManager extends BaseMediaModule
 		// }
 
 		inReq.putPageValue("sections", sections);
+	}
+
+	private Map<String, Double> createProgressMap(MultiValued progress)
+	{
+		Map<String, Double> progressMap = new HashMap<>();
+		if (progress == null)
+		{
+			progressMap.put("beginnerprogress", 0.0);
+			progressMap.put("competentprogress", 0.0);
+			progressMap.put("expertprogress", 0.0);
+			return progressMap;
+		}
+		Double bp = progress.getDouble("beginnerprogress");
+		if (bp == null)
+		{
+			bp = 0.0;
+		}
+		Double cp = progress.getDouble("competentprogress");
+		if (cp == null)
+		{
+			cp = 0.0;
+		}
+		Double ep = progress.getDouble("expertprogress");
+		if (ep == null)
+		{
+			ep = 0.0;
+		}
+		progressMap.put("beginnerprogress", bp);
+		progressMap.put("competentprogress", cp);
+		progressMap.put("expertprogress", ep);
+		return progressMap;
 	}
 
 }

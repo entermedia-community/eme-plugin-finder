@@ -43,15 +43,14 @@ public class SmartCreatorCreateQuestionsSkill extends BaseSkill
 			getMediaArchive().getSearcher("componentsection").query().exact("playbackentitymoduleid", playbackentitymoduleid).exact("playbackentityid", playbackentityid).search();
 
 		LlmConnection llmconnection = getMediaArchive().getLlmConnection("thinking");
-		Searcher questionsearcher = getMediaArchive().getSearcher("entityquestion");
 
-		Collection<Data> questionstosave = new ArrayList<Data>();
+		Searcher questionSearcher = getMediaArchive().getSearcher("entityquestion");
+		Searcher contentSearcher = getMediaArchive().getSearcher("componentcontent");
 
 		int ordering = 0;
 		for (Data section : componentsSection)
 		{
 			String sectionid = section.getId();
-			Searcher contentSearcher = getMediaArchive().getSearcher("componentcontent");
 			Collection<Data> componentcontents = contentSearcher.query().exact("componentsectionid", sectionid).search();
 
 			String contextcontent = "";
@@ -120,33 +119,14 @@ public class SmartCreatorCreateQuestionsSkill extends BaseSkill
 					continue;
 				}
 
-				Data question = questionsearcher.createNewData();
+				Data question = questionSearcher.createNewData();
 				question.setValue("question", questiontext);
 				for (int i = 0; i < QUESTION_CHOICES.length; i++)
 				{
 					question.setValue(QUESTION_CHOICES[i], choices.get(i));
 				}
 				question.setValue("correctoption", QUESTION_CHOICES[correctindex]);
-
-				questionstosave.add(question);
-			}
-		}
-
-		if (questionstosave.size() > 0)
-		{
-			questionsearcher.saveAllData(questionstosave, null);
-
-			Collection<Data> componentstosave = new ArrayList<Data>();
-			Searcher contentSearcher = getMediaArchive().getSearcher("componentcontent");
-
-			for (Data question : questionstosave)
-			{
-				String sectionid = (String) inContext.getContextValue("sectionid");
-				if (sectionid == null)
-				{
-					log.warn("No section ID found in context for question: " + question.getId());
-					continue;
-				}
+				questionSearcher.saveData(question);
 
 				Data componentContent = contentSearcher.createNewData();
 				componentContent.setValue("componenttype", "mcq");
@@ -154,12 +134,7 @@ public class SmartCreatorCreateQuestionsSkill extends BaseSkill
 				componentContent.setValue("modificationdate", new Date());
 				componentContent.setValue("componentsectionid", sectionid);
 				componentContent.setValue("ordering", ordering++);
-
-				componentstosave.add(componentContent);
-			}
-			if (componentstosave.size() > 0)
-			{
-				contentSearcher.saveAllData(componentstosave, null);
+				contentSearcher.saveData(componentContent);
 			}
 		}
 	}
