@@ -1,6 +1,5 @@
 package org.entermediadb.ai.skills;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -54,11 +53,15 @@ public class SmartCreatorCreateQuestionsSkill extends BaseSkill
 
 			String contextcontent = "";
 
-			int ordering = 2;
+			int ordering = -1;
 			for (Data componentcontent : componentcontents)
 			{
-				componentcontent.setValue("ordering", ordering);
-				ordering++;
+				int currentOrdering = Integer.parseInt(componentcontent.get("ordering"));
+				if (ordering == -1)
+				{
+					ordering = currentOrdering;
+				}
+				componentcontent.setValue("ordering", currentOrdering + 1);
 
 				String componenttype = componentcontent.get("componenttype");
 				if ("asset".equals(componenttype))
@@ -126,7 +129,7 @@ public class SmartCreatorCreateQuestionsSkill extends BaseSkill
 				componentContent.setValue("questionid", question.getId());
 				componentContent.setValue("modificationdate", new Date());
 				componentContent.setValue("componentsectionid", sectionid);
-				componentContent.setValue("ordering", 1);
+				componentContent.setValue("ordering", ordering);
 				componentSearcher.saveData(componentContent);
 			}
 		}
