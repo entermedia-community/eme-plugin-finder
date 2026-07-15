@@ -115,6 +115,12 @@ public class SmartCreatorCreateQuestionsSkill extends BaseSkill
 					continue;
 				}
 
+				Object cognitive_level = questionmap.get("cognitive_level");
+				if (cognitive_level == null)
+				{
+					cognitive_level = "beginner";
+				}
+
 				Data question = questionSearcher.createNewData();
 				question.setValue("question", questiontext);
 				for (int i = 0; i < QUESTION_CHOICES.length; i++)
@@ -122,6 +128,7 @@ public class SmartCreatorCreateQuestionsSkill extends BaseSkill
 					question.setValue(QUESTION_CHOICES[i], choices.get(i));
 				}
 				question.setValue("correctoption", QUESTION_CHOICES[correctindex]);
+				question.setValue("mcqcognitivelevel", cognitive_level);
 				questionSearcher.saveData(question);
 
 				Data componentContent = componentSearcher.createNewData();
