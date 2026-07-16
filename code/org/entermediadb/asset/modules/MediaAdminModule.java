@@ -17,6 +17,7 @@ import org.entermediadb.asset.upload.FileUpload;
 import org.entermediadb.asset.upload.UploadRequest;
 import org.entermediadb.elasticsearch.ElasticNodeManager;
 import org.entermediadb.events.PathEventManager;
+import org.entermediadb.manager.SiteSnapshotManager;
 import org.entermediadb.modules.update.Downloader;
 import org.entermediadb.workspace.WorkspaceManager;
 import org.json.simple.JSONArray;
@@ -531,7 +532,17 @@ public class MediaAdminModule extends BaseMediaModule
 		snap.setValue("snapshotstatus", "pendingrestore");
 		snap.setValue("configonly", configonly);
 		snaps.saveData(snap);
-		manager.runSharedPathEvent("/system/events/snapshot/restoresite.html");
+
+		SiteSnapshotManager snapshotmanager = (SiteSnapshotManager) getModuleManager().getBean("system", "siteSnapshotManager");
+		try
+		{
+			snapshotmanager.restoreSnapshot(inReq, snap);
+		}
+		catch (Exception ex)
+		{
+			log.error("Error restoring snapshot: " + snapid, ex);
+		}
+
 		inReq.putPageValue("snapshot", snap);
 
 		Data site = getSearcherManager().getData("system", "site", snap.get("site"));
