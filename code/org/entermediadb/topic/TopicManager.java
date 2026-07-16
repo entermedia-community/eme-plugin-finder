@@ -69,9 +69,18 @@ public class TopicManager extends BaseMediaModule
 				}
 
 				Map<String, Double> progressMap = new HashMap<>();
-				progressMap.put("beginnerprogress", beginnerProgress / tutorials.size());
-				progressMap.put("competentprogress", competentProgress / tutorials.size());
-				progressMap.put("expertprogress", expertProgress / tutorials.size());
+				if (tutorials.size() == 0)
+				{
+					progressMap.put("beginnerprogress", 0.0);
+					progressMap.put("competentprogress", 0.0);
+					progressMap.put("expertprogress", 0.0);
+				}
+				else
+				{
+					progressMap.put("beginnerprogress", beginnerProgress / tutorials.size());
+					progressMap.put("competentprogress", competentProgress / tutorials.size());
+					progressMap.put("expertprogress", expertProgress / tutorials.size());
+				}
 
 				topicmap.put("progress", progressMap);
 				data.add(topicmap);
