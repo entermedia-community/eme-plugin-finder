@@ -1050,4 +1050,13 @@ public class WorkspaceManager
 		Element thedata = data.getElement();// .asXML();
 		return thedata;
 	}
+	public void saveDefaultData(String catalogid)
+	{
+		// Implementation of saveDefaultData
+	}
+	public void restoreDefaultData(String catalogid)
+	{
+		// Implementation of restoreDefaultData
+	}
+
 }
