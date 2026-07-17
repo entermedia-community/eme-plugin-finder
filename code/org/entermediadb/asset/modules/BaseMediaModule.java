@@ -91,30 +91,24 @@ public class BaseMediaModule extends BaseModule
 
 		String applink = site.getSiteLink(applicationid);
 		String sitelink = "";
-		String siteroot = null;
 		MediaArchive archive = getMediaArchive(inReq);
 		if (archive != null)
 		{
-			siteroot = archive.getCatalogSettingValue("siteroot");
+			String siteroot = site.getSiteRootDynamic();
+
+			String communitytagcategory = inReq.findPathValue("communitytag");
+			if (communitytagcategory != null)
+			{
+				Data community = archive.getCachedData("communitytag", communitytagcategory);
+				if (community != null)
+				{
+					siteroot = community.get("externaldomain");
+				}
+			}
+
 			if (siteroot == null)
 			{
-				if (siteroot == null)
-				{
-					siteroot = site.getSiteRootDynamic();
-				}
-				String communitytagcategory = inReq.findPathValue("communitytag");
-				if (communitytagcategory != null)
-				{
-					Data community = archive.getCachedData("communitytag", communitytagcategory);
-					if (community != null)
-					{
-						siteroot = community.get("externaldomain");
-					}
-				}
-				if (siteroot == null)
-				{
-					siteroot = archive.getCatalogSettingValue("siterootdefault");
-				}
+				siteroot = archive.getCatalogSettingValue("siterootdefault");
 			}
 			if (siteroot == null)
 			{

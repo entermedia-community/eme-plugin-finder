@@ -2831,6 +2831,27 @@
 		</property>
 	</bean>
 
+	<bean id="adaptiveTutorialWelcomeSkill" class="org.entermediadb.ai.skills.AdaptiveTutorialWelcomeSkill" scope="prototype">
+		<property name="moduleManager">
+			<ref bean="moduleManager" />
+		</property>
+	</bean>
+	<bean id="adaptiveTutorialContinueSkill" class="org.entermediadb.ai.skills.AdaptiveTutorialContinueSkill" scope="prototype">
+		<property name="moduleManager">
+			<ref bean="moduleManager" />
+		</property>
+	</bean>
+	<bean id="adaptiveTutorialEndSkill" class="org.entermediadb.ai.skills.AdaptiveTutorialEndSkill" scope="prototype">
+		<property name="moduleManager">
+			<ref bean="moduleManager" />
+		</property>
+	</bean>
+	<bean id="adaptiveTutorialUserCommentSkill" class="org.entermediadb.ai.skills.AdaptiveTutorialUserCommentSkill" scope="prototype">
+		<property name="moduleManager">
+			<ref bean="moduleManager" />
+		</property>
+	</bean>
+
 	<bean id="runningscenario" class="org.entermediadb.ai.automation.RunningScenario" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
