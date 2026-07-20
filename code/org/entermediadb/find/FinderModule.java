@@ -980,4 +980,16 @@ public class FinderModule extends BaseMediaModule
 		inReq.putSessionValue("picker", picker);
 		inReq.putPageValue("picker", picker);
 	}
+
+	public void loadEmeProfile(WebPageRequest inReq)
+	{
+		User user = inReq.getUser();
+		if (user == null)
+		{
+			return;
+		}
+		MediaArchive archive = getMediaArchive(inReq);
+		Data hit = archive.query("emeprofile").exact("owner", user.getId()).cachedSearchOne();
+		inReq.putPageValue("emeprofile", hit);
+	}
 }
