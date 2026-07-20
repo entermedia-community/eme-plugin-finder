@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.entermediadb.data.ViewData;
 import org.openedit.Data;
@@ -89,7 +91,7 @@ public class ElasticViewSearcher extends ElasticListSearcher
 		HitTracker actualviews = super.search(inSearch);
 
 		Term moduleid = inSearch.getTermByDetailId("moduleid");
-		Term systemdefined = inSearch.getTermByDetailId("systemdefined");
+		
 
 		if (moduleid == null)
 		{
@@ -97,50 +99,29 @@ public class ElasticViewSearcher extends ElasticListSearcher
 		}
 
 		HitTracker combinedviews = actualviews;
-		// Basic searches we can mege with template
-		if (moduleid != null && systemdefined != null)
+
+		Boolean isSystemdefined = false;
+		Term systemdefined = inSearch.getTermByDetailId("systemdefined");
+		if (systemdefined != null)
 		{
-			// Now go deal with the standard list
-			Searcher searcher = getSearcherManager().getSearcher(getCatalogId(), "viewtemplate");
+			isSystemdefined = Boolean.parseBoolean(systemdefined.getValue());
+		}	
 
-			String systemdefinedval = systemdefined.getValue();
-			if (systemdefinedval == null)
-			{
-				systemdefinedval = "false";
-			}
-			SearchQuery q = searcher.query().exact("systemdefined", systemdefinedval).getQuery();
-
-			if (inSearch.getTermByDetailId("rendertype") != null)
-			{
-				Term rendertype = inSearch.getTermByDetailId("rendertype").copy();
-				rendertype.setDetail(searcher.getDetail("rendertype"));
-				q.addTerm(rendertype);
-			}
-
-			Collection templateresults = searcher.search(q);
+		// Basic searches we can mege with template
+		if (moduleid != null)
+		{
+			Collection templateresults = getTemplateresults(inSearch, isSystemdefined);
 
 			combinedviews = mergeResults(actualviews, moduleid.getValue(), templateresults);
 		}
 
-		// Remove deleted
 		List<ViewData> finallist = new ArrayList<ViewData>();
 		for (Iterator iterator = combinedviews.iterator(); iterator.hasNext();)
 		{
 			Data d = (Data) iterator.next();
 			// Make sure these aren't SearchHitData
 			ViewData data = (ViewData) loadData(d);
-			if (!data.getBoolean("deleted"))
-			{
-				// if( "asset".equals(moduleid.getValue() ) )
-				// {
-				// //Dont add the dataone
-				// if( data.getId().equals("assetgeneral") ) //legacy id
-				// {
-				// continue;
-				// }
-				// }
-				finallist.add(data);
-			}
+			finallist.add(data);
 		}
 
 		Collections.sort(finallist, new Comparator<ViewData>() {
@@ -168,16 +149,39 @@ public class ElasticViewSearcher extends ElasticListSearcher
 		return combined;
 	}
 
+	private Collection getTemplateresults(SearchQuery inSearch, Boolean isSystemdefined) {
+		// Now go deal with the standard list
+		Searcher templateSearcher = getSearcherManager().getSearcher(getCatalogId(), "viewtemplate");
+
+		SearchQuery q = templateSearcher.query().exact("systemdefined", isSystemdefined).getQuery();
+
+		if (inSearch.getTermByDetailId("rendertype") != null)
+		{
+			Term rendertype = inSearch.getTermByDetailId("rendertype").copy();
+			rendertype.setDetail(templateSearcher.getDetail("rendertype"));
+			q.addTerm(rendertype);
+		}
+
+		Collection templateresults = templateSearcher.search(q);
+		return templateresults;
+	}
+
 	// TODO Save deleted with special flag
 
 	protected HitTracker mergeResults(HitTracker actualviews, String inModuleId, Collection baseresults)
 	{
 		ListHitTracker combinedviews = new ListHitTracker();
+		Set deletedViews = new HashSet();
 
 		for (Iterator iterator = actualviews.iterator(); iterator.hasNext();)
 		{
 			Data hit = (Data) iterator.next();
 			ViewData existing = (ViewData) loadData(hit);
+			if (existing.getBoolean("deleted"))
+			{
+				deletedViews.add(existing.getId());
+				continue;
+			}
 			combinedviews.add(existing);
 		}
 		// Fix all the IDS and parents and module
@@ -185,6 +189,10 @@ public class ElasticViewSearcher extends ElasticListSearcher
 		{
 			Data template = (Data) iterator.next();
 			ViewData extra = loadViewData(inModuleId, template);
+			if (deletedViews.contains(extra.getId()))
+			{
+				continue;
+			}
 			ViewData goodone = (ViewData) combinedviews.findData("id", extra.getId());
 			if (goodone != null)
 			{
