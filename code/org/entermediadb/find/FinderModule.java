@@ -31,6 +31,7 @@ import org.openedit.profile.ModuleData;
 import org.openedit.profile.UserProfile;
 import org.openedit.users.User;
 import org.openedit.util.PathUtilities;
+import org.openedit.util.URLUtilities;
 
 public class FinderModule extends BaseMediaModule
 {
@@ -398,6 +399,41 @@ public class FinderModule extends BaseMediaModule
 		inReq.putPageValue("modulehits", unsorted);
 		inReq.putPageValue("livesearchfor", plainquery);
 		// inReq.putPageValue("livesuggestions",finallist);
+		inReq.putPageValue("highlighter", new Highlighter());
+
+		// Include module results
+		resultsManager.loadOrganizedResults(inReq, unsorted, assetunsorted);
+
+	}
+
+	public void searchForRecent(WebPageRequest inReq)
+	{
+		MediaArchive archive = getMediaArchive(inReq);
+
+		QueryBuilder dq = archive.query("modulesearch").addFacet("entitysourcetype").named("findersearchall").all().hitsPerPage(30);
+
+		Collection searchmodules = new ArrayList();
+		String mainsearchmodule = inReq.getRequestParameter("mainsearchmodule");
+		ResultsManager resultsManager = getResultsManager(inReq);
+		if (mainsearchmodule != null)
+		{
+			searchmodules.add(mainsearchmodule);
+			dq.getQuery().setValue("searchtypes", searchmodules);
+		}
+		else
+		{
+			searchmodules = resultsManager.loadUserSearchTypes(inReq);
+			Collection searchmodulescopy = new ArrayList(searchmodules);
+			dq.getQuery().setValue("searchtypes", searchmodulescopy);
+		}
+
+		SecurityEnabledSearchSecurity security = new SecurityEnabledSearchSecurity();
+		security.attachSecurity(inReq, archive.getSearcher("modulesearch"), dq.getQuery());
+
+		HitTracker unsorted = dq.search(inReq); // With permissions?
+		HitTracker assetunsorted = null;
+
+		inReq.putPageValue("modulehits", unsorted);
 		inReq.putPageValue("highlighter", new Highlighter());
 
 		// Include module results
@@ -950,7 +986,7 @@ public class FinderModule extends BaseMediaModule
 		if (moduleid == null)
 		{
 			moduleid = "asset";
-		}	
+		}
 		String targetfieldid = inReq.getRequestParameter("targetfieldid");
 
 		Picker picker = (Picker) inReq.getPageValue("picker");
@@ -992,4 +1028,31 @@ public class FinderModule extends BaseMediaModule
 		Data hit = archive.query("emeprofile").exact("owner", user.getId()).cachedSearchOne();
 		inReq.putPageValue("emeprofile", hit);
 	}
+
+	public void loadEmeProfileData(WebPageRequest inReq)
+	{
+		Data emeprofile = (Data) inReq.getPageValue("emeprofile");
+		URLUtilities urlutil = (URLUtilities) inReq.getPageValue("url_util");
+		String requestedPath = urlutil.getOriginalPath();
+		String[] url = requestedPath.split("/");
+		String viewid = url[4];
+		if (viewid == null)
+		{
+			return;
+		}
+		MediaArchive archive = getMediaArchive(inReq);
+		Data viewdata = archive.getCachedData("view", viewid);
+		inReq.putPageValue("viewdata", viewdata);
+
+		inReq.putPageValue("entitymoduleviewid", viewid);
+		inReq.putPageValue("entity", emeprofile);
+		Data module = archive.getCachedData("module", "emeprofile");
+		inReq.putPageValue("entitymodule", module);
+
+		inReq.putPageValue("parententityid", emeprofile.getId());
+		inReq.putPageValue("parententitymoduleid", "emeprofile");
+		inReq.putPageValue("parententitymoduleviewid", viewid);
+
+	}
+
 }
