@@ -1055,4 +1055,41 @@ public class FinderModule extends BaseMediaModule
 
 	}
 
+	public void loadProjectData(WebPageRequest inReq)
+	{
+		Data librarycollection = (Data) inReq.getPageValue("librarycol");
+		if (librarycollection == null)
+		{
+			return;
+		}
+		URLUtilities urlutil = (URLUtilities) inReq.getPageValue("url_util");
+		String requestedPath = urlutil.getOriginalPath();
+		String[] url = requestedPath.split("/");
+		if (url.length < 5)
+		{
+			return;
+		}
+		String viewid = url[4];
+		if (viewid == null)
+		{
+			return;
+		}
+		MediaArchive archive = getMediaArchive(inReq);
+		Data viewdata = archive.getCachedData("view", viewid);
+
+		inReq.putPageValue("viewdata", viewdata);
+		// inReq.putPageValue("entitymoduleviewdata", viewdata);
+		inReq.putPageValue("entityviewdata", viewdata);
+
+		inReq.putPageValue("entitymoduleviewid", viewid);
+		inReq.putPageValue("entity", librarycollection);
+		Data module = archive.getCachedData("module", "librarycollection");
+		inReq.putPageValue("entitymodule", module);
+
+		inReq.putPageValue("parententityid", librarycollection.getId());
+		inReq.putPageValue("parententitymoduleid", "librarycollection");
+		inReq.putPageValue("parententitymoduleviewid", viewid);
+
+	}
+
 }

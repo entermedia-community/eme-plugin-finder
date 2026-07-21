@@ -388,6 +388,11 @@ public class BaseMediaModule extends BaseModule
 
 	public Data loadModule(WebPageRequest inReq)
 	{
+		Data moduledata = (Data) inReq.getPageValue("module");
+		if (moduledata != null)
+		{
+			return moduledata;
+		}
 		String moduleid = inReq.findValue("module");
 
 		if (moduleid == null && inReq.getUserProfile() != null)
@@ -399,7 +404,7 @@ public class BaseMediaModule extends BaseModule
 			moduleid = "modulesearch";
 		}
 
-		Data moduledata = getMediaArchive(inReq).getCachedData("module", moduleid);
+		moduledata = getMediaArchive(inReq).getCachedData("module", moduleid);
 		if (moduledata != null)
 		{
 			inReq.putPageValue("module", moduledata);
