@@ -93,23 +93,21 @@ public class RunningScenario extends BaseMediaObject implements CatalogEnabled
 			// we determine we dont need to do anything.
 			return false;
 		}
+		else if ("runskill".equals(response.getOperationState()))
+		{
+			String runskill = response.getRunSkillEnabled();
+			runProcess(runskill, inContext);
+			return false;
+		}
+		else if ("needuserinput".equals(response.getOperationState()))
+		{
+			// fire complete shoudl have sent it back to the user
+			return false;
+		}
 		else
-			if ("runskill".equals(response.getOperationState()))
-			{
-				String runskill = response.getRunSkillEnabled();
-				runProcess(runskill, inContext);
-				return false;
-			}
-			else
-				if ("needuserinput".equals(response.getOperationState()))
-				{
-					// fire complete shoudl have sent it back to the user
-					return false;
-				}
-				else
-				{
-					log.info("No status from " + inContext.getCurrentScenario() + " running " + inSkillEnabled.getEnabledId());
-				}
+		{
+			log.info("No status from " + inContext.getCurrentScenario() + " running " + inSkillEnabled.getEnabledId());
+		}
 		return true;
 	}
 
@@ -153,7 +151,10 @@ public class RunningScenario extends BaseMediaObject implements CatalogEnabled
 	{
 		String inId = getId();
 
+		getMediaArchive().getCacheManager().put("agentsenabled", inId, new ArrayList<AgentEnabled>()); // Clear the cache to force reload
+
 		Collection<AgentEnabled> cached = (Collection<AgentEnabled>) getMediaArchive().getCacheManager().get("agentsenabled", inId);
+
 		if (cached == null || cached.isEmpty())
 		{
 			Collection found = getMediaArchive().query("aiskillenabled").exact("automationscenario", inId).exact("enabled", true).search();
@@ -166,7 +167,6 @@ public class RunningScenario extends BaseMediaObject implements CatalogEnabled
 				String agentid = agentenableddata.get("aiskill");
 				MultiValued agentdata = (MultiValued) getMediaArchive().getCachedData("aiskill", agentid);
 				enabled.setAgentData(agentdata);
-
 				addContextValues(enabled);
 
 				if (agentdata == null)

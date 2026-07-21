@@ -11,14 +11,12 @@ import org.entermediadb.ai.BaseSkill;
 import org.entermediadb.ai.ChatMessageContext;
 import org.entermediadb.ai.creator.AiSmartCreatorSteps;
 import org.entermediadb.ai.llm.AgentEnabled;
-import org.entermediadb.ai.llm.BasicLlmResponse;
 import org.entermediadb.ai.llm.LlmConnection;
 import org.entermediadb.ai.llm.LlmResponse;
 import org.entermediadb.asset.MediaArchive;
 import org.entermediadb.util.Inflector;
 import org.json.simple.JSONObject;
 import org.openedit.Data;
-import org.openedit.MultiValued;
 import org.openedit.data.Searcher;
 
 public class ChatSmartCreatorConfirmationSkill extends BaseSkill

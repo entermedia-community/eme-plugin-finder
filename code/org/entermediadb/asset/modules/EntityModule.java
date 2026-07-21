@@ -87,42 +87,41 @@ public class EntityModule extends BaseMediaModule
 				saved = true;
 			}
 		}
-		else
-			if (moduleid.equals("faceprofilegroup"))
+		else if (moduleid.equals("faceprofilegroup"))
+		{
+			List<ValuesMap> otherprofiles = createListMap((Collection) asset.getValue("faceprofiles"));
+			Boolean alreadyinprofile = false;
+			for (int i = 0; i < otherprofiles.size(); i++)
 			{
-				List<ValuesMap> otherprofiles = createListMap((Collection) asset.getValue("faceprofiles"));
-				Boolean alreadyinprofile = false;
-				for (int i = 0; i < otherprofiles.size(); i++)
+				ValuesMap profilegroups = (ValuesMap) otherprofiles.get(i);
+				if (profilegroups.containsInValues("faceprofilegroup", entityid))
 				{
-					ValuesMap profilegroups = (ValuesMap) otherprofiles.get(i);
-					if (profilegroups.containsInValues("faceprofilegroup", entityid))
-					{
-						alreadyinprofile = true;
-					}
-				}
-				if (!alreadyinprofile)
-				{
-					List<Map> profilemap = new ArrayList<Map>();
-					Map profile = new HashMap();
-					profile.put("faceprofilegroup", entityid);
-					otherprofiles.add(new ValuesMap(profile));
-					asset.setValue("faceprofiles", otherprofiles);
-					saved = true;
+					alreadyinprofile = true;
 				}
 			}
-			else
+			if (!alreadyinprofile)
 			{
-				// Defualt entity
-				// asset.addValue(moduleid, entityid);
-				String categoryid = inPageRequest.getRequestParameter("categoryid");
-				Category c = archive.getCategory(categoryid);
-				if (c != null)
-				{
-					asset.addCategory(c);
-					saved = true;
-				}
+				List<Map> profilemap = new ArrayList<Map>();
+				Map profile = new HashMap();
+				profile.put("faceprofilegroup", entityid);
+				otherprofiles.add(new ValuesMap(profile));
+				asset.setValue("faceprofiles", otherprofiles);
 				saved = true;
 			}
+		}
+		else
+		{
+			// Defualt entity
+			// asset.addValue(moduleid, entityid);
+			String categoryid = inPageRequest.getRequestParameter("categoryid");
+			Category c = archive.getCategory(categoryid);
+			if (c != null)
+			{
+				asset.addCategory(c);
+				saved = true;
+			}
+			saved = true;
+		}
 
 		if (saved)
 		{
@@ -1235,15 +1234,14 @@ public class EntityModule extends BaseMediaModule
 			{
 				finallist = assethits.getSelectedHitracker();
 			}
-			else
-				if (assetid != null)
-				{
-					finallist = new ArrayList(1);
-					Asset asset = archive.getAsset(assetid);
-					asset.addCategory(category);
-					archive.saveAsset(asset);
-					finallist.add(asset);
-				}
+			else if (assetid != null)
+			{
+				finallist = new ArrayList(1);
+				Asset asset = archive.getAsset(assetid);
+				asset.addCategory(category);
+				archive.saveAsset(asset);
+				finallist.add(asset);
+			}
 			int added = entityManager.addAssetsToCategory(archive, category, finallist);
 			if (assethits != null)
 			{
@@ -1361,28 +1359,25 @@ public class EntityModule extends BaseMediaModule
 				csvimporter.importData();
 				inReq.putPageValue("importtotal", csvimporter.getImportTotal());
 			}
-			else
-				if (mime.contains("ms-excel"))
-				{
-					XlsImporter csvimporter = new XlsImporter();
-					csvimporter.setModuleManager(getModuleManager());
-					csvimporter.setContext(inReq);
-					csvimporter.setImportPage(tmp);
-					csvimporter.setLog(logger);
-					csvimporter.setMakeId(false);
-					csvimporter.importData();
+			else if (mime.contains("ms-excel"))
+			{
+				XlsImporter csvimporter = new XlsImporter();
+				csvimporter.setModuleManager(getModuleManager());
+				csvimporter.setContext(inReq);
+				csvimporter.setImportPage(tmp);
+				csvimporter.setLog(logger);
+				csvimporter.setMakeId(false);
+				csvimporter.importData();
 
-				}
-				else
-					if (mime.endsWith("ditamap"))
-					{
+			}
+			else if (mime.endsWith("ditamap"))
+			{
 
-					}
-					else
-						if (mime.endsWith("dita"))
-						{
+			}
+			else if (mime.endsWith("dita"))
+			{
 
-						}
+			}
 			getPageManager().removePage(tmp);
 
 		}
@@ -1851,11 +1846,10 @@ public class EntityModule extends BaseMediaModule
 				{
 					count = importer.countVideosInChannel(archive, ytParser);
 				}
-				else
-					if (type.equals("PLAYLIST"))
-					{
-						count = importer.countVideosInPlaylist(archive, ytParser);
-					}
+				else if (type.equals("PLAYLIST"))
+				{
+					count = importer.countVideosInPlaylist(archive, ytParser);
+				}
 
 				if (count > 1)
 				{

@@ -614,7 +614,11 @@ public class ChatModule extends BaseMediaModule
 		{
 			throw new IllegalArgumentException("channeltype is required");
 		}
-		String entityid = inReq.findValue("entityid");
+		String entityid = inReq.getRequestParameter("entityid");
+		if (entityid == null)
+		{
+			entityid = inReq.findValue("entityid");
+		}
 		if (entityid == null)
 		{
 			entityid = inReq.findValue("dataid");

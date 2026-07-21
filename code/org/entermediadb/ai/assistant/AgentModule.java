@@ -15,6 +15,7 @@ import org.entermediadb.asset.modules.BaseMediaModule;
 import org.entermediadb.scripts.ScriptLogger;
 import org.entermediadb.workspace.WorkspaceManager;
 import org.openedit.Data;
+import org.openedit.MultiValued;
 import org.openedit.WebPageRequest;
 import org.openedit.data.Searcher;
 import org.openedit.hittracker.HitTracker;
@@ -217,7 +218,7 @@ public class AgentModule extends BaseMediaModule
 				String value = inReq.getRequestParameter(key);
 				if (value != null)
 				{
-					agentContext.addContext(key.substring("context_".length()), value);
+					agentContext.putContextValue(key.substring("context_".length()), value);
 				}
 			}
 		}
@@ -356,4 +357,13 @@ public class AgentModule extends BaseMediaModule
 	// ScriptLogger logger = (ScriptLogger)inReq.getPageValue("log");
 	// informaticsManager.processAll(logger);
 	// }
+
+	public void handleWelcome(WebPageRequest inReq)
+	{
+		String tutorialid = (String) inReq.getPageValue("tutorialid");
+		Searcher tutorialsearcher = getMediaArchive(inReq).getSearcher("entitytutorial");
+		MultiValued tutorial = (MultiValued) tutorialsearcher.query().exact("id", tutorialid).searchOne();
+
+		inReq.putPageValue("tutorial", tutorial);
+	}
 }

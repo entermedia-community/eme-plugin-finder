@@ -251,10 +251,10 @@ public class AssistantManager extends BaseAiManager implements SkillStatusListen
 
 		String id = inChannel.get("user");
 		UserProfile profile = archive.getUserProfile(id);
-		chatMessageContext.addContext("chatprofile", profile);
+		chatMessageContext.putContextValue("chatprofile", profile);
 		chatMessageContext.setUserProfile(profile);
 
-		chatMessageContext.addContext("channel", inChannel);
+		chatMessageContext.putContextValue("channel", inChannel);
 
 		// String oldstatus = usermessage.get("chatmessagestatus");
 
@@ -262,11 +262,11 @@ public class AssistantManager extends BaseAiManager implements SkillStatusListen
 		usermessage.setValue("chatmessagestatus", "completed");
 		getMediaArchive().saveData("chatterbox", usermessage); // Update the user message again to finish it
 
-		chatMessageContext.addContext("message", usermessage);
+		chatMessageContext.putContextValue("message", usermessage);
 
-		chatMessageContext.addContext("assistant", this);
+		chatMessageContext.putContextValue("assistant", this);
 
-		chatMessageContext.addContext("channelchathistory", loadChannelChatHistory(inChannel));
+		chatMessageContext.putContextValue("channelchathistory", loadChannelChatHistory(inChannel));
 
 		// Add new agentmessage
 		MultiValued agentmessage = newAgentMessage(usermessage, chatMessageContext);
@@ -282,11 +282,11 @@ public class AssistantManager extends BaseAiManager implements SkillStatusListen
 				Integer playbacksection = (Integer) inChannel.getValue("playbacksection");
 				if (playbacksection != null)
 				{
-					chatMessageContext.addContext("playbacksection", playbacksection);
+					chatMessageContext.putContextValue("playbacksection", playbacksection);
 				}
 				else
 				{
-					chatMessageContext.addContext("playbacksection", 0);
+					chatMessageContext.putContextValue("playbacksection", 0);
 				}
 			}
 			else
@@ -335,16 +335,16 @@ public class AssistantManager extends BaseAiManager implements SkillStatusListen
 		MediaArchive archive = getMediaArchive();
 
 		Data channel = archive.getCachedData("channel", agentmessage.get("channel"));
-		chatMessageContext.addContext("channel", channel);
+		chatMessageContext.putContextValue("channel", channel);
 
-		chatMessageContext.addContext("usermessage", usermessage);
-		chatMessageContext.addContext("agentmessage", agentmessage);
+		chatMessageContext.putContextValue("usermessage", usermessage);
+		chatMessageContext.putContextValue("agentmessage", agentmessage);
 
-		// chatMessageContext.addContext("aisearchparams", chatMessageContext.getAiSearchParams() );
+		// chatMessageContext.putContextValue("aisearchparams", chatMessageContext.getAiSearchParams() );
 		// // ??
 
 		String apphome = "/" + channel.get("chatapplicationid");
-		chatMessageContext.addContext("apphome", apphome);
+		chatMessageContext.putContextValue("apphome", apphome);
 
 		LlmResponse response = null;
 		String messagePrefix = chatMessageContext.getMessagePrefix();
@@ -479,10 +479,10 @@ public class AssistantManager extends BaseAiManager implements SkillStatusListen
 	 * if(fullText.replaceAll("\\s|\\n", "").length() == 0) { return null; }
 	 * 
 	 * chatMessageContext chatMessageContext = new chatMessageContext();
-	 * chatMessageContext.addContext("fulltext", fullText);
+	 * chatMessageContext.putContextValue("fulltext", fullText);
 	 * 
 	 * String model = archive.getCatalogSettingValue("llmmcpmodel"); if(model == null) { model =
-	 * "gpt-5-nano"; } chatMessageContext.addContext("model", model);
+	 * "gpt-5-nano"; } chatMessageContext.putContextValue("model", model);
 	 * 
 	 * LlmConnection llmconnection = (LlmConnection) archive.getBean("openaiConnection");
 	 * 
