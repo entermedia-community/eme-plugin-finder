@@ -6785,6 +6785,10 @@ a.collectionbox.favorite {
 	border: 0 none;
 }
 
+.modal-dialog-form {
+	padding: 1rem;
+}
+
 .submodulepicker {
 	max-height: 100%;
 }
@@ -12381,7 +12385,4 @@ a.action-link:hover {
 	resize: vertical;
 	color: #626b7a;
 	letter-spacing: 1px;
-}
-.eme-avatar img {
-	border-radius: 50%;
 }

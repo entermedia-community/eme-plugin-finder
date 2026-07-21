@@ -1043,6 +1043,7 @@ public class FinderModule extends BaseMediaModule
 		MediaArchive archive = getMediaArchive(inReq);
 		Data viewdata = archive.getCachedData("view", viewid);
 		inReq.putPageValue("viewdata", viewdata);
+		inReq.putPageValue("entityviewdata", viewdata);
 
 		inReq.putPageValue("entitymoduleviewid", viewid);
 		inReq.putPageValue("entity", emeprofile);
