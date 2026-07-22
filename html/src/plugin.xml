@@ -2841,6 +2841,11 @@
 			<ref bean="moduleManager" />
 		</property>
 	</bean>
+	<bean id="adaptiveTutorialAnswerSkill" class="org.entermediadb.ai.skills.AdaptiveTutorialAnswerSkill" scope="prototype">
+		<property name="moduleManager">
+			<ref bean="moduleManager" />
+		</property>
+	</bean>
 	<bean id="adaptiveTutorialEndSkill" class="org.entermediadb.ai.skills.AdaptiveTutorialEndSkill" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />

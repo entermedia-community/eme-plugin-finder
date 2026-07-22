@@ -3,6 +3,7 @@ package org.entermediadb.ai.skills;
 import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.BaseSkill;
 import org.entermediadb.ai.ChatMessageContext;
+import org.entermediadb.ai.automation.RunningScenario;
 import org.entermediadb.ai.llm.AgentEnabled;
 import org.entermediadb.ai.llm.LlmConnection;
 import org.entermediadb.ai.llm.LlmResponse;
@@ -31,7 +32,12 @@ public class AdaptiveTutorialWelcomeSkill extends BaseSkill
 
 		AgentEnabled skillEnabled = messageContext.getCurrentAgentEnable();
 		messageContext.fireStatusComplete(skillEnabled);
+
+		RunningScenario scenario = messageContext.getCurrentScenario();
+
+		AgentEnabled nextAgentEnabled = scenario.findEnabled("chat_tutor_continue");
+		AgentContext nextContext = scenario.createAgentContext(messageContext, nextAgentEnabled);
+		scenario.runProcess(nextAgentEnabled, nextContext);
 	}
 
-	
 }
