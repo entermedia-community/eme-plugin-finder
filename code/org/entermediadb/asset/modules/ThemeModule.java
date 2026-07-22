@@ -114,14 +114,14 @@ public class ThemeModule extends BaseMediaModule
 				Page logopage = archive.getOriginalDocument(logoasset);
 				if (logopage != null)
 				{
-					Page destpage = getPageManager().getPage("/" + applicationid + "/theme/" + theme.getId() + "/logo.png");
+					Page destpage = getPageManager().getPage("/" + applicationid + "/" + theme.getId() + "/logo.png");
 					if (!destpage.getPath().equals(logopage.getPath()))
 					{
 						getPageManager().copyPage(logopage, destpage);
 						Dimension assetdimension = archive.getAssetImporter().getAssetUtilities().getImageDimensionImageIO(logopage.getContentItem());
 						if (assetdimension.width > 0)
 						{
-							theme.setValue("logowith", assetdimension.width);
+							theme.setValue("logowidth", assetdimension.width);
 						}
 						if (assetdimension.height > 0)
 						{
