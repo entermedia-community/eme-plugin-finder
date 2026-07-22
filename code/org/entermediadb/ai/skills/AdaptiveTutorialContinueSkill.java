@@ -20,8 +20,8 @@ public class AdaptiveTutorialContinueSkill extends BaseSkill
 
 		String tutorialid = (String) messageContext.getContextValue("tutorialid");
 
-		String sectionid = (String) messageContext.getContextValue("sectionid");
-		String componentid = (String) messageContext.getContextValue("componentid");
+		String sectionid = null; // (String) messageContext.getContextValue("sectionid");
+		String componentid = null; // (String) messageContext.getContextValue("componentid");
 
 		Data topsection = null;
 		Data topcomponent = null;
@@ -39,42 +39,46 @@ public class AdaptiveTutorialContinueSkill extends BaseSkill
 			topsection = allsections.iterator().next();
 			sectionid = topsection.getId();
 		}
+		else
+		{
+			topsection = getNextData(allsections, sectionid);
+			if (topsection != null)
+			{
+				sectionid = topsection.getId();
+			}
+		}
 
 		Collection<Data> allcomponents = getMediaArchive().query("componentcontent").exact("componentsectionid", sectionid).sort("ordering").search();
 
 		if (allcomponents.isEmpty())
 		{
-			componentid = null;
-			topsection = getNextData(allsections, sectionid);
-
-			if (topsection != null)
-			{
-				sectionid = topsection.getId();
-				allcomponents = getMediaArchive().query("componentcontent").exact("componentsectionid", sectionid).sort("ordering").search();
-			}
-		}
-
-		if (allcomponents.isEmpty())
-		{
 			endTutorial(messageContext);
 			return;
+			// componentid = null;
+			// topsection = getNextData(allsections, sectionid);
+
+			// if (topsection != null)
+			// {
+			// sectionid = topsection.getId();
+			// allcomponents = getMediaArchive().query("componentcontent").exact("componentsectionid",
+			// sectionid).sort("ordering").search();
+			// }
 		}
 
 		if (componentid == null)
 		{
 			topcomponent = allcomponents.iterator().next();
-			componentid = topcomponent.getId();
 		}
 		else
 		{
 			topcomponent = getNextData(allcomponents, componentid);
-			if (topcomponent != null)
-			{
-				componentid = topcomponent.getId();
-			}
 		}
 
-		if (topsection == null || topcomponent == null)
+		if (topcomponent != null)
+		{
+			componentid = topcomponent.getId();
+		}
+		else
 		{
 			endTutorial(messageContext);
 			return;
@@ -91,20 +95,21 @@ public class AdaptiveTutorialContinueSkill extends BaseSkill
 		messageContext.setLastResponse(response);
 		messageContext.log("sent" + response.getMessagePlain());
 
-		Map<String, String> brodcastpayload = new HashMap<String, String>();
-		if ("question".equals(topcomponent.get("contenttype")))
+		Map<String, String> broadcastpayload = new HashMap<String, String>();
+		broadcastpayload.put("messageid", topcomponent.getId());
+		if ("mcq".equals(topcomponent.get("componenttype")))
 		{
-			brodcastpayload.put("messagetype", "question");
+			broadcastpayload.put("messagetype", "question");
 		}
-		else if ("asset".equals(topcomponent.get("contenttype")))
+		else if ("asset".equals(topcomponent.get("componenttype")))
 		{
-			brodcastpayload.put("messagetype", "asset");
+			broadcastpayload.put("messagetype", "asset");
 		}
 		else
 		{
-			brodcastpayload.put("messagetype", "text");
+			broadcastpayload.put("messagetype", "text");
 		}
-		messageContext.putContextValue("sentwelcome", true);
+		messageContext.setValue("broadcastpayload", broadcastpayload);
 
 		AgentEnabled skillEnabled = messageContext.getCurrentAgentEnable();
 		messageContext.fireStatusComplete(skillEnabled);
@@ -115,7 +120,7 @@ public class AdaptiveTutorialContinueSkill extends BaseSkill
 		AgentEnabled currentAgentEnabled = messageContext.getCurrentScenario().findEnabled("chat_tutor_end");
 
 		messageContext.setCurrentAgentEnable(currentAgentEnabled);
-		super.process(messageContext);
+		messageContext.fireStatusComplete(currentAgentEnabled);
 	}
 
 	public Data getNextData(Collection<Data> allsections, String sectionid)

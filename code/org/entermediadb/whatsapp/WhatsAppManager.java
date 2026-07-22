@@ -4,17 +4,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.client.methods.CloseableHttpResponse;
-import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.BaseAiManager;
-import org.entermediadb.ai.llm.BaseAgentContext;
-import org.entermediadb.ai.llm.LlmConnection;
-import org.entermediadb.ai.llm.LlmResponse;
 import org.entermediadb.websocket.chat.ChatBroadcastListener;
-import org.entermediadb.websocket.chat.ChatConnection;
 import org.entermediadb.websocket.chat.ChatServer;
 import org.json.simple.JSONObject;
 import org.openedit.Data;

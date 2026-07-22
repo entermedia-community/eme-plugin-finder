@@ -34,15 +34,26 @@ public class ChatConnection extends Endpoint implements MessageHandler.Partial<S
 	protected String fieldSessionID;
 	protected String fieldUserId;
 	protected String fieldChannelId;
+	protected String fieldChannelType;
 
 	public String getChannelId()
 	{
 		return fieldChannelId;
 	}
 
+	public String getChannelType()
+	{
+		return fieldChannelType;
+	}
+
 	public void setChannelId(String inChannelId)
 	{
 		fieldChannelId = inChannelId;
+	}
+
+	public void setChannelType(String inChannelType)
+	{
+		fieldChannelType = inChannelType;
 	}
 
 	protected Collection fieldNotifyTopics;
@@ -167,6 +178,7 @@ public class ChatConnection extends Endpoint implements MessageHandler.Partial<S
 		fieldUserId = (String) params.get("userid"); // TODO: Replace with entermediakey
 
 		fieldChannelId = (String) params.get("channel");
+		fieldChannelType = (String) params.get("channeltype");
 
 		ModuleManager modulemanager = (ModuleManager) session.getUserProperties().get("moduleManager");
 		if (modulemanager == null)

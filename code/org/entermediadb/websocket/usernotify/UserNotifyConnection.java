@@ -1,27 +1,17 @@
 package org.entermediadb.websocket.usernotify;
 
-import java.io.IOException;
 import java.io.StringReader;
-
 import javax.websocket.CloseReason;
 import javax.websocket.Endpoint;
 import javax.websocket.EndpointConfig;
 import javax.websocket.MessageHandler;
 import javax.websocket.RemoteEndpoint;
 import javax.websocket.Session;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.entermediadb.asset.MediaArchive;
 import org.json.simple.JSONObject;
-import org.openedit.util.JSONParser;
-import org.json.simple.parser.ParseException;
-import org.openedit.Data;
 import org.openedit.ModuleManager;
-import org.openedit.users.User;
-
-// let url =
-// `/entermedia/services/websocket/org/entermediadb/websocket/chat/ChatConnection?sessionid=${tabID}&userid=${userid}`;
+import org.openedit.util.JSONParser;
 
 public class UserNotifyConnection extends Endpoint implements MessageHandler.Partial<String>
 {

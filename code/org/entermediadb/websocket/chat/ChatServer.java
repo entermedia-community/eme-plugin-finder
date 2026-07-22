@@ -348,12 +348,6 @@ public class ChatServer
 						// If connected user is navigating the channel and has permission to view
 						chatConnection.sendMessage(inMap);
 					}
-
-					/*
-					 * String connectionChannel = chatConnection.getChannelId(); if
-					 * (channelid.equals(connectionChannel)) { //log.info("Other connection is not a team member: " +
-					 * chatConnection.getChannelId()); chatConnection.sendMessage(inMap); }
-					 */
 				}
 			}
 
@@ -375,11 +369,6 @@ public class ChatServer
 						String connectedUser = chatConnection.getUserId();
 						if (connectedUser != null)
 						{
-							/*
-							 * String connectionTopic = chatConnection.getChannelId(); //Current Connection Channel if(
-							 * channelid != null && channelid.equals(connectionTopic)) {
-							 * manager.updateChatTopicLastChecked(String.valueOf(channelid), connectedUser); }
-							 */
 							manager.updateChatTopicLastChecked(String.valueOf(channelid), connectedUser);
 						}
 					}
