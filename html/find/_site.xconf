@@ -12,7 +12,6 @@
   <property name="bs">4</property>
   <property name="enableprofilefilters">true</property>
 
-  <property name="sidebarcomponent">addentity</property>
   <property name="fallbackdirectory">/community/default</property>
   
   <property name="login-path">/${applicationid}/authentication/nopermissions.html</property>
