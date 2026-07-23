@@ -15,11 +15,13 @@ public class AdaptiveTutorialWelcomeSkill extends BaseSkill
 	public void process(AgentContext inAgentContext)
 	{
 		ChatMessageContext messageContext = (ChatMessageContext) inAgentContext;
-		MultiValued agentmessage = messageContext.getAgentMessage();
-		// if (messageContext.getContextValue("sentwelcome") == null)
-		// {
-		// messageContext.putContextValue("sentwelcome", true);
-		agentmessage.setValue("chatmessagestatus", "completed");
+
+		messageContext.putContextValue("skiploader", Boolean.TRUE);
+
+		String tutorialid = (String) messageContext.getContextValue("tutorialid");
+		MultiValued tutorial = (MultiValued) getMediaArchive().query("entitytutorial").exact("id", tutorialid).searchOne();
+
+		messageContext.putContextValue("tutorial", tutorial);
 
 		LlmConnection llmconnection = getMediaArchive().getLlmConnection("localrender"); // Should stay
 		// search_start

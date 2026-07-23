@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.oltu.oauth2.common.utils.JSONUtils;
 import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.BaseAiManager;
 import org.entermediadb.ai.ChatMessageContext;
@@ -24,6 +25,7 @@ import org.entermediadb.ai.llm.AgentEnabled;
 import org.entermediadb.ai.llm.BaseAgentContext;
 import org.entermediadb.ai.llm.LlmResponse;
 import org.entermediadb.asset.MediaArchive;
+import org.entermediadb.asset.util.JsonUtil;
 import org.entermediadb.find.EntityManager;
 import org.entermediadb.net.HttpSharedConnection;
 import org.entermediadb.scripts.ScriptLogger;
@@ -967,9 +969,19 @@ public class AssistantManager extends BaseAiManager implements SkillStatusListen
 
 		ChatMessageContext chatMessageContext = (ChatMessageContext) inContext;
 
+		boolean skiploader = Boolean.TRUE.equals(chatMessageContext.getContextValue("skiploader"));
+
+		if (skiploader)
+		{
+			chatMessageContext.putContextValue("skiploader", Boolean.FALSE);
+			return;
+		}
+
 		MultiValued function = inAgentEnabled.getAutomationEnabledData();
 
-		String loader = "<i class=\"fas fa-spinner fa-spin mr-2\"></i> ";
+		JsonUtil jsonUtil = (JsonUtil) getMediaArchive().getBean("jsonUtil");
+
+		String loader = jsonUtil.escape("<i class=\"fas fa-spinner fa-spin mr-2\"></i> ");
 		String processingmessage = null;
 		if (function != null)
 		{
@@ -1098,6 +1110,9 @@ public class AssistantManager extends BaseAiManager implements SkillStatusListen
 			}
 
 			ChatServer server = (ChatServer) getMediaArchive().getBean("chatServer");
+
+			log.info("Broadcasting: " + functionMessageUpdate.toJSONString());
+
 			server.broadcastMessage(functionMessageUpdate);
 
 		}

@@ -1,6 +1,5 @@
 package org.entermediadb.ai.skills;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import org.entermediadb.ai.AgentContext;
@@ -10,6 +9,7 @@ import org.entermediadb.ai.llm.AgentEnabled;
 import org.entermediadb.ai.llm.LlmConnection;
 import org.entermediadb.ai.llm.LlmResponse;
 import org.openedit.Data;
+import org.openedit.MultiValued;
 
 public class AdaptiveTutorialContinueSkill extends BaseSkill
 {
@@ -20,72 +20,31 @@ public class AdaptiveTutorialContinueSkill extends BaseSkill
 
 		String tutorialid = (String) messageContext.getContextValue("tutorialid");
 
-		String sectionid = null; // (String) messageContext.getContextValue("sectionid");
-		String componentid = null; // (String) messageContext.getContextValue("componentid");
+		String sectionid = (String) messageContext.getContextValue("sectionid");
+		String componentid = (String) messageContext.getContextValue("componentid");
 
-		Data topsection = null;
-		Data topcomponent = null;
+		Map<String, Data> next = getNextSectionAndComponent(tutorialid, sectionid, componentid);
+		if (next == null)
+		{
+			endTutorial(messageContext);
+			return;
+		}
+		Data topsection = next.get("section");
+		Data topcomponent = next.get("component");
 
-		Collection<Data> allsections = getMediaArchive().query("componentsection").exact("playbackentitymoduleid", "entitytutorial").exact("playbackentityid", tutorialid).sort("ordering").search();
-
-		if (allsections.isEmpty())
+		if (topsection == null || topcomponent == null)
 		{
 			endTutorial(messageContext);
 			return;
 		}
 
-		if (sectionid == null)
+		if (componentid != null && componentid.equals(topcomponent.getId()))
 		{
-			topsection = allsections.iterator().next();
-			sectionid = topsection.getId();
-		}
-		else
-		{
-			topsection = getNextData(allsections, sectionid);
-			if (topsection != null)
-			{
-				sectionid = topsection.getId();
-			}
+			throw new IllegalStateException("Next component is the same as the current component. This should not happen.");
 		}
 
-		Collection<Data> allcomponents = getMediaArchive().query("componentcontent").exact("componentsectionid", sectionid).sort("ordering").search();
-
-		if (allcomponents.isEmpty())
-		{
-			endTutorial(messageContext);
-			return;
-			// componentid = null;
-			// topsection = getNextData(allsections, sectionid);
-
-			// if (topsection != null)
-			// {
-			// sectionid = topsection.getId();
-			// allcomponents = getMediaArchive().query("componentcontent").exact("componentsectionid",
-			// sectionid).sort("ordering").search();
-			// }
-		}
-
-		if (componentid == null)
-		{
-			topcomponent = allcomponents.iterator().next();
-		}
-		else
-		{
-			topcomponent = getNextData(allcomponents, componentid);
-		}
-
-		if (topcomponent != null)
-		{
-			componentid = topcomponent.getId();
-		}
-		else
-		{
-			endTutorial(messageContext);
-			return;
-		}
-
-		messageContext.putContextValue("sectionid", sectionid);
-		messageContext.putContextValue("componentid", componentid);
+		messageContext.putContextValue("sectionid", topsection.getId());
+		messageContext.putContextValue("componentid", topcomponent.getId());
 		messageContext.putContextValue("topsection", topsection);
 		messageContext.putContextValue("topcomponent", topcomponent);
 
@@ -93,13 +52,18 @@ public class AdaptiveTutorialContinueSkill extends BaseSkill
 		LlmResponse response = llmconnection.renderLocalAction(messageContext, "chat_tutor_continue");
 
 		messageContext.setLastResponse(response);
-		messageContext.log("sent" + response.getMessagePlain());
+		messageContext.log("sent" + response.getMessage());
 
 		Map<String, String> broadcastpayload = new HashMap<String, String>();
-		broadcastpayload.put("messageid", topcomponent.getId());
+		// broadcastpayload.put("messageid", topcomponent.getId());Continuing
+
+		broadcastpayload.put("sectionid", topsection.getId());
+		broadcastpayload.put("componentid", topcomponent.getId());
+
 		if ("mcq".equals(topcomponent.get("componenttype")))
 		{
 			broadcastpayload.put("messagetype", "question");
+			broadcastpayload.put("interactive", "yes");
 		}
 		else if ("asset".equals(topcomponent.get("componenttype")))
 		{
@@ -123,22 +87,64 @@ public class AdaptiveTutorialContinueSkill extends BaseSkill
 		messageContext.fireStatusComplete(currentAgentEnabled);
 	}
 
-	public Data getNextData(Collection<Data> allsections, String sectionid)
+	public Map<String, Data> getNextSectionAndComponent(String tutorialid, String sectionid, String componentid)
 	{
-		Data nextsection = null;
-		boolean found = false;
-		for (Data section : allsections)
+		Data currentsection = null;
+		if (sectionid != null)
 		{
-			if (found)
+			currentsection = getMediaArchive().getData("componentsection", sectionid);
+		}
+		else
+		{
+			currentsection = getMediaArchive().query("componentsection").exact("playbackentitymoduleid", "entitytutorial").exact("playbackentityid", tutorialid).sort("ordering").searchOne();
+		}
+
+		if (currentsection == null)
+		{
+			return null;
+		}
+
+		MultiValued currentSectionMv = (MultiValued) currentsection;
+		int currentSectionOrdering = currentSectionMv.getInt("ordering");
+
+		Data nextSection = getMediaArchive().query("componentsection")
+			.exact("playbackentitymoduleid", "entitytutorial")
+			.exact("playbackentityid", tutorialid)
+			.moreThan("ordering", currentSectionOrdering)
+			.sort("ordering")
+			.searchOne();
+
+		Data nextcomponent = null;
+		if (componentid != null)
+		{
+			MultiValued currentcomponent = (MultiValued) getMediaArchive().getData("componentcontent", componentid);
+			if (currentcomponent != null)
 			{
-				nextsection = section;
-				break;
-			}
-			if (section.getId().equals(sectionid))
-			{
-				found = true;
+				int currentOrdering = currentcomponent.getInt("ordering");
+				nextcomponent = getMediaArchive().query("componentcontent").exact("componentsectionid", currentsection.getId()).moreThan("ordering", currentOrdering).sort("ordering").searchOne();
 			}
 		}
-		return nextsection;
+		else
+		{
+			nextcomponent = getMediaArchive().query("componentcontent").exact("componentsectionid", currentsection.getId()).sort("ordering").searchOne();
+		}
+
+		if (nextcomponent == null)
+		{
+			if (nextSection == null)
+			{
+				return null;
+			}
+			else
+			{
+				return getNextSectionAndComponent(tutorialid, nextSection.getId(), null);
+			}
+		}
+
+		Map<String, Data> result = new HashMap<String, Data>();
+		result.put("section", currentsection);
+		result.put("component", nextcomponent);
+		return result;
 	}
+
 }

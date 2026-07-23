@@ -357,13 +357,4 @@ public class AgentModule extends BaseMediaModule
 	// ScriptLogger logger = (ScriptLogger)inReq.getPageValue("log");
 	// informaticsManager.processAll(logger);
 	// }
-
-	public void handleWelcome(WebPageRequest inReq)
-	{
-		String tutorialid = (String) inReq.getPageValue("tutorialid");
-		Searcher tutorialsearcher = getMediaArchive(inReq).getSearcher("entitytutorial");
-		MultiValued tutorial = (MultiValued) tutorialsearcher.query().exact("id", tutorialid).searchOne();
-
-		inReq.putPageValue("tutorial", tutorial);
-	}
 }
