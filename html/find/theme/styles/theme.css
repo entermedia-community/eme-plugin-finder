@@ -2921,6 +2921,7 @@ a.col-resize i {
 
 .sidebar-selected .sidebar-toggler-show {
 	background: #444;
+	color:#eee;
 }
 
 .lighttheme .sidebar-selected .sidebar-toggler-show {
