@@ -10,7 +10,7 @@ import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.ChatMessageContext;
 import org.entermediadb.ai.automation.RunningScenario;
 import org.entermediadb.ai.informatics.InformaticsProcessorManager;
-import org.entermediadb.ai.skills.CreationSkill;
+import org.entermediadb.ai.skills.MediaCreationSkill;
 import org.entermediadb.ai.skills.QuestionsSkill;
 import org.entermediadb.ai.skills.SearchingSkill;
 import org.entermediadb.asset.MediaArchive;
@@ -34,10 +34,10 @@ public class AgentModule extends BaseMediaModule
 		return assistantManager;
 	}
 
-	public CreationSkill getCreationSkill(WebPageRequest inReq)
+	public MediaCreationSkill getCreationSkill(WebPageRequest inReq)
 	{
 		String catalogid = inReq.findValue("catalogid");
-		CreationSkill creationManager = (CreationSkill) getMediaArchive(catalogid).getBean("creationSkill");
+		MediaCreationSkill creationManager = (MediaCreationSkill) getMediaArchive(catalogid).getBean("creationSkill");
 		return creationManager;
 	}
 

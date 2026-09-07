@@ -1,5 +1,6 @@
 package org.entermediadb.ai.skills;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -20,15 +21,21 @@ public class AgentJobCreatorSkill extends BaseSkill
 	{
 		ChatMessageContext messageContext = (ChatMessageContext) inAgentContext;
 
+		String userRequest = inAgentContext.get("goaltext"); //required
+
 		//Needed?
-		messageContext.fireStatusStarting(messageContext.getCurrentAgentEnable());
+		messageContext.fireStatusStarting(messageContext.getCurrentAutomationStep());
 
 		MultiValued agentmessage = messageContext.getAgentMessage();
 		MultiValued usermessage = (MultiValued) getMediaArchive().getCachedData("chatterbox", agentmessage.get("replytoid"));
 
 		Collection<String> docids = loadSkillDocIds();
 		EmbeddingManager embeddings = (EmbeddingManager) getMediaArchive().getBean("embeddingManager");
-		LlmResponse response = embeddings.callStructure(messageContext, docids, "","");
+
+		String prompt = "You are an AI agent orchestrator tasked with creating tasks to complete a given request. Chose the appropriate skills and automation scenarios to accomplish the goal. Only return the doc ids";
+
+
+		LlmResponse response = embeddings.callFindDocIds(messageContext, docids, prompt, userRequest);
 
 		String responseText = response.getMessage();
 
@@ -48,18 +55,28 @@ public class AgentJobCreatorSkill extends BaseSkill
 
 	protected Collection<String> loadSkillDocIds()
 	{
-		Collection<String> ids = (Collection<String> )getMediaArchive().getCacheManager().get("skills","skillids");
-		if(ids == null)
+		Collection<String> docids = (Collection<String> )getMediaArchive().getCacheManager().get("skills","skillids");
+		if(docids == null)
 		{
-			HitTracker skillds = getMediaArchive().getList("agentskill");
-			ids = skillds.collectValues("id");
+			docids = new ArrayList<String>();
+
+			HitTracker skills = getMediaArchive().getList("agentskill");
+			Collection<String> skillids = skills.collectValues("id");
+			for(String id : skillids)
+			{
+				String typed = "aiskill_" + id;
+				docids.add(typed);
+			}
 
 			HitTracker automations = getMediaArchive().getList("automationscenario");
 			Collection<String> moreids = automations.collectValues("id");
-			ids.addAll(moreids);	
-			getMediaArchive().getCacheManager().put("skills","skillids", ids);
+			for(String id : moreids)
+			{
+				docids.add("automationscenario_" + id);
+			}
+			getMediaArchive().getCacheManager().put("skills","skillids", docids);
 		}
-		return ids; // Replace with actual collection of document IDs
+		return docids; // Replace with actual collection of document IDs
 	}
 	
 }

@@ -29,7 +29,7 @@ public class HotFolderSourceSkill extends BaseSkill
 		// Loop over the children SourceAgents and check the time config
 		String base = "/WEB-INF/data/" + getCatalogId() + "/originals";
 
-		String id = inContext.getCurrentAgentEnable().getAgentData().getId();
+		String id = inContext.getCurrentAutomationStep().getAgentData().getId();
 		AssetSource assetSource = getMediaArchive().getAssetManager().findAssetSourceById(id);
 
 		String name = assetSource.getName();

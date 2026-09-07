@@ -27,7 +27,7 @@ public class TranscriberSkill extends BaseSkill
 		if (pageofhits != null && !pageofhits.isEmpty())
 		{
 			List workinghits = new ArrayList(pageofhits);
-			getTranscriberManager().transcribeAssets(inContext.getScriptLogger(), mycontext.getCurrentAgentEnable().getAgentData(), mycontext.getAssetsToProcess());
+			getTranscriberManager().transcribeAssets(inContext.getScriptLogger(), mycontext.getCurrentAutomationStep().getAgentData(), mycontext.getAssetsToProcess());
 			for (Iterator iterator2 = pageofhits.iterator(); iterator2.hasNext();)
 			{
 				MultiValued data = (MultiValued) iterator2.next();

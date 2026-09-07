@@ -66,7 +66,7 @@ public class AdaptiveTutorialUserCommentSkill extends AdaptiveTutorialBaseSkill
 
 		tutorMessageContext.putContextValue("messagerendertype", "agentcomment");
 
-		AutomationStep skillEnabled = tutorMessageContext.getCurrentAgentEnable();
+		AutomationStep skillEnabled = tutorMessageContext.getCurrentAutomationStep();
 		tutorMessageContext.fireStatusComplete(skillEnabled);
 	}
 }

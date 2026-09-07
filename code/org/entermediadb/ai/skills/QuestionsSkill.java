@@ -30,7 +30,7 @@ public class QuestionsSkill extends BaseSkill
 	{
 		ChatMessageContext messageContext = (ChatMessageContext) inAgentContext;
 		MultiValued inAgentMessage = messageContext.getAgentMessage();
-		String agentFn = messageContext.getCurrentAgentEnable().getEnabledId();
+		String agentFn = messageContext.getCurrentAutomationStep().getEnabledId();
 
 		inAgentMessage.setValue("chatmessagestatus", "completed");
 
@@ -69,7 +69,7 @@ public class QuestionsSkill extends BaseSkill
 			response.setNextSkillEnabled("question_ask");
 			messageContext.setLastResponse(response);
 			messageContext.setWaitTime(null);
-			AutomationStep skillEnabled = messageContext.getCurrentAgentEnable();
+			AutomationStep skillEnabled = messageContext.getCurrentAutomationStep();
 			messageContext.fireStatusComplete(skillEnabled);
 
 		}

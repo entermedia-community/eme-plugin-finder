@@ -30,7 +30,8 @@ public class AutoDetectWelcomeSkill extends BaseSkill
 		}
 		// super.process(messageContext);
 
-		AutomationStep skillEnabled = messageContext.getCurrentAgentEnable();
+		//Next step is to run the scenerion and skill using 
+		AutomationStep skillEnabled = messageContext.getCurrentAutomationStep();
 		messageContext.fireStatusComplete(skillEnabled);
 	}
 

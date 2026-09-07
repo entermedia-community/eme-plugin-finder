@@ -26,15 +26,15 @@ import org.openedit.repository.InputStreamItem;
 import org.openedit.users.User;
 import org.openedit.util.DateStorageUtil;
 
-public class CreationSkill extends BaseSkill
+public class MediaCreationSkill extends BaseSkill
 {
-	private static final Log log = LogFactory.getLog(CreationSkill.class);
+	private static final Log log = LogFactory.getLog(MediaCreationSkill.class);
 
 	@Override
 	public void process(AgentContext inAgentContext)
 	{
 		ChatMessageContext messageContext = (ChatMessageContext) inAgentContext;
-		String agentFn = messageContext.getCurrentAgentEnable().getEnabledId();
+		String agentFn = messageContext.getCurrentAutomationStep().getEnabledId();
 		if ("creation_image_welcome".equals(agentFn))
 		{
 			String entityid = inAgentContext.get("entityid");

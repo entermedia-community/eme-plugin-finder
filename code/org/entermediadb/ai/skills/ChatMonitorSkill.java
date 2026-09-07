@@ -25,7 +25,7 @@ public class ChatMonitorSkill extends BaseSkill
 		MultiValued usermessage = (MultiValued) getMediaArchive().getCachedData("chatterbox", agentmessage.get("replytoid"));
 		String query = usermessage.get("message");
 
-		String agentFn = inAgentContext.getCurrentAgentEnable().getAutomationStepData().getId();
+		String agentFn = inAgentContext.getCurrentAutomationStep().getAutomationStepData().getId();
 
 		// Move to its own skill, next step is parse text
 		inAgentContext.put("userquery", query);
@@ -36,30 +36,28 @@ public class ChatMonitorSkill extends BaseSkill
 
 		LlmConnection llmconnection = getMediaArchive().getLlmConnection("thinking");
 
-		LlmResponse response = llmconnection.callToolsFunction(inAgentContext, agentFn);
-
+		LlmResponse response = llmconnection.callToolsFunction(inAgentContext, "chat_monitor");
 		log.info(response.getRawResponse());
 
-		String skillenableid = response.getRunSkillEnabled();
+
 		JSONObject functionArgs = response.getFunctionArguments();
+		String selectedscenario = functionArgs.get("selectedscenario").toString();
+		//showfriendlyresponse
+		if (selectedscenario.equals("showfriendlyresponse"))
+		{
+			llmconnection = getMediaArchive().getLlmConnection("localrender"); // Should stay search_start
+
+			response = llmconnection.renderLocalAction(inAgentContext, "chatmonitor");
+			inAgentContext.setLastResponse(response);
+
+			return;
+		}
 
 		inAgentContext.addContext("messagestructured", response.getMessageStructured());
 		inAgentContext.addContext("userquery", query);
 		inAgentContext.addContext("arguments", functionArgs);
-
-		if (skillenableid.equals("auto_detect_showresponse"))
-		{
-			llmconnection = getMediaArchive().getLlmConnection("localrender"); // Should stay search_start
-			response = llmconnection.renderLocalAction(inAgentContext, "auto_detect_showresponse");
-		}
-		else
-		{
-			response.setRunSkillEnabled(skillenableid);
-		}
-		messageContext.setLastResponse(response);
-
-		AutomationStep skillEnabled = messageContext.getCurrentAgentEnable();
-		messageContext.fireStatusComplete(skillEnabled);
+		messageContext.put("selectedscenario", selectedscenario);
+		super.process(messageContext); //This will run ChatMonitorResponseSkill
 	}
 
 }

@@ -27,7 +27,7 @@ public class EmbeddingSkill extends BaseSkill
 		if (pageofhits != null && !pageofhits.isEmpty())
 		{
 			List workinghits = new ArrayList(pageofhits);
-			getEmbeddingManager().processRecords(inContext.getScriptLogger(), inContext.getCurrentAgentEnable().getAgentData(), pageofhits);;
+			getEmbeddingManager().processRecords(inContext.getScriptLogger(), inContext.getCurrentAutomationStep().getAgentData(), pageofhits);;
 			for (Iterator iterator2 = pageofhits.iterator(); iterator2.hasNext();)
 			{
 				MultiValued data = (MultiValued) iterator2.next();

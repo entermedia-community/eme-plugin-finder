@@ -2793,8 +2793,13 @@
 		</property>
 	</bean>
 
+	<bean id="chatMonitorSkill" class="org.entermediadb.ai.skills.ChatMonitorSkill" scope="prototype">
+		<property name="moduleManager">
+			<ref bean="moduleManager" />
+		</property>
+	</bean>
 
-	<bean id="autoDetectChatSkill" class="org.entermediadb.ai.skills.AutoDetectChatSkill" scope="prototype">
+	<bean id="chatMonitorResponseSkill" class="org.entermediadb.ai.skills.ChatMonitorResponseSkill" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>

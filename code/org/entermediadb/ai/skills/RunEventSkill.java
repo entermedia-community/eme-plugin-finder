@@ -15,7 +15,7 @@ public class RunEventSkill extends BaseSkill
 	@Override
 	public void process(AgentContext inContext)
 	{
-		String operation = inContext.getCurrentAgentEnable().getAgentData().get("runoperation");
+		String operation = inContext.getCurrentAutomationStep().getAgentData().get("runoperation");
 		WebPageRequest request = (WebPageRequest) inContext.getContextValue("webpagerequest");
 		runPathEvent(inContext, operation, request);
 	}

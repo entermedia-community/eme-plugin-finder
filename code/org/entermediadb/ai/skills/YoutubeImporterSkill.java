@@ -29,7 +29,7 @@ public class YoutubeImporterSkill extends BaseSkill
 	@Override
 	public void process(AgentContext inContext)
 	{
-		AutomationStep currentEnabled = inContext.getCurrentAgentEnable();
+		AutomationStep currentEnabled = inContext.getCurrentAutomationStep();
 
 		User user = getMediaArchive().getUser("agent");
 		importFromUrl(inContext, user);

@@ -27,7 +27,7 @@ public class SmartCreatorRenderFinishedOutlineSkill extends BaseSkill
 		messageContext.setWaitTime(null);
 		messageContext.setLastResponse(response);
 
-		AutomationStep skillEnabled = messageContext.getCurrentAgentEnable();
+		AutomationStep skillEnabled = messageContext.getCurrentAutomationStep();
 		messageContext.fireStatusComplete(skillEnabled);
 	}
 

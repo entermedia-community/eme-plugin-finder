@@ -77,7 +77,7 @@ public class SmartCreatorMakeSuggestionsSkill extends BaseSkill
 		// response.setNextSkillEnabled("smartcreator_parse"); chat_smartcreator_parse_user_prompt
 		messageContext.setLastResponse(response);
 
-		AutomationStep skillEnabled = messageContext.getCurrentAgentEnable();
+		AutomationStep skillEnabled = messageContext.getCurrentAutomationStep();
 		messageContext.fireStatusComplete(skillEnabled);
 		return;
 	}

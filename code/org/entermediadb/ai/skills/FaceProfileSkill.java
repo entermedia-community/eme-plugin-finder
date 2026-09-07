@@ -28,7 +28,7 @@ public class FaceProfileSkill extends BaseSkill
 		{
 			Collection<Asset> workinghits = new ArrayList(assets);
 
-			getFaceProfileManager().processAssets(inContext.getScriptLogger(), mycontext.getCurrentAgentEnable().getAgentData(), assets);
+			getFaceProfileManager().processAssets(inContext.getScriptLogger(), mycontext.getCurrentAutomationStep().getAgentData(), assets);
 
 			for (Iterator iterator2 = assets.iterator(); iterator2.hasNext();)
 			{

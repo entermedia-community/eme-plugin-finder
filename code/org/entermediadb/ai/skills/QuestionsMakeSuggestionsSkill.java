@@ -35,7 +35,7 @@ public class QuestionsMakeSuggestionsSkill extends BaseSkill
 		ChatMessageContext messageContext = (ChatMessageContext) inAgentContext;
 		///
 		MultiValued inAgentMessage = messageContext.getAgentMessage();
-		String agentFn = messageContext.getCurrentAgentEnable().getEnabledId();
+		String agentFn = messageContext.getCurrentAutomationStep().getEnabledId();
 
 		MultiValued usermessage = (MultiValued) getMediaArchive().getCachedData("chatterbox", inAgentMessage.get("replytoid"));
 		String query = usermessage.get("message");

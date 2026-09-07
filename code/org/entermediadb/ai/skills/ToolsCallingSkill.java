@@ -21,7 +21,7 @@ public class ToolsCallingSkill extends BaseSkill
 
 		JSONParser parser = new JSONParser();
 
-		AutomationStep currentEnabled = inContext.getCurrentAgentEnable();
+		AutomationStep currentEnabled = inContext.getCurrentAutomationStep();
 		Collection<AutomationStep> enabledChildren = currentEnabled.getChildren();
 
 		for (AutomationStep enabled : enabledChildren)

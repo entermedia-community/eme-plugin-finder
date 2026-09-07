@@ -46,7 +46,7 @@ public class HandleWebEventSkill extends BaseSkill
 			{
 				inContext.put("nextskillenabledid", nextSkillEnabledId);
 				AutomationStep currentAutomationStep = inContext.getCurrentScenario().findEnabled(nextSkillEnabledId);
-				inContext.setCurrentAgentEnable(currentAutomationStep);
+				inContext.setCurrentAutomationStep(currentAutomationStep);
 				currentAutomationStep.getAgent().process(inContext);
 				return;
 			}

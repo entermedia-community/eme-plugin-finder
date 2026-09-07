@@ -1035,7 +1035,7 @@ public class ContentPublishingSkill extends BaseSkill implements CatalogEnabled
 		 * }
 		 * 
 		 */
-		throw new OpenEditException("Unknown function name: " + inAgentContext.getCurrentAgentEnable().getEnabledId());
+		throw new OpenEditException("Unknown function name: " + inAgentContext.getCurrentAutomationStep().getEnabledId());
 
 	}
 

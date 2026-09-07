@@ -52,7 +52,7 @@ public class AdaptiveTutorialWelcomeSkill extends AdaptiveTutorialBaseSkill
 		tutorMessageContext.putContextValue("componentid", null);
 		tutorMessageContext.putContextValue("messagerendertype", "welcome");
 
-		AutomationStep skillEnabled = tutorMessageContext.getCurrentAgentEnable();
+		AutomationStep skillEnabled = tutorMessageContext.getCurrentAutomationStep();
 		tutorMessageContext.fireStatusComplete(skillEnabled);
 	}
 

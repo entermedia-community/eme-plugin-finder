@@ -194,25 +194,25 @@ public class BaseAgentContext extends BaseData implements CatalogEnabled, AgentC
 		}
 	}
 
-	protected AutomationStep fieldCurrentAgentEnable;
+	protected AutomationStep fieldCurrentAutomationStep;
 
-	public AutomationStep getCurrentAgentEnable()
+	public AutomationStep getCurrentAutomationStep()
 	{
-		if (fieldCurrentAgentEnable == null && getParentContext() != null)
+		if (fieldCurrentAutomationStep == null && getParentContext() != null)
 		{
-			return getParentContext().getCurrentAgentEnable();
+			return getParentContext().getCurrentAutomationStep();
 		}
-		return fieldCurrentAgentEnable;
+		return fieldCurrentAutomationStep;
 	}
 
-	public void setCurrentAgentEnable(AutomationStep inCurrentAgentEnable)
+	public void setCurrentAutomationStep(AutomationStep inCurrentAutomationStep)
 	{
-		fieldCurrentAgentEnable = inCurrentAgentEnable;
-		if (inCurrentAgentEnable != null)
+		fieldCurrentAutomationStep = inCurrentAutomationStep;
+		if (inCurrentAutomationStep != null)
 		{
-			if (inCurrentAgentEnable.getExtraContextValues() != null)
+			if (inCurrentAutomationStep.getExtraContextValues() != null)
 			{
-				JSONObject json = inCurrentAgentEnable.getExtraContextValues();
+				JSONObject json = inCurrentAutomationStep.getExtraContextValues();
 				for (Object key : json.keySet())
 				{
 					Object value = json.get(key);
@@ -589,10 +589,10 @@ public class BaseAgentContext extends BaseData implements CatalogEnabled, AgentC
 	{
 		LogEntry entry = new LogEntry(inString, inLog);
 		entry.setDate(new Date());
-		if (getCurrentAgentEnable() != null)
+		if (getCurrentAutomationStep() != null)
 		{
-			entry.setCurrentAutomationStepData(getCurrentAgentEnable().getAutomationStepData());
-			entry.setAgentData(getCurrentAgentEnable().getAgentData());
+			entry.setCurrentAutomationStepData(getCurrentAutomationStep().getAutomationStepData());
+			entry.setAgentData(getCurrentAutomationStep().getAgentData());
 		}
 		getLogs().add(entry);
 	}

@@ -12,7 +12,7 @@ public class RunModuleSkill extends RunEventSkill
 	public void process(AgentContext inContext)
 	{
 		// Use path-event style exec
-		String operation = inContext.getCurrentAgentEnable().getAgentData().get("runoperation");
+		String operation = inContext.getCurrentAutomationStep().getAgentData().get("runoperation");
 
 		operation = operation.replaceFirst("_", ".");
 

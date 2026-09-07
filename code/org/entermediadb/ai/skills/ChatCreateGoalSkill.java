@@ -23,7 +23,7 @@ public class ChatCreateGoalSkill extends BaseSkill
 	{
 		ChatMessageContext messageContext = (ChatMessageContext) inAgentContext;
 
-		messageContext.fireStatusStarting(messageContext.getCurrentAgentEnable());
+		messageContext.fireStatusStarting(messageContext.getCurrentAutomationStep());
 
 		MultiValued agentmessage = messageContext.getAgentMessage();
 		MultiValued usermessage = (MultiValued) getMediaArchive().getCachedData("chatterbox", agentmessage.get("replytoid"));

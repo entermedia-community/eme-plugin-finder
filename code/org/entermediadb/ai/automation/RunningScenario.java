@@ -69,7 +69,7 @@ public class RunningScenario extends BaseMediaObject implements CatalogEnabled
 
 	public boolean runProcess(AutomationStep inSkillEnabled, AgentContext inContext, boolean skipStatusStart)
 	{
-		inContext.setCurrentAgentEnable(inSkillEnabled);
+		inContext.setCurrentAutomationStep(inSkillEnabled);
 		Skill agent = inSkillEnabled.getAgent();
 		if (agent == null)
 		{
@@ -249,7 +249,7 @@ public class RunningScenario extends BaseMediaObject implements CatalogEnabled
 			contextbeanname = "baseAgentContext";
 		}
 		AgentContext childContext = (AgentContext) getMediaArchive().getBean(contextbeanname, false);
-		childContext.setCurrentAgentEnable(inEnabled);
+		childContext.setCurrentAutomationStep(inEnabled);
 		if (inParentContext != null)
 		{
 			childContext.setParentContext(inParentContext);

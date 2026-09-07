@@ -36,7 +36,7 @@ public class SmartCreatorPlaybackSkill extends BaseSkill
 	public void process(AgentContext inContext)
 	{
 		ChatMessageContext messageContext = (ChatMessageContext) inContext;
-		String functionName = inContext.getCurrentAgentEnable().getEnabledId();
+		String functionName = inContext.getCurrentAutomationStep().getEnabledId();
 		boolean runandreturn = "smartcreator_parsecontent".equals(functionName);
 		if (functionName == null || runandreturn)
 		{

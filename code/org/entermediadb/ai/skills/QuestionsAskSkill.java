@@ -68,7 +68,7 @@ public class QuestionsAskSkill extends BaseSkill
 
 				messageContext.setLastResponse(response);
 				messageContext.setWaitTime(null);
-				AutomationStep skillEnabled = messageContext.getCurrentAgentEnable();
+				AutomationStep skillEnabled = messageContext.getCurrentAutomationStep();
 				messageContext.fireStatusComplete(skillEnabled);
 				return;
 			}

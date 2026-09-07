@@ -11,12 +11,12 @@ public class BaseSkill extends BaseAiManager implements Skill, CatalogEnabled
 {
 	public void startupScenario(AgentContext inContext)
 	{
-		Boolean cancelStarting = (Boolean) inContext.getContextValue("cancelstartup" + inContext.getCurrentAgentEnable().getEnabledId());
+		Boolean cancelStarting = (Boolean) inContext.getContextValue("cancelstartup" + inContext.getCurrentAutomationStep().getEnabledId());
 		if (cancelStarting != null && cancelStarting.booleanValue())
 		{
 			return;
 		}
-		AutomationStep skillEnabled = inContext.getCurrentAgentEnable();
+		AutomationStep skillEnabled = inContext.getCurrentAutomationStep();
 		inContext.fireStatusStarting(skillEnabled);
 
 	}
@@ -32,10 +32,10 @@ public class BaseSkill extends BaseAiManager implements Skill, CatalogEnabled
 	@Override
 	public void process(AgentContext inContext)
 	{
-		AutomationStep skillEnabled = inContext.getCurrentAgentEnable();
+		AutomationStep skillEnabled = inContext.getCurrentAutomationStep();
 		inContext.fireStatusComplete(skillEnabled);
 
-		Collection<AutomationStep> children = inContext.getCurrentAgentEnable().getChildren();
+		Collection<AutomationStep> children = inContext.getCurrentAutomationStep().getChildren();
 
 		for (AutomationStep agentEnabled : children)
 		{

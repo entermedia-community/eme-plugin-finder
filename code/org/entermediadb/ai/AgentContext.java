@@ -46,9 +46,9 @@ public interface AgentContext extends Data
 
 	void setCurrentScenario(RunningScenario inCurrentScenario);
 
-	AutomationStep getCurrentAgentEnable();
+	AutomationStep getCurrentAutomationStep();
 
-	void setCurrentAgentEnable(AutomationStep inCurrentAgentEnable);
+	void setCurrentAutomationStep(AutomationStep inCurrentAutomationStep);
 
 	String getCatalogId();
 

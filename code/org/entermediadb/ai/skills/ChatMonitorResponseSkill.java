@@ -2,22 +2,16 @@ package org.entermediadb.ai.skills;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import java.util.ArrayList;
-import java.util.Collection;
 import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.BaseSkill;
 import org.entermediadb.ai.ChatMessageContext;
 import org.entermediadb.ai.automation.RunningScenario;
 import org.entermediadb.ai.llm.AutomationStep;
-import org.entermediadb.ai.llm.LlmConnection;
-import org.entermediadb.ai.llm.LlmResponse;
-import org.json.simple.JSONObject;
-import org.openedit.Data;
 import org.openedit.MultiValued;
 
-public class EmeTeamChatRespondSkill extends BaseSkill
+public class ChatMonitorResponseSkill extends BaseSkill
 {
-	private static final Log log = LogFactory.getLog(EmeTeamChatRespondSkill.class);
+	private static final Log log = LogFactory.getLog(ChatMonitorResponseSkill.class);
 
 	@Override
 	public void startupScenario(AgentContext inContext)
@@ -41,35 +35,22 @@ public class EmeTeamChatRespondSkill extends BaseSkill
 
 		//TODO Fix entityid for collections?
 		String entityid = inAgentContext.get("entityid");
-
-		LlmConnection llmconnection = getMediaArchive().getLlmConnection("thinking");
-		LlmResponse response = llmconnection.callToolsFunction(inAgentContext, "emeteamchat_detect");
-
-		log.info(response.getRawResponse());
-
-		messageContext.setLastResponse(response);
-
-		String selectedtool = response.getRunSkillEnabled();
-		if (selectedtool == null)
+		String selectedscenario = inAgentContext.get("selectedscenario");
+		if (selectedscenario == null)
 		{
-			log.error("No tool selected for query: " + query);
+			log.error("No scenario selected for query: " + query);
 			return;
 		}
 		String scenario = null;
-		if (!selectedtool.contains("."))
+		if (!selectedscenario.contains("."))
 		{
-			log.error("Selected tool needs the format: scenario.skillenabled. Selected tool:" + selectedtool);
+			log.error("Selected scenario needs the format: scenario.skillenabled. Selected scenario:" + selectedscenario);
 			return;
 		}
-		scenario = selectedtool.split("\\.")[0];
-		String skillenableid = selectedtool.split("\\.")[1];
+		scenario = selectedscenario.split("\\.")[0];
+		String skillenableid = selectedscenario.split("\\.")[1];
 
-		log.info("Selected tool: " + selectedtool + " for scenario: " + scenario + " and skill: " + skillenableid);
-
-		JSONObject functionArgs = response.getFunctionArguments();
-		inAgentContext.addContext("messagestructured", response.getMessageStructured());
-		inAgentContext.addContext("userquery", query);
-		inAgentContext.addContext("arguments", functionArgs);
+		log.info("Selected scenario: " + selectedscenario + " for scenario: " + scenario + " and skill: " + skillenableid);
 
 		//we are on a task, or answering questions or another sceneration. 
 		if (scenario != null)
