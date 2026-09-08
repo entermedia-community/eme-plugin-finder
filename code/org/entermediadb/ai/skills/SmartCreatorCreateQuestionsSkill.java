@@ -85,7 +85,7 @@ public class SmartCreatorCreateQuestionsSkill extends BaseSkill
 
 			inContext.putContextValue("contextcontent", contextcontent);
 			LlmResponse response = llmconnection.callStructure(inContext, "smartcreator_questions");
-			JSONObject rawResponse = response.getMessageStructured();
+			JSONObject rawResponse = response.getResponsePayload();
 			Collection<Map> questions = (Collection<Map>) rawResponse.get("questions");
 
 			for (Map questionmap : questions)

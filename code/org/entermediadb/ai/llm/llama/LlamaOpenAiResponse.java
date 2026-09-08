@@ -29,7 +29,7 @@ public class LlamaOpenAiResponse extends OpenAiResponse
     }
 
     @Override
-    public JSONObject getMessageStructured()
+    public JSONObject getResponsePayload()
     {
 
         JSONArray choices = (JSONArray) rawResponse.get("choices");

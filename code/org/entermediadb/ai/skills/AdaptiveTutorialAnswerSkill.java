@@ -75,7 +75,7 @@ public class AdaptiveTutorialAnswerSkill extends AdaptiveTutorialBaseSkill
 		LlmConnection llmconnection = getMediaArchive().getLlmConnection("thinking");
 		LlmResponse response = llmconnection.callStructure(tutorMessageContext, "chat_tutor_feedback");
 
-		JSONObject feedback = response.getMessageStructured();
+		JSONObject feedback = response.getResponsePayload();
 		String feedbackText = (String) feedback.get("message");
 		if (feedbackText == null)
 		{

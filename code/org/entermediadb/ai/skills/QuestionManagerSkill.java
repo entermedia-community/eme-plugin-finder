@@ -56,7 +56,7 @@ public class QuestionManagerSkill extends ToolsCallingSkill
 
                 LlmConnection llmConnection = getMediaArchive().getLlmConnection("thinking");
                 response = llmConnection.callStructure(inContext, "agentemailanswer");
-                JSONObject raw = response.getMessageStructured();
+                JSONObject raw = response.getResponsePayload();
                 JSONObject reply = (JSONObject) raw.get("reply_email");
                 inContext.addContext("reply_subject", reply.get("subject"));
                 inContext.addContext("reply_body", reply.get("body"));
@@ -65,7 +65,7 @@ public class QuestionManagerSkill extends ToolsCallingSkill
             {
                 LlmConnection llmConnection = getMediaArchive().getLlmConnection("thinking");
                 LlmResponse response = llmConnection.callToolsFunction(inContext, "agentemailgreeting");
-                JSONObject raw = response.getMessageStructured();
+                JSONObject raw = response.getResponsePayload();
                 JSONObject reply = (JSONObject) raw.get("greeting_email");
                 inContext.addContext("reply_subject", reply.get("subject"));
                 inContext.addContext("reply_body", reply.get("body"));

@@ -110,7 +110,7 @@ public class ChatLoadCollectionAndRolesSkill extends BaseSkill
 		log.info("Selected tool: " + selectedtool + " for scenario: " + scenario + " and skill: " + skillenableid);
 
 		JSONObject functionArgs = response.getFunctionArguments();
-		inAgentContext.addContext("messagestructured", response.getMessageStructured());
+		inAgentContext.addContext("messagestructured", response.getResponsePayload());
 		inAgentContext.addContext("userquery", query);
 		inAgentContext.addContext("arguments", functionArgs);
 
@@ -138,7 +138,7 @@ public class ChatLoadCollectionAndRolesSkill extends BaseSkill
 			// Get the docids for the collection and set it in the context
 			Collection<String> docids = getAssistantManager().findDocIdsForEntity("librarycollection", collectionid);
 
-			String responserole = (String) response.getMessageStructured().get("role");
+			String responserole = (String) response.getResponsePayload().get("role");
 			if (responserole == null || responserole.isEmpty())
 			{
 				log.error("No role selected for query: " + query);

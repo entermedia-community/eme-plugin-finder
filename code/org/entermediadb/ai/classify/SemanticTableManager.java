@@ -502,7 +502,7 @@ public class SemanticTableManager extends BaseAiManager implements CatalogEnable
 			log.info("No structured data returned");
 			return null;
 		}
-		JSONObject content = structure.getMessageStructured();
+		JSONObject content = structure.getResponsePayload();
 		JSONArray jsonvalues = (JSONArray) content.get(fieldname);
 		Collection<String> values = new ArrayList();
 		// replace underscore with spaces

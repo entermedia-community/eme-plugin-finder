@@ -90,14 +90,14 @@ public class BasicLlmResponse implements LlmResponse
 	}
 
 	@Override
-	public JSONObject getMessageStructured()
+	public JSONObject getResponsePayload()
 	{
 		return getRawResponse();
 	}
 
 	public JSONObject getToolsResponse()
 	{
-		return getMessageStructured();
+		return getResponsePayload();
 	}
 
 	@Override
@@ -170,7 +170,7 @@ public class BasicLlmResponse implements LlmResponse
 	@Override
 	public Collection getCollection(String inKey)
 	{
-		Object obj = getMessageStructured().get(inKey);
+		Object obj = getResponsePayload().get(inKey);
 		if (obj instanceof JSONArray || obj instanceof Collection)
 		{
 			return (Collection) obj;
@@ -185,7 +185,7 @@ public class BasicLlmResponse implements LlmResponse
 		{
 			return fieldFunctionArguments;
 		}
-		return getMessageStructured();
+		return getResponsePayload();
 	}
 
 	public void setNextSkillEnabled(String inFunction)

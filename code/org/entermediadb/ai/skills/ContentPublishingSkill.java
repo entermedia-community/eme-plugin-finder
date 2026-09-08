@@ -885,7 +885,7 @@ public class ContentPublishingSkill extends BaseSkill implements CatalogEnabled
 			LlmResponse results = inLlm.callCreateFunction(params, "create_record");
 
 			child = targetsearcher.createNewData();
-			JSONObject args = results.getMessageStructured();
+			JSONObject args = results.getResponsePayload();
 			if (args != null)
 			{
 				for (Iterator iterator = args.keySet().iterator(); iterator.hasNext();)
@@ -945,7 +945,7 @@ public class ContentPublishingSkill extends BaseSkill implements CatalogEnabled
 
 			LlmResponse results = inLlm.callCreateFunction(params, "create_record");
 
-			JSONObject args = results.getMessageStructured();
+			JSONObject args = results.getResponsePayload();
 			for (Iterator iterator = args.keySet().iterator(); iterator.hasNext();)
 			{
 				Object type = (Object) iterator.next();

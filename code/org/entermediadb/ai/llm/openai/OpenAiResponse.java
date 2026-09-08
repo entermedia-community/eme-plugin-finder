@@ -65,7 +65,7 @@ public class OpenAiResponse extends BasicLlmResponse
     }
 
     @Override
-    public JSONObject getMessageStructured()
+    public JSONObject getResponsePayload()
     {
         /*
          * if (!isToolCall()) {

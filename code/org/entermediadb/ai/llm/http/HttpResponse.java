@@ -10,7 +10,7 @@ public class HttpResponse extends BasicLlmResponse
 {
 
     @Override
-    public JSONObject getMessageStructured()
+    public JSONObject getResponsePayload()
     {
 
         JSONArray choices = (JSONArray) rawResponse.get("choices");

@@ -11,6 +11,7 @@ import org.entermediadb.ai.automation.RunningScenario;
 import org.entermediadb.ai.classify.EmbeddingManager;
 import org.entermediadb.ai.llm.AutomationStep;
 import org.entermediadb.ai.llm.BasicLlmResponse;
+import org.entermediadb.ai.llm.LlmConnection;
 import org.entermediadb.ai.llm.LlmResponse;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -48,6 +49,9 @@ public class AgentJobCreatorSkill extends BaseSkill
 		JSONObject raw = response.getRawResponse();
 		JSONArray selecedSkills = (JSONArray) raw.get("parent_ids");
 
+
+		Collection<String> selectedSkillIds = new ArrayList<String>();
+
 		if (selecedSkills != null && !selecedSkills.isEmpty())
 		{
 			// Pick first skill only?
@@ -56,33 +60,20 @@ public class AgentJobCreatorSkill extends BaseSkill
 			{
 				String scenarioid = firstSkillId.replace("automationscenario_", "");
 
-				BasicLlmResponse basicResponse = new BasicLlmResponse();
-				basicResponse.setMessage("Agent Job Skill scenario picked: " + scenarioid);
-				inAgentContext.setLastResponse(basicResponse);
-				AutomationStep skillEnabled = messageContext.getCurrentAutomationStep();
-				messageContext.fireStatusComplete(skillEnabled);
-
-				/*
-				 * RunningScenario running = (RunningScenario) getMediaArchive().getBean("runningscenario", false);
-				 * running.setId(scenarioid);
-				 * 
-				 * AutomationStep stepEnabled = running.findEnabled(scenarioid); if (stepEnabled == null) {
-				 * log.error("No step enabled found for id: " + scenarioid); return; }
-				 * running.runProcess(stepEnabled, inAgentContext);
-				 * messageContext.putContextValue("selectedScenarioId", scenarioid);
-				 */
+				
 			}
 			else if (firstSkillId != null && firstSkillId.startsWith("aiskill"))
 			{
 				String skillid = firstSkillId.replace("aiskill_", "");
 				BasicLlmResponse basicResponse = new BasicLlmResponse();
-				basicResponse.setMessage("Agent Job selected skill: " + skillid);
-				inAgentContext.setLastResponse(basicResponse);
-				AutomationStep skillEnabled = messageContext.getCurrentAutomationStep();
-				messageContext.fireStatusComplete(skillEnabled);
 
 			}
+			LlmConnection llmconnection = getMediaArchive().getLlmConnection("thinking");
+			LlmResponse planresponse = llmconnection.callStructure(messageContext, "agentJobCreator");
 
+			JSONObject steps = response.getResponsePayload();
+			
+		
 		}
 
 		// Parse this as JSON?

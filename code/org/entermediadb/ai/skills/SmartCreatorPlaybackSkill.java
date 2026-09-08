@@ -588,7 +588,7 @@ public class SmartCreatorPlaybackSkill extends BaseSkill
 		LlmConnection llmconnection = getMediaArchive().getLlmConnection("thinking");
 		LlmResponse response = llmconnection.callSmartCreatorAiAction(agentcontext, "grammar");
 
-		JSONObject result = response.getMessageStructured();
+		JSONObject result = response.getResponsePayload();
 		if (result != null)
 		{
 			String corrected_text = (String) result.get("corrected_text");
@@ -616,7 +616,7 @@ public class SmartCreatorPlaybackSkill extends BaseSkill
 		LlmConnection llmconnection = getMediaArchive().getLlmConnection("thinking");
 		LlmResponse response = llmconnection.callSmartCreatorAiAction(agentcontext, "improve");
 
-		JSONObject result = response.getMessageStructured();
+		JSONObject result = response.getResponsePayload();
 		if (result != null)
 		{
 			String paragraph = (String) result.get("paragraph");
@@ -643,7 +643,7 @@ public class SmartCreatorPlaybackSkill extends BaseSkill
 		LlmConnection llmconnection = getMediaArchive().getLlmConnection("thinking");
 		LlmResponse response = llmconnection.callSmartCreatorAiAction(agentcontext, "generate");
 
-		JSONObject result = response.getMessageStructured();
+		JSONObject result = response.getResponsePayload();
 		if (result != null)
 		{
 			String paragraph = (String) result.get("paragraph");
@@ -679,7 +679,7 @@ public class SmartCreatorPlaybackSkill extends BaseSkill
 		messageContext.addContext("sectiontext", sectiontext);
 		LlmConnection llmconnection = getMediaArchive().getLlmConnection("thinking");
 		LlmResponse response = llmconnection.callStructure(messageContext, "smartcreator_parsecontent");
-		JSONObject json = response.getMessageStructured();
+		JSONObject json = response.getResponsePayload();
 		Collection boundaries = (Collection) json.get("parsed_content");
 		return boundaries;
 	}

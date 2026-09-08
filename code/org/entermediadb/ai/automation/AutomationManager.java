@@ -350,7 +350,7 @@ public class AutomationManager extends BaseAiManager implements WebEventListener
 
 				LlmResponse res = llmConnection.callStructure(context, "agentparamsfromskill");
 
-				JSONObject rawresponse = res.getMessageStructured();
+				JSONObject rawresponse = res.getResponsePayload();
 				if (rawresponse != null)
 				{
 					JSONArray arguments = (JSONArray) rawresponse.get("arguments");

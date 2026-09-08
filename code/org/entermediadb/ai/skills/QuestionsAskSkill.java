@@ -133,7 +133,7 @@ public class QuestionsAskSkill extends BaseSkill
 	/*
 	 * protected void handleLlmResponse(AgentContext messageContext, LlmResponse response) { //TODO: Use
 	 * IF statements to sort what parsing we need to do. parseSearchParams parseWorkflowParams etc
-	 * JSONObject content = response.getMessageStructured();
+	 * JSONObject content = response.getResponsePayload();
 	 * 
 	 * String toolname = (String) content.get("next_step"); //request_type
 	 * 

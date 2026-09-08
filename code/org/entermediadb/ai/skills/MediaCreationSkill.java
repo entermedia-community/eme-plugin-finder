@@ -60,7 +60,7 @@ public class MediaCreationSkill extends BaseSkill
 					throw new OpenEditException("No results from AI for function: " + agentFn);
 				}
 				AiCreation creation = inAgentContext.getAiCreationParams();
-				JSONObject content = response.getMessageStructured();
+				JSONObject content = response.getResponsePayload();
 				creation.setCreationFields(content);
 				response.setRawMessage("");
 				response.setRunSkillEnabled("creation_image_create");

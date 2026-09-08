@@ -95,7 +95,7 @@ public class SearchingSkill extends BaseSkill
 
 				LlmConnection server = getMediaArchive().getLlmConnection("thinking");
 				LlmResponse res = server.callStructure(inAgentContext, agentFn);
-				JSONObject messagestructured = (JSONObject) res.getMessageStructured();
+				JSONObject messagestructured = (JSONObject) res.getResponsePayload();
 
 				loadSearchParts(inAgentContext, messagestructured);
 				if (inAgentContext.getAiSearchParams() == null)

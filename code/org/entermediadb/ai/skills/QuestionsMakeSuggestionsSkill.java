@@ -51,7 +51,7 @@ public class QuestionsMakeSuggestionsSkill extends BaseSkill
 
 		Searcher searcher = getMediaArchive().getSearcher("aisuggestion");
 
-		JSONObject json = response.getMessageStructured();
+		JSONObject json = response.getResponsePayload();
 		Collection suggestions = (Collection) json.get("suggestions");
 		for (Iterator iterator = suggestions.iterator(); iterator.hasNext();)
 		{
@@ -197,7 +197,7 @@ public class QuestionsMakeSuggestionsSkill extends BaseSkill
 	/*
 	 * protected void handleLlmResponse(AgentContext messageContext, LlmResponse response) { //TODO: Use
 	 * IF statements to sort what parsing we need to do. parseSearchParams parseWorkflowParams etc
-	 * JSONObject content = response.getMessageStructured();
+	 * JSONObject content = response.getResponsePayload();
 	 * 
 	 * String toolname = (String) content.get("next_step"); //request_type
 	 * 

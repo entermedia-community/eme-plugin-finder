@@ -31,7 +31,7 @@ public class OllamaResponse extends BasicLlmResponse
 	}
 
 	@Override
-	public JSONObject getMessageStructured()
+	public JSONObject getResponsePayload()
 	{
 		/*
 		 * JSONArray choices = (JSONArray) res.getRawResponse().get("choices"); JSONObject choice =

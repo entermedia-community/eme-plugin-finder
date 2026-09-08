@@ -225,7 +225,7 @@ public class ClassifyManager extends BaseAiManager
 
 			if (results != null)
 			{
-				JSONObject arguments = results.getMessageStructured();
+				JSONObject arguments = results.getResponsePayload();
 				if (arguments != null)
 				{
 
@@ -379,7 +379,7 @@ public class ClassifyManager extends BaseAiManager
 
 				if (results != null)
 				{
-					JSONObject arguments = results.getMessageStructured();
+					JSONObject arguments = results.getResponsePayload();
 					if (arguments != null)
 					{
 

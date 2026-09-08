@@ -44,7 +44,7 @@ public class SmartCreatorParseUserPromptSkill extends BaseSkill
 		LlmConnection llmconnection = getMediaArchive().getLlmConnection("thinking");
 		LlmResponse res = llmconnection.callStructure(messageContext, "smartcreator_parse");
 
-		JSONObject paragraphs = res.getMessageStructured();
+		JSONObject paragraphs = res.getResponsePayload();
 		instructions.loadJsonParts(paragraphs);
 
 		return res;

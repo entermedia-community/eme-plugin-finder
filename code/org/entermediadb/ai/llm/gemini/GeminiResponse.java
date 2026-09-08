@@ -27,7 +27,7 @@ public class GeminiResponse extends BasicLlmResponse
     }
 
     @Override
-    public JSONObject getMessageStructured()
+    public JSONObject getResponsePayload()
     {
         if (!isToolCall())
             return null;

@@ -8,7 +8,7 @@ import org.json.simple.JSONObject;
 public interface LlmResponse
 {
 
-    JSONObject getMessageStructured();
+    JSONObject getResponsePayload();
 
     JSONObject getToolsResponse();
 

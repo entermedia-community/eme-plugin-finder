@@ -52,7 +52,7 @@ public class ChatSmartCreatorConfirmationSkill extends BaseSkill
 
 		LlmResponse res = llmconnection.callStructure(messageContext, "smartcreator_confirmoutline");
 
-		JSONObject updatedSectionsJson = res.getMessageStructured();
+		JSONObject updatedSectionsJson = res.getResponsePayload();
 
 		Collection<String> updatedSections = (Collection<String>) updatedSectionsJson.get("updated_outline");
 		instructions.setProposedSections(updatedSections);
