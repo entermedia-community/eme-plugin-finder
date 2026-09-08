@@ -141,7 +141,11 @@ public class WorkspaceManager
 		PropertyDetailsArchive archive = getSearcherManager().getPropertyDetailsArchive(catalogid);
 		String path = "/WEB-INF/data/" + catalogid + "/fields/" + searchtype + ".xml";
 		String pathbase = "/" + catalogid + "/fields/" + searchtype + ".xml";
-		if (getPageManager().getPage(path).exists() || getPageManager().getPage(pathbase).exists())
+		String base = "/catalog/fields/" + searchtype + ".xml";
+		
+		if (getPageManager().getPage(path).exists() || 
+			getPageManager().getPage(pathbase).exists() ||
+			getPageManager().getPage(base).exists())
 		{
 			return searchtype;
 		}
