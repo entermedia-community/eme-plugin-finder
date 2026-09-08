@@ -7,14 +7,14 @@ import org.apache.commons.logging.LogFactory;
 import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.BaseSkill;
 import org.entermediadb.ai.ChatMessageContext;
-import org.entermediadb.ai.automation.RunningScenario;
+import org.entermediadb.ai.automation.PossibleStep;
 import org.entermediadb.ai.classify.EmbeddingManager;
-import org.entermediadb.ai.llm.AutomationStep;
 import org.entermediadb.ai.llm.BasicLlmResponse;
 import org.entermediadb.ai.llm.LlmConnection;
 import org.entermediadb.ai.llm.LlmResponse;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.openedit.Data;
 import org.openedit.MultiValued;
 import org.openedit.hittracker.HitTracker;
 
@@ -43,14 +43,12 @@ public class AgentJobCreatorSkill extends BaseSkill
 			"You are an AI agent orchestrator tasked with creating tasks to complete a given request. Chose the appropriate skills and automation scenarios to accomplish the goal. Only return the doc ids";
 
 		LlmResponse response = embeddings.callFindDocIds(messageContext, docids, prompt, userRequest);
-
-		// String responseText = response.getMessage();
-
+		
 		JSONObject raw = response.getRawResponse();
 		JSONArray selecedSkills = (JSONArray) raw.get("parent_ids");
+		//TODO: Update the UI with a notice that we are making progress
 
-
-		Collection<String> selectedSkillIds = new ArrayList<String>();
+		Collection<PossibleStep> possible_steps = new ArrayList<PossibleStep>();
 
 		if (selecedSkills != null && !selecedSkills.isEmpty())
 		{
@@ -59,34 +57,34 @@ public class AgentJobCreatorSkill extends BaseSkill
 			if (firstSkillId != null && firstSkillId.startsWith("automationscenario"))
 			{
 				String scenarioid = firstSkillId.replace("automationscenario_", "");
-
-				
+				Data scenario = getMediaArchive().getCachedData("automationscenario", scenarioid);
+				PossibleStep step = new PossibleStep();
+				step.setId(firstSkillId);
+				step.setValue("description", scenario.get("longdescription"));
+				step.setValue("inputs", scenario.get("requiredinputs"));
+				step.setValue("outputs", scenario.get("defaultoutputs"));
+				possible_steps.add(step);
 			}
 			else if (firstSkillId != null && firstSkillId.startsWith("aiskill"))
 			{
 				String skillid = firstSkillId.replace("aiskill_", "");
-				BasicLlmResponse basicResponse = new BasicLlmResponse();
-
+				Data skill = getMediaArchive().getCachedData("aiskill", skillid);
+				PossibleStep step = new PossibleStep();
+				step.setId(firstSkillId);
+				step.setValue("description", skill.get("skilloverview"));
+				step.setValue("inputs", skill.get("requiredinputs"));
+				step.setValue("outputs", skill.get("defaultoutputs"));
+				possible_steps.add(step);
 			}
+			inAgentContext.put("possible_steps", possible_steps);
 			LlmConnection llmconnection = getMediaArchive().getLlmConnection("thinking");
 			LlmResponse planresponse = llmconnection.callStructure(messageContext, "agentJobCreator");
 
-			JSONObject steps = response.getResponsePayload();
-			
+			JSONObject steps = planresponse.getResponsePayload();
+			inAgentContext.put("next_steps", steps);
+			super.process(inAgentContext);
 		
 		}
-
-		// Parse this as JSON?
-
-		// messageContext.putContextValue("goal", goal);
-		super.process(messageContext);
-
-		// AutomationStep skillEnabled = messageContext.getCurrentAgentEnable();
-		// fireStatusComplete(skillEnabled);
-
-		// getMediaArchive().fireSharedMediaEvent("goaltask/goalcreated");
-
-		return;
 	}
 
 	protected Collection<String> loadSkillDocIds()
