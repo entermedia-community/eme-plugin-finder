@@ -2,6 +2,8 @@ package org.entermediadb.ai.skills;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
+import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.entermediadb.ai.AgentContext;
@@ -9,13 +11,13 @@ import org.entermediadb.ai.BaseSkill;
 import org.entermediadb.ai.ChatMessageContext;
 import org.entermediadb.ai.automation.PossibleStep;
 import org.entermediadb.ai.classify.EmbeddingManager;
-import org.entermediadb.ai.llm.BasicLlmResponse;
 import org.entermediadb.ai.llm.LlmConnection;
 import org.entermediadb.ai.llm.LlmResponse;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.openedit.Data;
 import org.openedit.MultiValued;
+import org.openedit.data.Searcher;
 import org.openedit.hittracker.HitTracker;
 
 public class AgentJobCreatorSkill extends BaseSkill
@@ -80,13 +82,47 @@ public class AgentJobCreatorSkill extends BaseSkill
 			LlmConnection llmconnection = getMediaArchive().getLlmConnection("thinking");
 			LlmResponse planresponse = llmconnection.callStructure(messageContext, "agentJobCreator");
 
-			JSONObject steps = planresponse.getResponsePayload();
-			inAgentContext.put("next_steps", steps);
+			JSONObject payload = planresponse.getResponsePayload();
+
+			//save to the database
+			Data newjob = getMediaArchive().getSearcher("agentjob").createNewData();
+			newjob.setValue("owner",inAgentContext.getChatUser());
+			newjob.setValue("submitteddate",new Date());
+			newjob.setValue("status","pending");
+			getMediaArchive().saveData("agentjob", newjob);
+			Collection<Map> steps = (Collection<Map>) payload.get("agent_steps");
+			saveSteps(newjob,steps);
+
+			//TODO: Confirm with the user. render local to tell the user what we are going to kick off. Dont go forward without confirmation skill
+
+			//TODO: Once saved Put a link to the Job Orchestrator to monitor the job. Or have this job listen to web events and refresh?
+
+			//Kick off the job scheduler?
+			getMediaArchive().fireSharedMediaEvent("ai/runopenjobs");
+
 			super.process(inAgentContext);
 		
 		}
 	}
 
+	protected void saveSteps(Data newjob, Collection<Map> steps)
+	{
+		Searcher searcher = getMediaArchive().getSearcher("agentjobstep");	
+		Collection tosave = new ArrayList();
+		for (Map stepData : steps)
+		{
+			Data step = searcher.createNewData();
+			step.setValue("agentjob", newjob.getId());
+
+			step.setValue("aiskillid", newjob.getId());
+			step.setValue("description", stepData.get("description"));
+			step.setValue("requiredinputs", stepData.get("inputs")); //TODO: Parse JSON?
+			step.setValue("defaultoutput", stepData.get("outputs"));
+			tosave.add(step);
+		}
+		getMediaArchive().saveData("agentjobstep", tosave);
+
+	}
 	protected Collection<String> loadSkillDocIds()
 	{
 		Collection<String> docids = (Collection<String>) getMediaArchive().getCacheManager().get("skills", "skillids");
