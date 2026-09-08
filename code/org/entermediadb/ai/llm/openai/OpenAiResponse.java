@@ -125,6 +125,74 @@ public class OpenAiResponse extends BasicLlmResponse
         return null;
     }
 
+    public JSONObject getToolsResponse()
+    {
+        /*
+         * if (!isToolCall()) {
+         * 
+         * return null; }
+         */
+        JSONParser parser = new JSONParser();
+        JSONObject arguments = null;
+        JSONArray choices = (JSONArray) rawResponse.get("choices");
+        if (choices == null || choices.isEmpty())
+        {
+            return null;
+        }
+        JSONObject choice = (JSONObject) choices.get(0);
+        JSONObject message = (JSONObject) choice.get("message");
+
+        if (message == null || message.isEmpty())
+        {
+            return null;
+        }
+
+        JSONObject functionCall = (JSONObject) message.get("function_call");
+
+        if (functionCall != null)
+        {
+            String argumentsString = (String) functionCall.get("arguments");
+
+            arguments = parser.parse(argumentsString);
+
+            return arguments;
+        }
+
+        JSONArray tool_calls = (JSONArray) message.get("tool_calls");
+        if (tool_calls != null)
+        {
+            JSONObject function = (JSONObject) tool_calls.get(0);
+            JSONObject function0 = (JSONObject) function.get("function");
+
+            JSONObject response = new JSONObject();
+            response.put("name", function0.get("name"));
+            arguments = parser.parse((String) function0.get("arguments"));
+            response.put("arguments", arguments);
+            return response;
+
+            //
+            // // JSONObject functionarguments = (JSONObject) function0.get("arguments");
+            // String argumentsString = (String) function0.get("arguments");
+
+            // arguments = parser.parse(argumentsString);
+
+            // return arguments;
+        }
+
+        try
+        {
+            String argumentsString = (String) message.get("content");
+            arguments = parser.parse(argumentsString);
+            return arguments;
+        }
+        catch (Exception e)
+        {
+            // ignore
+        }
+
+        return null;
+    }
+
     @Override
     public String getRunSkillEnabled()
     {

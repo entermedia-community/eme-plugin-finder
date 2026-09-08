@@ -33,9 +33,9 @@ public class ChatMonitorResponseSkill extends BaseSkill
 		// reset messagereload
 		inAgentContext.putContextValue("messagereload", false);
 
-		//TODO Fix entityid for collections?
+		// TODO Fix entityid for collections?
 		String entityid = inAgentContext.get("entityid");
-		String selectedscenario = inAgentContext.get("selectedscenario");
+		String selectedscenario = (String) inAgentContext.getContextValue("selectedscenario");
 		if (selectedscenario == null)
 		{
 			log.error("No scenario selected for query: " + query);
@@ -52,7 +52,7 @@ public class ChatMonitorResponseSkill extends BaseSkill
 
 		log.info("Selected scenario: " + selectedscenario + " for scenario: " + scenario + " and skill: " + skillenableid);
 
-		//we are on a task, or answering questions or another sceneration. 
+		// we are on a task, or answering questions or another sceneration.
 		if (scenario != null)
 		{
 			RunningScenario running = (RunningScenario) getMediaArchive().getBean("runningscenario", false);

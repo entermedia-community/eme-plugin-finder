@@ -10,6 +10,8 @@ public interface LlmResponse
 
     JSONObject getMessageStructured();
 
+    JSONObject getToolsResponse();
+
     JSONObject getRawResponse();
 
     void setRawResponse(JSONObject inObj);

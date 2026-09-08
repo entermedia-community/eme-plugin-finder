@@ -5,6 +5,7 @@ import org.apache.commons.logging.LogFactory;
 import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.BaseSkill;
 import org.entermediadb.ai.ChatMessageContext;
+import org.entermediadb.ai.automation.RunningScenario;
 import org.entermediadb.ai.llm.AutomationStep;
 import org.entermediadb.ai.llm.LlmConnection;
 import org.entermediadb.ai.llm.LlmResponse;
@@ -39,25 +40,31 @@ public class ChatMonitorSkill extends BaseSkill
 		LlmResponse response = llmconnection.callToolsFunction(inAgentContext, "chat_monitor");
 		log.info(response.getRawResponse());
 
+		JSONObject structuredResponse = response.getToolsResponse();
 
-		JSONObject functionArgs = response.getFunctionArguments();
-		String selectedscenario = functionArgs.get("selectedscenario").toString();
-		//showfriendlyresponse
-		if (selectedscenario.equals("showfriendlyresponse"))
+		String selected_tool = (String) structuredResponse.get("name");
+
+		inAgentContext.addContext("selectedscenario", selected_tool);
+
+		inAgentContext.addContext("arguments", structuredResponse.get("arguments"));
+
+		if (selected_tool.equals("showfriendlyresponse"))
 		{
-			llmconnection = getMediaArchive().getLlmConnection("localrender"); // Should stay search_start
 
-			response = llmconnection.renderLocalAction(inAgentContext, "chatmonitor");
+			llmconnection = getMediaArchive().getLlmConnection("localrender");
+			response = llmconnection.renderLocalAction(inAgentContext, "chat_detect_showresponse");
+			response.setNextSkillEnabled("chatMonitor"); // Stay in this skill?
 			inAgentContext.setLastResponse(response);
+
+			AutomationStep skillEnabled = messageContext.getCurrentAutomationStep();
+
+			messageContext.fireStatusComplete(skillEnabled);
 
 			return;
 		}
 
-		inAgentContext.addContext("messagestructured", response.getMessageStructured());
-		inAgentContext.addContext("userquery", query);
-		inAgentContext.addContext("arguments", functionArgs);
-		messageContext.put("selectedscenario", selectedscenario);
-		super.process(messageContext); //This will run ChatMonitorResponseSkill
+		super.process(messageContext);
+
 	}
 
 }

@@ -673,6 +673,31 @@ public class EmbeddingManager extends BaseAiManager
 		return null;
 	}
 
+	public LlmResponse callFindDocIds(AgentContext inAgentContext, Collection<String> docids, String prompt, String userquery)
+	{
+		JSONObject chatjson = new JSONObject();
+		chatjson.put("prompt", prompt);
+		chatjson.put("query", userquery);
+		chatjson.put("parent_ids", docids);
+
+		LlmConnection llmconnection = getMediaArchive().getLlmConnection("embedding");
+
+		String customerkey = getMediaArchive().getCatalogSettingValue("catalog-storageid");
+		if (customerkey == null)
+		{
+			customerkey = "demo";
+		}
+
+		Map headers = new HashMap();
+		headers.put("x-customerkey", customerkey);
+
+		log.info(" sending to server: " + chatjson.toJSONString());
+
+		LlmResponse response = llmconnection.callJson("/findDocIds", headers, chatjson);
+
+		return response;
+	}
+
 	public Collection<String> findDocIds(AgentContext inAgentContext, Collection<String> docids, String userquery)
 	{
 		JSONObject chatjson = new JSONObject();

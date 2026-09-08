@@ -40,12 +40,12 @@ public class BasicLlmResponse implements LlmResponse
 	}
 
 	@Override
-    public String getMessage()
-    {
-       
-        return fieldMessage;
-       
-    }
+	public String getMessage()
+	{
+
+		return fieldMessage;
+
+	}
 
 	public void setMessagePlain(String inMessage)
 	{
@@ -93,6 +93,11 @@ public class BasicLlmResponse implements LlmResponse
 	public JSONObject getMessageStructured()
 	{
 		return getRawResponse();
+	}
+
+	public JSONObject getToolsResponse()
+	{
+		return getMessageStructured();
 	}
 
 	@Override
@@ -206,9 +211,10 @@ public class BasicLlmResponse implements LlmResponse
 	public void setRawMessage(String inMessage)
 	{
 		String dataMessage = "";
-		String mainMessage = inMessage; 
+		String mainMessage = inMessage;
 
-	    //refactor: include only messageplain with new lines in between, and remove all other messageplain tags. This is to avoid including messageplain that are part of the main message.
+		// refactor: include only messageplain with new lines in between, and remove all other messageplain
+		// tags. This is to avoid including messageplain that are part of the main message.
 		int dataStart = mainMessage.indexOf("<messageplain>");
 		while (dataStart >= 0)
 		{
