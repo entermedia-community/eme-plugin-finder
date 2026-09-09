@@ -14,6 +14,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.openedit.Data;
 import org.openedit.MultiValued;
+import org.openedit.util.JSONParser;
 
 public class AdaptiveTutorialBaseSkill extends BaseSkill
 {
@@ -57,7 +58,8 @@ public class AdaptiveTutorialBaseSkill extends BaseSkill
 
 		for (MultiValued message : messages)
 		{
-			JSONObject agentContext = message.getJSONValue("agentcontextvalues");
+			Map<String, Object> agentContext = getAgentContext(message);	
+
 			if (agentContext == null || !sectionId.equals(agentContext.get("sectionid")))
 			{
 				continue;
@@ -92,23 +94,41 @@ public class AdaptiveTutorialBaseSkill extends BaseSkill
 
 		for (MultiValued msg : releaventMessages)
 		{
-			buildHistoryFromAgentContext(msg.getJSONValue("agentcontextvalues"), chatHistory);
+			Map<String, Object> agentContext = getAgentContext(msg);
+			buildHistoryFromAgentContext(agentContext, chatHistory);
 		}
 
 		return chatHistory;
 	}
 
-	protected void buildHistoryFromAgentContext(JSONObject agentContext, JSONArray chatHistory)
+	private Map<String, Object> getAgentContext(MultiValued message)
+	{
+		Object agentContextObj = message.getValue("agentcontextvalues");
+		Map<String, Object> agentContext = null;
+		if( agentContextObj instanceof String)
+		{
+			String agentContextStr = (String) agentContextObj;
+			agentContext = new JSONParser().parseMap(agentContextStr);
+			message.setValue("agentcontextvalues",agentContext); //For next time
+		}	
+		else
+		{
+			agentContext = (Map<String, Object>) agentContextObj;
+		}
+		return agentContext;
+	}
+
+	protected void buildHistoryFromAgentContext(Map<String, Object> agentContext, JSONArray chatHistory)
 	{
 		if ("question".equals(agentContext.get("messagerendertype")))
 		{
 			StringBuilder ctx = new StringBuilder();
 
-			JSONObject question = (JSONObject) agentContext.get("question");
+			Map<String, Object> question = (Map<String, Object>) agentContext.get("question");
 			if (question != null)
 			{
 				ctx.append(question.get("question")).append(" \n");
-				JSONObject options = (JSONObject) question.get("options");
+				Map<String, Object> options = (Map<String, Object>) question.get("options");
 				// sort options
 				List<String> optionKeys = new ArrayList<>(options.keySet());
 				Collections.sort(optionKeys);

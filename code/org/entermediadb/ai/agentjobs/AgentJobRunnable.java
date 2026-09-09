@@ -2,6 +2,7 @@ package org.entermediadb.ai.agentjobs;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.entermediadb.ai.AgentContext;
 import org.openedit.MultiValued;
 
 public class AgentJobRunnable implements Runnable
@@ -9,6 +10,14 @@ public class AgentJobRunnable implements Runnable
 	private static final Log log = LogFactory.getLog(AgentJobRunnable.class);
 
 	AgentJob fieldAgentJob;
+	AgentContext fieldContext;
+
+	public AgentContext getContext() {
+		return fieldContext;
+	}
+	public void setContext(AgentContext inContext) {
+		fieldContext = inContext;
+	}
 
 	public AgentJob getAgentJob()
 	{

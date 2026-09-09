@@ -49,14 +49,14 @@ public class FileOperationSkill extends BaseSkill
 	@Override
 	public void process(AgentContext inContext)
 	{
-		String filename = (String) inContext.getContextValue("filename");
+		String filepath = (String) inContext.getContextValue("filepath");
 		String operationType = (String) inContext.getContextValue("fileoperationtype");
 
-		if (filename == null || filename.trim().isEmpty())
+		if (filepath == null || filepath.trim().isEmpty())
 		{
-			log.warn("FileOperationSkill: No filename provided in context");
+			log.warn("FileOperationSkill: No filepath provided in context");
 			inContext.putContextValue("fileoperationstatus", "error");
-			inContext.putContextValue("errormessage", "No filename provided");
+			inContext.putContextValue("errormessage", "No filepath provided");
 			super.process(inContext);
 			return;
 		}
@@ -65,11 +65,11 @@ public class FileOperationSkill extends BaseSkill
 		{
 			if (OPERATION_READ.equalsIgnoreCase(operationType))
 			{
-				handleReadOperation(inContext, filename);
+				handleReadOperation(inContext, filepath);
 			}
 			else if (OPERATION_WRITE.equalsIgnoreCase(operationType))
 			{
-				handleWriteOperation(inContext, filename);
+				handleWriteOperation(inContext, filepath);
 			}
 			else
 			{
@@ -96,18 +96,17 @@ public class FileOperationSkill extends BaseSkill
 	 * @param filename Name of the file to read
 	 * @throws IOException If file reading fails
 	 */
-	private void handleReadOperation(AgentContext inContext, String filename) throws IOException
+	private void handleReadOperation(AgentContext inContext, String filepath) throws IOException
 	{
-		String filepath = (String) inContext.getContextValue("filepath");
 
 		// Resolve file path
-		File file = resolveFilePath(filename, filepath, true);
+		File file = new File(filepath);
 
 		if (file == null || !file.exists())
 		{
-			log.warn("FileOperationSkill: File not found: " + filename);
+			log.warn("FileOperationSkill: File not found: " + filepath);
 			inContext.putContextValue("fileoperationstatus", "error");
-			inContext.putContextValue("errormessage", "File not found: " + filename);
+			inContext.putContextValue("errormessage", "File not found: " + filepath);
 			return;
 		}
 
@@ -132,14 +131,13 @@ public class FileOperationSkill extends BaseSkill
 	 * Handles file write operation
 	 * 
 	 * @param inContext AgentContext containing write parameters
-	 * @param filename Name of the file to write
+	 * @param filepath Name of the file to write
 	 * @throws IOException If file writing fails
 	 */
-	private void handleWriteOperation(AgentContext inContext, String filename) throws IOException
+	private void handleWriteOperation(AgentContext inContext, String filepath) throws IOException
 	{
-		String filepath = (String) inContext.getContextValue("filepath");
 		String content = (String) inContext.getContextValue("filecontent");
-		Object overwriteObj = inContext.getContextValue("overwritefile");
+		Object appendcontent = inContext.getContextValue("appendcontent");
 
 		if (content == null)
 		{
@@ -149,29 +147,20 @@ public class FileOperationSkill extends BaseSkill
 			return;
 		}
 
-		boolean overwrite = false;
-		if (overwriteObj != null)
+		boolean append = false;
+		if (appendcontent != null)
 		{
-			overwrite = Boolean.parseBoolean(overwriteObj.toString());
+			append = Boolean.parseBoolean(appendcontent.toString());
 		}
 
 		// Resolve file path
-		File file = resolveFilePath(filename, filepath, false);
+		File file = new File(filepath);
 
 		if (file == null)
 		{
-			log.warn("FileOperationSkill: Unable to resolve file path for: " + filename);
+			log.warn("FileOperationSkill: Unable to resolve file path for: " + filepath);
 			inContext.putContextValue("fileoperationstatus", "error");
-			inContext.putContextValue("errormessage", "Unable to resolve file path for: " + filename);
-			return;
-		}
-
-		// Check if file exists and overwrite is not allowed
-		if (file.exists() && !overwrite)
-		{
-			log.warn("FileOperationSkill: File already exists and overwrite is not allowed: " + file.getAbsolutePath());
-			inContext.putContextValue("fileoperationstatus", "error");
-			inContext.putContextValue("errormessage", "File already exists. Set 'overwritefile' to true to overwrite");
+			inContext.putContextValue("errormessage", "Unable to resolve file path for: " + filepath);
 			return;
 		}
 
@@ -189,52 +178,12 @@ public class FileOperationSkill extends BaseSkill
 		}
 
 		// Write file content
-		writeFileContent(file, content);
+		writeFileContent(file, content, append);
 		inContext.putContextValue("fileoperationresult", "File successfully written: " + file.getAbsolutePath());
 		inContext.putContextValue("filepath", file.getAbsolutePath());
 		inContext.putContextValue("fileoperationstatus", "success");
 
 		log.info("FileOperationSkill: Successfully wrote " + content.length() + " characters to " + file.getAbsolutePath());
-	}
-
-	/**
-	 * Resolves the complete file path from filename and optional filepath
-	 * 
-	 * @param filename Name of the file
-	 * @param filepath Optional directory path
-	 * @param isReadOperation True if this is a read operation
-	 * @return Resolved File object, or null if unable to resolve
-	 */
-	private File resolveFilePath(String filename, String filepath, boolean isReadOperation)
-	{
-		File file;
-
-		if (filepath != null && !filepath.trim().isEmpty())
-		{
-			// Use provided path
-			file = new File(filepath, filename);
-		}
-		else if (filename.contains(File.separator) || filename.contains("/"))
-		{
-			// Extract path from filename
-			file = new File(filename);
-		}
-		else
-		{
-			// No path information available
-			if (isReadOperation)
-			{
-				// For read, search in current directory
-				file = new File(filename);
-			}
-			else
-			{
-				// For write, use current directory
-				file = new File(filename);
-			}
-		}
-
-		return file;
 	}
 
 	/**
@@ -273,9 +222,9 @@ public class FileOperationSkill extends BaseSkill
 	 * @param content Content to write
 	 * @throws IOException If writing fails
 	 */
-	private void writeFileContent(File file, String content) throws IOException
+	private void writeFileContent(File file, String content, boolean append) throws IOException
 	{
-		try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, StandardCharsets.UTF_8)))
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, StandardCharsets.UTF_8, append	)))
 		{
 			writer.write(content);
 			writer.flush();

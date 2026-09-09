@@ -361,26 +361,33 @@ public class BaseAgentContext extends BaseData implements CatalogEnabled, AgentC
 	}
 
 	/**
-	 * @deprecated use putContextValue instead.
 	 * @param inKey
 	 * @param inValue
 	 */
-	public void put(String inKey, Object inValue)
+	public void putContextValue(String inKey, Object inValue)
 	{
-		putContextValue(inKey, inValue);
+		put(inKey, inValue);
 	}
 
+	public void putAl(Map<String,Object> inMap)
+	{
+		for (String key : inMap.keySet()) 
+		{
+			Object value = inMap.get(key);
+			put(key, value);
+		}
+	}
 	/**
-	 * @deprecated use putContextValue instead.
+	 * @deprecated use put instead.
 	 * @param inKey
 	 * @param inValue
 	 */
 	public void addContext(String inKey, Object inValue)
 	{
-		putContextValue(inKey, inValue);
+		put(inKey, inValue);
 	}
 
-	public void putContextValue(String inKey, Object inValue)
+	public void put(String inKey, Object inValue)
 	{
 		getContext().put(inKey, inValue); // Track what is changed locally..
 		AgentContext ctx = getParentContext();
@@ -396,10 +403,24 @@ public class BaseAgentContext extends BaseData implements CatalogEnabled, AgentC
 		getRootContext().getContext().put(inKey, inValue); // Make sure everyone is updated
 	}
 
-	public void putContextValues(Map inValues)
+	/**	(non-Javadoc)
+	 * @deprecated use put
+	 * @see org.entermediadb.ai.AgentContext#putContextValues(java.util.Map)
+	 */
+	public void putContextValues(Map<String, Object> inValues)
 	{
-		getRootContext().getContext().putAll(inValues);
+		putAll(inValues);
 	}
+
+	public void putAll(Map<String, Object> inMap)
+	{
+		for (String key : inMap.keySet())
+		{
+			Object value = inMap.get(key);
+			put(key, value);
+		}
+	}
+	
 
 	// public JSONObject getArguments() {
 	// return arguments;

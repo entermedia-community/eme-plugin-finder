@@ -33,6 +33,11 @@ public class BaseSkill extends BaseAiManager implements Skill, CatalogEnabled
 	public void process(AgentContext inContext)
 	{
 		AutomationStep skillEnabled = inContext.getCurrentAutomationStep();
+		if( skillEnabled == null )
+		{
+			return;
+		}
+
 		inContext.fireStatusComplete(skillEnabled);
 
 		Collection<AutomationStep> children = inContext.getCurrentAutomationStep().getChildren();

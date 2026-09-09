@@ -77,9 +77,20 @@ public interface AgentContext extends Data
 	void setContext(Map<String, Object> inContext);
 
 	void put(String inKey, Object inValue);
+	void putAll(Map<String, Object> inMap);
 
+	/**
+	 * @deprecated use put()
+	 * @param inKey
+	 * @param inValue
+	 */
 	void addContext(String inKey, Object inValue);
 
+	/**
+	 * @deprecated use put()
+	 * @param inKey
+	 * @param inValue
+	 */
 	void putContextValue(String inKey, Object inValue);
 
 	String toString();
@@ -152,7 +163,7 @@ public interface AgentContext extends Data
 
 	public void fireStatusComplete(AutomationStep inAutomationStep);
 
-	void putContextValues(Map params);
+	void putContextValues(Map<String, Object> params);
 
 	JSONObject toJSON();
 

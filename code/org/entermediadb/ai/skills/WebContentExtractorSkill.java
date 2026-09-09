@@ -23,6 +23,7 @@ import org.entermediadb.ai.BaseSkill;
 import org.entermediadb.ai.llm.BasicLlmResponse;
 import org.json.simple.JSONObject;
 import org.openedit.Data;
+import org.openedit.util.HttpSharedConnection;
 
 /**
  * WebContentExtractorSkill - Extracts and reads content from specified websites.
@@ -70,15 +71,15 @@ public class WebContentExtractorSkill extends BaseSkill
 	{
 		String websiteUrl = (String) inContext.getContextValue("websiteurl");
 		String requestMethod = (String) inContext.getContextValue("requestmethod");
-		Boolean extractMetadata = (Boolean) inContext.getContextValue("extractmetadata");
+		String extractMetadata = (String) inContext.getContextValue("extractmetadata");
 		Object maxLengthObj = inContext.getContextValue("maxcontentlength");
 		String userAgent = (String) inContext.getContextValue("useragent");
 
 		if (websiteUrl == null || websiteUrl.trim().isEmpty())
 		{
 			log.warn("WebContentExtractorSkill: No website URL provided in context");
-			inContext.putContextValue("extractionstatus", "error");
-			inContext.putContextValue("errormessage", "No website URL provided");
+			inContext.put("extractionstatus", "error");
+			inContext.put("errormessage", "No website URL provided");
 			super.process(inContext);
 			return;
 		}
@@ -120,7 +121,7 @@ public class WebContentExtractorSkill extends BaseSkill
 			inContext.putContextValue("extractedcontent", extractedText);
 
 			// Extract metadata if requested
-			if (extractMetadata != null && extractMetadata.booleanValue())
+			if (extractMetadata != null && Boolean.parseBoolean(extractMetadata))
 			{
 				Map<String, String> metadata = extractMetadata(htmlContent, websiteUrl);
 				inContext.putContextValue("webpagemetadata", metadata);
@@ -158,51 +159,9 @@ public class WebContentExtractorSkill extends BaseSkill
 	 */
 	private String fetchWebContent(String urlString, long maxContentLength, String requestMethod, String userAgent) throws IOException
 	{
-		// Validate and normalize URL
-		if (!urlString.startsWith("http://") && !urlString.startsWith("https://"))
-		{
-			urlString = "https://" + urlString;
-		}
-
-		URL url = new URL(urlString);
-		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-		// Set timeouts and headers
-		connection.setConnectTimeout(CONNECT_TIMEOUT);
-		connection.setReadTimeout(READ_TIMEOUT);
-		connection.setRequestMethod(requestMethod);
-		connection.setRequestProperty("User-Agent", userAgent);
-		connection.setInstanceFollowRedirects(true);
-
-		try
-		{
-			int responseCode = connection.getResponseCode();
-
-			if (responseCode < 200 || responseCode >= 400)
-			{
-				log.warn("WebContentExtractorSkill: HTTP error " + responseCode + " for URL: " + urlString);
-				return null;
-			}
-
-			StringBuilder contentBuilder = new StringBuilder();
-			long totalRead = 0;
-
-			try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8)))
-			{
-				String line;
-				while ((line = reader.readLine()) != null && totalRead < maxContentLength)
-				{
-					contentBuilder.append(line).append("\n");
-					totalRead += line.length() + 1;
-				}
-			}
-
-			return contentBuilder.toString();
-		}
-		finally
-		{
-			connection.disconnect();
-		}
+		HttpSharedConnection connection = new HttpSharedConnection();
+		String content = connection.getResponseString(urlString, null);
+		return content;
 	}
 
 	/**

@@ -1,5 +1,6 @@
 package org.entermediadb.ai.agentjobs;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -20,6 +21,7 @@ import org.openedit.data.QueryBuilder;
 import org.openedit.data.Searcher;
 import org.openedit.hittracker.HitTracker;
 import org.openedit.util.ExecutorManager;
+import org.openedit.util.JSONParser;
 
 public class AgentJobOrchestrator implements AgentJobListener, CatalogEnabled
 {
@@ -114,19 +116,7 @@ public class AgentJobOrchestrator implements AgentJobListener, CatalogEnabled
 		// Lock searching for tasks
 		try
 		{
-			Searcher jobsearcher = getMediaArchive().getSearcher("agentjob");
-
-			QueryBuilder query = getMediaArchive().localQuery("agentjob");
-			query.orgroup("status", "new"); 
-			query.sort("submitteddateDown");
-
-			if (hasRunningAgentJob()) //Skip these just in case
-			{
-				query.notgroup("id", getRunningIds());
-			}
-			HitTracker newjobs = jobsearcher.search(query.getQuery());
-			newjobs.enableBulkOperations();
-			newjobs.setHitsPerPage(500); // Just enought to fill up the queue
+			HitTracker newjobs = getNewjobs();
 			setTotalPending(newjobs.size());
 			if (newjobs.size() > 0)
 			{
@@ -147,8 +137,17 @@ public class AgentJobOrchestrator implements AgentJobListener, CatalogEnabled
 
 				AgentJob job = (AgentJob)getMediaArchive().getCachedData("agentjob", hit.getId());
 				
+				//get the steps
+				Collection<MultiValued> steps = getMediaArchive().query("agentjobstep").exact("agentjob", job.getId()).sort("orderUp").search();
+				job.setSteps(steps);
+
 				//Run it now
 				AgentJobRunnable torun = new AgentJobRunnable();
+				AgentContext context = new BaseAgentContext();
+				context.setCatalogId(getCatalogId());
+				context.setModuleManager(getModuleManager());
+				context.putContextValue("agentjob", job);
+				torun.setContext(context);
 				torun.setAgentJob(job);
 				torun.setEventListener(this);
 				addAgentJob(torun);
@@ -158,6 +157,24 @@ public class AgentJobOrchestrator implements AgentJobListener, CatalogEnabled
 		{
 			log.error("Could not process queue ", ex);
 		}
+	}
+
+	public HitTracker getNewjobs()
+	{
+		Searcher jobsearcher = getMediaArchive().getSearcher("agentjob");
+
+		QueryBuilder query = getMediaArchive().localQuery("agentjob");
+		query.orgroup("status", "new"); 
+		query.sort("submitteddateDown");
+
+		if (hasRunningAgentJob()) //Skip these just in case
+		{
+			query.notgroup("id", getRunningIds());
+		}
+		HitTracker newjobs = jobsearcher.search(query.getQuery());
+		newjobs.enableBulkOperations();
+		newjobs.setHitsPerPage(500); // Just enought to fill up the queue
+		return newjobs;
 	}
 
 	public Map getCurrentJobsRunning()
@@ -201,55 +218,85 @@ public class AgentJobOrchestrator implements AgentJobListener, CatalogEnabled
 		}
 
 		currentJobsRunning.put(inAgentJob.getId(), inAgentJob);
-		getThreads().execute("AgentJob", inAgentJob);
+		getThreads().execute("importing", inAgentJob);
 	}
 
 	public void runStep(AgentJobRunnable inAgentJob, MultiValued inStep)
 	{
-		Data stepdata = (Data) inStep;
-		String aiskillid = inStep.get("aiskillid");
-		if( aiskillid != null )
-		{
-			runSkill(inAgentJob,inStep);
-		}
-		
-		String workflowid = inStep.get("workflowid");
-		if( workflowid != null )
-		{
-			runWorkflow(inAgentJob,inStep);
-		}	
-	}
-
-	private void runSkill(AgentJobRunnable inAgentJob, MultiValued inStep)
-	{
-		String aiskillid = inStep.get("aiskillid");
-		Data aiskill = getMediaArchive().query("aiskill").exact("id", aiskillid).searchOne();
-		inStep.setValue("status", "running");
-		getMediaArchive().saveData("agentjobstep", inStep);
 		try
 		{
-			Skill skill = (Skill) getModuleManager().getBean(getCatalogId(), aiskill.get("bean"));
-
-			AgentContext context = new BaseAgentContext();
-			context.setCatalogId(getCatalogId());
-			context.setModuleManager(getModuleManager());
-			context.putContextValue("agentjob", inAgentJob.getAgentJob());
-			context.putContextValue("agentjobstep", inStep);
-
-			skill.process(context);
-
-			inStep.setValue("status", "complete");
+			String aiskillid = inStep.get("aiskillid");
+			if( aiskillid != null )
+			{
+				runSkill(inAgentJob,inStep);
+			}
+			
+			String workflowid = inStep.get("workflowid");
+			if( workflowid != null )
+			{
+				runWorkflow(inAgentJob,inStep);
+			}	
 		}
 		catch (Exception ex)
 		{
 			log.error("Error running step " + inStep.getId(), ex);
 			inStep.setValue("status", "error");
 			inStep.setValue("errordetails", ex.getMessage());
+			inAgentJob.getAgentJob().setValue("status", "error");
+			getMediaArchive().saveData("agentjob", inAgentJob.getAgentJob());
+			throw new RuntimeException(ex); //stop processing the rest of the steps
 		}
 		finally
 		{
 			getMediaArchive().saveData("agentjobstep", inStep);
 		}
+	}
+
+	private void runSkill( AgentJobRunnable inAgentJob, MultiValued inStep)
+	{
+		String aiskillid = inStep.get("aiskillid");
+		Data aiskill = getMediaArchive().query("aiskill").exact("id", aiskillid).searchOne();
+		inStep.setValue("status", "running");
+		getMediaArchive().saveData("agentjobstep", inStep);
+			Skill skill = (Skill) getModuleManager().getBean(getCatalogId(), aiskill.get("bean"));
+			String json = inStep.get("parameters");
+			Collection<Map<String,Object>> parameters = null;
+			if( json != null)
+			{
+				parameters = (Collection<Map<String,Object>>)new JSONParser().parseCollection(json);
+			}
+
+			if(  parameters != null)
+			{
+				for (Map<String,Object> map : parameters) 
+				{
+					String key = (String)map.get("input_id");
+					String value = (String)map.get("value");
+					if( value == null)
+					{
+						String oldkey  = (String)map.get("variable");
+						value = (String)inAgentJob.getContext().getContextValue(oldkey);
+					}
+					if( value.startsWith("${"))
+					{
+						String[] parts = value.split("\\.");
+						if( parts.length > 1)
+						{
+							String oldkey = parts[parts.length -1];
+							if( oldkey.endsWith("}"))
+							{
+								oldkey = oldkey.substring(0,oldkey.length() -1);
+							}
+							value = (String)inAgentJob.getContext().getContextValue(oldkey);
+						}
+					}
+
+					inAgentJob.getContext().put(key,value);
+				}
+			}
+			skill.process(inAgentJob.getContext());
+
+			inStep.setValue("status", "complete");
 
 	}
 
@@ -307,6 +354,10 @@ public class AgentJobOrchestrator implements AgentJobListener, CatalogEnabled
 		{
 			currentJobsRunning.remove(inAgentJob.getId());
 			log.info("RELEASED " + inAgentJob.getId());
+			//Save job
+			inAgentJob.getAgentJob().setValue("status", "complete");
+			getMediaArchive().saveData("agentjob", inAgentJob.getAgentJob());
+
 			checkQueue();
 		}
 		catch (Exception ex)

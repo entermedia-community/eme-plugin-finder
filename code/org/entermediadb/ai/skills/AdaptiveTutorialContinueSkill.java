@@ -201,7 +201,7 @@ public class AdaptiveTutorialContinueSkill extends AdaptiveTutorialBaseSkill
 			}
 
 			MultiValued newMessage = (MultiValued) getMediaArchive().getSearcher("chatterbox").createNewData();
-			newMessage.setJSONValue("agentcontextvalues", tutorMessageContext.toJSON());
+			newMessage.setValue("agentcontextvalues", tutorMessageContext.toJSON());
 			newMessage.setValue("date", new Date());
 			newMessage.setValue("channel", tutorMessageContext.getChannel().getId());
 			newMessage.setValue("user", "agent");

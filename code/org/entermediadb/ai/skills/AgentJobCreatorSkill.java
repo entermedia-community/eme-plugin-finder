@@ -13,6 +13,7 @@ import org.entermediadb.ai.automation.PossibleStep;
 import org.entermediadb.ai.classify.EmbeddingManager;
 import org.entermediadb.ai.llm.LlmConnection;
 import org.entermediadb.ai.llm.LlmResponse;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.openedit.Data;
 import org.openedit.MultiValued;
@@ -64,7 +65,7 @@ public class AgentJobCreatorSkill extends BaseSkill
 					PossibleStep step = new PossibleStep();
 					step.setId(firstSkillId);
 					step.setValue("description", scenario.get("longdescription"));
-					step.setValue("inputs", scenario.get("requiredinputs"));
+					step.setValue("inputs", scenario.get("parameters"));
 					step.setValue("outputs", scenario.get("defaultoutput"));
 					possible_steps.add(step);
 				}
@@ -75,7 +76,7 @@ public class AgentJobCreatorSkill extends BaseSkill
 					PossibleStep step = new PossibleStep();
 					step.setId(firstSkillId);
 					step.setValue("description", skill.get("markdowncontent"));
-					step.setValue("inputs", skill.get("requiredinputs"));
+					step.setValue("inputs", skill.get("parameters"));
 					step.setValue("outputs", skill.get("defaultoutput"));
 					possible_steps.add(step);
 				}
@@ -90,7 +91,7 @@ public class AgentJobCreatorSkill extends BaseSkill
 			Data newjob = getMediaArchive().getSearcher("agentjob").createNewData();
 			newjob.setValue("owner", inAgentContext.getChatUser());
 			newjob.setValue("submitteddate", new Date());
-			newjob.setValue("status", "pending");
+			newjob.setValue("status", "new");
 			newjob.setValue("llmprompt", userRequest);
 			getMediaArchive().saveData("agentjob", newjob);
 			Collection<Map> steps = (Collection<Map>) payload.get("agent_steps");
@@ -117,15 +118,33 @@ public class AgentJobCreatorSkill extends BaseSkill
 	{
 		Searcher searcher = getMediaArchive().getSearcher("agentjobstep");
 		Collection tosave = new ArrayList();
+		int ordering = 0;
 		for (Map stepData : steps)
 		{
 			Data step = searcher.createNewData();
 			step.setValue("agentjob", newjob.getId());
+			step.setValue("ordering", ordering++);
 
-			step.setValue("aiskillid", stepData.get("skill_id"));
-			step.setValue("description", stepData.get("description"));
-			step.setValue("requiredinputs", stepData.get("inputs")); // TODO: Parse JSON?
-			step.setValue("defaultoutput", stepData.get("outputs"));
+			String id = (String)stepData.get("skill_id");
+			if( id.startsWith("aiskill_"))
+			{
+				String skillid = id.replace("aiskill_", "");
+				step.setValue("aiskillid", skillid);
+			}
+			else if( id.startsWith("automationscenario_"))
+			{
+				String scenarioid = id.replace("automationscenario_", "");
+				step.setValue("workflowid", scenarioid);
+			}
+
+			step.setValue("markdowncontent", stepData.get("details"));
+			JSONArray inputs = (JSONArray) stepData.get("parameters");
+			if( inputs != null)
+			{
+				step.setValue("parameters", inputs.toJSONString());	
+			}
+
+			//step.setValue("defaultoutput", stepData.get("outputs"));
 			tosave.add(step);
 		}
 		getMediaArchive().saveData("agentjobstep", tosave);
