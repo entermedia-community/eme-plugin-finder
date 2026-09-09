@@ -39,6 +39,7 @@ public class AgentJobCreatorSkill extends BaseSkill
 		Collection<String> docids = loadSkillDocIds();
 		EmbeddingManager embeddings = (EmbeddingManager) getMediaArchive().getBean("embeddingManager");
 
+		//TODO: Add more context and have AI create a summary of what the user wants. Could be across multiuple messages
 		String prompt =
 			"You are a search tool looking for tools needed to accomplish a goal. Only return the doc ids";
 
@@ -90,6 +91,7 @@ public class AgentJobCreatorSkill extends BaseSkill
 			newjob.setValue("owner", inAgentContext.getChatUser());
 			newjob.setValue("submitteddate", new Date());
 			newjob.setValue("status", "pending");
+			newjob.setValue("llmprompt", userRequest);
 			getMediaArchive().saveData("agentjob", newjob);
 			Collection<Map> steps = (Collection<Map>) payload.get("agent_steps");
 			saveSteps(newjob, steps);
@@ -102,6 +104,9 @@ public class AgentJobCreatorSkill extends BaseSkill
 
 			// Kick off the job scheduler?
 			getMediaArchive().fireSharedMediaEvent("ai/runopenjobs");
+
+
+			//next Render the confirmation and wait
 
 			super.process(inAgentContext);
 
@@ -117,7 +122,7 @@ public class AgentJobCreatorSkill extends BaseSkill
 			Data step = searcher.createNewData();
 			step.setValue("agentjob", newjob.getId());
 
-			step.setValue("aiskillid", newjob.getId());
+			step.setValue("aiskillid", stepData.get("skill_id"));
 			step.setValue("description", stepData.get("description"));
 			step.setValue("requiredinputs", stepData.get("inputs")); // TODO: Parse JSON?
 			step.setValue("defaultoutput", stepData.get("outputs"));

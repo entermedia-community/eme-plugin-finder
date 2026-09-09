@@ -3265,7 +3265,7 @@
 		</property>
 	</bean>
 
-	<bean id="agentjob" class="org.entermediadb.catalog.AgentJob" lazy-init="default" scope="prototype">
+	<bean id="agentjob" class="org.entermediadb.ai.agentjobs.AgentJob" lazy-init="default" scope="prototype">
 	</bean>
 
 
