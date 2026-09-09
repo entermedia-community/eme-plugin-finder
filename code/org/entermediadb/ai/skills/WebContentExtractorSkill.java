@@ -69,9 +69,9 @@ public class WebContentExtractorSkill extends BaseSkill
 	public void process(AgentContext inContext)
 	{
 		String websiteUrl = (String) inContext.getContextValue("websiteurl");
+		String requestMethod = (String) inContext.getContextValue("requestmethod");
 		Boolean extractMetadata = (Boolean) inContext.getContextValue("extractmetadata");
 		Object maxLengthObj = inContext.getContextValue("maxcontentlength");
-		String requestMethod = (String) inContext.getContextValue("requestmethod");
 		String userAgent = (String) inContext.getContextValue("useragent");
 
 		if (websiteUrl == null || websiteUrl.trim().isEmpty())

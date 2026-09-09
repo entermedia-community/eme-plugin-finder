@@ -33,7 +33,7 @@ public class AgentJobCreatorSkill extends BaseSkill
 		MultiValued usermessage = (MultiValued) getMediaArchive().getCachedData("chatterbox", agentmessage.get("replytoid"));
 
 		String userRequest = usermessage.get("message");
-		// inAgentContext.get("goaltext"); //required
+		inAgentContext.put("query", userRequest); // required
 
 		// Needed?
 		messageContext.fireStatusStarting(messageContext.getCurrentAutomationStep());
@@ -45,38 +45,41 @@ public class AgentJobCreatorSkill extends BaseSkill
 			"You are an AI agent orchestrator tasked with creating tasks to complete a given request. Chose the appropriate skills and automation scenarios to accomplish the goal. Only return the doc ids";
 
 		LlmResponse response = embeddings.callFindDocIds(messageContext, docids, prompt, userRequest);
-		
+
 		JSONObject raw = response.getRawResponse();
-		JSONArray selecedSkills = (JSONArray) raw.get("parent_ids");
-		//TODO: Update the UI with a notice that we are making progress
+		Collection<String> selecedSkills = (Collection<String>) raw.get("parent_ids");
+		// TODO: Update the UI with a notice that we are making progress
 
 		Collection<PossibleStep> possible_steps = new ArrayList<PossibleStep>();
 
 		if (selecedSkills != null && !selecedSkills.isEmpty())
 		{
 			// Pick first skill only?
-			String firstSkillId = (String) selecedSkills.get(0);
-			if (firstSkillId != null && firstSkillId.startsWith("automationscenario"))
+			for (String firstSkillId : selecedSkills)
 			{
-				String scenarioid = firstSkillId.replace("automationscenario_", "");
-				Data scenario = getMediaArchive().getCachedData("automationscenario", scenarioid);
-				PossibleStep step = new PossibleStep();
-				step.setId(firstSkillId);
-				step.setValue("description", scenario.get("longdescription"));
-				step.setValue("inputs", scenario.get("requiredinputs"));
-				step.setValue("outputs", scenario.get("defaultoutputs"));
-				possible_steps.add(step);
-			}
-			else if (firstSkillId != null && firstSkillId.startsWith("aiskill"))
-			{
-				String skillid = firstSkillId.replace("aiskill_", "");
-				Data skill = getMediaArchive().getCachedData("aiskill", skillid);
-				PossibleStep step = new PossibleStep();
-				step.setId(firstSkillId);
-				step.setValue("description", skill.get("skilloverview"));
-				step.setValue("inputs", skill.get("requiredinputs"));
-				step.setValue("outputs", skill.get("defaultoutputs"));
-				possible_steps.add(step);
+
+				if (firstSkillId != null && firstSkillId.startsWith("automationscenario"))
+				{
+					String scenarioid = firstSkillId.replace("automationscenario_", "");
+					Data scenario = getMediaArchive().getCachedData("automationscenario", scenarioid);
+					PossibleStep step = new PossibleStep();
+					step.setId(firstSkillId);
+					step.setValue("description", scenario.get("longdescription"));
+					step.setValue("inputs", scenario.get("requiredinputs"));
+					step.setValue("outputs", scenario.get("defaultoutputs"));
+					possible_steps.add(step);
+				}
+				else if (firstSkillId != null && firstSkillId.startsWith("aiskill"))
+				{
+					String skillid = firstSkillId.replace("aiskill_", "");
+					Data skill = getMediaArchive().getCachedData("aiskill", skillid);
+					PossibleStep step = new PossibleStep();
+					step.setId(firstSkillId);
+					step.setValue("description", skill.get("skilloverview"));
+					step.setValue("inputs", skill.get("requiredinputs"));
+					step.setValue("outputs", skill.get("defaultoutputs"));
+					possible_steps.add(step);
+				}
 			}
 			inAgentContext.put("possible_steps", possible_steps);
 			LlmConnection llmconnection = getMediaArchive().getLlmConnection("thinking");
@@ -84,30 +87,32 @@ public class AgentJobCreatorSkill extends BaseSkill
 
 			JSONObject payload = planresponse.getResponsePayload();
 
-			//save to the database
+			// save to the database
 			Data newjob = getMediaArchive().getSearcher("agentjob").createNewData();
-			newjob.setValue("owner",inAgentContext.getChatUser());
-			newjob.setValue("submitteddate",new Date());
-			newjob.setValue("status","pending");
+			newjob.setValue("owner", inAgentContext.getChatUser());
+			newjob.setValue("submitteddate", new Date());
+			newjob.setValue("status", "pending");
 			getMediaArchive().saveData("agentjob", newjob);
 			Collection<Map> steps = (Collection<Map>) payload.get("agent_steps");
-			saveSteps(newjob,steps);
+			saveSteps(newjob, steps);
 
-			//TODO: Confirm with the user. render local to tell the user what we are going to kick off. Dont go forward without confirmation skill
+			// TODO: Confirm with the user. render local to tell the user what we are going to kick off. Dont go
+			// forward without confirmation skill
 
-			//TODO: Once saved Put a link to the Job Orchestrator to monitor the job. Or have this job listen to web events and refresh?
+			// TODO: Once saved Put a link to the Job Orchestrator to monitor the job. Or have this job listen
+			// to web events and refresh?
 
-			//Kick off the job scheduler?
+			// Kick off the job scheduler?
 			getMediaArchive().fireSharedMediaEvent("ai/runopenjobs");
 
 			super.process(inAgentContext);
-		
+
 		}
 	}
 
 	protected void saveSteps(Data newjob, Collection<Map> steps)
 	{
-		Searcher searcher = getMediaArchive().getSearcher("agentjobstep");	
+		Searcher searcher = getMediaArchive().getSearcher("agentjobstep");
 		Collection tosave = new ArrayList();
 		for (Map stepData : steps)
 		{
@@ -116,13 +121,14 @@ public class AgentJobCreatorSkill extends BaseSkill
 
 			step.setValue("aiskillid", newjob.getId());
 			step.setValue("description", stepData.get("description"));
-			step.setValue("requiredinputs", stepData.get("inputs")); //TODO: Parse JSON?
+			step.setValue("requiredinputs", stepData.get("inputs")); // TODO: Parse JSON?
 			step.setValue("defaultoutput", stepData.get("outputs"));
 			tosave.add(step);
 		}
 		getMediaArchive().saveData("agentjobstep", tosave);
 
 	}
+
 	protected Collection<String> loadSkillDocIds()
 	{
 		Collection<String> docids = (Collection<String>) getMediaArchive().getCacheManager().get("skills", "skillids");
@@ -130,19 +136,25 @@ public class AgentJobCreatorSkill extends BaseSkill
 		{
 			docids = new ArrayList<String>();
 
-			HitTracker skills = getMediaArchive().getList("agentskill");
-			Collection<String> skillids = skills.collectValues("id");
-			for (String id : skillids)
+			Collection<MultiValued> skills = getMediaArchive().query("aiskill").all().search();
+
+			for (MultiValued data : skills)
 			{
-				String typed = "aiskill_" + id;
-				docids.add(typed);
+				if (data.get("markdowncontent") != null)
+				{
+					String typed = "aiskill_" + data.getId();
+					docids.add(typed);
+				}
 			}
 
-			HitTracker automations = getMediaArchive().getList("automationscenario");
-			Collection<String> moreids = automations.collectValues("id");
-			for (String id : moreids)
+			Collection<MultiValued> automations = getMediaArchive().query("automationscenario").all().cachedSearch();
+
+			for (MultiValued data : automations)
 			{
-				docids.add("automationscenario_" + id);
+				if (data.get("markdowncontent") != null)
+				{
+					docids.add("automationscenario_" + data.getId());
+				}
 			}
 			getMediaArchive().getCacheManager().put("skills", "skillids", docids);
 		}

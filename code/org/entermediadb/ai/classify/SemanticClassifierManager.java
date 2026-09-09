@@ -77,6 +77,11 @@ public class SemanticClassifierManager extends BaseAiManager
 				continue;
 			}
 
+			if (getMediaArchive().getSearcher(moduleid).getDetail(fieldname) == null)
+			{
+				continue;
+			}
+
 			try
 			{
 				Collection<String> newvalues = getSemanticTableManager().createSemanticValues(llmsemanticconnection, inConfig, moduleid, data);
@@ -181,11 +186,10 @@ public class SemanticClassifierManager extends BaseAiManager
 					continue;
 				}
 			}
-			else
-				if (excludedEntityIds != null && excludedEntityIds.contains(rankedResult.getEntityId()))
-				{
-					continue;
-				}
+			else if (excludedEntityIds != null && excludedEntityIds.contains(rankedResult.getEntityId()))
+			{
+				continue;
+			}
 
 			Collection hits = bytype.get(rankedResult.getModuleId());
 			if (hits == null)

@@ -49,8 +49,8 @@ public class FileOperationSkill extends BaseSkill
 	@Override
 	public void process(AgentContext inContext)
 	{
-		String operationType = (String) inContext.getContextValue("fileoperationtype");
 		String filename = (String) inContext.getContextValue("filename");
+		String operationType = (String) inContext.getContextValue("fileoperationtype");
 
 		if (filename == null || filename.trim().isEmpty())
 		{

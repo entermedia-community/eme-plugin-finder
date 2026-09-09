@@ -248,15 +248,7 @@ public class EmbeddingManager extends BaseAiManager
 			pagedata.put("page_id", searchtype + "_" + inEntity.getId());
 			pagedata.put("page_label", inEntity.getName());
 
-			String fieldToEmbed;
-			if ("aiskill".equals(searchtype))
-			{
-				fieldToEmbed = "skilloverview";
-			}
-			else
-			{
-				fieldToEmbed = "longdescription";
-			}
+			String fieldToEmbed = "markdowncontent";
 
 			PropertyDetail detail = getMediaArchive().getSearcher(searchtype).getDetail(fieldToEmbed);
 			if (detail != null)

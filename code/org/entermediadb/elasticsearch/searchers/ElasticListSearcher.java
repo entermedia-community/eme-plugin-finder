@@ -66,6 +66,10 @@ public class ElasticListSearcher extends BaseElasticSearcher implements Reloadab
 	 */
 	protected boolean isTrackEdits()
 	{
+		if (getDetail("emrecordstatus") != null)
+		{
+			return true;
+		}
 		return false;
 	}
 
