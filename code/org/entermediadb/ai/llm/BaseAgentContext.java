@@ -387,6 +387,11 @@ public class BaseAgentContext extends BaseData implements CatalogEnabled, AgentC
 		put(inKey, inValue);
 	}
 
+	public void putRoot(String inKey, Object inValue)
+	{
+		getRootContext().getContext().put(inKey, inValue);
+	}
+
 	public void put(String inKey, Object inValue)
 	{
 		getContext().put(inKey, inValue); // Track what is changed locally..

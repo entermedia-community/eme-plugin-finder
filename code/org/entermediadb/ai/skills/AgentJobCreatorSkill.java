@@ -11,6 +11,7 @@ import org.entermediadb.ai.BaseSkill;
 import org.entermediadb.ai.ChatMessageContext;
 import org.entermediadb.ai.automation.PossibleStep;
 import org.entermediadb.ai.classify.EmbeddingManager;
+import org.entermediadb.ai.llm.AutomationStep;
 import org.entermediadb.ai.llm.LlmConnection;
 import org.entermediadb.ai.llm.LlmResponse;
 import org.json.simple.JSONArray;
@@ -18,6 +19,7 @@ import org.json.simple.JSONObject;
 import org.openedit.Data;
 import org.openedit.MultiValued;
 import org.openedit.data.Searcher;
+import org.openedit.data.ValuesMap;
 
 public class AgentJobCreatorSkill extends BaseSkill
 {
@@ -27,11 +29,21 @@ public class AgentJobCreatorSkill extends BaseSkill
 	public void process(AgentContext inAgentContext)
 	{
 		ChatMessageContext messageContext = (ChatMessageContext) inAgentContext;
-
-		MultiValued agentmessage = messageContext.getAgentMessage();
-		MultiValued usermessage = (MultiValued) getMediaArchive().getCachedData("chatterbox", agentmessage.get("replytoid"));
-
-		String userRequest = usermessage.get("message");
+		Collection<MultiValued> channelChatHistory = messageContext.getChannelChatHistory();
+		StringBuffer buffer = new StringBuffer();
+		for (MultiValued multiValued : channelChatHistory) {
+			if( "agent".equals( multiValued.get("user")))
+			{
+				continue;
+			}
+			String plain = multiValued.get("message");
+			if( plain != null)
+			{
+				buffer.insert(0, plain + "\n");
+			}
+		}
+		
+		String userRequest = buffer.toString();// usermessage.get("message");
 		inAgentContext.put("query", userRequest); // required
 
 		// Needed?
@@ -86,16 +98,32 @@ public class AgentJobCreatorSkill extends BaseSkill
 			LlmResponse planresponse = llmconnection.callStructure(messageContext, "agentJobCreator");
 
 			JSONObject payload = planresponse.getResponsePayload();
-
-			// save to the database
+			ValuesMap responseValues = new ValuesMap(payload);
+			// Create steps
 			Data newjob = getMediaArchive().getSearcher("agentjob").createNewData();
 			newjob.setValue("owner", inAgentContext.getChatUser());
 			newjob.setValue("submitteddate", new Date());
 			newjob.setValue("status", "new");
 			newjob.setValue("llmprompt", userRequest);
-			getMediaArchive().saveData("agentjob", newjob);
 			Collection<Map> steps = (Collection<Map>) payload.get("agent_steps");
-			saveSteps(newjob, steps);
+			Collection<Data> proposedSteps = saveSteps(newjob, steps);
+			messageContext.put("proposedsteps", proposedSteps);
+			responseValues.get("userapproved");
+			boolean userapproved = responseValues.getBoolean("userapproved");
+			if( !userapproved )
+			{
+
+				llmconnection = getMediaArchive().getLlmConnection("localrender");
+				response = llmconnection.renderLocalAction(inAgentContext, "agent_job_showjobplan");
+				inAgentContext.setLastResponse(planresponse);
+
+				AutomationStep skillEnabled = inAgentContext.getCurrentAutomationStep();
+				inAgentContext.fireStatusComplete(skillEnabled);
+				return;
+			}
+
+			getMediaArchive().saveData("agentjob", newjob);
+			getMediaArchive().saveData("agentjobstep", proposedSteps);
 
 			// TODO: Confirm with the user. render local to tell the user what we are going to kick off. Dont go
 			// forward without confirmation skill
@@ -114,7 +142,7 @@ public class AgentJobCreatorSkill extends BaseSkill
 		}
 	}
 
-	protected void saveSteps(Data newjob, Collection<Map> steps)
+	protected Collection<Data> saveSteps(Data newjob, Collection<Map> steps)
 	{
 		Searcher searcher = getMediaArchive().getSearcher("agentjobstep");
 		Collection tosave = new ArrayList();
@@ -147,8 +175,7 @@ public class AgentJobCreatorSkill extends BaseSkill
 			//step.setValue("defaultoutput", stepData.get("outputs"));
 			tosave.add(step);
 		}
-		getMediaArchive().saveData("agentjobstep", tosave);
-
+		return tosave;
 	}
 
 	protected Collection<String> loadSkillDocIds()
