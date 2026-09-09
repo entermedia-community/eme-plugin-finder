@@ -13,12 +13,10 @@ import org.entermediadb.ai.automation.PossibleStep;
 import org.entermediadb.ai.classify.EmbeddingManager;
 import org.entermediadb.ai.llm.LlmConnection;
 import org.entermediadb.ai.llm.LlmResponse;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.openedit.Data;
 import org.openedit.MultiValued;
 import org.openedit.data.Searcher;
-import org.openedit.hittracker.HitTracker;
 
 public class AgentJobCreatorSkill extends BaseSkill
 {
@@ -42,7 +40,7 @@ public class AgentJobCreatorSkill extends BaseSkill
 		EmbeddingManager embeddings = (EmbeddingManager) getMediaArchive().getBean("embeddingManager");
 
 		String prompt =
-			"You are an AI agent orchestrator tasked with creating tasks to complete a given request. Chose the appropriate skills and automation scenarios to accomplish the goal. Only return the doc ids";
+			"You are a search tool looking for tools needed to accomplish a goal. Only return the doc ids";
 
 		LlmResponse response = embeddings.callFindDocIds(messageContext, docids, prompt, userRequest);
 
@@ -66,7 +64,7 @@ public class AgentJobCreatorSkill extends BaseSkill
 					step.setId(firstSkillId);
 					step.setValue("description", scenario.get("longdescription"));
 					step.setValue("inputs", scenario.get("requiredinputs"));
-					step.setValue("outputs", scenario.get("defaultoutputs"));
+					step.setValue("outputs", scenario.get("defaultoutput"));
 					possible_steps.add(step);
 				}
 				else if (firstSkillId != null && firstSkillId.startsWith("aiskill"))
@@ -75,9 +73,9 @@ public class AgentJobCreatorSkill extends BaseSkill
 					Data skill = getMediaArchive().getCachedData("aiskill", skillid);
 					PossibleStep step = new PossibleStep();
 					step.setId(firstSkillId);
-					step.setValue("description", skill.get("skilloverview"));
+					step.setValue("description", skill.get("markdowncontent"));
 					step.setValue("inputs", skill.get("requiredinputs"));
-					step.setValue("outputs", skill.get("defaultoutputs"));
+					step.setValue("outputs", skill.get("defaultoutput"));
 					possible_steps.add(step);
 				}
 			}
@@ -136,6 +134,7 @@ public class AgentJobCreatorSkill extends BaseSkill
 		{
 			docids = new ArrayList<String>();
 
+			//TODO: Add embeded checks
 			Collection<MultiValued> skills = getMediaArchive().query("aiskill").all().search();
 
 			for (MultiValued data : skills)
