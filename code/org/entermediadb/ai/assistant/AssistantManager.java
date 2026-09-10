@@ -187,7 +187,7 @@ public class AssistantManager extends BaseAiManager implements SkillStatusListen
 		}
 		List<MultiValued> sorted = new ArrayList<>();
 		sorted.addAll(messages);
-		Collections.reverse(sorted); //Newst last
+		Collections.reverse(sorted); // Newst last
 
 		for (Iterator<MultiValued> iterator = sorted.iterator(); iterator.hasNext();)
 		{
@@ -447,7 +447,7 @@ public class AssistantManager extends BaseAiManager implements SkillStatusListen
 		// inChannel).sort("dateUp").search();
 
 		List<MultiValued> recent = new ArrayList<MultiValued>();
-		
+
 		for (Iterator<MultiValued> iterator = messages.iterator(); iterator.hasNext();)
 		{
 			MultiValued message = iterator.next();
@@ -1047,7 +1047,8 @@ public class AssistantManager extends BaseAiManager implements SkillStatusListen
 		MultiValued agentmessage = chatMessageContext.getAgentMessage();
 
 		String message = inContext.getMessagePrefix() + processingmessage;
-		agentmessage.setValue("message", message); // setting status
+		agentmessage.setValue("message", message);
+		agentmessage.setValue("messagetype", "status");
 		agentmessage.setValue("functionname", function.getId());
 		getMediaArchive().saveData("chatterbox", agentmessage);
 		ChatServer server = (ChatServer) getMediaArchive().getBean("chatServer");
