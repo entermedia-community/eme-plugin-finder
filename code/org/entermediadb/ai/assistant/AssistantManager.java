@@ -452,6 +452,10 @@ public class AssistantManager extends BaseAiManager implements SkillStatusListen
 		for (Iterator<MultiValued> iterator = messages.iterator(); iterator.hasNext();)
 		{
 			MultiValued message = iterator.next();
+			if (message.get("messagetype") == null)
+			{
+				continue;
+			}
 			if ("system".equals(message.get("messagetype")))
 			{
 				continue;
@@ -1155,7 +1159,7 @@ public class AssistantManager extends BaseAiManager implements SkillStatusListen
 
 			JSONObject jsonMessage = new JSONObject(functionMessageUpdate);
 
-			log.info("Broadcasting: " + jsonMessage.toJSONString());
+			// log.info("Broadcasting: " + jsonMessage.toJSONString());
 
 			server.broadcastMessage(jsonMessage);
 

@@ -31,18 +31,19 @@ public class AgentJobCreatorSkill extends BaseSkill
 		ChatMessageContext messageContext = (ChatMessageContext) inAgentContext;
 		Collection<MultiValued> channelChatHistory = messageContext.getChannelChatHistory();
 		StringBuffer buffer = new StringBuffer();
-		for (MultiValued multiValued : channelChatHistory) {
-			if( "agent".equals( multiValued.get("user")))
+		for (MultiValued multiValued : channelChatHistory)
+		{
+			if ("agent".equals(multiValued.get("user")))
 			{
 				continue;
 			}
 			String plain = multiValued.get("message");
-			if( plain != null)
+			if (plain != null)
 			{
 				buffer.insert(0, plain + "\n");
 			}
 		}
-		
+
 		String userRequest = buffer.toString();// usermessage.get("message");
 		inAgentContext.put("query", userRequest); // required
 
@@ -52,9 +53,9 @@ public class AgentJobCreatorSkill extends BaseSkill
 		Collection<String> docids = loadSkillDocIds();
 		EmbeddingManager embeddings = (EmbeddingManager) getMediaArchive().getBean("embeddingManager");
 
-		//TODO: Add more context and have AI create a summary of what the user wants. Could be across multiuple messages
-		String prompt =
-			"You are a search tool looking for tools needed to accomplish a goal. Only return the doc ids";
+		// TODO: Add more context and have AI create a summary of what the user wants. Could be across
+		// multiuple messages
+		String prompt = "You are a search tool looking for tools needed to accomplish a goal. Only return the doc ids";
 
 		LlmResponse response = embeddings.callFindDocIds(messageContext, docids, prompt, userRequest);
 
@@ -108,14 +109,17 @@ public class AgentJobCreatorSkill extends BaseSkill
 			Collection<Map> steps = (Collection<Map>) payload.get("agent_steps");
 			Collection<Data> proposedSteps = saveSteps(newjob, steps);
 			messageContext.put("proposedsteps", proposedSteps);
-			responseValues.get("userapproved");
+
+			// TODO: We need to extrat confirmation to external skill or, watch last user message in history?
+
 			boolean userapproved = responseValues.getBoolean("userapproved");
-			if( !userapproved )
+			if (!userapproved)
 			{
 
 				llmconnection = getMediaArchive().getLlmConnection("localrender");
 				response = llmconnection.renderLocalAction(inAgentContext, "agent_job_showjobplan");
-				inAgentContext.setLastResponse(planresponse);
+
+				inAgentContext.setLastResponse(response);
 
 				AutomationStep skillEnabled = inAgentContext.getCurrentAutomationStep();
 				inAgentContext.fireStatusComplete(skillEnabled);
@@ -134,8 +138,7 @@ public class AgentJobCreatorSkill extends BaseSkill
 			// Kick off the job scheduler?
 			getMediaArchive().fireSharedMediaEvent("ai/runopenjobs");
 
-
-			//next Render the confirmation and wait
+			// next Render the confirmation and wait
 
 			super.process(inAgentContext);
 
@@ -153,13 +156,13 @@ public class AgentJobCreatorSkill extends BaseSkill
 			step.setValue("agentjob", newjob.getId());
 			step.setValue("ordering", ordering++);
 
-			String id = (String)stepData.get("skill_id");
-			if( id.startsWith("aiskill_"))
+			String id = (String) stepData.get("skill_id");
+			if (id.startsWith("aiskill_"))
 			{
 				String skillid = id.replace("aiskill_", "");
 				step.setValue("aiskillid", skillid);
 			}
-			else if( id.startsWith("automationscenario_"))
+			else if (id.startsWith("automationscenario_"))
 			{
 				String scenarioid = id.replace("automationscenario_", "");
 				step.setValue("workflowid", scenarioid);
@@ -167,12 +170,12 @@ public class AgentJobCreatorSkill extends BaseSkill
 
 			step.setValue("markdowncontent", stepData.get("details"));
 			JSONArray inputs = (JSONArray) stepData.get("parameters");
-			if( inputs != null)
+			if (inputs != null)
 			{
-				step.setValue("parameters", inputs.toJSONString());	
+				step.setValue("parameters", inputs.toJSONString());
 			}
 
-			//step.setValue("defaultoutput", stepData.get("outputs"));
+			// step.setValue("defaultoutput", stepData.get("outputs"));
 			tosave.add(step);
 		}
 		return tosave;
@@ -185,7 +188,7 @@ public class AgentJobCreatorSkill extends BaseSkill
 		{
 			docids = new ArrayList<String>();
 
-			//TODO: Add embeded checks
+			// TODO: Add embeded checks
 			Collection<MultiValued> skills = getMediaArchive().query("aiskill").all().search();
 
 			for (MultiValued data : skills)

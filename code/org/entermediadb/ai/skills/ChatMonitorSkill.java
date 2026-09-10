@@ -5,12 +5,12 @@ import org.apache.commons.logging.LogFactory;
 import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.BaseSkill;
 import org.entermediadb.ai.ChatMessageContext;
-import org.entermediadb.ai.automation.RunningScenario;
 import org.entermediadb.ai.llm.AutomationStep;
 import org.entermediadb.ai.llm.LlmConnection;
 import org.entermediadb.ai.llm.LlmResponse;
 import org.json.simple.JSONObject;
 import org.openedit.MultiValued;
+import groovy.json.JsonOutput;
 
 public class ChatMonitorSkill extends BaseSkill
 {
@@ -38,7 +38,9 @@ public class ChatMonitorSkill extends BaseSkill
 		LlmConnection llmconnection = getMediaArchive().getLlmConnection("thinking");
 
 		LlmResponse response = llmconnection.callToolsFunction(inAgentContext, "chat_monitor");
+
 		log.info(response.getRawResponse());
+		// log.info(JsonOutput.prettyPrint(payload.toJSONString()));
 
 		JSONObject structuredResponse = response.getToolsResponse();
 
