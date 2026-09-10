@@ -180,7 +180,7 @@ public class AssistantManager extends BaseAiManager implements SkillStatusListen
 		}
 		Collection<MultiValued> messages = archive.query("chatterbox").exact("channel", inChannel.getId()).sort("dateDown").search();
 		Collection<MultiValued> filtered = loadChannelChatHistory(messages);
-		chatMessageContext.putContextValue("channelchathistory", filtered);
+		chatMessageContext.putRoot("channelchathistory", filtered);
 		if (messages.isEmpty())
 		{
 			return chatMessageContext;
