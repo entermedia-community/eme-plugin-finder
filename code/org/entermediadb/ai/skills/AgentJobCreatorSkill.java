@@ -14,6 +14,7 @@ import org.entermediadb.ai.classify.EmbeddingManager;
 import org.entermediadb.ai.llm.AutomationStep;
 import org.entermediadb.ai.llm.LlmConnection;
 import org.entermediadb.ai.llm.LlmResponse;
+import org.entermediadb.markdown.MarkdownUtil;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.openedit.Data;
@@ -40,7 +41,7 @@ public class AgentJobCreatorSkill extends BaseSkill
 			String plain = multiValued.get("message");
 			if (plain != null)
 			{
-				buffer.insert(0, plain + "\n");
+				buffer.append(plain + "\n");
 			}
 		}
 
@@ -103,19 +104,26 @@ public class AgentJobCreatorSkill extends BaseSkill
 			// Create steps
 			Data newjob = getMediaArchive().getSearcher("agentjob").createNewData();
 			newjob.setValue("owner", inAgentContext.getChatUser());
-			newjob.setValue("submitteddate", new Date());
+			newjob.setValue("submitteddate", new Date()); 
 			newjob.setValue("status", "new");
 			newjob.setValue("llmprompt", userRequest);
+			newjob.setValue("markdowncontent", responseValues.get("job_requested"));
+			newjob.setValue("name", responseValues.get("job_name"));
+			
 			Collection<Map> steps = (Collection<Map>) payload.get("agent_steps");
 			Collection<Data> proposedSteps = saveSteps(newjob, steps);
+			messageContext.put("agentjob", newjob);
 			messageContext.put("proposedsteps", proposedSteps);
 
 			// TODO: We need to extra confirmation to external skill or, watch last user message in history?
 
 			boolean userapproved = responseValues.getBoolean("userapproved");
+			inAgentContext.put("userapproved", userapproved);
 			if (!userapproved)
 			{
 
+				MarkdownUtil markdown = new MarkdownUtil();
+				inAgentContext.put("markdown", markdown);
 				llmconnection = getMediaArchive().getLlmConnection("localrender");
 				response = llmconnection.renderLocalAction(inAgentContext, "agent_job_showjobplan");
 
@@ -127,9 +135,9 @@ public class AgentJobCreatorSkill extends BaseSkill
 				inAgentContext.fireStatusComplete(skillEnabled);
 				return;
 			}
-
+			
 			getMediaArchive().saveData("agentjob", newjob);
-			messageContext.put("agentjob", newjob);
+			//messageContext.put("agentjob", newjob);
 			getMediaArchive().saveData("agentjobstep", proposedSteps);
 
 			// TODO: Confirm with the user. render local to tell the user what we are going to kick off. Dont go

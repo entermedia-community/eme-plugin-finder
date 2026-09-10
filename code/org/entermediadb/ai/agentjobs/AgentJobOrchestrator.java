@@ -1,11 +1,11 @@
 package org.entermediadb.ai.agentjobs;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.entermediadb.ai.AgentContext;
@@ -356,6 +356,7 @@ public class AgentJobOrchestrator implements AgentJobListener, CatalogEnabled
 			log.info("RELEASED " + inAgentJob.getId());
 			//Save job
 			inAgentJob.getAgentJob().setValue("status", "complete");
+			inAgentJob.getAgentJob().setValue("enddate", new Date());
 			getMediaArchive().saveData("agentjob", inAgentJob.getAgentJob());
 
 			checkQueue();

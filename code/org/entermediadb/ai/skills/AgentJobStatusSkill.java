@@ -1,5 +1,6 @@
 package org.entermediadb.ai.skills;
 
+import java.util.Date;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.entermediadb.ai.AgentContext;
@@ -7,6 +8,7 @@ import org.entermediadb.ai.BaseSkill;
 import org.entermediadb.ai.agentjobs.AgentJob;
 import org.entermediadb.ai.llm.LlmConnection;
 import org.entermediadb.ai.llm.LlmResponse;
+import org.entermediadb.markdown.MarkdownUtil;
 
 public class AgentJobStatusSkill extends BaseSkill
 {
@@ -25,6 +27,18 @@ public class AgentJobStatusSkill extends BaseSkill
 
 		agentjob = (AgentJob)getMediaArchive().getData("agentjob", agentjob.getId());
 		inContext.put("agentjob", agentjob);
+		MarkdownUtil markdown = new MarkdownUtil();
+		inContext.put("markdown", markdown);
+
+
+		Date endtime = agentjob.getDate("enddate");
+		Date starttime = agentjob.getDate("submitteddate");
+		if( endtime != null && starttime != null)
+		{
+			double secondsTaken = (endtime.getTime() - starttime.getTime()) / 1000D;
+			inContext.put("secondstaken", secondsTaken);
+		}
+
 		LlmConnection llmconnection = getMediaArchive().getLlmConnection("localrender");
 		LlmResponse response = llmconnection.renderLocalAction(inContext, "agent_job_showjobplan");
 
