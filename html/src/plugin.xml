@@ -2718,6 +2718,12 @@
 		</property>
 	</bean>
 
+	<bean id="mediaCreatorSkill" class="org.entermediadb.ai.skills.MediaCreationSkill" scope="prototype">
+		<property name="moduleManager">
+			<ref bean="moduleManager" />
+		</property>
+	</bean>
+
 	<bean id="agentJobCreatorSkill" class="org.entermediadb.ai.skills.AgentJobCreatorSkill" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
