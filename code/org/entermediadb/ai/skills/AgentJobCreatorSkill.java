@@ -119,6 +119,8 @@ public class AgentJobCreatorSkill extends BaseSkill
 				llmconnection = getMediaArchive().getLlmConnection("localrender");
 				response = llmconnection.renderLocalAction(inAgentContext, "agent_job_showjobplan");
 
+				//This needs to be set so we come back here, not to the chat
+				response.setNextSkillEnabled("agentJobCreator");
 				inAgentContext.setLastResponse(response);
 
 				AutomationStep skillEnabled = inAgentContext.getCurrentAutomationStep();
@@ -127,6 +129,7 @@ public class AgentJobCreatorSkill extends BaseSkill
 			}
 
 			getMediaArchive().saveData("agentjob", newjob);
+			messageContext.put("agentjob", newjob);
 			getMediaArchive().saveData("agentjobstep", proposedSteps);
 
 			// TODO: Confirm with the user. render local to tell the user what we are going to kick off. Dont go
@@ -136,7 +139,7 @@ public class AgentJobCreatorSkill extends BaseSkill
 			// to web events and refresh?
 
 			// Kick off the job scheduler?
-			getMediaArchive().fireSharedMediaEvent("ai/runopenjobs");
+			getMediaArchive().fireSharedMediaEvent("agentjob/runagentjobs");
 			super.process(messageContext);
 
 		}

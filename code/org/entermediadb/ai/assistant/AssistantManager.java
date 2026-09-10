@@ -1169,16 +1169,14 @@ public class AssistantManager extends BaseAiManager implements SkillStatusListen
 			log.error("Error in fireStatusComplete", ex);
 		}
 
-		Long waittime = 200l;
-
 		RunningScenario currentscenario = inContext.getCurrentScenario();
 		if (currentscenario != null)
 		{
 			Long wait = inContext.getWaitTime();
-			if (wait != null && wait instanceof Long)
+			if (wait != null)
 			{
 				inContext.setWaitTime(null);
-				waittime = wait;
+				Long waittime = wait;
 				log.info("Previous function requested to wait " + waittime + " milliseconds");
 				try
 				{
@@ -1190,18 +1188,14 @@ public class AssistantManager extends BaseAiManager implements SkillStatusListen
 					Thread.currentThread().interrupt();
 				}
 			}
-
-			// chatMessageContext.setAgentMessage(agentmessage);
-			// chatMessageContext.setUserMessage(usermessage);
-
-			// String runFunctionName = response.getRunSkillEnabled();
-			// if (runFunctionName != null)
-			// {
-			// MultiValued nextFunction = (MultiValued) archive.getCachedData("aifunction", runFunctionName);
-			// chatMessageContext.setCurrentFunction(nextFunction);
-			// execCurrentFunctionFromChat(chatMessageContext, usermessage, runFunctionName);
-			// }
-			// // Save the current state
+			if( response != null)
+			{
+				String runFunctionName = response.getRunSkillEnabled();
+				if (runFunctionName != null)
+				{
+					currentscenario.runProcess(runFunctionName, inContext);
+				}
+			}
 		}
 	}
 

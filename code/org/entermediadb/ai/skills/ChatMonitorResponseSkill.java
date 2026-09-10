@@ -64,6 +64,7 @@ public class ChatMonitorResponseSkill extends BaseSkill
 				log.error("No skill enabled found for id: " + skillenableid);
 				return;
 			}
+			inAgentContext.setCurrentScenario(running);
 			running.runProcess(skillEnabled, inAgentContext);
 		}
 		else

@@ -16,17 +16,29 @@ public class AgentJobStatusSkill extends BaseSkill
 	public void process(AgentContext inContext)
 	{
 		log.info("AgentJobStatusSkill running for catalog: " + getCatalogId());
+		AgentJob agentjob = (AgentJob) inContext.getContextValue("agentjob");
+		if( agentjob == null)
+		{
+			log.warn("No agent job found in context.");
+			return;
+		}
 
+		agentjob = (AgentJob)getMediaArchive().getData("agentjob", agentjob.getId());
+		inContext.put("agentjob", agentjob);
 		LlmConnection llmconnection = getMediaArchive().getLlmConnection("localrender");
 		LlmResponse response = llmconnection.renderLocalAction(inContext, "agent_job_showjobplan");
-		AgentJob agentjob = (AgentJob) inContext.getContextValue("agentjob");
+
 		String status = agentjob.get("status");
-		if (!"completed".equals(status) || !"error".equals(status))
+		if (!"complete".equals(status) && !"error".equals(status))
 		{
-			log.info("Agent job completed successfully.");
+			log.info("Agent job not completed yet.");
 			inContext.setWaitTime(1000L);
-			response.setNextSkillEnabled("agentJobStatus");
+			response.setRunSkillEnabled("agentJobStatus");
 		}	
+		else
+		{
+			response.setNextSkillEnabled("chatMonitor");
+		}
 		inContext.setLastResponse(response);
 
 		super.process(inContext);

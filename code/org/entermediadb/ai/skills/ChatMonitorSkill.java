@@ -10,7 +10,6 @@ import org.entermediadb.ai.llm.LlmConnection;
 import org.entermediadb.ai.llm.LlmResponse;
 import org.json.simple.JSONObject;
 import org.openedit.MultiValued;
-import groovy.json.JsonOutput;
 
 public class ChatMonitorSkill extends BaseSkill
 {
