@@ -36,11 +36,14 @@ public class AgentJobStatusSkill extends BaseSkill
 		if( endtime != null && starttime != null)
 		{
 			double secondsTaken = (endtime.getTime() - starttime.getTime()) / 1000D;
-			inContext.put("secondstaken", secondsTaken);
+			//Only local. add putLocal
+			inContext.getContext().put("secondstaken", secondsTaken);
 		}
 
 		LlmConnection llmconnection = getMediaArchive().getLlmConnection("localrender");
 		LlmResponse response = llmconnection.renderLocalAction(inContext, "agent_job_showjobplan");
+
+		//inContext.put("secondstaken", null);
 
 		String status = agentjob.get("status");
 		if (!"complete".equals(status) && !"error".equals(status))
