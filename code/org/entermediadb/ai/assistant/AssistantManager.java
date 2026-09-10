@@ -185,10 +185,9 @@ public class AssistantManager extends BaseAiManager implements SkillStatusListen
 		{
 			return chatMessageContext;
 		}
-
 		List<MultiValued> sorted = new ArrayList<>();
 		sorted.addAll(messages);
-		Collections.reverse(sorted);
+		Collections.reverse(sorted); //Newst last
 
 		for (Iterator<MultiValued> iterator = sorted.iterator(); iterator.hasNext();)
 		{
@@ -447,8 +446,8 @@ public class AssistantManager extends BaseAiManager implements SkillStatusListen
 		// HitTracker messages = getMediaArchive().query("chatterbox").exact("channel",
 		// inChannel).sort("dateUp").search();
 
-		Collection<MultiValued> recent = new ArrayList<MultiValued>();
-
+		List<MultiValued> recent = new ArrayList<MultiValued>();
+		
 		for (Iterator<MultiValued> iterator = messages.iterator(); iterator.hasNext();)
 		{
 			MultiValued message = iterator.next();
@@ -470,7 +469,7 @@ public class AssistantManager extends BaseAiManager implements SkillStatusListen
 			}
 			recent.add(message);
 		}
-
+		Collections.reverse(recent); // Newest last
 		return recent;
 	}
 

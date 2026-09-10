@@ -110,7 +110,7 @@ public class AgentJobCreatorSkill extends BaseSkill
 			Collection<Data> proposedSteps = saveSteps(newjob, steps);
 			messageContext.put("proposedsteps", proposedSteps);
 
-			// TODO: We need to extrat confirmation to external skill or, watch last user message in history?
+			// TODO: We need to extra confirmation to external skill or, watch last user message in history?
 
 			boolean userapproved = responseValues.getBoolean("userapproved");
 			if (!userapproved)
@@ -137,10 +137,7 @@ public class AgentJobCreatorSkill extends BaseSkill
 
 			// Kick off the job scheduler?
 			getMediaArchive().fireSharedMediaEvent("ai/runopenjobs");
-
-			// next Render the confirmation and wait
-
-			super.process(inAgentContext);
+			super.process(messageContext);
 
 		}
 	}

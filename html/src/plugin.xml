@@ -2736,6 +2736,12 @@
 		</property>
 	</bean>
 
+	<bean id="agentJobStatusSkill" class="org.entermediadb.ai.skills.AgentJobStatusSkill" scope="prototype">
+		<property name="moduleManager">
+			<ref bean="moduleManager" />
+		</property>
+	</bean>
+
 
 
 	<bean id="emeChatRespondSkill" class="org.entermediadb.ai.skills.EmeChatRespondSkill" scope="prototype">
