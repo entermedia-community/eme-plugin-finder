@@ -3293,5 +3293,10 @@
 	</bean>
 
 
+	<bean id="handleErrorSkill" class="org.entermediadb.ai.skills.HandleErrorSkill" lazy-init="default" scope="prototype">
+		<property name="moduleManager">
+			<ref bean="moduleManager" />
+		</property>
+	</bean>
 
 </beans>

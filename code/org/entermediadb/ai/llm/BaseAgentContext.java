@@ -199,6 +199,14 @@ public class BaseAgentContext extends BaseData implements CatalogEnabled, AgentC
 		{
 			return getParentContext().getCurrentAutomationStep();
 		}
+		if( fieldCurrentAutomationStep == null && getCurrentScenario() != null)
+		{
+			Collection<AutomationStep> enabled = getCurrentScenario().getEnabledAgents();
+			if( enabled != null && enabled.size() > 0)
+			{
+				fieldCurrentAutomationStep = enabled.iterator().next();
+			}
+		}
 		return fieldCurrentAutomationStep;
 	}
 

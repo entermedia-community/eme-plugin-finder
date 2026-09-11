@@ -128,7 +128,7 @@ public class AgentJobCreatorSkill extends BaseSkill
 				response = llmconnection.renderLocalAction(inAgentContext, "agent_job_showjobplan");
 
 				//This needs to be set so we come back here, not to the chat
-				response.setNextSkillEnabled("agentJobCreator");
+				response.setNextAutomationStep(inAgentContext.getCurrentScenario().getId() + ".agentJobCreator");
 				inAgentContext.setLastResponse(response);
 
 				AutomationStep skillEnabled = inAgentContext.getCurrentAutomationStep();

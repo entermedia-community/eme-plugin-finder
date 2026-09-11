@@ -67,7 +67,7 @@ public class ChatSmartCreatorConfirmationSkill extends BaseSkill
 
 			// Render the updated outline for confirmation
 			res.setOperationState("runskill");
-			res.setRunSkillEnabled("chat_smartcreator_renderoutline");
+			res.setExecAutomationSkill("chat_smartcreator_renderoutline");
 			messageContext.setLastResponse(res);
 
 			// AutomationStep skillEnabled = messageContext.getCurrentAgentEnable();

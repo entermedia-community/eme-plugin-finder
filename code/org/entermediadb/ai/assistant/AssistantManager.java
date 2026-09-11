@@ -1112,7 +1112,7 @@ public class AssistantManager extends BaseAiManager implements SkillStatusListen
 			}
 			else
 			{
-				nextFunctionName = response.getNextSkillEnabled();
+				nextFunctionName = response.getNextAutomationStep();
 			}
 
 			if (nextFunctionName == null)
@@ -1124,6 +1124,8 @@ public class AssistantManager extends BaseAiManager implements SkillStatusListen
 				}
 			}
 
+			//Make functioname be the last functio
+			//and next be the next
 			agentmessage.setValue("functionname", inAutomationStep.getEnabledId());
 			agentmessage.setValue("nextfunctionname", nextFunctionName);
 			agentmessage.setValue("chatmessagestatus", "completed");
@@ -1190,7 +1192,7 @@ public class AssistantManager extends BaseAiManager implements SkillStatusListen
 			}
 			if( response != null)
 			{
-				String runFunctionName = response.getRunSkillEnabled();
+				String runFunctionName = response.getExecAutomationSkill();
 				if (runFunctionName != null)
 				{
 					currentscenario.runProcess(runFunctionName, inContext);

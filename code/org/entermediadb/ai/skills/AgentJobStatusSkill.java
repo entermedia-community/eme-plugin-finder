@@ -50,11 +50,14 @@ public class AgentJobStatusSkill extends BaseSkill
 		{
 			log.info("Agent job not completed yet.");
 			inContext.setWaitTime(1000L);
-			response.setRunSkillEnabled("agentJobStatus");
+			response.setExecAutomationSkill("agentJobStatus");
 		}	
 		else
 		{
-			response.setNextSkillEnabled("chatMonitor");
+			//complete or error, go back to the chat monitor
+			String startup_scenario = (String) inContext.getContextValue("startup_scenario");
+			response.setNextAutomationStep(startup_scenario);
+
 		}
 		inContext.setLastResponse(response);
 

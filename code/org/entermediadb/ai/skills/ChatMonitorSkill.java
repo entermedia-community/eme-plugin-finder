@@ -25,7 +25,12 @@ public class ChatMonitorSkill extends BaseSkill
 		MultiValued usermessage = (MultiValued) getMediaArchive().getCachedData("chatterbox", agentmessage.get("replytoid"));
 		String query = usermessage.get("message");
 
-		String agentFn = inAgentContext.getCurrentAutomationStep().getAutomationStepData().getId();
+		String functionpath = inAgentContext.getCurrentScenario().getId();
+		String function = inAgentContext.getCurrentAutomationStep().getAutomationStepData().getId();
+
+		functionpath = functionpath + "." + function;
+
+		inAgentContext.put("startup_scenario", functionpath);
 
 		// Move to its own skill, next step is parse text
 		inAgentContext.put("userquery", query);
@@ -54,7 +59,7 @@ public class ChatMonitorSkill extends BaseSkill
 
 			llmconnection = getMediaArchive().getLlmConnection("localrender");
 			response = llmconnection.renderLocalAction(inAgentContext, "chat_detect_showresponse");
-			response.setNextSkillEnabled("chatMonitor"); // Stay in this skill?
+			response.setNextAutomationStep("chatMonitor"); // Stay in this skill?
 			inAgentContext.setLastResponse(response);
 
 			AutomationStep skillEnabled = messageContext.getCurrentAutomationStep();
