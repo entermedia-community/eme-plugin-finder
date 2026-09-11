@@ -2817,6 +2817,12 @@
 		</property>
 	</bean>
 
+	<bean id="markdownToHtmlSkill" class="org.entermediadb.ai.skills.MarkdownToHtmlSkill" scope="prototype">
+		<property name="moduleManager">
+			<ref bean="moduleManager" />
+		</property>
+	</bean>
+
 	<bean id="SmartCreatorModule" class="org.entermediadb.ai.creator.SmartCreatorModule">
 	</bean>
 

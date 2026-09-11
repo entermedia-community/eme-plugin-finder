@@ -46,6 +46,13 @@ public class BasicLlmResponse implements LlmResponse
 		return fieldMessage;
 
 	}
+		@Override
+	public void setMessage(String inMessage)
+	{
+		fieldMessage = inMessage;
+	}
+
+
 
 	public void setMessagePlain(String inMessage)
 	{
@@ -153,12 +160,6 @@ public class BasicLlmResponse implements LlmResponse
 	{
 		// TODO Auto-generated method stub
 		return null;
-	}
-
-	@Override
-	public void setMessage(String inMessage)
-	{
-		fieldMessage = inMessage;
 	}
 
 	@Override
