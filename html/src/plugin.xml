@@ -2742,6 +2742,15 @@
 		</property>
 	</bean>
 
+	<bean id="openCodeRunnerSkill" class="org.entermediadb.ai.skills.OpenCodeRunnerSkill" scope="prototype">
+		<property name="moduleManager">
+			<ref bean="moduleManager" />
+		</property>
+		<property name="exec">
+			<ref bean="exec" />
+		</property>
+	</bean>
+
 
 
 	<bean id="emeChatRespondSkill" class="org.entermediadb.ai.skills.EmeChatRespondSkill" scope="prototype">
