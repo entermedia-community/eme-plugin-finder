@@ -112,7 +112,7 @@ public class AgentJobCreatorSkill extends BaseSkill
 			
 			Collection<Map> steps = (Collection<Map>) payload.get("agent_steps");
 			Collection<Data> proposedSteps = saveSteps(newjob, steps);
-			messageContext.put("agentjob", newjob);
+			messageContext.put("agentjob", newjob);  //No id
 			messageContext.put("proposedsteps", proposedSteps);
 
 			// TODO: We need to extra confirmation to external skill or, watch last user message in history?
@@ -135,18 +135,15 @@ public class AgentJobCreatorSkill extends BaseSkill
 				inAgentContext.fireStatusComplete(skillEnabled);
 				return;
 			}
-			
+
 			getMediaArchive().saveData("agentjob", newjob);
-			//messageContext.put("agentjob", newjob);
+            proposedSteps = saveSteps(newjob, steps); //Save with job id
 			getMediaArchive().saveData("agentjobstep", proposedSteps);
 
-			// TODO: Confirm with the user. render local to tell the user what we are going to kick off. Dont go
-			// forward without confirmation skill
+			messageContext.put("agentjob", newjob);
+			messageContext.put("proposedsteps", proposedSteps);
 
-			// TODO: Once saved Put a link to the Job Orchestrator to monitor the job. Or have this job listen
-			// to web events and refresh?
-
-			// Kick off the job scheduler?
+			// Kick off the job scheduler
 			getMediaArchive().fireSharedMediaEvent("agentjob/runagentjobs");
 			super.process(messageContext);
 
