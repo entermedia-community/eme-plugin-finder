@@ -86,17 +86,18 @@ public class OpenCodeRunnerSkill extends BaseSkill
 			String stdout = execResult.getStandardOut();
 
 			log.info("OpenCodeRunnerSkill command exited with code: " + exitcode);
-			if (exitcode != 0)
-			{
-				inContext.put("errormessage", "Command exited with code " + exitcode);
-				throw new OpenEditException("Command exited with code " + exitcode);
-			}
 			String filecontents = stdout;
 			inContext.put("commandoutput", filecontents);
 			
 			LlmResponse response = new BasicLlmResponse();
 			response.setMessage(filecontents);
 			inContext.setLastResponse(response);
+			if (exitcode != 0)
+			{
+				inContext.put("errormessage", "Command exited with code " + exitcode);
+				throw new OpenEditException("Command exited with code " + exitcode);
+			}
+
 		}
 		catch (Exception e)
 		{
