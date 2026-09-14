@@ -136,7 +136,15 @@ public class AgentJobOrchestrator implements AgentJobListener, CatalogEnabled
 				Data hit = (Data) iterator.next();
 
 				AgentJob job = (AgentJob)getMediaArchive().getCachedData("agentjob", hit.getId());
-				
+				if( job.getValue("status") != null && job.getValue("status").equals("running"))
+				{
+					log.info("Skipping job " + job + " as it is already running");
+					continue;
+				}
+
+				job.setValue("status","running");
+				getMediaArchive().saveData("agentjob", job);
+
 				//get the steps
 				Collection<MultiValued> steps = getMediaArchive().query("agentjobstep").exact("agentjob", job.getId()).sort("orderUp").search();
 				job.setSteps(steps);
@@ -146,7 +154,8 @@ public class AgentJobOrchestrator implements AgentJobListener, CatalogEnabled
 				AgentContext context = new BaseAgentContext();
 				context.setCatalogId(getCatalogId());
 				context.setModuleManager(getModuleManager());
-				context.putContextValue("agentjob", job);
+				context.put("agentjob", job);
+				//context.put("userrequest", job.get("userrequest"));
 				torun.setContext(context);
 				torun.setAgentJob(job);
 				torun.setEventListener(this);
@@ -258,6 +267,10 @@ public class AgentJobOrchestrator implements AgentJobListener, CatalogEnabled
 		Data aiskill = getMediaArchive().query("aiskill").exact("id", aiskillid).searchOne();
 		inStep.setValue("status", "running");
 		getMediaArchive().saveData("agentjobstep", inStep);
+
+		String userrequest = inStep.get("markdowncontent"); //Starting point for each job
+		inAgentJob.getContext().put("userrequest", userrequest);
+
 			Skill skill = (Skill) getModuleManager().getBean(getCatalogId(), aiskill.get("bean"));
 			String json = inStep.get("parameters");
 			Collection<Map<String,Object>> parameters = null;
@@ -296,8 +309,14 @@ public class AgentJobOrchestrator implements AgentJobListener, CatalogEnabled
 			}
 			skill.process(inAgentJob.getContext());
 
-			inStep.setValue("status", "complete");
+			if( inAgentJob.getContext().getLastResponse() != null)
+			{
+				String message = inAgentJob.getContext().getLastResponse().getMessage();
+				inStep.setValue("lastresponse", message);
+			}
 
+			inStep.setValue("status", "complete");
+			getMediaArchive().saveData("agentjobstep", inStep);
 	}
 
 	AutomationManager fieldAutomationManager;
@@ -320,8 +339,8 @@ public class AgentJobOrchestrator implements AgentJobListener, CatalogEnabled
 			AgentContext context = new BaseAgentContext();
 			context.setCatalogId(getCatalogId());
 			context.setModuleManager(getModuleManager());
-			context.putContextValue("agentjob", inAgentJob.getAgentJob());
-			context.putContextValue("agentjobstep", inStep);
+			context.put("agentjob", inAgentJob.getAgentJob());
+			context.put("agentjobstep", inStep);
 
 			getAutomationManager().runScenario(workflowid, context);
 
@@ -355,6 +374,10 @@ public class AgentJobOrchestrator implements AgentJobListener, CatalogEnabled
 			currentJobsRunning.remove(inAgentJob.getId());
 			log.info("RELEASED " + inAgentJob.getId());
 			//Save job
+			String lastresponse = inAgentJob.getAgentJob().findLastResponse();
+
+			inAgentJob.getAgentJob().setValue("lastresponse", lastresponse);
+			
 			inAgentJob.getAgentJob().setValue("status", "complete");
 			inAgentJob.getAgentJob().setValue("enddate", new Date());
 			getMediaArchive().saveData("agentjob", inAgentJob.getAgentJob());

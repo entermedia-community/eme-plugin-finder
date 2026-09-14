@@ -9,6 +9,7 @@ import org.entermediadb.ai.agentjobs.AgentJob;
 import org.entermediadb.ai.llm.LlmConnection;
 import org.entermediadb.ai.llm.LlmResponse;
 import org.entermediadb.markdown.MarkdownUtil;
+import org.openedit.OpenEditException;
 
 public class AgentJobStatusSkill extends BaseSkill
 {
@@ -45,6 +46,22 @@ public class AgentJobStatusSkill extends BaseSkill
 
 		//inContext.put("secondstaken", null);
 
+		Integer countloops = (Integer) inContext.getContextValue("countloops");
+
+		if( countloops == null)
+		{
+			countloops = 0;
+		}
+		else
+		{
+			countloops++;
+		}
+		inContext.put("countloops", countloops);
+		if( countloops > 200)
+		{
+			inContext.put("countloops", 0);
+			throw new OpenEditException("Agent job status skill has looped too many times. Something is wrong.");
+		}
 		String status = agentjob.get("status");
 		if (!"complete".equals(status) && !"error".equals(status))
 		{

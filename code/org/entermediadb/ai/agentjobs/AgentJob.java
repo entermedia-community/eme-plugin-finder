@@ -22,4 +22,17 @@ public class AgentJob extends BaseData
 	{
 		steps = inSteps;
 	}
+
+	public String findLastResponse()
+	{
+		for(MultiValued step : steps)
+		{
+			String lastresponse = step.get("lastresponse");
+			if(lastresponse != null)
+			{
+				return lastresponse;
+			}
+		}	
+		return null;
+	}
 }

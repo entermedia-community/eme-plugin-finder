@@ -6,16 +6,16 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.BaseSkill;
 import org.entermediadb.ai.llm.BasicLlmResponse;
 import org.entermediadb.ai.llm.LlmResponse;
+import org.openedit.OpenEditException;
+import org.openedit.repository.ContentItem;
 import org.openedit.util.Exec;
-import org.openedit.util.FinalizedProcess;
-import org.openedit.util.FinalizedProcessBuilder;
+import org.openedit.util.ExecResult;
 
 /**
  * OpenCodeRunnerSkill - Runs the opencode CLI in a working directory passed in the agent context
@@ -41,88 +41,70 @@ public class OpenCodeRunnerSkill extends BaseSkill
 	@Override
 	public void process(AgentContext inContext)
 	{
+
+		String query = (String) inContext.getContextValue("userrequest");
+		if(  query == null || query.trim().isEmpty())
+		{
+			throw new OpenEditException("OpenCodeRunnerSkill: No user request provided");
+		}
+
 		String workingpath = (String) inContext.getContextValue("workingpath");
 		if (workingpath == null || workingpath.trim().isEmpty())
 		{
-			workingpath = getMediaArchive().getRootDirectory().getParentFile().getAbsolutePath();
+			ContentItem root = getMediaArchive().getPageManager().getRepository().get("/");
+
+			workingpath = new File( root.getAbsolutePath() ).getParentFile().getAbsolutePath();
+
 			log.info("OpenCodeRunnerSkill: No workingpath provided, defaulting to " + workingpath);
 		}
 
 		String outputfilepath = (String) inContext.getContextValue("outputfile");
-		File outputfile = null;
 		try
 		{
-			if (outputfilepath != null && !outputfilepath.trim().isEmpty())
-			{
-				outputfile = new File(outputfilepath);
-			}
-			else
-			{
-				outputfile = new File(new File(workingpath, "tomcat/logs"), "opencoderunner_" + System.currentTimeMillis() + ".log");
-			}
-
-			File parent = outputfile.getParentFile();
-			if (parent != null && !parent.exists())
-			{
-				parent.mkdirs();
-			}
-
+			//opencode run --model "local-llama//root/unsloth/Qwen3.8-27B-GGUF/Qwen3.8-27B-UD-Q4_K_XL.gguf" "What is 2 + 3"
 			log.info("OpenCodeRunnerSkill running command: " + COMMAND + " in " + workingpath);
 
 			List<String> args = new ArrayList<String>();
-			args.add(COMMAND);
+			// Add any additional arguments to the command here if needed
 
-			FinalizedProcessBuilder builder = new FinalizedProcessBuilder(args);
-			builder.keepProcess(false);
-			builder.logInputtStream(true);
-			builder.directory(new File(workingpath));
+			args.add("--dir");
+			args.add(workingpath);
+			//args.add("--config");
+			//args.add(new File(workingpath, "opencode.json").getAbsolutePath());
+			args.add("--model");
+			args.add("local-llama//root/unsloth/Qwen3.8-27B-GGUF/Qwen3.8-27B-UD-Q4_K_XL.gguf");
+			args.add("run");
+			args.add(query);
 
-			FinalizedProcess process = builder.start(getExec().getExecutorManager());
-			try
+
+			ExecResult execResult =  getExec().runExec(COMMAND, args, true, new File(workingpath), 10 * 1000 * 60);
+			if( execResult.getReturnValue() == 0)
 			{
-				int exitcode = process.waitFor(getExec().getTimeLimit());
-				String stdout = process.getStandardOutputs();
-				String stderr = process.getErrorOutputs();
-
-				appendToFile(outputfile, stdout);
-				if (stderr != null && !stderr.trim().isEmpty())
-				{
-					appendToFile(outputfile, stderr);
-				}
-
-				log.info("OpenCodeRunnerSkill command exited with code: " + exitcode);
-				if (exitcode != 0)
-				{
-					inContext.put("errormessage", "Command exited with code " + exitcode);
-				}
+				log.info("OpenCodeRunnerSkill command executed successfully");
 			}
-			finally
+			int exitcode = execResult.getReturnValue();
+			String stdout = execResult.getStandardOut();
+
+			log.info("OpenCodeRunnerSkill command exited with code: " + exitcode);
+			if (exitcode != 0)
 			{
-				process.close();
+				inContext.put("errormessage", "Command exited with code " + exitcode);
+				throw new OpenEditException("Command exited with code " + exitcode);
 			}
-		}
-		catch (IOException e)
-		{
-			log.error("OpenCodeRunnerSkill failed running command: " + COMMAND + " in " + workingpath, e);
-			inContext.put("errormessage", "Failed running command: " + e.getMessage());
-		}
-		catch (InterruptedException e)
-		{
-			log.error("OpenCodeRunnerSkill interrupted running command: " + COMMAND + " in " + workingpath, e);
-			Thread.currentThread().interrupt();
-			inContext.put("errormessage", "Command execution was interrupted");
-		}
-
-		if (outputfile != null && outputfile.exists())
-		{
-			String filecontents = readFileContents(outputfile);
+			String filecontents = stdout;
 			inContext.put("commandoutput", filecontents);
-			inContext.put("outputfilepath", outputfile.getAbsolutePath());
-
+			
 			LlmResponse response = new BasicLlmResponse();
 			response.setMessage(filecontents);
 			inContext.setLastResponse(response);
 		}
+		catch (Exception e)
+		{
+			log.error("OpenCodeRunnerSkill interrupted running command: " + COMMAND + " in " + workingpath, e);
+			Thread.currentThread().interrupt();
+			throw new OpenEditException("OpenCodeRunnerSkill interrupted running command: " + COMMAND + " in " + workingpath, e);
+		}
+
 
 		super.process(inContext);
 	}
@@ -144,7 +126,7 @@ public class OpenCodeRunnerSkill extends BaseSkill
 		}
 	}
 
-	protected String readFileContents(File inFile)
+	protected String readFileContents(File inFile, boolean deleteAfterRead)
 	{
 		FileInputStream in = null;
 		try
@@ -155,6 +137,7 @@ public class OpenCodeRunnerSkill extends BaseSkill
 			{
 				return "";
 			}
+			
 			return contents;
 		}
 		catch (IOException e)
@@ -165,6 +148,10 @@ public class OpenCodeRunnerSkill extends BaseSkill
 		finally
 		{
 			getExec().getFiller().close(in);
+			if (deleteAfterRead && inFile.exists())
+			{
+				inFile.delete();
+			}
 		}
 	}
 

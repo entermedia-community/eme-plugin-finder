@@ -106,14 +106,11 @@ public class AgentJobCreatorSkill extends BaseSkill
 			newjob.setValue("owner", inAgentContext.getChatUser());
 			newjob.setValue("submitteddate", new Date()); 
 			newjob.setValue("status", "new");
-			newjob.setValue("llmprompt", userRequest);
+			newjob.setValue("userrequest", userRequest);
 			newjob.setValue("markdowncontent", responseValues.get("job_requested"));
 			newjob.setValue("name", responseValues.get("job_name"));
 			
 			Collection<Map> steps = (Collection<Map>) payload.get("agent_steps");
-			Collection<Data> proposedSteps = saveSteps(newjob, steps);
-			messageContext.put("agentjob", newjob);  //No id
-			messageContext.put("proposedsteps", proposedSteps);
 
 			// TODO: We need to extra confirmation to external skill or, watch last user message in history?
 
@@ -121,6 +118,9 @@ public class AgentJobCreatorSkill extends BaseSkill
 			inAgentContext.put("userapproved", userapproved);
 			if (!userapproved)
 			{
+				Collection<Data> proposedSteps = saveSteps(newjob, steps);
+				messageContext.put("agentjob", newjob);  //No id
+				messageContext.put("proposedsteps", proposedSteps);
 
 				MarkdownUtil markdown = new MarkdownUtil();
 				inAgentContext.put("markdown", markdown);
@@ -137,7 +137,7 @@ public class AgentJobCreatorSkill extends BaseSkill
 			}
 
 			getMediaArchive().saveData("agentjob", newjob);
-            proposedSteps = saveSteps(newjob, steps); //Save with job id
+            Collection<Data> proposedSteps = saveSteps(newjob, steps); //Save with job id
 			getMediaArchive().saveData("agentjobstep", proposedSteps);
 
 			messageContext.put("agentjob", newjob);
