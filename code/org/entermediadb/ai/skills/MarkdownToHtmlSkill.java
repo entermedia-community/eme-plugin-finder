@@ -19,7 +19,7 @@ public class MarkdownToHtmlSkill extends BaseSkill
 		{
 			log.warn("MarkdownToHtmlSkill: no 'markdowncontent' parameter found in context");
 			inAgentContext.put("html", "");
-			super.process(inAgentContext);
+			//super.process(inAgentContext);
 			return;
 		}
 

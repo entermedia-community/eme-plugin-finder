@@ -12,8 +12,10 @@ import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.BaseSkill;
 import org.entermediadb.ai.llm.BasicLlmResponse;
 import org.entermediadb.ai.llm.LlmResponse;
+import org.openedit.MultiValued;
 import org.openedit.OpenEditException;
 import org.openedit.repository.ContentItem;
+import org.openedit.util.DataOutputSaver;
 import org.openedit.util.Exec;
 import org.openedit.util.ExecResult;
 
@@ -58,26 +60,38 @@ public class OpenCodeRunnerSkill extends BaseSkill
 			log.info("OpenCodeRunnerSkill: No workingpath provided, defaulting to " + workingpath);
 		}
 
-		String outputfilepath = (String) inContext.getContextValue("outputfile");
+		//opencode run --model "local-llama//root/unsloth/Qwen3.8-27B-GGUF/Qwen3.8-27B-UD-Q4_K_XL.gguf" "What is 2 + 3"
+		log.info("OpenCodeRunnerSkill running command: " + COMMAND + " in " + workingpath);
+
+		List<String> args = new ArrayList<String>();
+		// Add any additional arguments to the command here if needed
+
+		args.add("--dir");
+		args.add(workingpath);
+		//args.add("--config");
+		//args.add(new File(workingpath, "opencode.json").getAbsolutePath());
+		args.add("--model");
+		args.add("local-llama//root/unsloth/Qwen3.8-27B-GGUF/Qwen3.8-27B-UD-Q4_K_XL.gguf");
+		args.add("run");
+		args.add("--format");
+		args.add("json");
+		args.add(query);
+
 		try
 		{
-			//opencode run --model "local-llama//root/unsloth/Qwen3.8-27B-GGUF/Qwen3.8-27B-UD-Q4_K_XL.gguf" "What is 2 + 3"
-			log.info("OpenCodeRunnerSkill running command: " + COMMAND + " in " + workingpath);
 
-			List<String> args = new ArrayList<String>();
-			// Add any additional arguments to the command here if needed
+			MultiValued jobstep = (MultiValued) inContext.getContextValue("agentjobstep");
+			DataOutputSaver dataOutputSaver = new DataOutputSaver(jobstep, "lastresponse");
+			dataOutputSaver.setCatalogId(getCatalogId());
+			dataOutputSaver.setModuleManager(getModuleManager());
 
-			args.add("--dir");
-			args.add(workingpath);
-			//args.add("--config");
-			//args.add(new File(workingpath, "opencode.json").getAbsolutePath());
-			args.add("--model");
-			args.add("local-llama//root/unsloth/Qwen3.8-27B-GGUF/Qwen3.8-27B-UD-Q4_K_XL.gguf");
-			args.add("run");
-			args.add(query);
+			int minutes = 1000 * 60 * 20; //60 second x 20 = 20 minutes
+			ExecResult execResult =  getExec().runExec(COMMAND, args, true, new File(workingpath), minutes,
+				(String lineX) -> {
+					dataOutputSaver.handleLog("INFO", lineX, null);
+				});
+			dataOutputSaver.flush(); //Saves log to DB
 
-
-			ExecResult execResult =  getExec().runExec(COMMAND, args, true, new File(workingpath), 10 * 1000 * 60);
 			if( execResult.getReturnValue() == 0)
 			{
 				log.info("OpenCodeRunnerSkill command executed successfully");
@@ -86,12 +100,12 @@ public class OpenCodeRunnerSkill extends BaseSkill
 			String stdout = execResult.getStandardOut();
 
 			log.info("OpenCodeRunnerSkill command exited with code: " + exitcode);
-			String filecontents = stdout;
-			inContext.put("commandoutput", filecontents);
+			//String filecontents = stdout;
+			inContext.put("commandoutput", stdout);
 			
 			LlmResponse response = new BasicLlmResponse();
-			response.setMessage(filecontents);
-			inContext.setLastResponse(response);
+			response.setMessage(stdout);
+			inContext.setLastResponse(response);  //Do I really need this?
 			if (exitcode != 0)
 			{
 				inContext.put("errormessage", "Command exited with code " + exitcode);
@@ -101,12 +115,13 @@ public class OpenCodeRunnerSkill extends BaseSkill
 		}
 		catch (Exception e)
 		{
-			log.error("OpenCodeRunnerSkill interrupted running command: " + COMMAND + " in " + workingpath, e);
-			Thread.currentThread().interrupt();
-			throw new OpenEditException("OpenCodeRunnerSkill interrupted running command: " + COMMAND + " in " + workingpath, e);
+			log.error("OpenCodeRunnerSkill error running command: " + COMMAND + " in " + workingpath, e);
+			if (e instanceof InterruptedException)
+			{
+				Thread.currentThread().interrupt();
+			}
+			throw new OpenEditException("OpenCodeRunnerSkill error running command: " + COMMAND + " in " + workingpath, e);
 		}
-
-
 		super.process(inContext);
 	}
 

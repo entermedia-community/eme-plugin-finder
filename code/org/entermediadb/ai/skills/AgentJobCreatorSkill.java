@@ -66,88 +66,92 @@ public class AgentJobCreatorSkill extends BaseSkill
 
 		Collection<PossibleStep> possible_steps = new ArrayList<PossibleStep>();
 
-		if (selecedSkills != null && !selecedSkills.isEmpty())
+		if (selecedSkills == null || selecedSkills.isEmpty())
 		{
-			// Pick first skill only?
-			for (String firstSkillId : selecedSkills)
+			log.info("No skills found");
+			//messageContext.fireStatusFailed("No skills found for the user request.");
+			//Go back to a friendly response?
+			return;
+		}
+		// Pick first skill only?
+		for (String firstSkillId : selecedSkills)
+		{
+
+			if (firstSkillId != null && firstSkillId.startsWith("automationscenario"))
 			{
-
-				if (firstSkillId != null && firstSkillId.startsWith("automationscenario"))
-				{
-					String scenarioid = firstSkillId.replace("automationscenario_", "");
-					Data scenario = getMediaArchive().getCachedData("automationscenario", scenarioid);
-					PossibleStep step = new PossibleStep();
-					step.setId(firstSkillId);
-					step.setValue("description", scenario.get("longdescription"));
-					step.setValue("inputs", scenario.get("parameters"));
-					step.setValue("outputs", scenario.get("defaultoutput"));
-					possible_steps.add(step);
-				}
-				else if (firstSkillId != null && firstSkillId.startsWith("aiskill"))
-				{
-					String skillid = firstSkillId.replace("aiskill_", "");
-					Data skill = getMediaArchive().getCachedData("aiskill", skillid);
-					PossibleStep step = new PossibleStep();
-					step.setId(firstSkillId);
-					step.setValue("description", skill.get("markdowncontent"));
-					step.setValue("inputs", skill.get("parameters"));
-					step.setValue("outputs", skill.get("defaultoutput"));
-					possible_steps.add(step);
-				}
+				String scenarioid = firstSkillId.replace("automationscenario_", "");
+				Data scenario = getMediaArchive().getCachedData("automationscenario", scenarioid);
+				PossibleStep step = new PossibleStep();
+				step.setId(firstSkillId);
+				step.setValue("description", scenario.get("longdescription"));
+				step.setValue("inputs", scenario.get("parameters"));
+				step.setValue("outputs", scenario.get("defaultoutput"));
+				possible_steps.add(step);
 			}
-			inAgentContext.put("possible_steps", possible_steps);
-			LlmConnection llmconnection = getMediaArchive().getLlmConnection("thinking");
-			LlmResponse planresponse = llmconnection.callStructure(messageContext, "agentJobCreator");
-
-			JSONObject payload = planresponse.getResponsePayload();
-			ValuesMap responseValues = new ValuesMap(payload);
-			// Create steps
-			Data newjob = getMediaArchive().getSearcher("agentjob").createNewData();
-			newjob.setValue("owner", inAgentContext.getChatUser());
-			newjob.setValue("submitteddate", new Date()); 
-			newjob.setValue("status", "new");
-			newjob.setValue("userrequest", userRequest);
-			newjob.setValue("markdowncontent", responseValues.get("job_requested"));
-			newjob.setValue("name", responseValues.get("job_name"));
-			
-			Collection<Map> steps = (Collection<Map>) payload.get("agent_steps");
-
-			// TODO: We need to extra confirmation to external skill or, watch last user message in history?
-
-			boolean userapproved = responseValues.getBoolean("userapproved");
-			inAgentContext.put("userapproved", userapproved);
-			if (!userapproved)
+			else if (firstSkillId != null && firstSkillId.startsWith("aiskill"))
 			{
-				Collection<Data> proposedSteps = saveSteps(newjob, steps);
-				messageContext.put("agentjob", newjob);  //No id
-				messageContext.put("proposedsteps", proposedSteps);
-
-				MarkdownUtil markdown = new MarkdownUtil();
-				inAgentContext.put("markdown", markdown);
-				llmconnection = getMediaArchive().getLlmConnection("localrender");
-				response = llmconnection.renderLocalAction(inAgentContext, "agent_job_showjobplan");
-
-				//This needs to be set so we come back here, not to the chat
-				response.setNextAutomationStep(inAgentContext.getCurrentScenario().getId() + ".agentJobCreator");
-				inAgentContext.setLastResponse(response);
-
-				AutomationStep skillEnabled = inAgentContext.getCurrentAutomationStep();
-				inAgentContext.fireStatusComplete(skillEnabled);
-				return;
+				String skillid = firstSkillId.replace("aiskill_", "");
+				Data skill = getMediaArchive().getCachedData("aiskill", skillid);
+				PossibleStep step = new PossibleStep();
+				step.setId(firstSkillId);
+				step.setValue("description", skill.get("markdowncontent"));
+				step.setValue("inputs", skill.get("parameters"));
+				step.setValue("outputs", skill.get("defaultoutput"));
+				possible_steps.add(step);
 			}
+		}
+		inAgentContext.put("possible_steps", possible_steps);
+		LlmConnection llmconnection = getMediaArchive().getLlmConnection("thinking");
+		LlmResponse planresponse = llmconnection.callStructure(messageContext, "agentJobCreator");
 
-			getMediaArchive().saveData("agentjob", newjob);
-            Collection<Data> proposedSteps = saveSteps(newjob, steps); //Save with job id
-			getMediaArchive().saveData("agentjobstep", proposedSteps);
+		JSONObject payload = planresponse.getResponsePayload();
+		ValuesMap responseValues = new ValuesMap(payload);
+		// Create steps
+		Data newjob = getMediaArchive().getSearcher("agentjob").createNewData();
+		newjob.setValue("owner", inAgentContext.getChatUser());
+		newjob.setValue("submitteddate", new Date()); 
+		newjob.setValue("status", "new");
+		newjob.setValue("userrequest", userRequest);
+		newjob.setValue("markdowncontent", responseValues.get("job_requested"));
+		newjob.setValue("name", responseValues.get("job_name"));
+		
+		Collection<Map> steps = (Collection<Map>) payload.get("agent_steps");
 
-			messageContext.put("agentjob", newjob);
+		// TODO: We need to extra confirmation to external skill or, watch last user message in history?
+
+		boolean userapproved = responseValues.getBoolean("userapproved");
+		inAgentContext.put("userapproved", userapproved);
+		if (!userapproved)
+		{
+			Collection<Data> proposedSteps = saveSteps(newjob, steps);
+			messageContext.put("agentjob", newjob);  //No id
 			messageContext.put("proposedsteps", proposedSteps);
 
-			// Kick off the job scheduler
-			getMediaArchive().fireSharedMediaEvent("agentjob/runagentjobs");
-			super.process(messageContext);
+			MarkdownUtil markdown = new MarkdownUtil();
+			inAgentContext.put("markdown", markdown);
+			llmconnection = getMediaArchive().getLlmConnection("localrender");
+			response = llmconnection.renderLocalAction(inAgentContext, "agent_job_showjobplan");
 
+			//This needs to be set so we come back here, not to the chat
+			response.setNextAutomationStep(inAgentContext.getCurrentScenario().getId() + ".agentJobCreator");
+			inAgentContext.setLastResponse(response);
+
+			AutomationStep skillEnabled = inAgentContext.getCurrentAutomationStep();
+			inAgentContext.fireStatusComplete(skillEnabled);
+			return;
 		}
+
+		getMediaArchive().saveData("agentjob", newjob);
+		Collection<Data> proposedSteps = saveSteps(newjob, steps); //Save with job id
+		getMediaArchive().saveData("agentjobstep", proposedSteps);
+
+		messageContext.put("agentjob", newjob);
+		messageContext.put("proposedsteps", proposedSteps);
+
+		// Kick off the job scheduler
+		getMediaArchive().fireSharedMediaEvent("agentjob/runagentjobs");
+		super.process(messageContext);
+
 	}
 
 	protected Collection<Data> saveSteps(Data newjob, Collection<Map> steps)

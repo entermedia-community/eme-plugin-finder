@@ -13,6 +13,7 @@ import org.entermediadb.ai.Skill;
 import org.entermediadb.ai.automation.AutomationManager;
 import org.entermediadb.ai.llm.BaseAgentContext;
 import org.entermediadb.asset.MediaArchive;
+import org.entermediadb.scripts.LogListener;
 import org.openedit.CatalogEnabled;
 import org.openedit.Data;
 import org.openedit.ModuleManager;
@@ -78,6 +79,7 @@ public class AgentJobOrchestrator implements AgentJobListener, CatalogEnabled
 
 	public void setCatalogId(String inCatalogId)
 	{
+
 		fieldCatalogId = inCatalogId;
 	}
 
@@ -144,10 +146,6 @@ public class AgentJobOrchestrator implements AgentJobListener, CatalogEnabled
 
 				job.setValue("status","running");
 				getMediaArchive().saveData("agentjob", job);
-
-				//get the steps
-				Collection<MultiValued> steps = getMediaArchive().query("agentjobstep").exact("agentjob", job.getId()).sort("orderUp").search();
-				job.setSteps(steps);
 
 				//Run it now
 				AgentJobRunnable torun = new AgentJobRunnable();
@@ -268,6 +266,8 @@ public class AgentJobOrchestrator implements AgentJobListener, CatalogEnabled
 		inStep.setValue("status", "running");
 		getMediaArchive().saveData("agentjobstep", inStep);
 
+		inAgentJob.getContext().put("agentjobstep",inStep);
+
 		String userrequest = inStep.get("markdowncontent"); //Starting point for each job
 		inAgentJob.getContext().put("userrequest", userrequest);
 
@@ -288,7 +288,15 @@ public class AgentJobOrchestrator implements AgentJobListener, CatalogEnabled
 					if( value == null)
 					{
 						String oldkey  = (String)map.get("variable");
+						if( oldkey == null)
+						{
+							oldkey = key;
+						}
 						value = (String)inAgentJob.getContext().getContextValue(oldkey);
+					}
+					if( value == null)
+					{
+						continue;
 					}
 					if( value.startsWith("${"))
 					{
@@ -307,13 +315,15 @@ public class AgentJobOrchestrator implements AgentJobListener, CatalogEnabled
 					inAgentJob.getContext().put(key,value);
 				}
 			}
+
 			skill.process(inAgentJob.getContext());
 
-			if( inAgentJob.getContext().getLastResponse() != null)
-			{
-				String message = inAgentJob.getContext().getLastResponse().getMessage();
-				inStep.setValue("lastresponse", message);
-			}
+
+			// if( inAgentJob.getContext().getLastResponse() != null)
+			// {
+			// 	String message = inAgentJob.getContext().getLastResponse().getMessage();
+			// 	inStep.setValue("lastresponse", message);
+			// }
 
 			inStep.setValue("status", "complete");
 			getMediaArchive().saveData("agentjobstep", inStep);
@@ -374,9 +384,9 @@ public class AgentJobOrchestrator implements AgentJobListener, CatalogEnabled
 			currentJobsRunning.remove(inAgentJob.getId());
 			log.info("RELEASED " + inAgentJob.getId());
 			//Save job
-			String lastresponse = inAgentJob.getAgentJob().findLastResponse();
-
-			inAgentJob.getAgentJob().setValue("lastresponse", lastresponse);
+			//Do we have this last response from the steps?
+			//String lastresponse = inAgentJob.getAgentJob().findLastResponse();
+			//inAgentJob.getAgentJob().setValue("lastresponse", lastresponse);
 			
 			inAgentJob.getAgentJob().setValue("status", "complete");
 			inAgentJob.getAgentJob().setValue("enddate", new Date());

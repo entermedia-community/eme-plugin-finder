@@ -26,7 +26,7 @@ public class AgentJobStatusSkill extends BaseSkill
 			return;
 		}
 
-		agentjob = (AgentJob)getMediaArchive().getData("agentjob", agentjob.getId());
+		agentjob = (AgentJob)getMediaArchive().getCachedData("agentjob", agentjob.getId());
 		inContext.put("agentjob", agentjob);
 		MarkdownUtil markdown = new MarkdownUtil();
 		inContext.put("markdown", markdown);
@@ -36,7 +36,7 @@ public class AgentJobStatusSkill extends BaseSkill
 		Date starttime = agentjob.getDate("submitteddate");
 		if( endtime != null && starttime != null)
 		{
-			double secondsTaken = (endtime.getTime() - starttime.getTime()) / 1000D;
+			double secondsTaken = (endtime.getTime() - starttime.getTime()) / 5000D;
 			//Only local. add putLocal
 			inContext.getContext().put("secondstaken", secondsTaken);
 		}
@@ -46,11 +46,11 @@ public class AgentJobStatusSkill extends BaseSkill
 
 		//inContext.put("secondstaken", null);
 
-		Integer countloops = (Integer) inContext.getContextValue("countloops");
+		Long countloops = (Long) inContext.getContextValue("countloops");
 
 		if( countloops == null)
 		{
-			countloops = 0;
+			countloops = 0L;
 		}
 		else
 		{
@@ -63,6 +63,8 @@ public class AgentJobStatusSkill extends BaseSkill
 			throw new OpenEditException("Agent job status skill has looped too many times. Something is wrong.");
 		}
 		String status = agentjob.get("status");
+
+		//status = "complete";
 		if (!"complete".equals(status) && !"error".equals(status))
 		{
 			log.info("Agent job not completed yet.");

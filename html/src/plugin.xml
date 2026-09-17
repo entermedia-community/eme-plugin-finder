@@ -3293,6 +3293,9 @@
 	</bean>
 
 	<bean id="agentjob" class="org.entermediadb.ai.agentjobs.AgentJob" lazy-init="default" scope="prototype">
+		<property name="moduleManager">
+			<ref bean="moduleManager" />
+		</property>
 	</bean>
 
 	<bean id="agentJobOrchestrator" class="org.entermediadb.ai.agentjobs.AgentJobOrchestrator" lazy-init="default" scope="prototype">
