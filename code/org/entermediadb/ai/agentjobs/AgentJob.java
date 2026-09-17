@@ -63,7 +63,8 @@ public class AgentJob extends BaseData implements CatalogEnabled
 		java.util.Collections.reverse(reversed);
 		for(MultiValued step : reversed)
 		{
-			String lastresponse = step.get("lastresponse");
+			MultiValued refreshedstep = (MultiValued) getMediaArchive().getCachedData("agentjobstep", step.getId());
+			String lastresponse = refreshedstep.get("lastresponse");
 			if(lastresponse != null)
 			{
 				return lastresponse;

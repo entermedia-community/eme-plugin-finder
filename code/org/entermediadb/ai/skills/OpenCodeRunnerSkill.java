@@ -27,7 +27,8 @@ import org.openedit.util.ExecResult;
  * Usage in AgentContext: - Set "workingpath" (optional) - Directory the opencode command runs in;
  * defaults to one level above getMediaArchive().getRootDirectory() - Set "outputfile" (optional) -
  * Path of the temp file to append output to; if not provided, defaults to a unique log file under
- * workingpath/tomcat/logs/
+ * workingpath/tomcat/logs/ - Set "yolo" (optional) - If true, passes --yolo to opencode so it runs
+ * without permission prompts
  *
  * Results stored in context: - "commandoutput" - Full contents of the output file after running -
  * "outputfilepath" - Path of the temp file that holds the appended output
@@ -72,6 +73,13 @@ public class OpenCodeRunnerSkill extends BaseSkill
 		//args.add(new File(workingpath, "opencode.json").getAbsolutePath());
 		args.add("--model");
 		args.add("local-llama//root/unsloth/Qwen3.8-27B-GGUF/Qwen3.8-27B-UD-Q4_K_XL.gguf");
+
+		String yolo = (String) inContext.getContextValue("yolo");
+		if (yolo == null || Boolean.parseBoolean(yolo))
+		{
+			args.add("--yolo");
+		}
+
 		args.add("run");
 		args.add("--format");
 		args.add("json");
@@ -85,7 +93,7 @@ public class OpenCodeRunnerSkill extends BaseSkill
 			dataOutputSaver.setCatalogId(getCatalogId());
 			dataOutputSaver.setModuleManager(getModuleManager());
 
-			int minutes = 1000 * 60 * 20; //60 second x 20 = 20 minutes
+			int minutes = 1000 * 60 * 30; //60 second x 20 = 20 minutes
 			ExecResult execResult =  getExec().runExec(COMMAND, args, true, new File(workingpath), minutes,
 				(String lineX) -> {
 					dataOutputSaver.handleLog("INFO", lineX, null);

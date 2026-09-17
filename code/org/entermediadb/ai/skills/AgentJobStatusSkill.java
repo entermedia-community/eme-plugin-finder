@@ -46,7 +46,7 @@ public class AgentJobStatusSkill extends BaseSkill
 
 		//inContext.put("secondstaken", null);
 
-		Long countloops = (Long) inContext.getContextValue("countloops");
+		Long countloops = (Long) inContext.getContextValue("jobcountloops");
 
 		if( countloops == null)
 		{
@@ -56,10 +56,10 @@ public class AgentJobStatusSkill extends BaseSkill
 		{
 			countloops++;
 		}
-		inContext.put("countloops", countloops);
-		if( countloops > 200)
+		inContext.put("jobcountloops", countloops);
+		if( countloops > 500)
 		{
-			inContext.put("countloops", 0);
+			inContext.put("jobcountloops", 0);
 			throw new OpenEditException("Agent job status skill has looped too many times. Something is wrong.");
 		}
 		String status = agentjob.get("status");
@@ -68,7 +68,7 @@ public class AgentJobStatusSkill extends BaseSkill
 		if (!"complete".equals(status) && !"error".equals(status))
 		{
 			log.info("Agent job not completed yet.");
-			inContext.setWaitTime(1000L);
+			inContext.setWaitTime(5000L);
 			response.setExecAutomationSkill("agentJobStatus");
 		}	
 		else
