@@ -8357,8 +8357,8 @@ a.bg-brand-dark:hover {
 }
 
 .btn-wide i {
-	font-size: 1.5rem;
-	margin-bottom: 5px;
+	font-size: 1.3rem;
+	margin-bottom: 2px;
 }
 
 .btn-brand:focus,
@@ -8366,6 +8366,10 @@ a.bg-brand-dark:hover {
 .btn-wide:focus,
 .btn-wide:active {
 	box-shadow: none;
+}
+
+.btn-wide .small i {
+	font-size: 0.75rem;
 }
 
 .btn-navbar {
