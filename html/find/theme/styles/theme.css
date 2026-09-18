@@ -39,6 +39,7 @@
 html.lighttheme {
 	--html-track: #fff;
 	--html-thumb: #aaa;
+	--default-text: #555;
 	--scroll-track: #fff;
 	--scroll-thumb: #cfcfcf;
 	--raised-shadow:
@@ -518,11 +519,6 @@ button[type="submit"] {
 
 .popover .popover-header {
 	margin: 0;
-}
-
-.emfinderapp,
-p.info {
-	color: #444;
 }
 
 .site-switcher {
@@ -2887,6 +2883,7 @@ a.col-resize i {
 
 .sidebar-togglers-bar {
 	width: 32px;
+	border-right: 1px solid var(--light-border);
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -2938,7 +2935,7 @@ a.col-resize i {
 	color: var(--default-text);
 }
 
-.sidebar-selected.contrast .sidebar-toggler-show {
+.Xsidebar-selected.contrast .sidebar-toggler-show {
 	color: #fff;
 	background: #666;
 }
@@ -7163,7 +7160,7 @@ a.collectionlike {
 
 .categorypathpicker .categorypath {
 	padding: 0.15rem 0.35rem;
-	border-bottom: 1px solid #f3f3f3;
+	border-bottom: 1px solid var(--light-border);
 }
 
 .categorypathpicker .pickcategorylink {

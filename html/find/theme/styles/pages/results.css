@@ -4951,7 +4951,7 @@ ul.summary-secondary-nav li a:hover {
 }
 .filter-box-header,
 .sidebar-component-header {
-	font-size: 0.95;
+	font-size: 0.95rem;
 	font-weight: bold;
 	line-height: 1; 
 	padding: 6px 0;
