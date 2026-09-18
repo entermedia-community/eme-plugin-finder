@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.entermediadb.asset.Category;
@@ -70,19 +71,46 @@ public class PermissionManager implements CatalogEnabled
 		return getSearcherManager().getSearcher(getCatalogId(), inSearchType);
 	}
 
-	public Map loadEntitySettingsGroupPermissions(String inEntityId, String inGroupId)
+	public Collection<String> loadEntitySettingsGroupPermissions(String inModuleId, String inGroupId)
 	{
 
-		Map permissions = new HashMap();
+		
 		Searcher searcher = getSearcher("permissionentityassigned");
-		HitTracker grouppermissions = searcher.query().exact("group", inGroupId).exact("moduleid", inEntityId).exact("enabled", true).search();
+		HitTracker grouppermissions = searcher.query().exact("group", inGroupId).exact("moduleid", inModuleId).exact("enabled", true).search();
 
-		for (Iterator iterator = grouppermissions.iterator(); iterator.hasNext();)
+		HitTracker hits = null;
+		Collection<String> allpermissions = new HashSet();
+		for (Object typeobj : getMediaArchive().getList("permissionentitytype"))
 		{
-			Data data = (Data) iterator.next();
-			permissions.put(data.get("permissionsentity"), data);
+			Data type = (Data) typeobj;
+			if ("views".equals(type.getId()))
+			{
+				hits = getMediaArchive().query("view").exact("moduleid", inModuleId).exact("systemdefined", false).sort("ordering").search();
+			}
+			else if ("module".equals(type.getId()))
+			{
+				hits = getMediaArchive().query("permissionsentity").exact("permissionentitytype", inModuleId).sort("ordering").search();
+			}
+			else
+			{
+				hits = getMediaArchive().query("permissionsentity").exact("permissionentitytype", type.getId()).sort("ordering").search();
+			}
+			Collection<String> existing = grouppermissions.collectValues("permissionsentity");
+			Collection<String> needit = hits.collectValues("id");
+			if (existing.isEmpty())
+			{
+				existing.addAll(needit);
+			}
+			
+			allpermissions.addAll(existing);
+			
+			if (existing.containsAll(needit)) 
+			{
+				allpermissions.add(type.getId());
+			}
+		
 		}
-		return permissions;
+		return allpermissions;
 	}
 
 	protected MediaArchive getMediaArchive()

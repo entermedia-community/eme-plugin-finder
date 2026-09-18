@@ -6175,14 +6175,12 @@ li.add {
 	border: 1px solid #6663;
 }
 
-.settings-table .sectionlevel {
-	background: #333 !important;
-}
-
 .settings-table .sectionlevel td {
+	color: var(--themed-navbar-secondary-text);
+    background: var(--themed-navbar-secondary);
 	font-size: 1rem;
 	font-weight: bold;
-	padding: 4px 8px;
+	padding: 6px 10px;
 }
 
 .settings-table td {
