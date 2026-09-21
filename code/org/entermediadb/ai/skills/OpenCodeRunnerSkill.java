@@ -88,8 +88,8 @@ public class OpenCodeRunnerSkill extends BaseSkill
 		try
 		{
 
-			MultiValued jobstep = (MultiValued) inContext.getContextValue("agentjobstep");
-			DataOutputSaver dataOutputSaver = new DataOutputSaver(jobstep, "lastresponse");
+			MultiValued agentjobstep = (MultiValued) inContext.getContextValue("agentjobstep");
+			DataOutputSaver dataOutputSaver = new DataOutputSaver(agentjobstep, "lastresponse");
 			dataOutputSaver.setCatalogId(getCatalogId());
 			dataOutputSaver.setModuleManager(getModuleManager());
 

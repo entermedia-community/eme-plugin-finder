@@ -71,12 +71,16 @@ public class PermissionManager implements CatalogEnabled
 		return getSearcherManager().getSearcher(getCatalogId(), inSearchType);
 	}
 
-	public Collection<String> loadEntitySettingsGroupPermissions(String inModuleId, String inGroupId)
+/**
+ * See what is available and give all permissions if needed
+ * @param inModuleId
+ * @param inGroupId
+ * @return
+ */
+	public Collection<String> caculateModulePermissions(String inModuleId, String inGroupId)
 	{
-
-		
 		Searcher searcher = getSearcher("permissionentityassigned");
-		HitTracker grouppermissions = searcher.query().exact("group", inGroupId).exact("moduleid", inModuleId).exact("enabled", true).search();
+		HitTracker grouppermissions = searcher.query().exact("group", inGroupId).exact("moduleid", inModuleId).missing("entityid").search();
 
 		HitTracker hits = null;
 		Collection<String> allpermissions = new HashSet();
@@ -112,6 +116,59 @@ public class PermissionManager implements CatalogEnabled
 		}
 		return allpermissions;
 	}
+
+
+	public Collection<String> caculateEntityPermissions(String inModuleId, String inEntityId, String inGroupId)
+	{
+		Searcher searcher = getSearcher("permissionentityassigned");
+		HitTracker modulepermissions = searcher.query().exact("group", inGroupId).exact("moduleid", inModuleId).missing("entityid").search();
+		Collection<String> existingassignedmodule = modulepermissions.collectValues("permissionsentity");
+
+		HitTracker entitypermissions = searcher.query().exact("group", inGroupId).exact("entityid", inEntityId).search(); //TODO add exact("moduleid", inModuleId)
+		Collection<String> existingassignedentity = entitypermissions.collectValues("permissionsentity");
+
+		HitTracker hits = null;
+		Collection<String> allpermissions = new HashSet();
+		for (Object typeobj : getMediaArchive().getList("permissionentitytype"))
+		{
+			Data type = (Data) typeobj;
+			if ("views".equals(type.getId()))
+			{
+				hits = getMediaArchive().query("view").exact("moduleid", inModuleId).exact("systemdefined", false).sort("ordering").search();
+			}
+			else if ("module".equals(type.getId()))
+			{
+				hits = getMediaArchive().query("permissionsentity").exact("permissionentitytype", inModuleId).sort("ordering").search();
+			}
+			else
+			{
+				hits = getMediaArchive().query("permissionsentity").exact("permissionentitytype", type.getId()).sort("ordering").search();
+			}
+			Collection<String> needit = hits.collectValues("id");
+			if (existingassignedentity.isEmpty() && existingassignedmodule.isEmpty())
+			{
+				existingassignedentity.addAll(needit); //everything
+			}
+
+			if( existingassignedentity.isEmpty())
+			{
+				allpermissions.addAll(existingassignedmodule);
+			}
+			else
+			{
+				allpermissions.addAll(existingassignedentity);
+			}
+			
+			if (existingassignedentity.containsAll(needit)) //contains everything
+			{
+				allpermissions.add(type.getId()); //If it has everything add the whole section
+			}
+		
+		}
+		return allpermissions;
+	}
+
+
 
 	protected MediaArchive getMediaArchive()
 	{

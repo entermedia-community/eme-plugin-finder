@@ -203,6 +203,10 @@
 		<property name="searcherManager">
 			<ref bean="searcherManager" />
 		</property>
+		<property name="permissionsManager">
+			<ref bean="permissionsManager" />
+		</property>
+
 	</bean>
 
 
