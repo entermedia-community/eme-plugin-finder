@@ -125,7 +125,6 @@
   <permission name="editasset">
     <or>
       <userprofile name="viewsettings" value="true"/>
-      <userprofile name="editallassets" value="true"/>
       <action name="AssetControlModule.canEditAsset"/>
     </or>
   </permission>
@@ -143,9 +142,6 @@
   </permission>
   <permission name="viewquicksearchheader">
     <boolean value="true"/>
-  </permission>
-  <permission name="editassettags">
-    <userprofile name="editassettags" value="true"/>
   </permission>
   <permission name="maximize">
     <userprofile name="maximize" value="true"/>
@@ -183,15 +179,7 @@
   <permission name="viewsidebarhelp">
     <userprofile name="viewsidebarhelp" value="true"/>
   </permission>
-  <permission name="viewassetdownloadhistory">
-    <userprofile name="viewassetdownloadhistory" value="true"/>
-  </permission>
-  <permission name="viewassetedithistory">
-    <userprofile name="viewassetedithistory" value="true"/>
-  </permission>
-  <permission name="viewassetorderhistory">
-    <userprofile name="viewassetorderhistory" value="true"/>
-  </permission>
+  
   <permission name="viewsettings">
     <userprofile name="viewsettings" value="true"/>
   </permission>
