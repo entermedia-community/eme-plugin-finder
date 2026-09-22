@@ -2353,6 +2353,18 @@
 		</property>
 	</bean>
 
+	<bean id="permissionsManager" class="org.entermediadb.users.PermissionManager" scope="prototype">
+		<property name="searcherManager">
+			<ref bean="searcherManager" />
+		</property>
+		<property name="cacheManager">
+			<ref bean="systemCacheManager" />
+		</property>
+		<property name="filterReader">
+			<ref bean="filterReader" />
+		</property>
+	</bean>
+
 
 	<bean id="elementalManager" class="org.entermediadb.elemental.ElementalManager" scope="prototype">
 		<property name="moduleManager">
