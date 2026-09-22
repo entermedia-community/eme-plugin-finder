@@ -5,11 +5,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.entermediadb.asset.Category;
@@ -71,12 +69,13 @@ public class PermissionManager implements CatalogEnabled
 		return getSearcherManager().getSearcher(getCatalogId(), inSearchType);
 	}
 
-/**
- * See what is available and give all permissions if needed
- * @param inModuleId
- * @param inGroupId
- * @return
- */
+	/**
+	 * See what is available and give all permissions if needed
+	 * 
+	 * @param inModuleId
+	 * @param inGroupId
+	 * @return
+	 */
 	public Collection<String> calculateModulePermissions(String inModuleId, String inGroupId)
 	{
 		Searcher searcher = getSearcher("permissionentityassigned");
@@ -105,18 +104,17 @@ public class PermissionManager implements CatalogEnabled
 			{
 				existing.addAll(needit);
 			}
-			
+
 			allpermissions.addAll(existing);
-			
-			if (existing.containsAll(needit)) 
+
+			if (existing.containsAll(needit))
 			{
 				allpermissions.add(type.getId());
 			}
-		
+
 		}
 		return allpermissions;
 	}
-
 
 	public Collection<String> calculateEntityPermissions(String inModuleId, String inEntityId, String inGroupId)
 	{
@@ -124,7 +122,7 @@ public class PermissionManager implements CatalogEnabled
 		HitTracker modulepermissions = searcher.query().exact("group", inGroupId).exact("moduleid", inModuleId).missing("entityid").search();
 		Collection<String> existingassignedmodule = modulepermissions.collectValues("permissionsentity");
 
-		HitTracker entitypermissions = searcher.query().exact("group", inGroupId).exact("entityid", inEntityId).search(); //TODO add exact("moduleid", inModuleId)
+		HitTracker entitypermissions = searcher.query().exact("group", inGroupId).exact("entityid", inEntityId).search(); // TODO add exact("moduleid", inModuleId)
 		Collection<String> existingassignedentity = entitypermissions.collectValues("permissionsentity");
 
 		HitTracker hits = null;
@@ -147,10 +145,10 @@ public class PermissionManager implements CatalogEnabled
 			Collection<String> needit = hits.collectValues("id");
 			if (existingassignedentity.isEmpty() && existingassignedmodule.isEmpty())
 			{
-				existingassignedentity.addAll(needit); //everything
+				existingassignedentity.addAll(needit); // everything
 			}
 
-			if( existingassignedentity.isEmpty())
+			if (existingassignedentity.isEmpty())
 			{
 				allpermissions.addAll(existingassignedmodule);
 			}
@@ -158,17 +156,15 @@ public class PermissionManager implements CatalogEnabled
 			{
 				allpermissions.addAll(existingassignedentity);
 			}
-			
-			if (existingassignedentity.containsAll(needit)) //contains everything
+
+			if (existingassignedentity.containsAll(needit)) // contains everything
 			{
-				allpermissions.add(type.getId()); //If it has everything add the whole section
+				allpermissions.add(type.getId()); // If it has everything add the whole section
 			}
-		
+
 		}
 		return allpermissions;
 	}
-
-
 
 	protected MediaArchive getMediaArchive()
 	{
@@ -320,7 +316,8 @@ public class PermissionManager implements CatalogEnabled
 			// Compare values
 			if (!rootValues.containsAll(combined) || !combined.containsAll(rootValues))
 			{
-				//permissionassigned = getPermissionManager().calculateEntityPermissions(inModule.getId(), groupid);
+				// permissionassigned = getPermissionManager().calculateEntityPermissions(inModule.getId(),
+				// groupid);
 				log.info("Root Category Values: " + rootValues + ", Module Values: " + combined);
 
 				needsupdate = true;
@@ -484,7 +481,7 @@ public class PermissionManager implements CatalogEnabled
 		Collection<String> empty = Collections.EMPTY_LIST;
 
 		Collection<String> viewersfound = category.collectValues("viewerusers"); // These are already combined from
-																					// customusers
+		// customusers
 
 		Collection<String> more = category.collectValues("customusers"); // These are already combined from customusers
 		viewersfound.addAll(more);
