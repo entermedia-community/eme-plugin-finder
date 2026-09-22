@@ -4460,6 +4460,9 @@ a.toggledialogtree h3 {
 	padding: 0 0 0 16px;
 	border-top: var(--1px-dark);
 }
+.entitytabcolumcontent .tab-actions {
+	padding: 20px;
+}
 .lighttheme .entitytabcolumcontent .tabheader {
 	color: var(--default-text);
 	background: var(--light-bg);

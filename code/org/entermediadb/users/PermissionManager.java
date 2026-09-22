@@ -320,7 +320,7 @@ public class PermissionManager implements CatalogEnabled
 			// Compare values
 			if (!rootValues.containsAll(combined) || !combined.containsAll(rootValues))
 			{
-				permissionassigned = getPermissionManager().calculateEntityPermissions(inModule.getId(), entityid, groupid);
+				//permissionassigned = getPermissionManager().calculateEntityPermissions(inModule.getId(), groupid);
 				log.info("Root Category Values: " + rootValues + ", Module Values: " + combined);
 
 				needsupdate = true;
