@@ -320,11 +320,11 @@ public class UserProfileModule extends BaseMediaModule
 			Collection<String> permissionassigned = null;
 			if( entityid != null)
 			{
-				permissionassigned = permissionManager.caculateEntityPermissions(moduleid, entityid, groupid);
+				permissionassigned = permissionManager.calculateEntityPermissions(moduleid, entityid, groupid);
 			}
 			else
 			{
-				permissionassigned = permissionManager.caculateModulePermissions(moduleid, groupid);
+				permissionassigned = permissionManager.calculateModulePermissions(moduleid, groupid);
 
 			}
 			inReq.putPageValue("permissionassigned", permissionassigned);

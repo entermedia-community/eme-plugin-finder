@@ -77,7 +77,7 @@ public class PermissionManager implements CatalogEnabled
  * @param inGroupId
  * @return
  */
-	public Collection<String> caculateModulePermissions(String inModuleId, String inGroupId)
+	public Collection<String> calculateModulePermissions(String inModuleId, String inGroupId)
 	{
 		Searcher searcher = getSearcher("permissionentityassigned");
 		HitTracker grouppermissions = searcher.query().exact("group", inGroupId).exact("moduleid", inModuleId).missing("entityid").search();
@@ -118,7 +118,7 @@ public class PermissionManager implements CatalogEnabled
 	}
 
 
-	public Collection<String> caculateEntityPermissions(String inModuleId, String inEntityId, String inGroupId)
+	public Collection<String> calculateEntityPermissions(String inModuleId, String inEntityId, String inGroupId)
 	{
 		Searcher searcher = getSearcher("permissionentityassigned");
 		HitTracker modulepermissions = searcher.query().exact("group", inGroupId).exact("moduleid", inModuleId).missing("entityid").search();
@@ -320,7 +320,7 @@ public class PermissionManager implements CatalogEnabled
 			// Compare values
 			if (!rootValues.containsAll(combined) || !combined.containsAll(rootValues))
 			{
-				log.info("Mismatch found for field '" + field + "' in module " + inModule.getId());
+				permissionassigned = getPermissionManager().calculateEntityPermissions(inModule.getId(), entityid, groupid);
 				log.info("Root Category Values: " + rootValues + ", Module Values: " + combined);
 
 				needsupdate = true;
