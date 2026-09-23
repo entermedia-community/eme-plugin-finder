@@ -6198,10 +6198,6 @@ li.add {
 	min-height: 33px;
 }
 
-.settings-table .emdatafieldvalue {
-	padding: 0.25rem 1rem;
-	border-left: var(--1px-light);
-}
 
 table.table-striped tbody td.emdatafield {
 	width: 220px;
