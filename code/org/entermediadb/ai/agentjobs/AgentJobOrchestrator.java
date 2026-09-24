@@ -13,6 +13,7 @@ import org.entermediadb.ai.Skill;
 import org.entermediadb.ai.automation.AutomationManager;
 import org.entermediadb.ai.llm.BaseAgentContext;
 import org.entermediadb.asset.MediaArchive;
+import org.entermediadb.mcp.client.OpenCodeClient;
 import org.entermediadb.scripts.LogListener;
 import org.openedit.CatalogEnabled;
 import org.openedit.Data;
@@ -33,6 +34,7 @@ public class AgentJobOrchestrator implements AgentJobListener, CatalogEnabled
 	protected Map currentJobsRunning = new ConcurrentHashMap();
 	protected String fieldCatalogId;
 	protected int fieldTotalPending;
+	protected OpenCodeClient fieldOpenCodeClient;
 
 	public int getMaxProcessors()
 	{
@@ -101,7 +103,19 @@ public class AgentJobOrchestrator implements AgentJobListener, CatalogEnabled
 		}
 		return fieldMediaArchive;
 	}
+	public OpenCodeClient getOpenCodeClient()
+	{
+		if (fieldOpenCodeClient == null)
+		{
+			fieldOpenCodeClient = (OpenCodeClient) getModuleManager().getBean(getCatalogId(), "openCodeClient");
+		}
+		return fieldOpenCodeClient;
+	}
 
+	public void setOpenCodeClient(OpenCodeClient inOpenCodeClient)
+	{
+		fieldOpenCodeClient = inOpenCodeClient;
+	}
 	public void setMediaArchive(MediaArchive inMediaArchive)
 	{
 		fieldMediaArchive = inMediaArchive;
@@ -325,8 +339,14 @@ public class AgentJobOrchestrator implements AgentJobListener, CatalogEnabled
 			// 	inStep.setValue("lastresponse", message);
 			// }
 
-			inStep.setValue("status", "complete");
-			getMediaArchive().saveData("agentjobstep", inStep);
+			// A skill may leave the step in a non-terminal state (e.g. "waitinginput" while a
+			// long-running external job is still processing or needs a question answered).
+			// Only stamp "complete" if the skill didn't already decide the outcome itself.
+			if ("running".equals(inStep.get("status")))
+			{
+				inStep.setValue("status", "complete");
+				getMediaArchive().saveData("agentjobstep", inStep);
+			}
 	}
 
 	AutomationManager fieldAutomationManager;
@@ -407,6 +427,5 @@ public class AgentJobOrchestrator implements AgentJobListener, CatalogEnabled
 		ExecutorManager queue = (ExecutorManager) getModuleManager().getBean(getMediaArchive().getCatalogId(), "executorManager");
 		return queue;
 	}
-
 
 }
