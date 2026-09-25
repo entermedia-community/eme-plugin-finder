@@ -5349,10 +5349,9 @@ table.greytxt {
 }
 
 #eml-tab-subnav li.current a {
-	color: var(--themed-tab-btn-active-text);
-	background: var(--light-bg);
 	height: calc(var(--nav-btn-height) + 1px);
 	line-height: var(--nav-btn-height);
+	background: var(--themed-tab-btn-active);
 }
 
 #eml-tab-subnav li.current a:hover {
