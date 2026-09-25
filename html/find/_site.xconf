@@ -225,12 +225,6 @@
   <permission name="savesearch">
     <userprofile name="savesearch" value="true"/>
   </permission>
-  <permission name="exportcollection">
-    <userprofile name="exportcollection" value="true"/>
-  </permission>
-  <permission name="sharecollection">
-    <userprofile name="sharecollection" value="true"/>
-  </permission>
   <permission name="addnewcollection">
     <userprofile name="addnewcollection" value="true"/>
   </permission>
