@@ -265,7 +265,12 @@ public class AgentJobOrchestrator implements AgentJobListener, CatalogEnabled
 			inStep.setValue("errordetails", ex.getMessage());
 			inAgentJob.getAgentJob().setValue("status", "error");
 			getMediaArchive().saveData("agentjob", inAgentJob.getAgentJob());
-			throw new RuntimeException(ex); //stop processing the rest of the steps
+			
+			if(ex instanceof RuntimeException)
+			{
+				throw (RuntimeException) ex;
+			}
+			throw new RuntimeException(ex); 
 		}
 		finally
 		{

@@ -73,7 +73,7 @@ public class OpenCodeRunnerSkill extends BaseSkill
 		{
 			AgentJobOrchestrator orchestrator = (AgentJobOrchestrator) getMediaArchive().getBean("agentJobOrchestrator");
 			client = orchestrator.getOpenCodeClient();
-			client.connectToServer();
+			client.connectToServer(); //start listening
 			status = client.loadStatus(agentjobstep.getId());
 			if (status == null)
 			{
@@ -83,7 +83,7 @@ public class OpenCodeRunnerSkill extends BaseSkill
 			long deadline = System.currentTimeMillis() + MAX_WAIT_MS;
 			do
 			{
-				status = client.advanceSession(agentjobstep.getId(), POLL_TIMEOUT_MS);
+				status = client.advanceSession(inContext.getScriptLogger(),agentjobstep.getId(), POLL_TIMEOUT_MS);
 				// Save progress from time to time so the step shows what opencode has said so far.
 				saveMarkdown(client, status);
 			}
@@ -112,6 +112,9 @@ public class OpenCodeRunnerSkill extends BaseSkill
 			agentjobstep.setValue("markdowncontent", status.getCurrentQuestion());
 			agentjobstep.setValue("pendingquestion", status.getCurrentQuestion());
 			agentjobstep.setValue("pendingpermissionid", status.getPendingPermissionId());
+			// The form's fields are rendered by agent_job_showjobplan.html via AgentJob.getPendingForm
+			JSONObject form = status.getPendingForm();
+			agentjobstep.setValue("pendingform", form == null ? null : form.toJSONString());
 			getMediaArchive().saveData("agentjobstep", agentjobstep);
 
 			LlmResponse response = new BasicLlmResponse();

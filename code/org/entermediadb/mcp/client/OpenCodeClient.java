@@ -1,29 +1,24 @@
 package org.entermediadb.mcp.client;
 
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Collections;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import org.apache.http.Header;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
-import org.entermediadb.ai.llm.LlmConnection;
 import org.entermediadb.asset.MediaArchive;
 import org.entermediadb.jsonrpc.JsonRpcScanner;
+import org.entermediadb.scripts.ScriptLogger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.openedit.CatalogEnabled;
 import org.openedit.Data;
 import org.openedit.ModuleManager;
-import org.openedit.OpenEditException;
 import org.openedit.util.HttpSharedConnection;
 import org.openedit.util.JSONParser;
 
@@ -836,7 +831,7 @@ public class OpenCodeClient implements CatalogEnabled
      * {@link #replyToPermission(String, String, String)}). A {@code permission.replied} event
      * clears the pending permission once it's answered.
      */
-    public SessionStatus advanceSession(String agentJobStepId, long inTimeoutMs) throws InterruptedException
+    public SessionStatus advanceSession(ScriptLogger inLog, String agentJobStepId, long inTimeoutMs) throws InterruptedException
     {
         SessionStatus status = loadStatus(agentJobStepId);
         if (status == null)
@@ -855,7 +850,7 @@ public class OpenCodeClient implements CatalogEnabled
                     {
                         continue;
                     }
-                    applySessionEvent(status, event);
+                    applySessionEvent(inLog,status, event);
                     status.setLastEventSeq(seq);
                 }
                 if (status.isCompleted() || status.getPendingPermissionId() != null)
@@ -878,7 +873,7 @@ public class OpenCodeClient implements CatalogEnabled
      * the {@code data} key (v1 used {@code properties}); heartbeats are SSE comment lines and
      * never arrive as JSON events.
      */
-    protected void applySessionEvent(SessionStatus inStatus, JSONObject inEvent)
+    protected void applySessionEvent(ScriptLogger inLog, SessionStatus inStatus, JSONObject inEvent)
     {
         String type = stringOf(inEvent.get("type"));
         if (type == null)
@@ -910,30 +905,36 @@ public class OpenCodeClient implements CatalogEnabled
                 inStatus.setPendingStatus("securityprompt");
             }
         }
-        else if ("question.asked".equals(type))
+        else if ("form.created".equals(type))
         {
-            if (inStatus.getSessionId().equals(stringOf(data.get("sessionID"))))
+            // Unlike other events, the session id is nested: data.form = {id, sessionID, title, metadata?, fields:[...]}
+            JSONObject form = asObject(data.get("form"));
+            if (form != null && inStatus.getSessionId().equals(stringOf(form.get("sessionID"))))
             {
-                // data.questions is an array of {question, header, options, ...}
-                String text = null;
-                Object questions = data.get("questions");
-                if (questions instanceof JSONArray && !((JSONArray) questions).isEmpty())
-                {
-                    JSONObject first = asObject(((JSONArray) questions).get(0));
-                    text = first == null ? null : stringOf(first.get("question"));
-                }
-                inStatus.setPendingPermissionId(stringOf(data.get("id")));
-                inStatus.setCurrentQuestion(text != null ? text : stringOf(data.get("message")));
+                inStatus.setPendingPermissionId(stringOf(form.get("id")));
+                inStatus.setCurrentQuestion(stringOf(form.get("title")));
+                inStatus.setPendingForm(form);
                 inStatus.setPendingStatus("question");
             }
         }
-        else if ("permission.replied".equals(type) || "question.replied".equals(type) || "question.rejected".equals(type))
+        else if ("permission.replied".equals(type))
         {
             String permissionId = stringOf(data.get("requestID"));
             if (permissionId != null && permissionId.equals(inStatus.getPendingPermissionId()))
             {
                 inStatus.setPendingPermissionId(null);
                 inStatus.setCurrentQuestion(null);
+            }
+        }
+        else if ("form.replied".equals(type) || "form.cancelled".equals(type))
+        {
+            // data = {id, sessionID, answer?}; id is the form id
+            String formId = stringOf(data.get("id"));
+            if (formId != null && formId.equals(inStatus.getPendingPermissionId()))
+            {
+                inStatus.setPendingPermissionId(null);
+                inStatus.setCurrentQuestion(null);
+                inStatus.setPendingForm(null);
             }
         }
         else if ("session.execution.failed".equals(type))
@@ -971,6 +972,12 @@ public class OpenCodeClient implements CatalogEnabled
                 inStatus.setCompleted(true);
             }
         }
+        else
+        {
+            // Log unhandled event types for debugging purposes
+            inLog.debug("OpenCodeClient received unhandled event type: " + type);
+        }
+
     }
 
     /**
@@ -988,19 +995,15 @@ public class OpenCodeClient implements CatalogEnabled
     }
 
     /**
-     * Answers a pending question request (from a {@code question.asked} event). NOTE: the
-     * endpoint and body shape here are assumed by analogy with the permission reply; they are not
-     * in the opencode-v2-api skill and need verifying against a live server.
+     * Answers a pending form (from a {@code form.created} event). inAnswer maps each field key to
+     * its value (string, number, boolean or array of strings for multiselect). The v2 endpoint
+     * ({@code POST /api/session/{id}/form/{formID}/reply}, body {@code {answer}}) returns 204.
      */
-    public boolean replyToQuestion(String inSessionId, String inQuestionId, String inAnswer)
+    public boolean replyToForm(String inSessionId, String inFormId, JSONObject inAnswer)
     {
-        JSONArray answer = new JSONArray();
-        answer.add(inAnswer);
-        JSONArray answers = new JSONArray();
-        answers.add(answer);
         JSONObject body = new JSONObject();
-        body.put("answers", answers);
-        int status = postJsonStatus("/api/session/" + inSessionId + "/question/" + inQuestionId + "/reply", body);
+        body.put("answer", inAnswer);
+        int status = postJsonStatus("/api/session/" + inSessionId + "/form/" + inFormId + "/reply", body);
         return status >= 200 && status < 300;
     }
 

@@ -1,5 +1,6 @@
 package org.entermediadb.mcp.client;
 import java.util.Date;
+import org.json.simple.JSONObject;
 import org.openedit.Data;
 public class SessionStatus
 {
@@ -76,7 +77,7 @@ public class SessionStatus
     }
 
     // Job status the pending request maps to: "securityprompt" (permission.asked) or "question"
-    // (question.asked). Only meaningful while getPendingPermissionId() is not null.
+    // (form.created). Only meaningful while getPendingPermissionId() is not null.
     protected String fieldPendingStatus;
 
     public String getPendingStatus() {
@@ -85,6 +86,18 @@ public class SessionStatus
 
     public void setPendingStatus(String pendingStatus) {
         this.fieldPendingStatus = pendingStatus;
+    }
+
+    // The opencode Form.Info ({id, sessionID, title, metadata?, fields:[...]}) from form.created,
+    // while that form is waiting on an answer. Null for permission requests.
+    protected JSONObject fieldPendingForm;
+
+    public JSONObject getPendingForm() {
+        return fieldPendingForm;
+    }
+
+    public void setPendingForm(JSONObject pendingForm) {
+        this.fieldPendingForm = pendingForm;
     }
 
     protected String fieldError;
