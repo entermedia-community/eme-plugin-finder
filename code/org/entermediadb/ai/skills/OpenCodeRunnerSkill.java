@@ -23,7 +23,7 @@ import org.openedit.repository.ContentItem;
  * agentjobstep and blocks until the session goes idle, hits an error, or opencode asks a
  * permission question that needs a human answer.
  *
- * Usage in AgentContext: - "userrequest" (required) - The prompt sent to opencode - "workingpath"
+ * Usage in AgentContext: - "userrequest" (required, set by OpenCodeUserRequestSkill in chat) - The prompt sent to opencode - "workingpath"
  * (optional) - Directory the opencode session runs in; defaults to one level above
  * getMediaArchive().getRootDirectory() - "agentjobstep" - The MultiValued step record; its id keys
  * the OpenCodeClient session map so re-running this skill resumes the same opencode session
@@ -49,10 +49,13 @@ public class OpenCodeRunnerSkill extends BaseSkill
 	@Override
 	public void process(AgentContext inContext)
 	{
+		AgentJobOrchestrator orchestrator = (AgentJobOrchestrator) getMediaArchive().getBean("agentJobOrchestrator");
 		String query = (String) inContext.getContextValue("userrequest");
 		if (query == null || query.trim().isEmpty())
 		{
-			throw new OpenEditException("OpenCodeRunnerSkill: No user request provided");
+			// In chat, OpenCodeUserRequestSkill runs first and sets userrequest and agentjobstep
+			log.info("OpenCodeRunnerSkill: no userrequest, waiting for input");
+			return;
 		}
 
 		String workingpath = (String) inContext.getContextValue("workingpath");
@@ -71,7 +74,6 @@ public class OpenCodeRunnerSkill extends BaseSkill
 		OpenCodeClient client;
 		try
 		{
-			AgentJobOrchestrator orchestrator = (AgentJobOrchestrator) getMediaArchive().getBean("agentJobOrchestrator");
 			client = orchestrator.getOpenCodeClient();
 			client.connectToServer(); //start listening
 			status = client.loadStatus(agentjobstep.getId());
@@ -140,7 +142,7 @@ public class OpenCodeRunnerSkill extends BaseSkill
 		saveMarkdown(status, output);
 
 		inContext.put("commandoutput", output);
-
+		inContext.put("markdowncontent", output);
 		LlmResponse response = new BasicLlmResponse();
 		response.setMessage(output);
 		inContext.setLastResponse(response);

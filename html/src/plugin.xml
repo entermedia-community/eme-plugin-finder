@@ -2765,6 +2765,12 @@
 		</property>
 	</bean>
 
+	<bean id="openCodeUserRequestSkill" class="org.entermediadb.ai.skills.OpenCodeUserRequestSkill" scope="prototype">
+		<property name="moduleManager">
+			<ref bean="moduleManager" />
+		</property>
+	</bean>
+
 	<bean id="openCodeRunnerSkill" class="org.entermediadb.ai.skills.OpenCodeRunnerSkill" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
