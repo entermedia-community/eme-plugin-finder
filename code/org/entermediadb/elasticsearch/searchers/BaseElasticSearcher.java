@@ -3373,7 +3373,8 @@ public class BaseElasticSearcher extends BaseSearcher implements FullTextLoader
 								}
 								else
 								{
-									ids.add(String.valueOf(object));
+									String v = (String.valueOf(object));
+									ids.add(v.trim());
 								}
 							}
 							inContent.field(key, ids);
