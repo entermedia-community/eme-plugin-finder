@@ -197,13 +197,9 @@ public class ThemeModule extends BaseMediaModule
 		{
 			themeid = inReq.findPathValue("themeid");
 		}
-		if (themeid != null && "defaulttheme".equals(themeid))
-		{
-			themeid = null;
-		}
 		if (themeid == null)
 		{
-			themeid = "theme";
+			themeid = "defaulttheme";
 		}
 		//legacy theme id "theme"
 		if (themeid.equals("theme"))
