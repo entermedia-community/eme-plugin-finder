@@ -319,6 +319,8 @@ public class AssetSecurityDataArchive implements AssetSecurityArchive
 		// }
 		// }
 
+		Boolean securityenabled = false;
+
 		if ("view".equals(inType))
 		{
 			Collection<Category> exactcategories = inAsset.getCategories();
@@ -340,10 +342,15 @@ public class AssetSecurityDataArchive implements AssetSecurityArchive
 						continue;
 					}
 					Collection viewusers = cat.collectValues("viewuser");
-					if (viewusers != null && viewusers.contains(inUser.getUserName()))
+					if (viewusers != null )
 					{
-						return true;
+						securityenabled = true;
+					 	if (viewusers.contains(inUser.getUserName()))
+						{
+							
+							return true;
 
+						}
 					}
 
 					// Use AllowAll boolean instead of Anonymous role
@@ -352,6 +359,7 @@ public class AssetSecurityDataArchive implements AssetSecurityArchive
 					Collection catgroups = cat.collectValues("viewgroup");
 					if (catgroups != null)
 					{
+						securityenabled = true;
 						for (Group group : inUser.getGroups())
 						{
 							if (catgroups.contains(group.getId()))
@@ -364,7 +372,11 @@ public class AssetSecurityDataArchive implements AssetSecurityArchive
 				}
 			}
 		}
-		return false;
+		if (!securityenabled)
+		{
+			return false;
+		}
+		return true;
 		/*
 		 * Collection allowed = getAccessList(inArchive, inType, inAsset);
 		 * 
