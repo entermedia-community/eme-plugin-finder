@@ -60,6 +60,19 @@ public class ThemeModule extends BaseMediaModule
 		}
 	}
 
+	public void saveCustomTheme(WebPageRequest inReq) throws UnsupportedEncodingException
+	{
+		MediaArchive archive = getMediaArchive(inReq);
+		// Process all the themes
+		String catalogid = inReq.findPathValue("catalogid");
+		Collection themes = getSearcherManager().query(catalogid, "theme").all().search();
+		String themeid = inReq.getRequestParameter("themeid");
+		Data theme = (Data) archive.getCachedData("theme", themeid);
+		setTheme(inReq, theme);
+
+		
+	}
+
 	public  void setTheme(WebPageRequest inReq, Data theme) throws UnsupportedEncodingException
 	{
 		MediaArchive archive = getMediaArchive(inReq);
