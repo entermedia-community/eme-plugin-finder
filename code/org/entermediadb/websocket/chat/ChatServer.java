@@ -362,7 +362,8 @@ public class ChatServer
 					UserProfile userprofile = archive.getUserProfile(chatConnection.getUserId());
 					Permissions userpermissions = userprofile.getPermissions();
 
-					if (channelid.equals(connectionChanelId) && userpermissions.canEntity(module, entity, "view"))
+					//if (channelid.equals(connectionChanelId) && userpermissions.canEntity(module, entity, "view"))
+					if (channelid.equals(connectionChanelId) )
 					{
 						// If connected user is navigating the channel and has permission to view
 						chatConnection.sendMessage(inMap);

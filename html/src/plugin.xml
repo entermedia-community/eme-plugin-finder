@@ -452,9 +452,7 @@
 		<property name="searcherManager">
 			<ref bean="searcherManager" />
 		</property>
-		<property name="assetSecurityArchive">
-			<ref bean="assetSecurityDataArchive" />
-		</property>
+
 		<property name="catalogImportConverter">
 			<ref bean="assetCompositeConverter" />
 		</property>
@@ -808,15 +806,7 @@
 			<ref bean="pageManager" />
 		</property>
 	</bean>
-	<!-- <bean id="relatedKeywordSearcher"
-	class="org.entermediadb.asset.search.RelatedKeywordLuceneSearcher" scope="prototype"> <property
-	name="rootDirectory"> <ref bean="root" /> </property> </bean> -->
-	<bean id="assetSecurityDataArchive" class="org.entermediadb.asset.search.AssetSecurityDataArchive">
-		<property name="searcherManager">
-			<ref bean="searcherManager" />
-		</property>
 
-	</bean>
 	<bean id="assetSecurityPageArchive" class="org.entermediadb.asset.search.AssetSecurityPageArchive">
 		<property name="pageManager">
 			<ref bean="pageManager" />
@@ -1419,9 +1409,6 @@
 		</property>
 		<property name="elasticNodeManager">
 			<ref bean="elasticNodeManager" />
-		</property>
-		<property name="assetSecurityArchive">
-			<ref bean="assetSecurityDataArchive" />
 		</property>
 		<property name="searcherManager">
 			<ref bean="searcherManager" />

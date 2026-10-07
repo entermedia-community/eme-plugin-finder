@@ -122,12 +122,6 @@
   <permission name="quicksearch">
     <userprofile name="quicksearch" value="true"/>
   </permission>
-  <permission name="editasset">
-    <or>
-      <userprofile name="viewsettings" value="true"/>
-      <action name="AssetControlModule.canEditAsset"/>
-    </or>
-  </permission>
   <permission name="editentities">
     <or>
       <userprofile name="viewsettings" value="true"/>

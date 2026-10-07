@@ -26,7 +26,6 @@ import org.entermediadb.asset.BaseAsset;
 import org.entermediadb.asset.Category;
 import org.entermediadb.asset.CompositeAsset;
 import org.entermediadb.asset.MediaArchive;
-import org.entermediadb.asset.search.AssetSecurityArchive;
 import org.entermediadb.asset.search.DataConnector;
 import org.entermediadb.asset.xmldb.CategorySearcher;
 import org.entermediadb.elasticsearch.SearchHitData;
@@ -49,7 +48,6 @@ public class ElasticAssetDataConnector extends BaseElasticSearcher implements Da
 
 	static final Log log = LogFactory.getLog(ElasticAssetDataConnector.class);
 
-	protected AssetSecurityArchive fieldAssetSecurityArchive;
 	protected MediaArchive fieldMediaArchive;
 	protected IntCounter fieldIntCounter;
 
@@ -322,22 +320,6 @@ public class ElasticAssetDataConnector extends BaseElasticSearcher implements Da
 		}
 	}
 
-	/*
-	 * protected void hydrateData(ContentItem inContent, String sourcepath, List buffer) { Asset data =
-	 * getMediaArchive().getAssetBySourcePath(sourcepath); if (data == null) { return; }
-	 * buffer.add(data); if (buffer.size() > 99) { updateIndex(buffer, null); } }
-	 */
-	protected void populatePermission(XContentBuilder inContent, Asset inAsset, String inPermission) throws IOException
-	{
-		List add = getAssetSecurityArchive().getAccessList(getMediaArchive(), inAsset);
-		if (add.size() == 0)
-		{
-			add.add("true");
-		}
-		inContent.array(inPermission, add.toArray());
-
-	}
-
 	// TODO: Migrate this into populateKeywords
 	protected String populateDescription(Asset asset, PropertyDetails inDetails, Set inCategories)
 	{
@@ -399,24 +381,6 @@ public class ElasticAssetDataConnector extends BaseElasticSearcher implements Da
 			}
 		}
 		return buffer.toString();
-	}
-
-	// /**
-	// * @deprecated Need to simplify
-	// */
-	// public void updateIndex(Collection<Data> all, boolean b)
-	// {
-	// updateIndex(all, null);
-	// }
-
-	public AssetSecurityArchive getAssetSecurityArchive()
-	{
-		return fieldAssetSecurityArchive;
-	}
-
-	public void setAssetSecurityArchive(AssetSecurityArchive inAssetSecurityArchive)
-	{
-		fieldAssetSecurityArchive = inAssetSecurityArchive;
 	}
 
 	public MediaArchive getMediaArchive()

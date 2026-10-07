@@ -286,7 +286,7 @@ public class PermissionManager implements CatalogEnabled
 		archive.saveData("category", rootcat);
 
 		boolean needsupdate = false;
-		String[] fieldsToCompare = {"users", "groups", "roles"};
+		String[] fieldsToCompare = {"users", "groups"};
 		for (String field : fieldsToCompare)
 		{
 
@@ -379,7 +379,7 @@ public class PermissionManager implements CatalogEnabled
 			buffer.append("Module " + module.getId() + " Permissions being updated");
 			Category rootcat = archive.getEntityManager().loadDefaultFolderForModule(module, null);
 
-			String[] fieldsToCompare = {"users", "groups", "roles"};
+			String[] fieldsToCompare = {"users", "groups"};
 			for (String field : fieldsToCompare)
 			{
 
@@ -406,18 +406,21 @@ public class PermissionManager implements CatalogEnabled
 
 			archive.getCategorySearcher().saveCategoryTree(rootcat);
 
-			Searcher modulesearcher = getSearcher(module.getId());
-
-			HitTracker missingcategory = modulesearcher.query().missing("rootcategory").search();
-			for (Iterator iterator2 = missingcategory.iterator(); iterator2.hasNext();)
+			if (!module.getId().equals("asset"))
 			{
-				Data data = (Data) iterator2.next();
-				archive.getEntityManager().loadDefaultFolder(module, data, null);
+				Searcher modulesearcher = getSearcher(module.getId());
+
+				HitTracker missingcategory = modulesearcher.query().missing("rootcategory").search();
+				for (Iterator iterator2 = missingcategory.iterator(); iterator2.hasNext();)
+				{
+					Data data = (Data) iterator2.next();
+					archive.getEntityManager().loadDefaultFolder(module, data, null);
+				}
+
+				modulesearcher.reIndexAll();
+
+				buffer.append("Module " + module.getId() + " Permissions update completed");
 			}
-
-			modulesearcher.reIndexAll();
-
-			buffer.append("Module " + module.getId() + " Permissions update completed");
 
 			HitTracker assets = archive.getAssetSearcher().query().exact("category", rootcat).search();
 			assets.enableBulkOperations();
@@ -431,6 +434,7 @@ public class PermissionManager implements CatalogEnabled
 			}
 
 		}
+		
 		if (!needupdate.isEmpty())
 		{
 			Data finishedinfo = searcher.createNewData();

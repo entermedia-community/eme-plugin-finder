@@ -38,7 +38,6 @@ import org.entermediadb.asset.scanner.AssetImporter;
 import org.entermediadb.asset.scanner.MetaDataReader;
 import org.entermediadb.asset.scanner.PresetCreator;
 import org.entermediadb.asset.search.AssetSearcher;
-import org.entermediadb.asset.search.AssetSecurityArchive;
 import org.entermediadb.asset.sources.AssetSourceManager;
 import org.entermediadb.asset.xmldb.CategorySearcher;
 import org.entermediadb.email.PostMail;
@@ -125,7 +124,6 @@ public class MediaArchive implements CatalogEnabled
 	protected AssetExport fieldAssetExport;
 	protected SearcherManager fieldSearcherManager;
 	protected AssetSourceManager fieldAssetManager;
-	protected AssetSecurityArchive fieldAssetSecurityArchive;
 
 	protected CategoryEditor fieldCategoryEditor;
 	protected AssetEditor fieldAssetEditor;
@@ -1046,15 +1044,6 @@ public class MediaArchive implements CatalogEnabled
 		fieldAssetSearcher = assetSearcher;
 	}
 
-	public AssetSecurityArchive getAssetSecurityArchive()
-	{
-		return fieldAssetSecurityArchive;
-	}
-
-	public void setAssetSecurityArchive(AssetSecurityArchive assetSecurityArchive)
-	{
-		fieldAssetSecurityArchive = assetSecurityArchive;
-	}
 
 	public void setConvertManager(TranscodeTools creatorManager)
 	{

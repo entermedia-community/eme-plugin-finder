@@ -470,21 +470,6 @@ public class AssetImporter
 		return pages;
 	}
 
-	protected void findUploadTeam(WebPageRequest inReq, MediaArchive archive, ListHitTracker tracker)
-	{
-		String groupid = inReq.getRequestParameter("viewgroup");
-		if (groupid != null)
-		{
-			for (Iterator iterator = tracker.iterator(); iterator.hasNext();)
-			{
-				Asset asset = (Asset) iterator.next();
-				asset.setProperty("uploadteam", groupid);
-				archive.getAssetSecurityArchive().grantGroupViewAccess(archive, groupid, asset);
-			}
-
-		}
-	}
-
 	public void createAssetsFromPages(MediaArchive inArchive, UploadRequest inUploadRequest, WebPageRequest inReq)
 	{
 		// final boolean createCategories = Boolean.parseBoolean(
