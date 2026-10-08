@@ -81,7 +81,9 @@ public class AssistantManager extends BaseAiManager
 		// clicked on
 
 		HitTracker allchannels =
-			channels.query().orgroup("channeltype", "agentchat,agententitychat,agenttutorchat,emeteamchat,emechat").after("refreshdate", now.getTime()).sort("refreshdateDown").search();
+			channels.query()
+			//.orgroup("channeltype", "agentchat,agententitychat,agenttutorchat,emeteamchat,emechat")
+			.after("refreshdate", now.getTime()).sort("refreshdateDown").search();
 
 		Searcher chats = archive.getSearcher("chatterbox");
 		for (Iterator iterator = allchannels.iterator(); iterator.hasNext();)

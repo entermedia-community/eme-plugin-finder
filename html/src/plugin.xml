@@ -2996,6 +2996,13 @@
 		</property>
 	</bean>
 
+	<bean id="welcomeMenuSkill" class="org.entermediadb.ai.skills.WelcomeMenuSkill"
+		scope="prototype">
+		<property name="moduleManager">
+			<ref bean="moduleManager" />
+		</property>
+	</bean>
+
 	<bean id="renderLocalTemplateSkill" class="org.entermediadb.ai.skills.RenderLocalTemplateSkill"
 		scope="prototype">
 		<property name="moduleManager">
