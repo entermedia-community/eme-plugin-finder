@@ -108,12 +108,12 @@ public class BasicLlmResponse implements LlmResponse
 	}
 
 	@Override
-	public String getExecAutomationSkill()
+	public String getExecAutomationStep()
 	{
 		return fieldRunFunctionName;
 	}
 
-	public void setExecAutomationSkill(String inFunctionName)
+	public void setExecAutomationStep(String inFunctionName)
 	{
 		fieldRunFunctionName = inFunctionName;
 	}

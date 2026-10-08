@@ -3,14 +3,14 @@ package org.entermediadb.ai.skills;
 import javax.mail.MessagingException;
 import org.entermediadb.ai.BaseSkill;
 import org.entermediadb.ai.AgentContext;
-import org.entermediadb.ai.llm.AutomationStep;
+import org.entermediadb.ai.agentjobs.AgentJobStep;
 import org.entermediadb.email.PostMail;
 
 public class ImapMailSenderSkill extends BaseSkill
 {
     public void process(AgentContext inContext)
     {
-        AutomationStep currentEnabled = inContext.getCurrentAutomationStep();
+        AgentJobStep currentEnabled = inContext.getCurrentAutomationStep();
 
         String server = (String) inContext.getContextValue("mailserver");
         int serverport = ((Long) inContext.getContextValue("mailport")).intValue();

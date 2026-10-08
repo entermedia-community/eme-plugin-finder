@@ -3,7 +3,7 @@ package org.entermediadb.ai.skills;
 import java.util.Date;
 import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.TutorMessageContext;
-import org.entermediadb.ai.llm.AutomationStep;
+import org.entermediadb.ai.agentjobs.AgentJobStep;
 import org.openedit.Data;
 import org.openedit.MultiValued;
 
@@ -32,7 +32,7 @@ public class AdaptiveTutorialEndSkill extends AdaptiveTutorialBaseSkill
 		channel.setValue("channelstatus", "finished");
 		getMediaArchive().getSearcher("channel").saveData(channel, null);
 
-		AutomationStep skillEnabled = tutorMessageContext.getCurrentAutomationStep();
+		AgentJobStep skillEnabled = tutorMessageContext.getCurrentAutomationStep();
 		tutorMessageContext.fireStatusComplete(skillEnabled);
 	}
 }

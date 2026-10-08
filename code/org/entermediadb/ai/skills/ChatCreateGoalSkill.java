@@ -5,7 +5,7 @@ import org.apache.commons.logging.LogFactory;
 import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.BaseSkill;
 import org.entermediadb.ai.ChatMessageContext;
-import org.entermediadb.ai.llm.AutomationStep;
+import org.entermediadb.ai.agentjobs.AgentJobStep;
 import org.entermediadb.ai.llm.BasicLlmResponse;
 import org.entermediadb.ai.llm.LlmConnection;
 import org.entermediadb.ai.llm.LlmResponse;
@@ -44,7 +44,7 @@ public class ChatCreateGoalSkill extends BaseSkill
 		messageContext.putContextValue("goal", goal);
 		super.process(messageContext);
 
-		// AutomationStep skillEnabled = messageContext.getCurrentAgentEnable();
+		// AgentJobStep skillEnabled = messageContext.getCurrentAgentEnable();
 		// fireStatusComplete(skillEnabled);
 
 		// getMediaArchive().fireSharedMediaEvent("goaltask/goalcreated");

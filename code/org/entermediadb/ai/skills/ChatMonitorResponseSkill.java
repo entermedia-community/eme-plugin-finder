@@ -5,8 +5,7 @@ import org.apache.commons.logging.LogFactory;
 import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.BaseSkill;
 import org.entermediadb.ai.ChatMessageContext;
-import org.entermediadb.ai.automation.RunningScenario;
-import org.entermediadb.ai.llm.AutomationStep;
+import org.entermediadb.ai.agentjobs.AgentJobStep;
 import org.openedit.MultiValued;
 
 public class ChatMonitorResponseSkill extends BaseSkill
@@ -14,12 +13,18 @@ public class ChatMonitorResponseSkill extends BaseSkill
 	private static final Log log = LogFactory.getLog(ChatMonitorResponseSkill.class);
 
 	@Override
-	public void startupScenario(AgentContext inContext)
+	public void processStarting(AgentContext inContext)
 	{
-		// super.startupScenario(inContext);
+		// super.processStarting(inContext);
 		// dont send hi
 	}
 
+	/**	(non-Javadoc)
+	 * 
+	 Do I create a job or handle it immediately?
+	 * 
+	 * @see org.entermediadb.ai.BaseSkill#process(org.entermediadb.ai.AgentContext)
+	 */
 	@Override
 	public void process(AgentContext inAgentContext)
 	{
@@ -46,7 +51,7 @@ public class ChatMonitorResponseSkill extends BaseSkill
 			log.error("Selected scenario needs the format: scenario.skillenabled. Selected scenario:" + selectedscenario);
 			return;
 		}
-		inAgentContext.getCurrentScenario().runProcess(selectedscenario, inAgentContext);
+		getAgentJobManager().runProcess(inAgentContext, selectedscenario);
 
 	}
 

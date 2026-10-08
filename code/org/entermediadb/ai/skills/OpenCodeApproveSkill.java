@@ -2,7 +2,7 @@ package org.entermediadb.ai.skills;
 
 import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.BaseSkill;
-import org.entermediadb.ai.agentjobs.AgentJobOrchestrator;
+import org.entermediadb.ai.agentjobs.AgentJobManager;
 import org.entermediadb.ai.llm.BasicLlmResponse;
 import org.entermediadb.ai.llm.LlmResponse;
 import org.entermediadb.mcp.client.OpenCodeClient;
@@ -12,18 +12,23 @@ import org.openedit.OpenEditException;
 
 /**
  * OpenCodeApproveSkill - Answers an opencode security (permission) prompt for an agentjobstep.
- * Context: "agentjobstepid" (required), "decision" = once | always | reject (default once).
+ * Context: "agentjobstep" (required), "decision" = once | always | reject (default once).
  */
 public class OpenCodeApproveSkill extends BaseSkill
 {
 	@Override
 	public void process(AgentContext inContext)
 	{
-		String stepid = (String) inContext.getContextValue("agentjobstepid");
-		MultiValued step = (MultiValued) getMediaArchive().getData("agentjobstep", stepid);
-		if (step == null || !"securityprompt".equals(step.get("status")))
+		MultiValued step = (MultiValued) inContext.getContextValue("agentjobstep");
+		if (step == null)
 		{
-			throw new OpenEditException("OpenCodeApproveSkill: step " + stepid + " is not waiting on a security prompt");
+			throw new OpenEditException("OpenCodeApproveSkill: missing agentjobstep in context");
+		}
+		if (!"securityprompt".equals(step.get("status")))
+		{
+			//throw new OpenEditException("OpenCodeApproveSkill: step " + step.get("id") + " is not waiting on a security prompt");
+			super.process(inContext);
+			return;
 		}
 		String decision = (String) inContext.getContextValue("decision");
 		if (!"always".equals(decision) && !"reject".equals(decision))
@@ -31,17 +36,17 @@ public class OpenCodeApproveSkill extends BaseSkill
 			decision = "once";
 		}
 
-		AgentJobOrchestrator orchestrator = (AgentJobOrchestrator) getMediaArchive().getBean("agentJobOrchestrator");
-		OpenCodeClient client = orchestrator.getOpenCodeClient();
-		SessionStatus status = client.loadStatus(stepid);
+		AgentJobManager manager = (AgentJobManager) getMediaArchive().getBean("agentJobManager");
+		OpenCodeClient client = manager.getOpenCodeClient();
+		SessionStatus status = client.loadStatus(step.get("id"));
 		String requestid = step.get("pendingpermissionid");
 		if (status == null || requestid == null)
 		{
-			throw new OpenEditException("OpenCodeApproveSkill: no opencode session waiting for step " + stepid);
+			throw new OpenEditException("OpenCodeApproveSkill: no opencode session waiting for step " + step.get("id"));
 		}
 		if (!client.replyToPermission(status.getSessionId(), requestid, decision))
 		{
-			throw new OpenEditException("OpenCodeApproveSkill: opencode rejected the reply for step " + stepid);
+			throw new OpenEditException("OpenCodeApproveSkill: opencode rejected the reply for step " + step.get("id"));
 		}
 
 		step.setValue("status", "running");

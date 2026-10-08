@@ -1,41 +1,47 @@
-package org.entermediadb.ai.llm;
+package org.entermediadb.ai.agentjobs;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.entermediadb.ai.Skill;
 import org.json.simple.JSONObject;
 import org.openedit.MultiValued;
 
-public class AutomationStep
+/**
+ * One agentjobstep row of an AgentJob, with its aiskill and the Skill bean that runs it. Steps copied
+ * from an automationscenario keep the automationstep id, and "runafter" links each step to its parent.
+ */
+public class AgentJobStep
 {
-	private static final Log log = LogFactory.getLog(AutomationStep.class);
+	AgentJobStep fieldParentStep;
 
-	AutomationStep fieldParentAutomationStep;
-
-	public AutomationStep getParentAutomationStep()
+	public AgentJobStep getParentStep()
 	{
-		return fieldParentAutomationStep;
+		return fieldParentStep;
 	}
 
-	public void setParentAutomationStep(AutomationStep inParentAutomationStep)
+	public void setParentStep(AgentJobStep inParentStep)
 	{
-		fieldParentAutomationStep = inParentAutomationStep;
+		fieldParentStep = inParentStep;
 	}
 
 	MultiValued fieldAgentData;
 
+	/** The aiskill row, or null for steps without a skill (such as opencode steps) */
 	public MultiValued getAgentData()
 	{
 		return fieldAgentData;
 	}
 
+	public void setAgentData(MultiValued inAgentData)
+	{
+		fieldAgentData = inAgentData;
+	}
+
 	public Object getValue(String inField)
 	{
-		Object value = getAutomationStepData().getValue(inField);
-		if (value == null)
+		Object value = getAgentJobStepData().getValue(inField);
+		if (value == null && getAgentData() != null)
 		{
 			value = getAgentData().getValue(inField);
 		}
@@ -44,29 +50,40 @@ public class AutomationStep
 
 	public String get(String inField)
 	{
-		String value = getAutomationStepData().get(inField);
-		if (value == null)
+		String value = getAgentJobStepData().get(inField);
+		if (value == null && getAgentData() != null)
 		{
 			value = getAgentData().get(inField);
 		}
 		return value;
 	}
 
-	public void setAgentData(MultiValued inAgentData)
+	public void setValue(String inField, Object inValue)
 	{
-		fieldAgentData = inAgentData;
+		getAgentJobStepData().setValue(inField, inValue);
 	}
 
-	MultiValued fieldAutomationStepData;
+	MultiValued fieldAgentJobStepData;
 
-	public MultiValued getAutomationStepData()
+	/** The agentjobstep row */
+	public MultiValued getAgentJobStepData()
 	{
-		return fieldAutomationStepData;
+		return fieldAgentJobStepData;
 	}
 
-	public void setAutomationStepData(MultiValued inAutomationStepData)
+	public void setAgentJobStepData(MultiValued inAgentJobStepData)
 	{
-		fieldAutomationStepData = inAutomationStepData;
+		fieldAgentJobStepData = inAgentJobStepData;
+	}
+
+	public String getId()
+	{
+		return getAgentJobStepData().getId();
+	}
+
+	public String getName()
+	{
+		return getAgentJobStepData().getName();
 	}
 
 	public Skill getAgent()
@@ -81,15 +98,15 @@ public class AutomationStep
 
 	Skill fieldAgent;
 
+	/** The id of the agentjobstep this one runs after */
 	public String getParentAgent()
 	{
-		String runafter = getAutomationStepData().get("runafter");
-		return runafter;
+		return getAgentJobStepData().get("runafter");
 	}
 
-	Collection<AutomationStep> fieldChildren;
+	Collection<AgentJobStep> fieldChildren;
 
-	public Collection<AutomationStep> getChildren()
+	public Collection<AgentJobStep> getChildren()
 	{
 		if (fieldChildren == null)
 		{
@@ -98,30 +115,27 @@ public class AutomationStep
 		return fieldChildren;
 	}
 
-	public void setChildren(Collection<AutomationStep> inChildren)
+	public void setChildren(Collection<AgentJobStep> inChildren)
 	{
 		fieldChildren = inChildren;
 	}
 
-	public AutomationStep getChildren(String inId)
+	public AgentJobStep getChildren(String inId)
 	{
-		AutomationStep selected = null;
-		for (AutomationStep child : getChildren())
+		for (AgentJobStep child : getChildren())
 		{
-			String id = child.get("id");
-			if (id.equals(inId))
+			if (inId.equals(child.getEnabledId()) || inId.equals(child.getId()))
 			{
-				selected = child;
-				break;
+				return child;
 			}
 		}
-		return selected;
+		return null;
 	}
 
-	public void addChild(AutomationStep inChildAgent)
+	public void addChild(AgentJobStep inChildAgent)
 	{
 		getChildren().add(inChildAgent);
-		inChildAgent.setParentAutomationStep(this);
+		inChildAgent.setParentStep(this);
 	}
 
 	@Override
@@ -166,12 +180,21 @@ public class AutomationStep
 		fieldExtraContextValues = inExtraContextValues;
 	}
 
+	/**
+	 * The automationstep id this step was copied from, used as the function name in chats. Steps added
+	 * directly to a job use their own id.
+	 */
 	public String getEnabledId()
 	{
-		return getAutomationStepData().getId();
+		String automationstep = getAgentJobStepData().get("automationstep");
+		if (automationstep != null)
+		{
+			return automationstep;
+		}
+		return getAgentJobStepData().getId();
 	}
 
-	public AutomationStep getNextAutomationStep()
+	public AgentJobStep getNextAutomationStep()
 	{
 		if (getChildren() != null && getChildren().size() > 0)
 		{

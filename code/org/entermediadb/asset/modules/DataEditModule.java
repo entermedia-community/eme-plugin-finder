@@ -426,6 +426,16 @@ public class DataEditModule extends BaseMediaModule
 			detail.setStored(true);
 			details.addDetail(detail);
 		}
+		String datatype = inReq.getRequestParameter("datatype.value");
+		if( datatype != null)
+		{
+			detail.setDataType(datatype);
+		}
+		String viewtypeString = inReq.getRequestParameter("viewtype.value");
+		if (viewtypeString != null)
+		{
+			detail.setViewType(viewtypeString);
+		}
 		searcher.getPropertyDetailsArchive().savePropertyDetail(detail, searchtype, inReq.getUser());
 		loadProperties(inReq);
 		// tuan

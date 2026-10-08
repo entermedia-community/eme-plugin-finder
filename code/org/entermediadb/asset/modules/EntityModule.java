@@ -1214,7 +1214,16 @@ public class EntityModule extends BaseMediaModule
 		}
 
 		entity = getMediaArchive(inPageRequest).getCachedData(inPageRequest, entitymoduleid, entityid);
-		inPageRequest.putPageValue("entity", entity);
+
+		String label = "entity";
+
+		// String auto = inPageRequest.findValue("get_entity_use_model_name");
+		// if( Boolean.parseBoolean(auto))
+		// {
+		// 	label =entitymodule.getName().toLowerCase();
+		// }
+
+		inPageRequest.putPageValue(label, entity);
 
 		return entity;
 	}

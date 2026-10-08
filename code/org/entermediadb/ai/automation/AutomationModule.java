@@ -1,5 +1,7 @@
 package org.entermediadb.ai.automation;
 
+import org.entermediadb.ai.agentjobs.AgentJobManager;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -110,7 +112,7 @@ public class AutomationModule extends BaseMediaModule
 		{
 			id = inReq.getPage().getPageName();
 		}
-		AutomationManager manager = getAutomationManager(inReq);
+		AgentJobManager manager = (AgentJobManager) getMediaArchive(inReq).getBean("agentJobManager");
 		ScriptLogger logger = (ScriptLogger) inReq.getPageValue("log");
 
 		String currentskkillenabled = inReq.findValue("skillenabledid");

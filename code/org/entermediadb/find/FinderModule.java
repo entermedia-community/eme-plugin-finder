@@ -1028,6 +1028,15 @@ public class FinderModule extends BaseMediaModule
 				return;
 			}
 			myemeprofile = getMediaArchive(inReq).query("emeprofile").exact("owner", user.getId()).cachedSearchOne();
+			if( myemeprofile == null)
+			{
+				myemeprofile = getMediaArchive(inReq).getSearcher("emeprofile").createNewData();
+				String urlname = "profiles/" + user.getScreenName();
+				myemeprofile.setValue("urlname", urlname);
+				myemeprofile.setValue("name", user.getName());
+				myemeprofile.setValue("owner", user.getId());
+				getMediaArchive(inReq).saveData("emeprofile", myemeprofile);
+			}
 			inReq.putPageValue("myemeprofile", myemeprofile);
 		}
 		// Loads other users emeprofile if we are viewing their profile

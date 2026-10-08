@@ -13,6 +13,7 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.entermediadb.ai.assistant.SemanticAction;
+import org.entermediadb.ai.agentjobs.AgentJobManager;
 import org.entermediadb.ai.automation.AutomationManager;
 import org.entermediadb.ai.classify.SemanticTableManager;
 import org.entermediadb.ai.llm.LlmResponse;
@@ -439,6 +440,11 @@ public class BaseAiManager extends BaseMediaObject
 	public AutomationManager getAutomationManager()
 	{
 		return (AutomationManager) getMediaArchive().getModuleManager().getBean(getCatalogId(), "automationManager", true);
+	}
+
+	public AgentJobManager getAgentJobManager()
+	{
+		return (AgentJobManager) getMediaArchive().getModuleManager().getBean(getCatalogId(), "agentJobManager", true);
 	}
 
 }

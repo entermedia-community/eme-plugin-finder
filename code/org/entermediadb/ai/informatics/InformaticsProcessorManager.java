@@ -15,7 +15,7 @@ import org.apache.commons.logging.LogFactory;
 import org.entermediadb.ai.BaseSkill;
 import org.entermediadb.ai.BaseAiManager;
 import org.entermediadb.ai.AgentContext;
-import org.entermediadb.ai.llm.AutomationStep;
+import org.entermediadb.ai.agentjobs.AgentJobStep;
 import org.entermediadb.asset.Asset;
 import org.entermediadb.scripts.ScriptLogger;
 import org.openedit.Data;
@@ -66,7 +66,7 @@ public class InformaticsProcessorManager extends BaseAiManager
 		inContext.setScriptLogger(inLog);
 		inContext.setAssetsToProcess(pageofhits);
 
-		getAutomationManager().runScenario("informatics", inContext);
+		getAgentJobManager().runScenario("informatics", inContext);
 	}
 
 	public HitTracker findPendingAssets(AgentContext inContext)

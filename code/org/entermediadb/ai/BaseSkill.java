@@ -3,25 +3,25 @@ package org.entermediadb.ai;
 import java.util.ArrayList;
 import java.util.Collection;
 import org.entermediadb.ai.assistant.AssistantManager;
-import org.entermediadb.ai.llm.AutomationStep;
+import org.entermediadb.ai.agentjobs.AgentJobStep;
 import org.openedit.CatalogEnabled;
 import org.openedit.Data;
 
 public class BaseSkill extends BaseAiManager implements Skill, CatalogEnabled
 {
-	public void startupScenario(AgentContext inContext)
+	public void processStarting(AgentContext inContext)
 	{
 		Boolean cancelStarting = (Boolean) inContext.getContextValue("cancelstartup" + inContext.getCurrentAutomationStep().getEnabledId());
 		if (cancelStarting != null && cancelStarting.booleanValue())
 		{
 			return;
 		}
-		AutomationStep skillEnabled = inContext.getCurrentAutomationStep();
+		AgentJobStep skillEnabled = inContext.getCurrentAutomationStep();
 		inContext.fireStatusStarting(skillEnabled);
 
 	}
 
-	public void endScenario(AgentContext inContext)
+	public void processCompleted(AgentContext inContext)
 	{
 		// Dont run the end event if the process was skipped beause it ends when the next starts
 	}
@@ -32,7 +32,7 @@ public class BaseSkill extends BaseAiManager implements Skill, CatalogEnabled
 	@Override
 	public void process(AgentContext inContext)
 	{
-		AutomationStep skillEnabled = inContext.getCurrentAutomationStep();
+		AgentJobStep skillEnabled = inContext.getCurrentAutomationStep();
 		if( skillEnabled == null )
 		{
 			return;
@@ -40,14 +40,14 @@ public class BaseSkill extends BaseAiManager implements Skill, CatalogEnabled
 
 		inContext.fireStatusComplete(skillEnabled);
 
-		Collection<AutomationStep> children = inContext.getCurrentAutomationStep().getChildren();
+		Collection<AgentJobStep> children = inContext.getCurrentAutomationStep().getChildren();
 
-		for (AutomationStep agentEnabled : children)
+		for (AgentJobStep agentEnabled : children)
 		{
-			AgentContext childContext = inContext.getCurrentScenario().createAgentContext(inContext, agentEnabled);
+			AgentContext childContext = getAgentJobManager().createAgentContext(inContext, agentEnabled);
 
 			// agentEnabled.getAgent().processstart(childContext);
-			inContext.getCurrentScenario().runProcess(agentEnabled, childContext);
+			getAgentJobManager().runProcess(childContext, agentEnabled);
 			// agentEnabled.getAgent().processend(childContext);
 		}
 	}

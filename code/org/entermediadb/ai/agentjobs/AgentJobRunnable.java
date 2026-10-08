@@ -1,14 +1,10 @@
 package org.entermediadb.ai.agentjobs;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.entermediadb.ai.AgentContext;
 import org.openedit.Data;
-import org.openedit.MultiValued;
 
 public class AgentJobRunnable implements Runnable
 {
-	private static final Log log = LogFactory.getLog(AgentJobRunnable.class);
 
 	AgentJob fieldAgentJob;
 	AgentContext fieldContext;
@@ -47,16 +43,16 @@ public class AgentJobRunnable implements Runnable
 		return getAgentJob().getId();
 	}
 	protected boolean fieldCompleted;
-	protected AgentJobListener fieldJobListener;
+	protected AgentJobOrchestrator fieldAgentJobOrchestrator;
 
-	public AgentJobListener getEventListener()
+	public AgentJobOrchestrator getAgentJobOrchestrator()
 	{
-		return fieldJobListener;
+		return fieldAgentJobOrchestrator;
 	}
 
-	public void setEventListener(AgentJobListener fieldJobListener)
+	public void setAgentJobOrchestrator(AgentJobOrchestrator inAgentJobOrchestrator)
 	{
-		this.fieldJobListener = fieldJobListener;
+		fieldAgentJobOrchestrator = inAgentJobOrchestrator;
 	}
 
 	public boolean hasComplete()
@@ -64,33 +60,16 @@ public class AgentJobRunnable implements Runnable
 		return fieldCompleted;
 	}
 
+	public void setCompleted(boolean inCompleted)
+	{
+		fieldCompleted = inCompleted;
+	}
+
 	public AgentJobRunnable() {}
 
 	public void run()
 	{
-		try
-		{
-			for (MultiValued step : getAgentJob().getSteps())
-			{
-				//runner.run();
-				//Get the job listenr and run it
-				getEventListener().runStep(this, step);
-				getEventListener().finishedStep(this,step);
-			}
-			fieldCompleted = true;
-		}
-		catch (Exception e)
-		{
-			log.error("ERRORS converting: " + getAgentJob(), e);
-		}
-		finally
-		{
-			if (hasComplete())
-			{
-				getEventListener().finishedAllSteps(this);
-			}
-			getEventListener().finishedRun(this);
-		}
+		getAgentJobOrchestrator().startJob(this);
 	}
 
 }

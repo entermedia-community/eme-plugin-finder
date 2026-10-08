@@ -11,7 +11,7 @@ import org.entermediadb.ai.Schema;
 import org.entermediadb.ai.assistant.AssistantManager;
 import org.entermediadb.ai.assistant.GuideStatus;
 import org.entermediadb.ai.classify.EmbeddingManager;
-import org.entermediadb.ai.llm.AutomationStep;
+import org.entermediadb.ai.agentjobs.AgentJobStep;
 import org.entermediadb.ai.llm.LlmConnection;
 import org.entermediadb.ai.llm.LlmResponse;
 import org.entermediadb.asset.Asset;
@@ -60,7 +60,7 @@ public class QuestionsSkill extends BaseSkill
 		LlmResponse response = llmconnection.renderLocalAction(messageContext, agentFn);
 		if (aisuggestions.isEmpty())
 		{
-			response.setExecAutomationSkill("question_create_suggestions");
+			response.setExecAutomationStep("question_create_suggestions");
 			messageContext.setLastResponse(response);
 			super.process(inAgentContext);
 		}
@@ -69,7 +69,7 @@ public class QuestionsSkill extends BaseSkill
 			response.setNextAutomationStep("question_ask");
 			messageContext.setLastResponse(response);
 			messageContext.setWaitTime(null);
-			AutomationStep skillEnabled = messageContext.getCurrentAutomationStep();
+			AgentJobStep skillEnabled = messageContext.getCurrentAutomationStep();
 			messageContext.fireStatusComplete(skillEnabled);
 
 		}

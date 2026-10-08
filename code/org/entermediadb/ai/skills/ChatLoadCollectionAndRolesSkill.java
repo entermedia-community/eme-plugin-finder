@@ -7,8 +7,8 @@ import java.util.Collection;
 import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.BaseSkill;
 import org.entermediadb.ai.ChatMessageContext;
-import org.entermediadb.ai.automation.RunningScenario;
-import org.entermediadb.ai.llm.AutomationStep;
+import org.entermediadb.ai.agentjobs.AgentJob;
+import org.entermediadb.ai.agentjobs.AgentJobStep;
 import org.entermediadb.ai.llm.LlmConnection;
 import org.entermediadb.ai.llm.LlmResponse;
 import org.json.simple.JSONObject;
@@ -20,9 +20,9 @@ public class ChatLoadCollectionAndRolesSkill extends BaseSkill
 	private static final Log log = LogFactory.getLog(ChatLoadCollectionAndRolesSkill.class);
 
 	@Override
-	public void startupScenario(AgentContext inContext)
+	public void processStarting(AgentContext inContext)
 	{
-		// super.startupScenario(inContext);
+		// super.processStarting(inContext);
 		// dont send hi
 	}
 
@@ -92,7 +92,7 @@ public class ChatLoadCollectionAndRolesSkill extends BaseSkill
 
 		messageContext.setLastResponse(response);
 
-		String selectedtool = response.getExecAutomationSkill();
+		String selectedtool = response.getExecAutomationStep();
 		if (selectedtool == null)
 		{
 			log.error("No tool selected for query: " + query);
@@ -117,17 +117,20 @@ public class ChatLoadCollectionAndRolesSkill extends BaseSkill
 		if (scenario != null)
 		{
 
-			RunningScenario running = (RunningScenario) getMediaArchive().getBean("runningscenario", false);
-			running.setId(scenario);
+			AgentJob job = inAgentContext.getCurrentAgentJob();
+			if (job == null || !scenario.equals(job.getScenarioId()))
+			{
+				job = getAgentJobManager().importScenario(scenario, inAgentContext);
+			}
 
-			AutomationStep skillEnabled = running.findEnabled(skillenableid);
+			AgentJobStep skillEnabled = job.findEnabled(skillenableid);
 			if (skillEnabled == null)
 			{
 				log.error("No skill enabled found for id: " + skillenableid);
 				return;
 			}
-			AgentContext childContext = running.createAgentContext(inAgentContext, skillEnabled);
-			childContext.setCurrentScenario(running);
+			AgentContext childContext = getAgentJobManager().createAgentContext(inAgentContext, skillEnabled);
+			childContext.setCurrentAgentJob(job);
 
 			childContext.putContextValue("cancelstartup" + skillenableid, true);
 			childContext.putContextValue("cancelemptyresponse", true);
@@ -174,7 +177,7 @@ public class ChatLoadCollectionAndRolesSkill extends BaseSkill
 			childContext.putContextValue("docids", docids);
 			agentmessage.setValue("useralias", useralias);
 
-			running.runProcess(skillEnabled, childContext);
+			getAgentJobManager().runProcess(childContext, skillEnabled);
 		}
 
 	}

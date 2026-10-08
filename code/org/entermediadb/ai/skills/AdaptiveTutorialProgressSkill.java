@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.TutorMessageContext;
-import org.entermediadb.ai.llm.AutomationStep;
+import org.entermediadb.ai.agentjobs.AgentJobStep;
 import org.openedit.Data;
 import org.openedit.MultiValued;
 import org.openedit.data.Searcher;
@@ -162,7 +162,7 @@ public class AdaptiveTutorialProgressSkill extends AdaptiveTutorialBaseSkill
 
 		agentmessage.setValue("message", "Progress updated for tutorial " + tutorialid);
 
-		AutomationStep skillEnabled = tutorMessageContext.getCurrentAutomationStep();
+		AgentJobStep skillEnabled = tutorMessageContext.getCurrentAutomationStep();
 		tutorMessageContext.fireStatusComplete(skillEnabled);
 
 	}

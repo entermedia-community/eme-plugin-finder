@@ -10,7 +10,7 @@ import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.BaseSkill;
 import org.entermediadb.ai.ChatMessageContext;
 import org.entermediadb.ai.creator.AiSmartCreatorSteps;
-import org.entermediadb.ai.llm.AutomationStep;
+import org.entermediadb.ai.agentjobs.AgentJobStep;
 import org.entermediadb.ai.llm.BasicLlmResponse;
 import org.entermediadb.ai.llm.LlmConnection;
 import org.entermediadb.ai.llm.LlmResponse;
@@ -67,10 +67,10 @@ public class ChatSmartCreatorConfirmationSkill extends BaseSkill
 
 			// Render the updated outline for confirmation
 			res.setOperationState("runskill");
-			res.setExecAutomationSkill("chat_smartcreator_renderoutline");
+			res.setExecAutomationStep("chat_smartcreator_renderoutline");
 			messageContext.setLastResponse(res);
 
-			// AutomationStep skillEnabled = messageContext.getCurrentAgentEnable();
+			// AgentJobStep skillEnabled = messageContext.getCurrentAgentEnable();
 			// messageContext.fireStatusComplete(skillEnabled);
 			return res;
 		}

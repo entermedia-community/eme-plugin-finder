@@ -1,12 +1,15 @@
 package org.entermediadb.mcp.server;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.entermediadb.ai.agentjobs.AgentJob;
+import org.entermediadb.ai.agentjobs.AgentJobManager;
+import org.entermediadb.ai.automation.AutomationManager;
 import org.entermediadb.ai.llm.VelocityRenderUtil;
 import org.entermediadb.asset.MediaArchive;
 import org.entermediadb.jsonrpc.JsonRpcResponseBuilder;
@@ -22,6 +25,8 @@ import org.openedit.users.User;
 public class McpManager implements CatalogEnabled
 {
     private static final Log log = LogFactory.getLog(McpManager.class);
+
+    protected static final String GET_JOB_STATUS = "get_job_status";
 
     protected ModuleManager fieldModuleManager;
     protected VelocityRenderUtil fieldRender;
@@ -54,6 +59,18 @@ public class McpManager implements CatalogEnabled
         fieldModuleManager = inModuleManager;
     }
 
+    protected AutomationManager fieldAutomationManager;
+
+    public AutomationManager getAutomationManager()
+    {
+        return (AutomationManager) getModuleManager().getBean(getCatalogId(),"automationManager");
+    }
+
+    public void setAutomationManager(AutomationManager inAutomationManager)
+    {
+        fieldAutomationManager = inAutomationManager;
+    }
+
     public VelocityRenderUtil getRenderUtil()
     {
         return fieldRender;
@@ -63,6 +80,17 @@ public class McpManager implements CatalogEnabled
     {
         fieldRender = inRender;
     }
+
+    public MediaArchive getMediaArchive()
+    {
+        return (MediaArchive) getModuleManager().getBean(getCatalogId(),    "mediaArchive");
+    }
+
+    public         AgentJobManager getAgentJobManager()
+    {
+        return (AgentJobManager) getModuleManager().getBean(getCatalogId(), "agentJobManager", true);
+    }
+
 
     public String getCatalogId()
     {
@@ -142,6 +170,15 @@ public class McpManager implements CatalogEnabled
             throw new OpenEditException("No active MCP connection for command: " + cmd);
         }
 
+        String response = buildResponse(inReq, cmd, payload);
+        inConnection.sendMessage(response);
+    }
+
+    /**
+     * Builds the JSON-RPC response for a call. Used by both the SSE and the Streamable HTTP transports.
+     */
+    public String buildResponse(WebPageRequest inReq, String cmd, JSONObject payload) throws Exception
+    {
         Object id = payload != null ? payload.get("id") : null;
 
         inReq.putPageValue("id", id);
@@ -163,6 +200,11 @@ public class McpManager implements CatalogEnabled
                 }
                 else
                 {
+                    //"enabledautomation";enabledautomation
+
+                    Collection automations = getMediaArchive().query("automationscenario").exact("connectedtop", "customerservicelabel").cachedSearch();
+                    inReq.putPageValue("enabledautomation", automations);
+
                     String fp = "/" + appid + "/ai/mcp/method/tools/list.json";
                     inReq.putPageValue("modules", profile.getEntities());
 
@@ -174,24 +216,31 @@ public class McpManager implements CatalogEnabled
             else
                 if ("tools/call".equals(cmd))
                 {
-                    String functionname = params != null ? (String) params.get("name") : null;
-                    if (functionname == null || functionname.isEmpty())
+                    String automationid = params != null ? (String) params.get("name") : null;
+                    if (automationid == null || automationid.isEmpty())
                     {
                         response = new JsonRpcResponseBuilder(id).withResponse("Invalid tools/call request. Missing tool name.", true).build();
                     }
                     else
-                    {
-                        String siteid = inReq.findValue("siteid");
-                        inReq.putPageValue("mcpapplicationid", siteid + "/find");
-                        String fp = "/" + appid + "/ai/mcp/functions/" + functionname + ".html";
+                        if (GET_JOB_STATUS.equals(automationid))
+                        {
+                            Map arguments = params != null ? (Map) params.get("arguments") : null;
+                            String jobid = arguments != null ? (String) arguments.get("jobid") : null;
+                            response = buildJobStatusResponse(inReq, id, jobid);
+                        }
+                        else
+                        {
+                            Map arguments = params != null ? (Map) params.get("arguments") : null;
+                            String query = arguments != null ? (String) arguments.get("query") : null;
 
-                        String text = getRenderUtil().loadInputFromTemplate(inReq, fp);
+                            AgentJob job = getAgentJobManager().createAgentJobFromMessage(inReq.getUserName(), query, automationid, null);
 
-                        text = text.replaceAll("(?m)^\\s*$\\n?", "");
-                        text = text.replaceAll("(\\r?\\n){2,}", "\n");
+                            //Start running the job. The client polls get_job_status for the result
+                            getAgentJobManager().checkQueue();
 
-                        response = new JsonRpcResponseBuilder(id).withResponse(text, false).build();
-                    }
+                            String text = "Job queued. jobid: " + job.getId() + "\nCall the " + GET_JOB_STATUS + " tool with this jobid to get the result.";
+                            response = new JsonRpcResponseBuilder(id).withResponse(text, false).build();
+                        }
                 }
                 else
                 {
@@ -199,12 +248,51 @@ public class McpManager implements CatalogEnabled
                     response = new JsonRpcResponseBuilder(id).withResponse("CMD Received " + cmd, false).build();
                 }
 
-        inConnection.sendMessage(response);
-        // inReq.getResponse().getOutputStream().write(response.getBytes()); //This
-        // should chunk it up
+        return response;
+    }
 
-        // inReq.getPageStreamer().getOutput().getWriter().write(response);
-        // inReq.getResponse().flushBuffer();
+    /**
+     * Reports the status of an agent job started by tools/call, with its last response once there is one.
+     */
+    protected String buildJobStatusResponse(WebPageRequest inReq, Object id, String inJobId)
+    {
+        if (inJobId == null || inJobId.isEmpty())
+        {
+            return new JsonRpcResponseBuilder(id).withResponse("Missing jobid.", true).build();
+        }
+        AgentJob job = (AgentJob) getMediaArchive().getCachedData("agentjob", inJobId);
+        if (job == null || !String.valueOf(inReq.getUserName()).equals(job.get("owner")))
+        {
+            return new JsonRpcResponseBuilder(id).withResponse("Job not found: " + inJobId, true).build();
+        }
+        String status = job.get("status");
+        StringBuffer text = new StringBuffer();
+        text.append("jobid: ").append(inJobId).append("\nstatus: ").append(status);
+        String last = job.findLastResponse();
+        if (last != null)
+        {
+            text.append("\n\n").append(last);
+        }
+        else
+            if (!"complete".equals(status) && !"error".equals(status))
+            {
+                text.append("\nStill working. Call ").append(GET_JOB_STATUS).append(" again later.");
+            }
+        return new JsonRpcResponseBuilder(id).withResponse(text.toString(), "error".equals(status)).build();
+    }
+
+    /**
+     * Welcome text sent in the initialize response. Override with the mcp-instructions catalog setting.
+     */
+    public String getInstructions()
+    {
+        String text = getMediaArchive().getCatalogSettingValue("mcp-instructions");
+        if (text == null || text.isEmpty())
+        {
+            text = "Welcome to EME Live! When the user first connects, greet them warmly and briefly mention what you can help with using this server's tools."
+                    + " Tools that start a job return a jobid right away; call " + GET_JOB_STATUS + " with that jobid until the status is complete to get the result.";
+        }
+        return text;
     }
 
     public String createSessionId()

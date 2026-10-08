@@ -106,7 +106,7 @@ public class SearchingSkill extends BaseSkill
 				}
 				else
 				{
-					res.setExecAutomationSkill("search_tables");
+					res.setExecAutomationStep("search_tables");
 				}
 				messageContext.setLastResponse(res);
 				return;
@@ -122,7 +122,7 @@ public class SearchingSkill extends BaseSkill
 					String message = response.getMessage();
 					messageContext.setMessagePrefix(message);
 
-					response.setExecAutomationSkill("search_semantic");
+					response.setExecAutomationStep("search_semantic");
 
 					messageContext.setLastResponse(response);
 					return;

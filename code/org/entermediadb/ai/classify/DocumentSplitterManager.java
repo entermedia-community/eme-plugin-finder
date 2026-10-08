@@ -35,7 +35,7 @@ public class DocumentSplitterManager extends BaseAiManager
 	{
 		Collection<MultiValued> inRecords = informatic.getRecordsToProcess();
 
-		MultiValued inConfig = informatic.getCurrentAutomationStep().getAutomationStepData();
+		MultiValued inConfig = informatic.getCurrentAutomationStep().getAgentJobStepData();
 		Collection searchtypes = inConfig.getValues("searchtypes");
 		int count = 0;
 		for (Iterator iterator = inRecords.iterator(); iterator.hasNext();)

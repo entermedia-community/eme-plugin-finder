@@ -8,7 +8,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.ChatMessageContext;
-import org.entermediadb.ai.automation.RunningScenario;
+import org.entermediadb.ai.agentjobs.AgentJob;
+import org.entermediadb.ai.agentjobs.AgentJobManager;
 import org.entermediadb.ai.informatics.InformaticsProcessorManager;
 import org.entermediadb.ai.skills.MediaCreationSkill;
 import org.entermediadb.ai.skills.QuestionsSkill;
@@ -190,9 +191,9 @@ public class AgentModule extends BaseMediaModule
 		String currentscenarioid = inReq.getRequestParameter("currentscenario");
 		if (currentscenarioid == null)
 		{
-			if (chatAgentContext.getCurrentScenario() != null)
+			if (chatAgentContext.getCurrentAgentJob() != null)
 			{
-				currentscenarioid = chatAgentContext.getCurrentScenario().getId();
+				currentscenarioid = chatAgentContext.getCurrentAgentJob().getScenarioId();
 			}
 			else
 			{
@@ -205,23 +206,23 @@ public class AgentModule extends BaseMediaModule
 		}
 
 		// See if change of scenario
-		if (chatAgentContext.getCurrentScenario() != null && !currentscenarioid.equals(chatAgentContext.getCurrentScenario().getId()))
+		if (chatAgentContext.getCurrentAgentJob() != null && !currentscenarioid.equals(chatAgentContext.getCurrentAgentJob().getScenarioId()))
 		{
-			chatAgentContext.setCurrentScenario(null);
+			chatAgentContext.setCurrentAgentJob(null);
 		}
-		if (chatAgentContext.getCurrentScenario() == null)
+		if (chatAgentContext.getCurrentAgentJob() == null)
 		{
-			// Scenario changed. Clear the context and start over.
-			RunningScenario running = (RunningScenario) mediaArchive.getBean("runningscenario", false);
-			running.setId(currentscenarioid);
-			chatAgentContext.setCurrentScenario(running);
+			// Scenario changed. Copy the scenario into a new agentjob and start over.
+			AgentJobManager agentJobManager = (AgentJobManager) mediaArchive.getBean("agentJobManager");
+			AgentJob job = agentJobManager.importScenario(currentscenarioid, chatAgentContext);
+			chatAgentContext.setCurrentAgentJob(job);
 			mediaArchive.saveData("agentcontext", chatAgentContext);
 
 			firesystemmessage = true;
 
 			if (functionname == null)
 			{
-				functionname = chatAgentContext.getCurrentScenario().getId() + "_welcome";
+				functionname = chatAgentContext.getCurrentAgentJob().getScenarioId() + "_welcome";
 			}
 		}
 		else if (functionname != null)

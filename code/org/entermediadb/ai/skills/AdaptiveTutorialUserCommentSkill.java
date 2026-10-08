@@ -7,7 +7,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.TutorMessageContext;
-import org.entermediadb.ai.llm.AutomationStep;
+import org.entermediadb.ai.agentjobs.AgentJobStep;
 import org.entermediadb.ai.llm.BasicLlmResponse;
 import org.entermediadb.ai.llm.LlmConnection;
 import org.entermediadb.ai.llm.LlmResponse;
@@ -66,7 +66,7 @@ public class AdaptiveTutorialUserCommentSkill extends AdaptiveTutorialBaseSkill
 
 		tutorMessageContext.putContextValue("messagerendertype", "agentcomment");
 
-		AutomationStep skillEnabled = tutorMessageContext.getCurrentAutomationStep();
+		AgentJobStep skillEnabled = tutorMessageContext.getCurrentAutomationStep();
 		tutorMessageContext.fireStatusComplete(skillEnabled);
 	}
 }

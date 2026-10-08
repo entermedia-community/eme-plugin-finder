@@ -3,7 +3,7 @@ package org.entermediadb.ai.skills;
 import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.BaseSkill;
 import org.entermediadb.ai.ChatMessageContext;
-import org.entermediadb.ai.llm.AutomationStep;
+import org.entermediadb.ai.agentjobs.AgentJobStep;
 import org.entermediadb.ai.llm.LlmConnection;
 import org.entermediadb.ai.llm.LlmResponse;
 import org.openedit.MultiValued;
@@ -31,7 +31,7 @@ public class AutoDetectWelcomeSkill extends BaseSkill
 		// super.process(messageContext);
 
 		//Next step is to run the scenerion and skill using 
-		AutomationStep skillEnabled = messageContext.getCurrentAutomationStep();
+		AgentJobStep skillEnabled = messageContext.getCurrentAutomationStep();
 		messageContext.fireStatusComplete(skillEnabled);
 	}
 

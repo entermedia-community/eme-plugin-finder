@@ -48,6 +48,18 @@ public class JsonRpcResponseBuilder
 		return this;
 	}
 
+	/**
+	 * Adds the optional initialize "instructions" text. Clients pass it to the model when it connects.
+	 */
+	public JsonRpcResponseBuilder withInstructions(String inInstructions)
+	{
+		if (this.result != null && inInstructions != null && !inInstructions.isEmpty())
+		{
+			this.result.put("instructions", inInstructions);
+		}
+		return this;
+	}
+
 	public JsonRpcResponseBuilder withToolsList(String toolsStr)
 	{
 		JSONObject result = new JSONObject();

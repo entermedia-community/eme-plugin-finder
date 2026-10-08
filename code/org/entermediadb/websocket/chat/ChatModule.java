@@ -614,6 +614,11 @@ public class ChatModule extends BaseMediaModule
 				return;
 			}
 		}
+		String channeltype = inReq.findValue("channeltype");
+		if (channeltype == null)
+		{
+			throw new IllegalArgumentException("channeltype is required");
+		}
 
 		Data entity = (Data) inReq.getPageValue("entity");
 
@@ -631,22 +636,17 @@ public class ChatModule extends BaseMediaModule
 			entityid = entity.getId();
 		}
 
-		if (entityid == null)
-		{
-			// throw new IllegalArgumentException("dataid is required");
-			log.error("Entity is required");
-		}
-
-		String channeltype = inReq.findValue("channeltype");
-		if (channeltype == null)
-		{
-			throw new IllegalArgumentException("channeltype is required");
-		}
-
 		String channeldatamodule = inReq.findValue("channeldatamodule");
 		if (channeldatamodule == null)
 		{
 			channeldatamodule = inReq.findValue("module");
+		}
+		if (entityid == null)
+		{
+			entity = (Data)inReq.getPageValue("emeprofile");
+			channeldatamodule = "emeprofile";
+			inReq.putPageValue("entity", entity);
+
 		}
 
 		if (entity == null && entityid != null && channeldatamodule != null)

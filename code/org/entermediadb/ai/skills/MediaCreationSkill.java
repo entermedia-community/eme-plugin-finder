@@ -48,7 +48,7 @@ public class MediaCreationSkill extends BaseSkill
 		JSONObject content = response.getResponsePayload();
 		creation.setCreationFields(content);
 		response.setRawMessage("");
-		response.setExecAutomationSkill("creation_image_create");
+		response.setExecAutomationStep("creation_image_create");
 		messageContext.setLastResponse(response);
 
 		// LlmResponse result = createImage(inAgentContext);
@@ -65,7 +65,7 @@ public class MediaCreationSkill extends BaseSkill
 
 		LlmResponse renderresult = renderllmconnection.renderLocalAction(inAgentContext, "creation_image_render");
 
-		log.info("Next function: " + renderresult.getExecAutomationSkill());
+		log.info("Next function: " + renderresult.getExecAutomationStep());
 
 		messageContext.setLastResponse(renderresult);
 		super.process(inAgentContext);
@@ -105,14 +105,14 @@ public class MediaCreationSkill extends BaseSkill
 			JSONObject content = response.getResponsePayload();
 			creation.setCreationFields(content);
 			response.setRawMessage("");
-			response.setExecAutomationSkill("creation_image_create");
+			response.setExecAutomationStep("creation_image_create");
 			messageContext.setLastResponse(response);
 			return;
 		}
 		else if ("creation_image_create".equals(agentFn))
 		{
 			LlmResponse result = createImage(inAgentContext);
-			result.setExecAutomationSkill("creation_image_render");
+			result.setExecAutomationStep("creation_image_render");
 			messageContext.setLastResponse(result);
 			return;
 		}
@@ -129,7 +129,7 @@ public class MediaCreationSkill extends BaseSkill
 
 			LlmResponse result = llmconnection.renderLocalAction(inAgentContext, agentFn);
 
-			log.info("Next function: " + result.getExecAutomationSkill());
+			log.info("Next function: " + result.getExecAutomationStep());
 
 			messageContext.setLastResponse(result);
 			return;
@@ -219,7 +219,7 @@ public class MediaCreationSkill extends BaseSkill
 
 			// inReq.putPageValue("asset", asset);
 			inAgentContext.addContext("asset", asset);
-			results.setExecAutomationSkill("creation_image_render");
+			results.setExecAutomationStep("creation_image_render");
 			inAgentContext.setValue("assetid", asset.getId());
 			inAgentContext.setValue("wait", 1000);
 			inAgentContext.setLastResponse(results);

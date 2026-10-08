@@ -16,11 +16,10 @@ import org.apache.commons.logging.LogFactory;
 import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.BaseAiManager;
 import org.entermediadb.ai.ChatMessageContext;
-import org.entermediadb.ai.SkillStatusListener;
 import org.entermediadb.ai.automation.AutomationManager;
-import org.entermediadb.ai.automation.RunningScenario;
+import org.entermediadb.ai.agentjobs.AgentJob;
 import org.entermediadb.ai.classify.EmbeddingManager;
-import org.entermediadb.ai.llm.AutomationStep;
+import org.entermediadb.ai.agentjobs.AgentJobStep;
 import org.entermediadb.ai.llm.BaseAgentContext;
 import org.entermediadb.ai.llm.LlmResponse;
 import org.entermediadb.asset.MediaArchive;
@@ -47,7 +46,7 @@ import org.openedit.profile.UserProfile;
 import org.openedit.users.User;
 import org.openedit.util.DateStorageUtil;
 
-public class AssistantManager extends BaseAiManager implements SkillStatusListener
+public class AssistantManager extends BaseAiManager
 {
 	private static final Log log = LogFactory.getLog(AssistantManager.class);
 
@@ -199,12 +198,12 @@ public class AssistantManager extends BaseAiManager implements SkillStatusListen
 			}
 		}
 
+		//Older chats only saved the scenario id, so copy that scenario into a new agentjob
 		Object currentscenario = chatMessageContext.getContextValue("currentscenario");
-		if (currentscenario instanceof String)
+		if (chatMessageContext.getCurrentAgentJob() == null && currentscenario instanceof String)
 		{
-			RunningScenario running = (RunningScenario) getMediaArchive().getBean("runningscenario", false);
-			running.setId((String) currentscenario);
-			chatMessageContext.setCurrentScenario(running);
+			AgentJob job = getAgentJobManager().importScenario((String) currentscenario, chatMessageContext);
+			chatMessageContext.setCurrentAgentJob(job);
 		}
 
 		return chatMessageContext;
@@ -265,11 +264,10 @@ public class AssistantManager extends BaseAiManager implements SkillStatusListen
 			// agentContext.setCurrentScenario(currentscenario);
 
 			String currentScenario = agentContext.get("currentscenario");
-			if (currentScenario != null)
+			if (currentScenario != null && agentContext.getCurrentAgentJob() == null)
 			{
-				RunningScenario running = (RunningScenario) getMediaArchive().getBean("runningscenario", false);;
-				running.setId(currentScenario);
-				agentContext.setCurrentScenario(running);
+				AgentJob job = getAgentJobManager().importScenario(currentScenario, agentContext);
+				agentContext.setCurrentAgentJob(job);
 			}
 
 		}
@@ -331,7 +329,7 @@ public class AssistantManager extends BaseAiManager implements SkillStatusListen
 			}
 			else
 			{
-				if (chatMessageContext.getCurrentScenario() == null)
+				if (chatMessageContext.getCurrentAgentJob() == null)
 				{
 					log.error("This should never happen");
 					return;
@@ -403,26 +401,21 @@ public class AssistantManager extends BaseAiManager implements SkillStatusListen
 		// ChatMessageContext messageContext = new ChatMessageContext(chatMessageContext);// Needed?
 		chatMessageContext.setAgentMessage(agentmessage);
 		chatMessageContext.setUserMessage(usermessage);
-		chatMessageContext.addStatusListener(this);
 		try
 		{
 			// get the scenerio and run that. Each scenerio will have one or more skills
-			RunningScenario scenerio = chatMessageContext.getCurrentScenario();
-
 			chatMessageContext.setLastResponse(null);
-			scenerio.runProcess(functionName, chatMessageContext);
-
-			// getAutomationManager().runScenario(scenerio.getId(), chatMessageContext);
+			getAgentJobManager().runProcess(chatMessageContext, functionName);
 
 		}
 		catch (HttpException e)
 		{
-			log.error("Error from " + chatMessageContext.getCurrentScenario(), e);
+			log.error("Error from " + chatMessageContext.getCurrentAgentJob(), e);
 			handleError(chatMessageContext, e.getMessage(), e.getErrorcode());
 		}
 		catch (Exception e)
 		{
-			log.error("Error from " + chatMessageContext.getCurrentScenario(), e);
+			log.error("Error from " + chatMessageContext.getCurrentAgentJob(), e);
 			handleError(chatMessageContext, e.getMessage());
 		}
 		// agentmessage.setValue("functionresponse", e.toString());
@@ -1002,203 +995,6 @@ public class AssistantManager extends BaseAiManager implements SkillStatusListen
 			}
 		}
 		getMediaArchive().saveData("automationscenario", tosave);
-	}
-
-	public void handleStatusStarting(AgentContext inContext, AutomationStep inAutomationStep)
-	{
-		if (!(inContext instanceof ChatMessageContext))
-		{
-			return;
-		}
-
-		ChatMessageContext chatMessageContext = (ChatMessageContext) inContext;
-
-		boolean skiploader = Boolean.parseBoolean((String) chatMessageContext.getContextValue("skiploader"));
-
-		if (skiploader)
-		{
-			// chatMessageContext.putContextValue("skiploader", Boolean.FALSE);
-			return;
-		}
-
-		MultiValued function = inAutomationStep.getAutomationStepData();
-
-		JsonUtil jsonUtil = (JsonUtil) getMediaArchive().getBean("jsonUtil");
-
-		String processingmessage = null;
-		if (function != null)
-		{
-			processingmessage = function.get("processingmessage");
-		}
-		if (processingmessage == null)
-		{
-			processingmessage = "Analyzing";
-		}
-
-		String processingtype = (String) inContext.getContextValue("processingtype");
-		if (processingtype != null)
-		{
-			processingmessage += " " + processingtype;
-		}
-		String loader = jsonUtil.escape("<i class='fas fa-spinner fa-spin'></i> ");
-		processingmessage = loader + processingmessage + "...";
-		processingmessage = "<span class='processing-message'>" + processingmessage + "</span>";
-
-		MultiValued agentmessage = chatMessageContext.getAgentMessage();
-
-		String message = inContext.getMessagePrefix() + processingmessage;
-		agentmessage.setValue("message", message);
-		agentmessage.setValue("messagetype", "status");
-		agentmessage.setValue("functionname", function.getId());
-		getMediaArchive().saveData("chatterbox", agentmessage);
-		ChatServer server = (ChatServer) getMediaArchive().getBean("chatServer");
-		server.broadcastMessage(getMediaArchive().getCatalogId(), agentmessage);
-
-	}
-
-	public void handleStatusComplete(AgentContext inContext, AutomationStep inAutomationStep)
-	{
-
-		MultiValued agentmessage = (MultiValued) inContext.getContextValue("agentmessage");
-		if (agentmessage == null)
-		{
-			return;
-		}
-		LlmResponse response = inContext.getLastResponse();
-
-		try
-		{
-			String updatedMessage = null;
-			String messagePrefix = inContext.getMessagePrefix();
-
-			if (response != null && response.getMessage() != null)
-			{
-				if (messagePrefix != null)
-				{
-					updatedMessage = messagePrefix + response.getMessage();
-				}
-				else
-				{
-					updatedMessage = response.getMessage();
-				}
-			}
-			if (updatedMessage != null)
-			{
-				agentmessage.setValue("message", updatedMessage); // Final message
-			}
-
-			String messageplain = agentmessage.get("messageplain");
-			if (response != null)
-			{
-				String newmessageplain = response.getMessagePlain();
-
-				if (newmessageplain != null)
-				{
-					if (messageplain == null)
-					{
-						messageplain = newmessageplain;
-					}
-					else
-					{
-						messageplain += " \n " + newmessageplain;
-					}
-					agentmessage.setValue("messageplain", messageplain);
-				}
-			}
-			String nextFunctionName = null;
-			if (response == null)
-			{
-				log.error("Skipping null responses");
-			}
-			else
-			{
-				nextFunctionName = response.getNextAutomationStep();
-			}
-
-			if (nextFunctionName == null)
-			{
-				AutomationStep nextEnabled = inAutomationStep.getNextAutomationStep();
-				if (nextEnabled != null)
-				{
-					nextFunctionName = nextEnabled.getEnabledId();
-				}
-			}
-
-			//Make functioname be the last functio
-			//and next be the next
-			agentmessage.setValue("functionname", inAutomationStep.getEnabledId());
-			agentmessage.setValue("nextfunctionname", nextFunctionName);
-			agentmessage.setValue("chatmessagestatus", "completed");
-
-			agentmessage.setValue("agentcontextvalues", inContext.toJSONString());
-
-			getMediaArchive().saveData("chatterbox", agentmessage);
-
-			Map<String, String> functionMessageUpdate = new HashMap<>();
-			functionMessageUpdate.put("messagetype", "airesponse");
-			functionMessageUpdate.put("catalogid", getMediaArchive().getCatalogId());
-			functionMessageUpdate.put("user", "agent");
-			functionMessageUpdate.put("channel", agentmessage.get("channel"));
-			functionMessageUpdate.put("messageid", agentmessage.getId());
-			if (messageplain == null)
-			{
-				messageplain = "New message";
-			}
-			functionMessageUpdate.put("message", updatedMessage);
-			functionMessageUpdate.put("agentcontextvalues", agentmessage.get("agentcontextvalues"));
-			functionMessageUpdate.put("messageplain", messageplain);
-			functionMessageUpdate.put("nextfunctionname", nextFunctionName);
-			functionMessageUpdate.put("functionname", inAutomationStep.getEnabledId());
-			functionMessageUpdate.put("date", DateStorageUtil.getStorageUtil().getJsonFormat().format(new Date()));
-			Boolean messagereload = (Boolean) inContext.getContextValue("messagereload");
-
-			if (messagereload != null && messagereload.booleanValue())
-			{
-				functionMessageUpdate.put("command", "messagereload");
-			}
-
-			ChatServer server = (ChatServer) getMediaArchive().getBean("chatServer");
-
-			JSONObject jsonMessage = new JSONObject(functionMessageUpdate);
-
-			// log.info("Broadcasting: " + jsonMessage.toJSONString());
-
-			server.broadcastMessage(jsonMessage);
-
-		}
-		catch (Exception ex)
-		{
-			log.error("Error in fireStatusComplete", ex);
-		}
-
-		RunningScenario currentscenario = inContext.getCurrentScenario();
-		if (currentscenario != null)
-		{
-			Long wait = inContext.getWaitTime();
-			if (wait != null)
-			{
-				inContext.setWaitTime(null);
-				Long waittime = wait;
-				log.info("Previous function requested to wait " + waittime + " milliseconds");
-				try
-				{
-					Thread.sleep(waittime);
-				}
-				catch (InterruptedException ex)
-				{
-					log.warn("Sleep interrupted", ex);
-					Thread.currentThread().interrupt();
-				}
-			}
-			if( response != null)
-			{
-				String runFunctionName = response.getExecAutomationSkill();
-				if (runFunctionName != null)
-				{
-					currentscenario.runProcess(runFunctionName, inContext);
-				}
-			}
-		}
 	}
 
 	public Data getEmeProfileForUser(String userid)

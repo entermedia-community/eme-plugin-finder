@@ -4,7 +4,7 @@ import java.util.Collection;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.entermediadb.ai.AgentContext;
-import org.entermediadb.ai.llm.AutomationStep;
+import org.entermediadb.ai.agentjobs.AgentJobStep;
 import org.entermediadb.email.ImapMailbox;
 import org.entermediadb.email.ImapMessage;
 import org.json.simple.JSONObject;
@@ -16,7 +16,7 @@ public class ImapMailCheckerSkill extends ToolsCallingSkill
   @Override
   public void process(AgentContext inContext)
   {
-    AutomationStep currentEnabled = inContext.getCurrentAutomationStep();
+    AgentJobStep currentEnabled = inContext.getCurrentAutomationStep();
 
     String server = (String) inContext.getContextValue("mailserver");
     int serverport = ((Long) inContext.getContextValue("mailport")).intValue();
@@ -34,7 +34,7 @@ public class ImapMailCheckerSkill extends ToolsCallingSkill
 
       inContext.info("Found " + messages.size() + " new messages");
 
-      AgentContext subContext = inContext.getCurrentScenario().createAgentContext(inContext, currentEnabled);
+      AgentContext subContext = getAgentJobManager().createAgentContext(inContext, currentEnabled);
 
       String agentid = currentEnabled.getAgentData().getId();
       try

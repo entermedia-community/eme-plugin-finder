@@ -3,7 +3,7 @@ package org.entermediadb.ai.skills;
 import java.util.Map;
 import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.BaseSkill;
-import org.entermediadb.ai.llm.AutomationStep;
+import org.entermediadb.ai.agentjobs.AgentJobStep;
 import org.openedit.MultiValued;
 import org.openedit.WebPageRequest;
 
@@ -13,7 +13,7 @@ public class HandleWebEventSkill extends BaseSkill
 	public void process(AgentContext inContext)
 	{
 		// String runoperation =
-		// inContext.getCurrentAgentEnable().getAutomationStepData().get("runoperation");
+		// inContext.getCurrentAgentEnable().getAgentJobStepData().get("runoperation");
 		WebPageRequest request = (WebPageRequest) inContext.getContextValue("webpagerequest");
 
 		if (request != null)
@@ -45,7 +45,7 @@ public class HandleWebEventSkill extends BaseSkill
 			if (nextAutomationStep != null)
 			{
 				inContext.put("nextautomationstep", nextAutomationStep);
-				AutomationStep currentAutomationStep = inContext.getCurrentScenario().findEnabled(nextAutomationStep);
+				AgentJobStep currentAutomationStep = inContext.getCurrentAgentJob().findEnabled(nextAutomationStep);
 				inContext.setCurrentAutomationStep(currentAutomationStep);
 				currentAutomationStep.getAgent().process(inContext);
 				return;

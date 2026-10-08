@@ -14,6 +14,7 @@ import java.util.Properties;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.entermediadb.ai.agentjobs.AgentJobManager;
 import org.entermediadb.ai.automation.AutomationManager;
 import org.entermediadb.ai.informatics.InformaticsContext;
 import org.entermediadb.asset.MediaArchive;
@@ -79,6 +80,11 @@ public class TranslationModule extends BaseMediaModule
 		return manager;
 	}
 
+	public AgentJobManager getAgentJobManager(WebPageRequest inReq)
+	{
+		return (AgentJobManager) getMediaArchive(inReq).getBean("agentJobManager");
+	}
+
 	public void translateField(WebPageRequest inReq)
 	{
 		Map params = inReq.getJsonRequest();
@@ -129,7 +135,7 @@ public class TranslationModule extends BaseMediaModule
 		Collection<MultiValued> pageofhits = Arrays.asList((MultiValued) record);
 		context.setRecordsToProcess(pageofhits);
 
-		getAutomationManager(inReq).runScenario("informatics_translate", context);
+		getAgentJobManager(inReq).runScenario("informatics_translate", context);
 
 		inReq.putPageValue("sourcelang", context.getContextValue("sourceLang"));
 

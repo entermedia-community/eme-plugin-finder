@@ -175,10 +175,22 @@ public class McpConnection implements Runnable
 		sendEvent("status", json);
 	}
 
-	public void sendPing()
+	public synchronized void sendPing()
 	{
-		// Optionally send keep-alive event
-		// writeRaw("event: ping\ndata: {}\n\n");
+		if (!active)
+		{
+			return;
+		}
+		try
+		{
+			// SSE comment, ignored by clients. Fails once the client has disconnected so the loop can end
+			writeRaw(": ping\n\n");
+		}
+		catch (IOException e)
+		{
+			log.info("MCP client disconnected, session: " + getSessionId());
+			close();
+		}
 	}
 
 	public void close()

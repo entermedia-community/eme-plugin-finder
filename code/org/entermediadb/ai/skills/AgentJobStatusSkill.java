@@ -72,7 +72,7 @@ public class AgentJobStatusSkill extends BaseSkill
 		{
 			log.info("Agent job not completed yet.");
 			inContext.setWaitTime(5000L);
-			response.setExecAutomationSkill("agentJobStatus");
+			response.setExecAutomationStep("agentJobStatus");
 		}	
 		else
 		{

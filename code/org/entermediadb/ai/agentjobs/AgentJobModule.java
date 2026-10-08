@@ -10,15 +10,15 @@ public class AgentJobModule extends BaseMediaModule
     public void checkQueue(WebPageRequest inReq)
     {
         String catalogid = inReq.findValue("catalogid");
-        AgentJobOrchestrator orchestrator = (AgentJobOrchestrator) getModuleManager().getBean(catalogid, "agentJobOrchestrator", true);
-        int count = orchestrator.runningProcesses();
+        AgentJobManager manager = (AgentJobManager) getModuleManager().getBean(catalogid, "agentJobManager", true);
+        int count = manager.runningProcesses();
         inReq.putPageValue("runningcount", count);
-        orchestrator.checkQueue();
+        manager.checkQueue();
 
         ScriptLogger logger = (ScriptLogger) inReq.getPageValue("log");
         if( logger != null)
         {
-            int pendingnew = orchestrator.getNewjobs().size();
+            int pendingnew = manager.getNewjobs().size();
             logger.info("Job queue " + count + " jobs are running, " + pendingnew + " new jobs pending");
         }
     }
@@ -26,8 +26,8 @@ public class AgentJobModule extends BaseMediaModule
     public void checkRepeatingJobs(WebPageRequest inReq)
     {
         String catalogid = inReq.findValue("catalogid");
-        AgentJobOrchestrator orchestrator = (AgentJobOrchestrator) getModuleManager().getBean(catalogid, "agentJobOrchestrator", true);
-        int count = orchestrator.checkRepeatingJobs();
+        AgentJobManager manager = (AgentJobManager) getModuleManager().getBean(catalogid, "agentJobManager", true);
+        int count = manager.checkRepeatingJobs();
 
         ScriptLogger logger = (ScriptLogger) inReq.getPageValue("log");
         if( logger != null)

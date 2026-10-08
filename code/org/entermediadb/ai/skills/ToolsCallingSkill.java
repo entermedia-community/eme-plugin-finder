@@ -5,7 +5,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.entermediadb.ai.BaseSkill;
 import org.entermediadb.ai.AgentContext;
-import org.entermediadb.ai.llm.AutomationStep;
+import org.entermediadb.ai.agentjobs.AgentJobStep;
 import org.entermediadb.ai.llm.LlmConnection;
 import org.entermediadb.ai.llm.LlmResponse;
 import org.json.simple.JSONObject;
@@ -21,12 +21,12 @@ public class ToolsCallingSkill extends BaseSkill
 
 		JSONParser parser = new JSONParser();
 
-		AutomationStep currentEnabled = inContext.getCurrentAutomationStep();
-		Collection<AutomationStep> enabledChildren = currentEnabled.getChildren();
+		AgentJobStep currentEnabled = inContext.getCurrentAutomationStep();
+		Collection<AgentJobStep> enabledChildren = currentEnabled.getChildren();
 
-		for (AutomationStep enabled : enabledChildren)
+		for (AgentJobStep enabled : enabledChildren)
 		{
-			String paramstructure = enabled.getAutomationStepData().get("parameterstructure");
+			String paramstructure = enabled.getAgentJobStepData().get("parameterstructure");
 			if (paramstructure != null)
 			{
 				Collection paramstructurejson = parser.parseCollection(paramstructure);
@@ -40,7 +40,7 @@ public class ToolsCallingSkill extends BaseSkill
 			if (enabledChildren.size() == 1)
 			{
 				// check if a param call is necessary
-				AutomationStep enabled = enabledChildren.iterator().next();
+				AgentJobStep enabled = enabledChildren.iterator().next();
 				Collection<JSONObject> paramstructure = enabled.getAgentParameterStructure();
 				if (paramstructure == null || paramstructure.size() == 0)
 				{
@@ -66,15 +66,15 @@ public class ToolsCallingSkill extends BaseSkill
 			LlmConnection llmConnection = getMediaArchive().getLlmConnection("thinking");
 			LlmResponse res = llmConnection.callToolsFunction(inContext, function);
 
-			String selectedagentid = (String) res.getExecAutomationSkill();
+			String selectedagentid = (String) res.getExecAutomationStep();
 
-			AutomationStep selectedenabled = currentEnabled.getChildren(selectedagentid);
+			AgentJobStep selectedenabled = currentEnabled.getChildren(selectedagentid);
 			if (selectedenabled != null)
 			{
 				JSONObject params = (JSONObject) res.getFunctionArguments();
 				selectedenabled.setAgentParameterValues(params);
 				// Do we always have a scenario here? Maybe we should just call the agent directly?
-				inContext.getCurrentScenario().runProcess(selectedenabled, inContext);
+				getAgentJobManager().runProcess(inContext, selectedenabled);
 			}
 			else
 			{

@@ -2879,7 +2879,7 @@
 		</property>
 	</bean>
 
-	<bean id="agentJobCreatorSkill" class="org.entermediadb.ai.skills.AgentJobCreatorSkill"
+	<bean id="openCodeJobCreatorSkill" class="org.entermediadb.ai.skills.OpenCodeJobCreatorSkill"
 		scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
@@ -3003,7 +3003,13 @@
 		</property>
 	</bean>
 
-	<bean id="chatMonitorSkill" class="org.entermediadb.ai.skills.ChatMonitorSkill" scope="prototype">
+	<bean id="chatMonitorSkill" class="org.entermediadb.ai.skills.LibraryCollectionChatMonitorSkill" scope="prototype">
+		<property name="moduleManager">
+			<ref bean="moduleManager" />
+		</property>
+	</bean>
+
+	<bean id="chatMonitorConfirmationSkill" class="org.entermediadb.ai.skills.ChatMonitorConfirmationSkill" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>
@@ -3192,13 +3198,6 @@
 		</property>
 	</bean>
 
-	<bean id="runningscenario" class="org.entermediadb.ai.automation.RunningScenario"
-		scope="prototype">
-		<property name="moduleManager">
-			<ref bean="moduleManager" />
-		</property>
-	</bean>
-
 
 	<bean id="baseAgentContext" class="org.entermediadb.ai.llm.BaseAgentContext" scope="prototype">
 		<property name="moduleManager">
@@ -3261,14 +3260,14 @@
 	</bean>
 
 
-	<bean id="mcpGenerator" class="org.entermediadb.mcp.McpGenerator">
+	<bean id="mcpGenerator" class="org.entermediadb.mcp.server.McpGenerator">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>
 
 	</bean>
 
-	<bean id="mcpManager" class="org.entermediadb.mcp.McpManager" scope="prototype">
+	<bean id="mcpManager" class="org.entermediadb.mcp.server.McpManager" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>
@@ -3581,7 +3580,21 @@
 		</property>
 	</bean>
 
-	<bean id="agentJobOrchestrator" class="org.entermediadb.ai.agentjobs.AgentJobOrchestrator"
+	<bean id="agentJobManager" class="org.entermediadb.ai.agentjobs.AgentJobManager"
+		lazy-init="default" scope="prototype">
+		<property name="moduleManager">
+			<ref bean="moduleManager" />
+		</property>
+	</bean>
+
+	<bean id="javaskillOrchestrator" class="org.entermediadb.ai.agentjobs.JavaSkillOrchestrator"
+		lazy-init="default" scope="prototype">
+		<property name="moduleManager">
+			<ref bean="moduleManager" />
+		</property>
+	</bean>
+
+	<bean id="openCodeOrchestrator" class="org.entermediadb.ai.agentjobs.OpenCodeOrchestrator"
 		lazy-init="default" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />

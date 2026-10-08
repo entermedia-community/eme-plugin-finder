@@ -59,7 +59,7 @@ public class GeminiResponse extends BasicLlmResponse
     }
 
     @Override
-    public String getExecAutomationSkill()
+    public String getExecAutomationStep()
     {
         if (!isToolCall())
             return null;

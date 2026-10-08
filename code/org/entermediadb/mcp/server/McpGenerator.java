@@ -45,6 +45,17 @@ public class McpGenerator implements Generator
 			String method = inReq.getRequest().getMethod();
 			if ("GET".equalsIgnoreCase(method))
 			{
+				String headerSessionId = inReq.getRequest().getHeader("mcp-session-id");
+				if (headerSessionId != null && !headerSessionId.isEmpty())
+				{
+					// Streamable HTTP client: we do not offer a standalone SSE stream, replies go in the POST body
+					inReq.getResponse().setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+					inReq.getResponse().setHeader("Allow", "POST");
+					inReq.getResponse().flushBuffer();
+					inReq.setCancelActions(true);
+					inReq.setHasRedirected(true);
+					return;
+				}
 				// /sse/somekey
 				manager.createConnection(archive, inReq);
 				// manager.staConnection(archive,inReq);
@@ -60,9 +71,12 @@ public class McpGenerator implements Generator
 				JSONObject payload = (JSONObject) inReq.getJsonRequest();
 				HttpServletRequest request = inReq.getRequest();
 				String mcpSessionId = request.getHeader("mcp-session-id");
+				// Legacy SSE clients post to the endpoint with ?sessionId=, Streamable HTTP clients use the header
+				boolean legacysse = false;
 				if (mcpSessionId == null || mcpSessionId.isEmpty())
 				{
 					mcpSessionId = request.getParameter("sessionId");
+					legacysse = mcpSessionId != null && !mcpSessionId.isEmpty();
 				}
 
 				String cmd = payload == null ? null : (String) payload.get("method");
@@ -76,14 +90,17 @@ public class McpGenerator implements Generator
 					inReq.getResponse().setHeader("mcp-session-id", mcpSessionId);
 
 					Object id = payload != null ? payload.get("id") : null;
-					String response = new JsonRpcResponseBuilder(id).withServer("eMedia Live").build();
+					String response = new JsonRpcResponseBuilder(id).withServer("eMedia Live").withInstructions(manager.getInstructions()).build();
 
-					McpConnection connection = manager.getConnection(mcpSessionId);
-					inReq.getResponse().setStatus(HttpServletResponse.SC_ACCEPTED);
-					if (connection != null)
+					McpConnection connection = legacysse ? manager.getConnection(mcpSessionId) : null;
+					if (connection == null)
 					{
-						connection.sendMessage(response);
+						// Streamable HTTP client: reply in the POST body
+						writeJson(inReq, HttpServletResponse.SC_OK, response);
+						return;
 					}
+					inReq.getResponse().setStatus(HttpServletResponse.SC_ACCEPTED);
+					connection.sendMessage(response);
 
 					inReq.getResponse().flushBuffer();
 					inReq.setCancelActions(true);
@@ -104,10 +121,31 @@ public class McpGenerator implements Generator
 					return;
 				}
 
-				McpConnection connection = manager.getConnection(mcpSessionId);
+				McpConnection connection = legacysse ? manager.getConnection(mcpSessionId) : null;
 				if (connection == null)
 				{
-					writeJsonError(inReq, HttpServletResponse.SC_CONFLICT, payload.get("id"), "No active MCP connection for session.");
+					// Streamable HTTP client: no SSE stream, so reply in the POST body
+					inReq.getResponse().setHeader("mcp-session-id", mcpSessionId);
+					if (payload.get("id") == null)
+					{
+						// Notifications get no response
+						inReq.getResponse().setStatus(HttpServletResponse.SC_ACCEPTED);
+						inReq.getResponse().flushBuffer();
+						inReq.setCancelActions(true);
+						inReq.setHasRedirected(true);
+						return;
+					}
+					String response;
+					try
+					{
+						response = manager.buildResponse(inReq, cmd, payload);
+					}
+					catch (Exception ex)
+					{
+						log.error("MCP call failed: " + cmd, ex);
+						response = new JsonRpcResponseBuilder(payload.get("id")).withResponse("Error running " + cmd + ": " + ex.getMessage(), true).build();
+					}
+					writeJson(inReq, HttpServletResponse.SC_OK, response);
 					return;
 				}
 
@@ -141,6 +179,11 @@ public class McpGenerator implements Generator
 	protected void writeJsonError(WebPageRequest inReq, int inStatusCode, Object inId, String inMessage) throws Exception
 	{
 		String response = new JsonRpcResponseBuilder(inId).withResponse(inMessage, true).build();
+		writeJson(inReq, inStatusCode, response);
+	}
+
+	protected void writeJson(WebPageRequest inReq, int inStatusCode, String response) throws Exception
+	{
 		inReq.getResponse().setStatus(inStatusCode);
 		inReq.getResponse().setContentType("application/json");
 		inReq.getResponse().getOutputStream().write(response.getBytes(StandardCharsets.UTF_8));

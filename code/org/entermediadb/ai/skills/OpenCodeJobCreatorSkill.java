@@ -11,7 +11,7 @@ import org.entermediadb.ai.BaseSkill;
 import org.entermediadb.ai.ChatMessageContext;
 import org.entermediadb.ai.automation.PossibleStep;
 import org.entermediadb.ai.classify.EmbeddingManager;
-import org.entermediadb.ai.llm.AutomationStep;
+import org.entermediadb.ai.agentjobs.AgentJobStep;
 import org.entermediadb.ai.llm.LlmConnection;
 import org.entermediadb.ai.llm.LlmResponse;
 import org.entermediadb.markdown.MarkdownUtil;
@@ -22,30 +22,34 @@ import org.openedit.MultiValued;
 import org.openedit.data.Searcher;
 import org.openedit.data.ValuesMap;
 
-public class AgentJobCreatorSkill extends BaseSkill
+public class OpenCodeJobCreatorSkill extends BaseSkill
 {
-	private static final Log log = LogFactory.getLog(AgentJobCreatorSkill.class);
+	private static final Log log = LogFactory.getLog(OpenCodeJobCreatorSkill.class);
 
 	@Override
 	public void process(AgentContext inAgentContext)
 	{
 		ChatMessageContext messageContext = (ChatMessageContext) inAgentContext;
-		Collection<MultiValued> channelChatHistory = messageContext.getChannelChatHistory();
-		StringBuffer buffer = new StringBuffer();
-		for (MultiValued multiValued : channelChatHistory)
-		{
-			if ("agent".equals(multiValued.get("user")))
-			{
-				continue;
-			}
-			String plain = multiValued.get("message");
-			if (plain != null)
-			{
-				buffer.append(plain + "\n");
-			}
-		}
 
-		String userRequest = buffer.toString();// usermessage.get("message");
+		String userRequest = (String)inAgentContext.getContextValue("query");
+		if( userRequest == null)
+		{
+			Collection<MultiValued> channelChatHistory = messageContext.getChannelChatHistory();
+			StringBuffer buffer = new StringBuffer();
+			for (MultiValued multiValued : channelChatHistory)
+			{
+				if ("agent".equals(multiValued.get("user")))
+				{
+					continue;
+				}
+				String plain = multiValued.get("message");
+				if (plain != null)
+				{
+					buffer.append(plain + "\n");
+				}
+			}
+			userRequest = buffer.toString();// usermessage.get("message");
+		}
 		inAgentContext.put("query", userRequest); // required
 
 		// Needed?
@@ -133,10 +137,10 @@ public class AgentJobCreatorSkill extends BaseSkill
 			response = llmconnection.renderLocalAction(inAgentContext, "agent_job_showjobplan");
 
 			//This needs to be set so we come back here, not to the chat
-			response.setNextAutomationStep(inAgentContext.getCurrentScenario().getId() + ".agentJobCreator");
+			response.setNextAutomationStep(inAgentContext.getCurrentAgentJob().getScenarioId() + ".agentJobCreator");
 			inAgentContext.setLastResponse(response);
 
-			AutomationStep skillEnabled = inAgentContext.getCurrentAutomationStep();
+			AgentJobStep skillEnabled = inAgentContext.getCurrentAutomationStep();
 			inAgentContext.fireStatusComplete(skillEnabled);
 			return;
 		}
@@ -144,6 +148,7 @@ public class AgentJobCreatorSkill extends BaseSkill
 		getMediaArchive().saveData("agentjob", newjob);
 		Collection<Data> proposedSteps = saveSteps(newjob, steps); //Save with job id
 		getMediaArchive().saveData("agentjobstep", proposedSteps);
+		runInOrder(proposedSteps);
 
 		messageContext.put("agentjob", newjob);
 		messageContext.put("proposedsteps", proposedSteps);
@@ -158,12 +163,10 @@ public class AgentJobCreatorSkill extends BaseSkill
 	{
 		Searcher searcher = getMediaArchive().getSearcher("agentjobstep");
 		Collection tosave = new ArrayList();
-		int ordering = 0;
 		for (Map stepData : steps)
 		{
 			Data step = searcher.createNewData();
 			step.setValue("agentjob", newjob.getId());
-			step.setValue("ordering", ordering++);
 
 			String id = (String) stepData.get("skill_id");
 			if (id.startsWith("aiskill_"))
@@ -174,7 +177,7 @@ public class AgentJobCreatorSkill extends BaseSkill
 			else if (id.startsWith("automationscenario_"))
 			{
 				String scenarioid = id.replace("automationscenario_", "");
-				step.setValue("workflowid", scenarioid);
+				step.setValue("automationscenario", scenarioid);
 			}
 
 			step.setValue("markdowncontent", stepData.get("details"));
@@ -188,6 +191,21 @@ public class AgentJobCreatorSkill extends BaseSkill
 			tosave.add(step);
 		}
 		return tosave;
+	}
+
+	/** Now that the steps have ids, point each one's runafter at the step before it */
+	protected void runInOrder(Collection<Data> inSteps)
+	{
+		Data previous = null;
+		for (Data step : inSteps)
+		{
+			if (previous != null)
+			{
+				step.setValue("runafter", previous.getId());
+			}
+			previous = step;
+		}
+		getMediaArchive().saveData("agentjobstep", inSteps);
 	}
 
 	protected Collection<String> loadSkillDocIds()

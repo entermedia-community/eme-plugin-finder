@@ -6,7 +6,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.BaseSkill;
-import org.entermediadb.ai.agentjobs.AgentJobOrchestrator;
+import org.entermediadb.ai.agentjobs.AgentJobManager;
 import org.entermediadb.ai.llm.BasicLlmResponse;
 import org.entermediadb.ai.llm.LlmResponse;
 import org.entermediadb.mcp.client.OpenCodeClient;
@@ -49,15 +49,8 @@ public class OpenCodeRunnerSkill extends BaseSkill
 	@Override
 	public void process(AgentContext inContext)
 	{
-		AgentJobOrchestrator orchestrator = (AgentJobOrchestrator) getMediaArchive().getBean("agentJobOrchestrator");
-		String query = (String) inContext.getContextValue("userrequest");
-		if (query == null || query.trim().isEmpty())
-		{
-			// In chat, OpenCodeUserRequestSkill runs first and sets userrequest and agentjobstep
-			log.info("OpenCodeRunnerSkill: no userrequest, waiting for input");
-			return;
-		}
-
+		AgentJobManager manager = (AgentJobManager) getMediaArchive().getBean("agentJobManager");
+		
 		String workingpath = (String) inContext.getContextValue("workingpath");
 		if (workingpath == null || workingpath.trim().isEmpty())
 		{
@@ -69,12 +62,12 @@ public class OpenCodeRunnerSkill extends BaseSkill
 		}
 
 		MultiValued agentjobstep = (MultiValued) inContext.getContextValue("agentjobstep");
-
+		String query = (String) agentjobstep.get("userrequest");
 		SessionStatus status;
 		OpenCodeClient client;
 		try
 		{
-			client = orchestrator.getOpenCodeClient();
+			client = manager.getOpenCodeClient();
 			client.connectToServer(); //start listening
 			status = client.loadStatus(agentjobstep.getId());
 			if (status == null)
@@ -106,7 +99,7 @@ public class OpenCodeRunnerSkill extends BaseSkill
 		if (status.getPendingPermissionId() != null)
 		{
 			// opencode is blocked on a tool-call approval. Leave the step for a human to answer
-			// instead of marking it complete; AgentJobOrchestrator.runSkill only stamps "complete"
+			// instead of marking it complete; the orchestrator only stamps "complete"
 			// when the step's status is still "running".
 			// "question" or "securityprompt" (see jobstatus.xml); the prompt text replaces the markdown.
 			String pendingStatus = status.getPendingStatus() != null ? status.getPendingStatus() : "securityprompt";

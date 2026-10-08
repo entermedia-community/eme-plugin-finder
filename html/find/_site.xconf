@@ -44,6 +44,7 @@
   <path-action name="Admin.loadPermissionFinder"/>
   <path-action name="Admin.allowViewing"/>
   <path-action name="TranslationModule.loadBrowserLanguage"/>
+  <path-action name="FinderModule.loadEmeProfile" />
   <path-action name="FinderModule.loadAppsMenu"/>
   <path-action name="PageValue.loadPageVariable" allowduplicates="true" bean="inflector"/>
 

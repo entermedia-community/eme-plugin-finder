@@ -34,9 +34,9 @@ public interface LlmResponse
 
     void setRawMessage(String inMessage);
 
-    String getExecAutomationSkill();
+    String getExecAutomationStep();
 
-    void setExecAutomationSkill(String inFunction);
+    void setExecAutomationStep(String inFunction);
 
     String getNextAutomationStep();
 

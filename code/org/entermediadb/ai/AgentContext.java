@@ -4,10 +4,10 @@ import java.util.Collection;
 import java.util.Map;
 import org.entermediadb.ai.assistant.AiCreation;
 import org.entermediadb.ai.assistant.AiSearch;
-import org.entermediadb.ai.automation.RunningScenario;
+import org.entermediadb.ai.agentjobs.AgentJob;
+import org.entermediadb.ai.agentjobs.AgentJobStep;
 import org.entermediadb.ai.creator.AiSmartCreatorSteps;
 import org.entermediadb.ai.knn.RankedResult;
-import org.entermediadb.ai.llm.AutomationStep;
 import org.entermediadb.ai.llm.LlmResponse;
 import org.entermediadb.ai.llm.LogEntry;
 import org.entermediadb.scripts.ScriptLogger;
@@ -42,13 +42,13 @@ public interface AgentContext extends Data
 
 	void setWaitTime(Long inWaitTime);
 
-	RunningScenario getCurrentScenario();
+	AgentJob getCurrentAgentJob();
 
-	void setCurrentScenario(RunningScenario inCurrentScenario);
+	void setCurrentAgentJob(AgentJob inCurrentAgentJob);
 
-	AutomationStep getCurrentAutomationStep();
+	AgentJobStep getCurrentAutomationStep();
 
-	void setCurrentAutomationStep(AutomationStep inCurrentAutomationStep);
+	void setCurrentAutomationStep(AgentJobStep inCurrentAutomationStep);
 
 	String getCatalogId();
 
@@ -161,9 +161,9 @@ public interface AgentContext extends Data
 
 	public void addStatusListener(SkillStatusListener inListener);
 
-	public void fireStatusStarting(AutomationStep inAutomationStep);
+	public void fireStatusStarting(AgentJobStep inAutomationStep);
 
-	public void fireStatusComplete(AutomationStep inAutomationStep);
+	public void fireStatusComplete(AgentJobStep inAutomationStep);
 
 	void putContextValues(Map<String, Object> params);
 

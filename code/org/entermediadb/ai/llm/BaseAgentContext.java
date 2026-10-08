@@ -12,7 +12,8 @@ import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.SkillStatusListener;
 import org.entermediadb.ai.assistant.AiCreation;
 import org.entermediadb.ai.assistant.AiSearch;
-import org.entermediadb.ai.automation.RunningScenario;
+import org.entermediadb.ai.agentjobs.AgentJob;
+import org.entermediadb.ai.agentjobs.AgentJobStep;
 import org.entermediadb.ai.creator.AiSmartCreatorSteps;
 import org.entermediadb.ai.knn.RankedResult;
 import org.entermediadb.scripts.ScriptLogger;
@@ -78,7 +79,7 @@ public class BaseAgentContext extends BaseData implements CatalogEnabled, AgentC
 		getStatusListeners().add(inListener);
 	}
 
-	public void fireStatusStarting(AutomationStep inAutomationStep)
+	public void fireStatusStarting(AgentJobStep inAutomationStep)
 	{
 		for (SkillStatusListener listener : getStatusListeners())
 		{
@@ -87,7 +88,7 @@ public class BaseAgentContext extends BaseData implements CatalogEnabled, AgentC
 	}
 
 	@Override
-	public void fireStatusComplete(AutomationStep inAutomationStep)
+	public void fireStatusComplete(AgentJobStep inAutomationStep)
 	{
 		for (SkillStatusListener listener : getStatusListeners())
 		{
@@ -170,38 +171,47 @@ public class BaseAgentContext extends BaseData implements CatalogEnabled, AgentC
 
 	protected String fieldCatalogId;
 
-	public RunningScenario getCurrentScenario()
+	public AgentJob getCurrentAgentJob()
 	{
-		RunningScenario scenario = (RunningScenario) getRootContext().getContextValue("currentscenario");
-		return scenario;
+		Object job = getRootContext().getContextValue("currentagentjob");
+		if (job instanceof AgentJob)
+		{
+			return (AgentJob) job;
+		}
+		return null;
 	}
 
-	public void setCurrentScenario(RunningScenario inCurrentScenario)
+	/**
+	 * The agentjob holds the steps being run. It is saved in the context json so chats keep it between
+	 * messages, and "currentscenario" keeps the automationscenario id it was copied from.
+	 */
+	public void setCurrentAgentJob(AgentJob inCurrentAgentJob)
 	{
-		//fieldCurrentScenario = inCurrentScenario;
-		putRoot("currentscenario", inCurrentScenario);
+		putRoot("currentagentjob", inCurrentAgentJob);
 
-		if (inCurrentScenario != null)
+		if (inCurrentAgentJob != null)
 		{
-			setValue("currentscenario", inCurrentScenario.getId());
+			putRoot("currentscenario", inCurrentAgentJob.getScenarioId());
+			setValue("currentscenario", inCurrentAgentJob.getScenarioId());
 		}
 		else
 		{
+			putRoot("currentscenario", null);
 			setValue("currentscenario", null);
 		}
 	}
 
-	protected AutomationStep fieldCurrentAutomationStep;
+	protected AgentJobStep fieldCurrentAutomationStep;
 
-	public AutomationStep getCurrentAutomationStep()
+	public AgentJobStep getCurrentAutomationStep()
 	{
 		if (fieldCurrentAutomationStep == null && getParentContext() != null)
 		{
 			return getParentContext().getCurrentAutomationStep();
 		}
-		if( fieldCurrentAutomationStep == null && getCurrentScenario() != null)
+		if( fieldCurrentAutomationStep == null && getCurrentAgentJob() != null)
 		{
-			Collection<AutomationStep> enabled = getCurrentScenario().getEnabledAgents();
+			Collection<AgentJobStep> enabled = getCurrentAgentJob().getSteps();
 			if( enabled != null && enabled.size() > 0)
 			{
 				fieldCurrentAutomationStep = enabled.iterator().next();
@@ -210,7 +220,7 @@ public class BaseAgentContext extends BaseData implements CatalogEnabled, AgentC
 		return fieldCurrentAutomationStep;
 	}
 
-	public void setCurrentAutomationStep(AutomationStep inCurrentAutomationStep)
+	public void setCurrentAutomationStep(AgentJobStep inCurrentAutomationStep)
 	{
 		fieldCurrentAutomationStep = inCurrentAutomationStep;
 		if (inCurrentAutomationStep != null)
@@ -622,7 +632,7 @@ public class BaseAgentContext extends BaseData implements CatalogEnabled, AgentC
 		entry.setDate(new Date());
 		if (getCurrentAutomationStep() != null)
 		{
-			entry.setCurrentAutomationStepData(getCurrentAutomationStep().getAutomationStepData());
+			entry.setCurrentAutomationStepData(getCurrentAutomationStep().getAgentJobStepData());
 			entry.setAgentData(getCurrentAutomationStep().getAgentData());
 		}
 		getLogs().add(entry);

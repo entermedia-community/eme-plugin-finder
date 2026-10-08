@@ -8,6 +8,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -15,25 +16,41 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.entermediadb.ai.AgentContext;
+import org.entermediadb.ai.ChatMessageContext;
 import org.entermediadb.ai.Skill;
+import org.entermediadb.ai.SkillStatusListener;
 import org.entermediadb.ai.automation.AutomationManager;
+import org.entermediadb.ai.agentjobs.AgentJobStep;
 import org.entermediadb.ai.llm.BaseAgentContext;
+import org.entermediadb.ai.llm.LlmResponse;
 import org.entermediadb.asset.MediaArchive;
+import org.entermediadb.asset.util.JsonUtil;
 import org.entermediadb.mcp.client.OpenCodeClient;
+import org.entermediadb.scripts.ScriptLogger;
+import org.entermediadb.websocket.chat.ChatServer;
+import org.json.simple.JSONObject;
 import org.openedit.CatalogEnabled;
 import org.openedit.Data;
 import org.openedit.ModuleManager;
 import org.openedit.MultiValued;
+import org.openedit.OpenEditException;
 import org.openedit.data.QueryBuilder;
 import org.openedit.data.Searcher;
 import org.openedit.hittracker.HitTracker;
+import org.openedit.profile.UserProfile;
+import org.openedit.util.DateStorageUtil;
 import org.openedit.util.ExecutorManager;
-import org.openedit.util.JSONParser;
 import org.openedit.util.OutputFiller;
 
-public class AgentJobOrchestrator implements AgentJobListener, CatalogEnabled
+public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 {
-	private static final Log log = LogFactory.getLog(AgentJobOrchestrator.class);
+	private static final Log log = LogFactory.getLog(AgentJobManager.class);
+
+	public static final String DEFAULT_ORCHESTRATOR = "javaskillOrchestrator";
+
+	/** automationstep fields that are not copied to the agentjobstep. runafter and aiskill are mapped instead */
+	protected static final Set<String> TEMPLATE_ONLY_FIELDS = Set.of("id", "enabled", "aiskill", "runafter", "ordering", "offsetx", "offsety");
+
 	
 	protected MediaArchive fieldMediaArchive;
 	protected ModuleManager fieldModuleManager;
@@ -153,6 +170,7 @@ public class AgentJobOrchestrator implements AgentJobListener, CatalogEnabled
 				// lock and create
 				if (currentJobsRunning.size() >= availableProcessors())
 				{
+					log.info("reached a full queue. Waiting till some complete before adding more jobs");
 					break;
 				}
 				Data hit = (Data) iterator.next();
@@ -161,6 +179,19 @@ public class AgentJobOrchestrator implements AgentJobListener, CatalogEnabled
 				if( job.getValue("status") != null && job.getValue("status").equals("running"))
 				{
 					log.info("Skipping job " + job + " as it is already running");
+					continue;
+				}
+				AgentJobOrchestrator orchestrator;
+				try
+				{
+					orchestrator = getOrchestrator(job);
+				}
+				catch (Exception ex)
+				{
+					log.error("Could not start agentjob " + job.getId(), ex);
+					job.setValue("status", "error");
+					job.setValue("errordetails", ex.getMessage());
+					getMediaArchive().saveData("agentjob", job);
 					continue;
 				}
 
@@ -173,10 +204,10 @@ public class AgentJobOrchestrator implements AgentJobListener, CatalogEnabled
 				context.setCatalogId(getCatalogId());
 				context.setModuleManager(getModuleManager());
 				context.put("agentjob", job);
-				//context.put("userrequest", job.get("userrequest"));
+				context.setCurrentAgentJob(job);
 				torun.setContext(context);
 				torun.setAgentJob(job);
-				torun.setEventListener(this);
+				torun.setAgentJobOrchestrator(orchestrator);
 				torun.setAgentJobRun(createAgentJobRun(job));
 				addAgentJob(torun);
 			}
@@ -249,179 +280,22 @@ public class AgentJobOrchestrator implements AgentJobListener, CatalogEnabled
 		getThreads().execute("importing", inAgentJob);
 	}
 
-	public void runStep(AgentJobRunnable inAgentJob, MultiValued inStep)
+	/**
+	 * Picks the orchestrator bean named by the agentjob's "orchestrator" field (see the chosenorchestrator list).
+	 * Jobs without one run their steps as Java skills.
+	 */
+	public AgentJobOrchestrator getOrchestrator(AgentJob inJob)
 	{
-		try
+		String orchestratorid = inJob.get("orchestrator");
+		if( orchestratorid == null || orchestratorid.trim().isEmpty())
 		{
-			String aiskillid = inStep.get("aiskillid");
-			if( aiskillid != null )
-			{
-				runSkill(inAgentJob,inStep);
-			}
-			
-			String workflowid = inStep.get("workflowid");
-			if( workflowid != null )
-			{
-				runWorkflow(inAgentJob,inStep);
-			}	
+			orchestratorid = DEFAULT_ORCHESTRATOR;
 		}
-		catch (Exception ex)
-		{
-			log.error("Error running step " + inStep.getId(), ex);
-			inStep.setValue("status", "error");
-			inStep.setValue("errordetails", ex.getMessage());
-			inAgentJob.getAgentJob().setValue("status", "error");
-			getMediaArchive().saveData("agentjob", inAgentJob.getAgentJob());
-			
-			if(ex instanceof RuntimeException)
-			{
-				throw (RuntimeException) ex;
-			}
-			throw new RuntimeException(ex); 
-		}
-		finally
-		{
-			getMediaArchive().saveData("agentjobstep", inStep);
-		}
+		Object bean = getModuleManager().getBean(getCatalogId(), orchestratorid, true);		
+		return (AgentJobOrchestrator) bean;
 	}
 
-	private void runSkill( AgentJobRunnable inAgentJob, MultiValued inStep)
-	{
-		String aiskillid = inStep.get("aiskillid");
-		Data aiskill = getMediaArchive().query("aiskill").exact("id", aiskillid).searchOne();
-		inStep.setValue("status", "running");
-		getMediaArchive().saveData("agentjobstep", inStep);
-
-		inAgentJob.getContext().put("agentjobstep",inStep);
-
-		String userrequest = inStep.get("markdowncontent"); //Starting point for each job
-		if( inAgentJob.getAgentJob().get("repeatperiod") != null)
-		{
-			//Skills may replace markdowncontent with their output, so keep the original request for the next repeat
-			String original = inStep.get("userrequest");
-			if( original == null)
-			{
-				inStep.setValue("userrequest", userrequest);
-			}
-			else
-			{
-				userrequest = original;
-			}
-		}
-		inAgentJob.getContext().put("userrequest", userrequest);
-
-			Skill skill = (Skill) getModuleManager().getBean(getCatalogId(), aiskill.get("bean"));
-			String json = inStep.get("parameters");
-			Collection<Map<String,Object>> parameters = null;
-			if( json != null)
-			{
-				parameters = (Collection<Map<String,Object>>)new JSONParser().parseCollection(json);
-			}
-
-			if(  parameters != null)
-			{
-				for (Map<String,Object> map : parameters) 
-				{
-					String key = (String)map.get("input_id");
-					String value = (String)map.get("value");
-					if( value == null)
-					{
-						String oldkey  = (String)map.get("variable");
-						if( oldkey == null)
-						{
-							oldkey = key;
-						}
-						value = (String)inAgentJob.getContext().getContextValue(oldkey);
-					}
-					if( value == null)
-					{
-						continue;
-					}
-					if( value.startsWith("${"))
-					{
-						String[] parts = value.split("\\.");
-						if( parts.length > 1)
-						{
-							String oldkey = parts[parts.length -1];
-							if( oldkey.endsWith("}"))
-							{
-								oldkey = oldkey.substring(0,oldkey.length() -1);
-							}
-							value = (String)inAgentJob.getContext().getContextValue(oldkey);
-						}
-					}
-
-					inAgentJob.getContext().put(key,value);
-				}
-			}
-
-			skill.process(inAgentJob.getContext());
-
-
-			// if( inAgentJob.getContext().getLastResponse() != null)
-			// {
-			// 	String message = inAgentJob.getContext().getLastResponse().getMessage();
-			// 	inStep.setValue("lastresponse", message);
-			// }
-
-			// A skill may leave the step in a non-terminal state (e.g. "waitinginput" while a
-			// long-running external job is still processing or needs a question answered).
-			// Only stamp "complete" if the skill didn't already decide the outcome itself.
-			if ("running".equals(inStep.get("status")))
-			{
-				inStep.setValue("status", "complete");
-				getMediaArchive().saveData("agentjobstep", inStep);
-			}
-	}
-
-	AutomationManager fieldAutomationManager;
-	protected AutomationManager getAutomationManager()
-	{
-		if( fieldAutomationManager == null)
-		{
-			fieldAutomationManager = (AutomationManager) getModuleManager().getBean(getCatalogId(), "automationManager");
-		}
-		return fieldAutomationManager;
-	}
-
-	private void runWorkflow(AgentJobRunnable inAgentJob, MultiValued inStep)
-	{
-		String workflowid = inStep.get("workflowid");
-		inStep.setValue("status", "running");
-		getMediaArchive().saveData("agentjobstep", inStep);
-		try
-		{
-			AgentContext context = new BaseAgentContext();
-			context.setCatalogId(getCatalogId());
-			context.setModuleManager(getModuleManager());
-			context.put("agentjob", inAgentJob.getAgentJob());
-			context.put("agentjobstep", inStep);
-
-			getAutomationManager().runScenario(workflowid, context);
-
-			inStep.setValue("status", "complete");
-		}
-		catch (Exception ex)
-		{
-			log.error("Error running step " + inStep.getId(), ex);
-			inStep.setValue("status", "error");
-			inStep.setValue("errordetails", ex.getMessage());
-		}
-		finally
-		{
-			getMediaArchive().saveData("agentjobstep", inStep);
-		}
-
-	}
-
-	public void finishedStep(AgentJobRunnable inAgentJob, Data inStep)
-	{
-		//currentJobsRunning.remove(inAgentJob.getId());
-
-		//Do nothing
-
-	}
-
+	/** Called by the orchestrator once every step ran */
 	public void finishedAllSteps(AgentJobRunnable inAgentJob)
 	{
 		try
@@ -447,6 +321,7 @@ public class AgentJobOrchestrator implements AgentJobListener, CatalogEnabled
 
 
 
+	/** Called by the orchestrator when the job exits, even after an error */
 	public void finishedRun(AgentJobRunnable inAgentJob)
 	{
 		currentJobsRunning.remove(inAgentJob.getId()); //Also released when a step threw an error
@@ -459,7 +334,7 @@ public class AgentJobOrchestrator implements AgentJobListener, CatalogEnabled
 		{
 			AgentJob job = inAgentJob.getAgentJob();
 			StringBuffer markdown = new StringBuffer();
-			for (MultiValued step : job.getSteps())
+			for (AgentJobStep step : job.getAllSteps())
 			{
 				Data saved = getMediaArchive().getCachedData("agentjobstep", step.getId());
 				String content = saved == null ? null : saved.get("markdowncontent");
@@ -606,12 +481,12 @@ public class AgentJobOrchestrator implements AgentJobListener, CatalogEnabled
 	protected void resetForRepeat(AgentJob inJob)
 	{
 		inJob.setSteps(null); //Reload from database
-		for (MultiValued step : inJob.getSteps())
+		for (AgentJobStep step : inJob.getAllSteps())
 		{
 			step.setValue("status", "new");
 			step.setValue("errordetails", null);
 			getOpenCodeClient().clearStatus(step.getId()); //Start a new opencode session
-			getMediaArchive().saveData("agentjobstep", step);
+			getMediaArchive().saveData("agentjobstep", step.getAgentJobStepData());
 		}
 		inJob.setValue("status", "new");
 		inJob.setValue("errordetails", null);
@@ -632,31 +507,565 @@ public class AgentJobOrchestrator implements AgentJobListener, CatalogEnabled
 	 * Creates a running agentjob with a single agentjobstep for the given skill from a chat message.
 	 * The job is saved as "running" so checkQueue does not pick it up; the caller runs the step itself.
 	 */
-	public AgentJob createAgentJobFromMessage(MultiValued inUserMessage, String inAiSkillId)
+	public AgentJob createAgentJobFromMessage(String inUserId, String inUserMessage, String inscenarioId, String inAiSkillId)
 	{
-		String userrequest = inUserMessage.get("message");
 
 		AgentJob job = (AgentJob) getMediaArchive().getSearcher("agentjob").createNewData();
-		job.setValue("owner", inUserMessage.get("user"));
+		job.setValue("owner", inUserId);
 		job.setValue("submitteddate", new Date());
 		job.setValue("startdate", new Date());
-		job.setValue("status", "running");
-		job.setValue("userrequest", userrequest);
-		job.setValue("name", userrequest);
+		job.setValue("status", "new");
+		job.setValue("userrequest", inUserMessage);
+		job.setValue("name", inUserMessage);
 		getMediaArchive().saveData("agentjob", job);
 
 		MultiValued step = (MultiValued) getMediaArchive().getSearcher("agentjobstep").createNewData();
 		step.setValue("agentjob", job.getId());
-		step.setValue("ordering", 0);
 		step.setValue("aiskillid", inAiSkillId);
-		step.setValue("status", "running");
-		step.setValue("markdowncontent", userrequest);
+		step.setValue("automationscenario", inscenarioId);
+		step.setValue("status", "new");
+		step.setValue("userrequest", inUserMessage);
 		getMediaArchive().saveData("agentjobstep", step);
 
-		Collection<MultiValued> steps = new ArrayList<MultiValued>();
-		steps.add(step);
-		job.setSteps(steps);
+		job.setSteps(null);
 		return job;
+	}
+
+	public AutomationManager getAutomationManager()
+	{
+		return (AutomationManager) getModuleManager().getBean(getCatalogId(), "automationManager", true);
+	}
+
+	/**
+	 * Saves a new agentjob with a copy of each enabled automationstep of the scenario as an agentjobstep.
+	 * Each copy keeps the automationstep id and its "runafter" points at the copied parent step.
+	 */
+	public AgentJob importScenario(String inScenarioId, AgentContext inContext)
+	{
+		AgentJob job = (AgentJob) getMediaArchive().getSearcher("agentjob").createNewData();
+		job.setValue("automationscenario", inScenarioId);
+		MultiValued scenariodata = (MultiValued) getMediaArchive().getCachedData("automationscenario", inScenarioId);
+		job.setValue("name", scenariodata == null ? inScenarioId : scenariodata.getName());
+		if (inContext != null && inContext.getUserProfile() != null)
+		{
+			job.setValue("owner", inContext.getUserProfile().getUserId());
+		}
+		Object userrequest = inContext == null ? null : inContext.getContextValue("userrequest");
+		if (userrequest instanceof String)
+		{
+			job.setValue("userrequest", userrequest);
+		}
+		job.setValue("submitteddate", new Date()); //No status so checkQueue leaves it alone until it runs
+		getMediaArchive().saveData("agentjob", job);
+
+		Collection<MultiValued> templates = getMediaArchive().query("automationstep").exact("automationscenario", inScenarioId).exact("enabled", true).sort("orderingUp").search();
+		Map<String, MultiValued> copies = new HashMap<String, MultiValued>();
+		Collection<MultiValued> tosave = new ArrayList<MultiValued>();
+		for (MultiValued template : templates)
+		{
+			MultiValued step = (MultiValued) getMediaArchive().getSearcher("agentjobstep").createNewData();
+			for (Object key : template.getProperties().keySet())
+			{
+				if (!TEMPLATE_ONLY_FIELDS.contains(key))
+				{
+					step.setValue((String) key, template.getValue((String) key));
+				}
+			}
+			step.setValue("agentjob", job.getId());
+			step.setValue("automationstep", template.getId());
+			step.setValue("automationscenario", inScenarioId);
+			step.setValue("aiskillid", template.get("aiskill"));
+			step.setValue("status", "new");
+			copies.put(template.getId(), step);
+			tosave.add(step);
+		}
+		getMediaArchive().saveData("agentjobstep", tosave);
+
+		//Now that the copies have ids point runafter at them
+		for (MultiValued template : templates)
+		{
+			String runafter = template.get("runafter");
+			MultiValued parent = runafter == null ? null : copies.get(runafter);
+			if (parent != null)
+			{
+				copies.get(template.getId()).setValue("runafter", parent.getId());
+			}
+		}
+		getMediaArchive().saveData("agentjobstep", tosave);
+
+		job.setSteps(null);
+		return job;
+	}
+
+	public AgentContext createAgentContext(AgentJobStep inStep)
+	{
+		return createAgentContext(null, inStep);
+	}
+
+	/** A child context using the step's aiskill "contextbean", or baseAgentContext */
+	public AgentContext createAgentContext(AgentContext inParentContext, AgentJobStep inStep)
+	{
+		String contextbeanname = inStep.getAgentData() == null ? null : inStep.getAgentData().get("contextbean");
+		if (contextbeanname == null)
+		{
+			contextbeanname = "baseAgentContext";
+		}
+		AgentContext childContext = (AgentContext) getMediaArchive().getBean(contextbeanname, false);
+		childContext.setCurrentAutomationStep(inStep);
+		if (inParentContext != null)
+		{
+			childContext.setParentContext(inParentContext);
+		}
+		return childContext;
+	}
+
+	public void runScenario(String inId, ScriptLogger inLogger)
+	{
+		AgentContext context = new BaseAgentContext();
+		context.setScriptLogger(inLogger);
+		runScenario(inId, context);
+	}
+
+	public void runScenario(String inId, UserProfile inUserProfile, Map inContextMap, String inAutomationStepId, ScriptLogger inLogger)
+	{
+		AgentContext context = new BaseAgentContext();
+		context.putContextValues(inContextMap);
+		context.setScriptLogger(inLogger);
+		context.setUserProfile(inUserProfile);
+		AgentJob job = importScenario(inId, context);
+
+		AgentJobStep step = null;
+		if (inAutomationStepId != null)
+		{
+			step = job.findEnabled(inAutomationStepId);
+		}
+		else if (!job.getSteps().isEmpty())
+		{
+			step = job.getSteps().iterator().next();
+		}
+		if (step == null)
+		{
+			log.error("No step " + inAutomationStepId + " in scenario " + inId);
+			return;
+		}
+		AgentContext stepcontext = createAgentContext(step);
+		stepcontext.putContextValues(inContextMap);
+		stepcontext.setScriptLogger(inLogger);
+		stepcontext.setUserProfile(inUserProfile);
+		runScenario(job, stepcontext);
+	}
+
+	public void runScenario(String inId, AgentContext inContext)
+	{
+		runScenario(importScenario(inId, inContext), inContext);
+	}
+
+	public void runScenario(AgentJob inJob, AgentContext inContext)
+	{
+		if (inContext.getId() == null)
+		{
+			inContext.setId(getAutomationManager().inCrementId());
+		}
+		getAutomationManager().addContext(inJob.getScenarioId(), inContext);
+		inContext.setCurrentAgentJob(inJob);
+
+		AgentJobStep step = inContext.getCurrentAutomationStep();
+		if (step == null)
+		{
+			log.error("Scenario " + inJob.getScenarioId() + " has no enabled steps");
+			return;
+		}
+		AgentContext currentContext = createAgentContext(inContext, step);
+		runProcess(currentContext, step);
+	}
+
+	/**
+	 * Runs a step by its automationstep id. Use "scenario.stepid" to switch to a new agentjob copied from
+	 * that scenario, or just "stepid" to stay in the context's current agentjob.
+	 */
+	public boolean runProcess(AgentContext inContext, String inFunctionParts)
+	{
+		log.info("Running scenario: " + inFunctionParts);
+		String[] parts = inFunctionParts.split("\\.");
+		String stepid = null;
+		AgentJob job = inContext.getCurrentAgentJob();
+		if (parts.length > 1)
+		{
+			if (job == null || !parts[0].equals(job.getScenarioId()))
+			{
+				job = importScenario(parts[0], inContext);
+				inContext.setCurrentAgentJob(job);
+			}
+			stepid = parts[1];
+		}
+		else
+		{
+			stepid = parts[0];
+		}
+		if (job == null)
+		{
+			log.error("No agentjob set on context for step: " + inFunctionParts);
+			return false;
+		}
+
+		AgentJobStep step = job.findEnabled(stepid);
+		if (step == null)
+		{
+			log.error("No step found for id: " + stepid + " in agentjob " + job.getId());
+			return false;
+		}
+		AgentContext currentContext = createAgentContext(inContext, step);
+		return runProcess(currentContext, step);
+	}
+
+	public boolean runProcess(AgentContext inContext, AgentJobStep inStep)
+	{
+		return runProcess(inContext, inStep, false);
+	}
+
+	/**
+	 * Runs one step of the context's agentjob and saves the step's status. Nested steps (children,
+	 * runskill, exec) run inside this call, and the outermost call finishes the agentjob.
+	 */
+	public boolean runProcess(AgentContext inContext, AgentJobStep inStep, boolean inSkipStatusStart)
+	{
+		inContext.setCurrentAutomationStep(inStep);
+		inContext.addStatusListener(this);
+
+		AgentJob job = inContext.getCurrentAgentJob();
+		boolean ownsjob = job != null && job.getRunDepth() == 0;
+		if (job != null)
+		{
+			job.setRunDepth(job.getRunDepth() + 1);
+		}
+		if (ownsjob)
+		{
+			job.setValue("status", "running");
+			job.setValue("errordetails", null);
+			job.setValue("startdate", new Date());
+			job.setValue("enddate", null);
+			getMediaArchive().saveData("agentjob", job);
+		}
+		inStep.setValue("status", "running");
+		inStep.setValue("errordetails", null);
+		getMediaArchive().saveData("agentjobstep", inStep.getAgentJobStepData());
+
+		try
+		{
+			return runStep(inContext, inStep, inSkipStatusStart);
+		}
+		catch (RuntimeException ex)
+		{
+			inStep.setValue("status", "error");
+			inStep.setValue("errordetails", ex.getMessage());
+			throw ex;
+		}
+		finally
+		{
+			finishStep(job, inStep, inContext);
+			if (job != null)
+			{
+				job.setRunDepth(job.getRunDepth() - 1);
+			}
+			if (ownsjob)
+			{
+				finishJob(job);
+			}
+		}
+	}
+
+	protected boolean runStep(AgentContext inContext, AgentJobStep inStep, boolean inSkipStatusStart)
+	{
+		Skill agent = inStep.getAgent();
+		if (agent == null)
+		{
+			log.error("No agent found for step " + inStep.getEnabledId());
+			inStep.setValue("status", "error");
+			inStep.setValue("errordetails", "No agent found for step " + inStep.getEnabledId());
+			return false;
+		}
+		if (!inSkipStatusStart)
+		{
+			agent.processStarting(inContext);
+		}
+		log.info("Running agentjob: " + inContext.getCurrentAgentJob() + "  step: " + inStep.getEnabledId());
+		agent.process(inContext);
+
+		LlmResponse response = inContext.getLastResponse();
+		if (response == null)
+		{
+			//Skills that do not call an LLM leave no response, so the step still completes
+			log.error("No response from " + inContext.getCurrentAgentJob() + " running " + inStep.getEnabledId());
+			return false;
+		}
+
+		String state = response.getOperationState();
+		if ("error".equals(state))
+		{
+			log.error("Error from " + inContext.getCurrentAgentJob() + " running " + inStep.getEnabledId() + ": " + response.getMessage());
+			inStep.setValue("status", "error");
+			inStep.setValue("errordetails", response.getMessage());
+			return false;
+		}
+		/// error, cancel, continue, runskill
+		if ("cancel".equals(state))
+		{
+			// Just return without broadcasting or saving anything. This is for when the function is called but
+			// we determine we dont need to do anything.
+			return false;
+		}
+		else if ("runskill".equals(state))
+		{
+			runProcess(inContext, response.getExecAutomationStep());
+			return false;
+		}
+		else if ("needuserinput".equals(state))
+		{
+			// fire complete should have sent it back to the user
+			inStep.setValue("status", "question");
+			return false;
+		}
+		else
+		{
+			log.info("No status from " + inContext.getCurrentAgentJob() + " running " + inStep.getEnabledId());
+		}
+		return true;
+	}
+
+	protected void finishStep(AgentJob inJob, AgentJobStep inStep, AgentContext inContext)
+	{
+		try
+		{
+			if ("running".equals(inStep.get("status")))
+			{
+				inStep.setValue("status", "complete");
+			}
+			LlmResponse response = inContext.getLastResponse();
+			if (response != null && response.getMessage() != null)
+			{
+				inStep.setValue("lastresponse", trimToFit(response.getMessage()));
+			}
+			getMediaArchive().saveData("agentjobstep", inStep.getAgentJobStepData());
+
+			//The job keeps the first error or question
+			String status = inStep.get("status");
+			if (inJob != null && !"complete".equals(status) && "running".equals(inJob.get("status")))
+			{
+				inJob.setValue("status", status);
+				inJob.setValue("errordetails", inStep.get("errordetails"));
+			}
+		}
+		catch (Exception ex)
+		{
+			log.error("Could not save agentjobstep " + inStep.getId(), ex);
+		}
+	}
+
+	protected void finishJob(AgentJob inJob)
+	{
+		try
+		{
+			if ("running".equals(inJob.get("status")))
+			{
+				inJob.setValue("status", "complete");
+			}
+			inJob.setValue("enddate", new Date());
+			getMediaArchive().saveData("agentjob", inJob);
+		}
+		catch (Exception ex)
+		{
+			log.error("Could not save agentjob " + inJob.getId(), ex);
+		}
+	}
+
+	public void handleStatusStarting(AgentContext inContext, AgentJobStep inAutomationStep)
+	{
+		if (!(inContext instanceof ChatMessageContext))
+		{
+			return;
+		}
+
+		ChatMessageContext chatMessageContext = (ChatMessageContext) inContext;
+
+		boolean skiploader = Boolean.parseBoolean((String) chatMessageContext.getContextValue("skiploader"));
+
+		if (skiploader)
+		{
+			return;
+		}
+
+		MultiValued function = inAutomationStep.getAgentJobStepData();
+
+		JsonUtil jsonUtil = (JsonUtil) getMediaArchive().getBean("jsonUtil");
+
+		String processingmessage = null;
+		if (function != null)
+		{
+			processingmessage = function.get("processingmessage");
+		}
+		if (processingmessage == null)
+		{
+			processingmessage = "Analyzing";
+		}
+
+		String processingtype = (String) inContext.getContextValue("processingtype");
+		if (processingtype != null)
+		{
+			processingmessage += " " + processingtype;
+		}
+		String loader = jsonUtil.escape("<i class='fas fa-spinner fa-spin'></i> ");
+		processingmessage = loader + processingmessage + "...";
+		processingmessage = "<span class='processing-message'>" + processingmessage + "</span>";
+
+		MultiValued agentmessage = chatMessageContext.getAgentMessage();
+
+		String message = inContext.getMessagePrefix() + processingmessage;
+		agentmessage.setValue("message", message);
+		agentmessage.setValue("messagetype", "status");
+		agentmessage.setValue("functionname", inAutomationStep.getEnabledId());
+		getMediaArchive().saveData("chatterbox", agentmessage);
+		ChatServer server = (ChatServer) getMediaArchive().getBean("chatServer");
+		server.broadcastMessage(getMediaArchive().getCatalogId(), agentmessage);
+	}
+
+	public void handleStatusComplete(AgentContext inContext, AgentJobStep inAutomationStep)
+	{
+		//Only chat contexts have an agentmessage to send back
+		MultiValued agentmessage = (MultiValued) inContext.getContextValue("agentmessage");
+		if (agentmessage == null)
+		{
+			return;
+		}
+		LlmResponse response = inContext.getLastResponse();
+
+		try
+		{
+			String updatedMessage = null;
+			String messagePrefix = inContext.getMessagePrefix();
+
+			if (response != null && response.getMessage() != null)
+			{
+				if (messagePrefix != null)
+				{
+					updatedMessage = messagePrefix + response.getMessage();
+				}
+				else
+				{
+					updatedMessage = response.getMessage();
+				}
+			}
+			if (updatedMessage != null)
+			{
+				agentmessage.setValue("message", updatedMessage); // Final message
+			}
+
+			String messageplain = agentmessage.get("messageplain");
+			if (response != null)
+			{
+				String newmessageplain = response.getMessagePlain();
+
+				if (newmessageplain != null)
+				{
+					if (messageplain == null)
+					{
+						messageplain = newmessageplain;
+					}
+					else
+					{
+						messageplain += " \n " + newmessageplain;
+					}
+					agentmessage.setValue("messageplain", messageplain);
+				}
+			}
+			String nextFunctionName = null;
+			if (response == null)
+			{
+				log.error("Skipping null responses");
+			}
+			else
+			{
+				nextFunctionName = response.getNextAutomationStep();
+			}
+
+			if (nextFunctionName == null)
+			{
+				AgentJobStep nextEnabled = inAutomationStep.getNextAutomationStep();
+				if (nextEnabled != null)
+				{
+					nextFunctionName = nextEnabled.getEnabledId();
+				}
+			}
+
+			//Make functioname be the last functio
+			//and next be the next
+			agentmessage.setValue("functionname", inAutomationStep.getEnabledId());
+			agentmessage.setValue("nextfunctionname", nextFunctionName);
+			agentmessage.setValue("chatmessagestatus", "completed");
+
+			agentmessage.setValue("agentcontextvalues", inContext.toJSONString());
+
+			getMediaArchive().saveData("chatterbox", agentmessage);
+
+			Map<String, String> functionMessageUpdate = new HashMap<>();
+			functionMessageUpdate.put("messagetype", "airesponse");
+			functionMessageUpdate.put("catalogid", getMediaArchive().getCatalogId());
+			functionMessageUpdate.put("user", "agent");
+			functionMessageUpdate.put("channel", agentmessage.get("channel"));
+			functionMessageUpdate.put("messageid", agentmessage.getId());
+			if (messageplain == null)
+			{
+				messageplain = "New message";
+			}
+			functionMessageUpdate.put("message", updatedMessage);
+			functionMessageUpdate.put("agentcontextvalues", agentmessage.get("agentcontextvalues"));
+			functionMessageUpdate.put("messageplain", messageplain);
+			functionMessageUpdate.put("nextfunctionname", nextFunctionName);
+			functionMessageUpdate.put("functionname", inAutomationStep.getEnabledId());
+			functionMessageUpdate.put("date", DateStorageUtil.getStorageUtil().getJsonFormat().format(new Date()));
+			Boolean messagereload = (Boolean) inContext.getContextValue("messagereload");
+
+			if (messagereload != null && messagereload.booleanValue())
+			{
+				functionMessageUpdate.put("command", "messagereload");
+			}
+
+			ChatServer server = (ChatServer) getMediaArchive().getBean("chatServer");
+
+			JSONObject jsonMessage = new JSONObject(functionMessageUpdate);
+
+			server.broadcastMessage(jsonMessage);
+		}
+		catch (Exception ex)
+		{
+			log.error("Error in fireStatusComplete", ex);
+		}
+
+		if (inContext.getCurrentAgentJob() != null)
+		{
+			Long wait = inContext.getWaitTime();
+			if (wait != null)
+			{
+				inContext.setWaitTime(null);
+				log.info("Previous function requested to wait " + wait + " milliseconds");
+				try
+				{
+					Thread.sleep(wait);
+				}
+				catch (InterruptedException ex)
+				{
+					log.warn("Sleep interrupted", ex);
+					Thread.currentThread().interrupt();
+				}
+			}
+			if (response != null)
+			{
+				String runFunctionName = response.getExecAutomationStep();
+				if (runFunctionName != null)
+				{
+					runProcess(inContext, runFunctionName);
+				}
+			}
+		}
 	}
 
 }

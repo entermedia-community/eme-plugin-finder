@@ -43,7 +43,7 @@ public class SmartCreatorFindMemoryFilesSkill extends BaseSkill
 		{
 			findMemoryFiles(inContext);
 			BasicLlmResponse response = new BasicLlmResponse();
-			response.setExecAutomationSkill("smartcreator_createoutline");
+			response.setExecAutomationStep("smartcreator_createoutline");
 			inContext.setLastResponse(response);
 		}
 	}

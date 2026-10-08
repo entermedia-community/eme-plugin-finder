@@ -11,12 +11,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.BaseAiManager;
-import org.entermediadb.ai.llm.AutomationStep;
+import org.entermediadb.ai.agentjobs.AgentJobStep;
 import org.entermediadb.ai.llm.BaseAgentContext;
 import org.entermediadb.ai.llm.LlmConnection;
 import org.entermediadb.ai.llm.LlmResponse;
 import org.entermediadb.events.EventTrigger;
-import org.entermediadb.scripts.ScriptLogger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.openedit.Data;
@@ -24,7 +23,6 @@ import org.openedit.MultiValued;
 import org.openedit.data.ValuesMap;
 import org.openedit.event.WebEvent;
 import org.openedit.event.WebEventListener;
-import org.openedit.profile.UserProfile;
 import org.openedit.util.JSONParser;
 
 /**
@@ -103,69 +101,6 @@ public class AutomationManager extends BaseAiManager implements WebEventListener
 		}
 	}
 
-	public void runScenario(String inId, ScriptLogger inLogger)
-	{
-		AgentContext context = new BaseAgentContext();
-		context.setScriptLogger(inLogger);
-		runScenario(inId, context);
-	}
-
-	public void runScenario(String id, UserProfile inUserProfile, Map inContextMap, String currentskkillenabled, ScriptLogger logger)
-	{
-		RunningScenario running = (RunningScenario) getMediaArchive().getBean("runningscenario", false);
-		running.setId(id);
-
-		AutomationStep enabled = null;
-		if (currentskkillenabled != null)
-		{
-			enabled = running.findEnabled(currentskkillenabled);
-		}
-		else
-		{
-			enabled = running.getEnabledAgents().iterator().next();
-		}
-
-		AgentContext inContext = running.createAgentContext(enabled);
-		inContext.putContextValues(inContextMap);
-		inContext.setScriptLogger(logger);
-		inContext.setUserProfile(inUserProfile);
-		if (inContext.getId() == null)
-		{
-			inContext.setId(inCrementId());
-		}
-		addContext(id, inContext);
-		runScenario(running, inContext);
-
-	}
-
-	public void runScenario(String inId, AgentContext inContext)
-	{
-		RunningScenario running = (RunningScenario) getMediaArchive().getBean("runningscenario", false);
-		running.setId(inId);
-
-		if (inContext.getId() == null)
-		{
-			inContext.setId(inCrementId());
-		}
-		addContext(inId, inContext);
-		runScenario(running, inContext);
-
-	}
-
-	public void runScenario(RunningScenario running, AgentContext inContext)
-	{
-		inContext.setCurrentScenario(running);
-
-		AutomationStep enabled = inContext.getCurrentAutomationStep();
-		// if (enabled == null)
-		// {
-		// 	enabled = running.getEnabledAgents().iterator().next();
-		// 	inContext.setCurrentAutomationStep(enabled);
-		// }
-		AgentContext inCurrentContext = running.createAgentContext(inContext, enabled);
-		running.runProcess(enabled, inCurrentContext);
-	}
-
 	public Map<String, MultiValued> getAllPositions()
 	{
 		Map<String, MultiValued> map = (Map<String, MultiValued>) getMediaArchive().getCacheManager().get("automationscenariopositionmap", "all");
@@ -209,12 +144,12 @@ public class AutomationManager extends BaseAiManager implements WebEventListener
 	}
 	// public Map<String,MultiValued> getEnabledPositions(String inScenario)
 	// {
-	// Collection<AutomationStep> found = getEnabledAgents(inScenario);
+	// Collection<AgentJobStep> found = getEnabledAgents(inScenario);
 	// Map<String,MultiValued> map = new HashMap(found.size());
 	// for (Iterator iterator2 = found.iterator(); iterator2.hasNext();)
 	// {
-	// AutomationStep agentEnabled = (AutomationStep) iterator2.next();
-	// String enabledid = agentEnabled.getAutomationStepData().getId();
+	// AgentJobStep agentEnabled = (AgentJobStep) iterator2.next();
+	// String enabledid = agentEnabled.getAgentJobStepData().getId();
 	// MultiValued data = getAllPositions().get(enabledid);
 	// map.put(enabledid, data);
 	// }
@@ -396,7 +331,7 @@ public class AutomationManager extends BaseAiManager implements WebEventListener
 					for (Iterator iterator = ids.iterator(); iterator.hasNext();)
 					{
 						String id = (String) iterator.next();
-						runScenario(id, context);
+						getAgentJobManager().runScenario(id, context);
 					}
 				}
 				// see if we have a handler enabled with that id then start that scenerio

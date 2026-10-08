@@ -6,7 +6,7 @@ import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.BaseSkill;
 import org.entermediadb.ai.ChatMessageContext;
 import org.entermediadb.ai.agentjobs.AgentJob;
-import org.entermediadb.ai.agentjobs.AgentJobOrchestrator;
+import org.entermediadb.ai.agentjobs.AgentJobManager;
 import org.openedit.MultiValued;
 
 /**
@@ -37,9 +37,11 @@ public class OpenCodeUserRequestSkill extends BaseSkill
 			return;
 		}
 
-		AgentJobOrchestrator orchestrator = (AgentJobOrchestrator) getMediaArchive().getBean("agentJobOrchestrator");
-		AgentJob agentjob = orchestrator.createAgentJobFromMessage(usermessage, "openCodeRunnerSkill");
-		MultiValued agentjobstep = agentjob.getSteps().iterator().next(); //one step
+		//Make a job for anything. One thing will search. Another will
+
+		AgentJobManager manager = (AgentJobManager) getMediaArchive().getBean("agentJobManager");
+		AgentJob agentjob = manager.createAgentJobFromMessage(usermessage.get("user"),"userrequest", null, "openCodeRunnerSkill");
+		MultiValued agentjobstep = agentjob.getSteps().iterator().next().getAgentJobStepData(); //one step
 
 		// Child contexts read the root context, not their parent's, so share the values there
 		inContext.putRoot("userrequest", userrequest);

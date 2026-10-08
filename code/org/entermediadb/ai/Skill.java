@@ -2,10 +2,12 @@ package org.entermediadb.ai;
 
 public interface Skill
 {
-	public void startupScenario(AgentContext inContext);
+	public void processStarting(AgentContext inContext);
 
-	public void endScenario(AgentContext inContext);
+	public void process(AgentContext inContext);
 
-	void process(AgentContext inContext);
+	public void processCompleted(AgentContext inContext);
+
+	
 
 }

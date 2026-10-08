@@ -2,17 +2,23 @@ package org.entermediadb.ai.agentjobs;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.entermediadb.ai.Skill;
 import org.entermediadb.asset.MediaArchive;
 import org.entermediadb.asset.util.JsonUtil;
 import org.openedit.CatalogEnabled;
 import org.openedit.ModuleManager;
 import org.openedit.MultiValued;
 import org.openedit.data.BaseData;
+import org.json.simple.JSONObject;
 import org.openedit.util.JSONParser;
 
 public class AgentJob extends BaseData implements CatalogEnabled
 {
+	private static final Log log = LogFactory.getLog(AgentJob.class);
 
 	String fieldCatalogId;
 
@@ -29,36 +35,200 @@ public class AgentJob extends BaseData implements CatalogEnabled
 	}	
 
 
-    private Collection<MultiValued> steps;
+	private Collection<AgentJobStep> steps;
+	private Collection<AgentJobStep> allsteps;
+	protected int fieldRunDepth;
 
-	public void addStep(MultiValued step)
+	/** How many runProcess calls are running this job right now. The outermost one finishes the job */
+	public int getRunDepth()
 	{
-		getSteps().add(step);
+		return fieldRunDepth;
 	}
 
-    public Collection<MultiValued> getSteps()
+	public void setRunDepth(int inRunDepth)
 	{
-		if( steps == null)
+		fieldRunDepth = inRunDepth;
+	}
+
+	public String getScenarioId()
+	{
+		return get("automationscenario");
+	}
+
+	public MultiValued getScenarioData()
+	{
+		String scenarioid = getScenarioId();
+		if (scenarioid == null)
 		{
-			steps = getMediaArchive().query("agentjobstep").exact("agentjob", getId()).sort("orderUp").search();
+			return null;
+		}
+		return (MultiValued) getMediaArchive().getCachedData("automationscenario", scenarioid);
+	}
+
+	public void addStep(AgentJobStep inStep)
+	{
+		getSteps().add(inStep);
+		getAllSteps().add(inStep);
+	}
+
+	/**
+	 * The top level steps of the job. Steps with a "runafter" are children of that step.
+	 */
+	public Collection<AgentJobStep> getSteps()
+	{
+		if (steps == null)
+		{
+			loadSteps();
 		}
 		return steps;
 	}
 
+	/** Every step, each followed by the steps that run after it */
+	public Collection<AgentJobStep> getAllSteps()
+	{
+		if (allsteps == null)
+		{
+			loadSteps();
+		}
+		return allsteps;
+	}
+
+	protected void loadSteps()
+	{
+		Collection<MultiValued> found = getMediaArchive().query("agentjobstep").exact("agentjob", getId()).search();
+		Map<String, AgentJobStep> byid = new LinkedHashMap<String, AgentJobStep>();
+		for (MultiValued data : found)
+		{
+			AgentJobStep step = new AgentJobStep();
+			step.setAgentJobStepData(data);
+			String aiskillid = data.get("aiskillid");
+			if (aiskillid != null)
+			{
+				MultiValued agentdata = (MultiValued) getMediaArchive().getCachedData("aiskill", aiskillid);
+				String bean = agentdata == null ? null : agentdata.get("bean");
+				if (bean == null)
+				{
+					//Skip it like the old scenario loader did, so its children still run as top level steps
+					log.error("Could not find aiskill bean " + aiskillid + " for agentjobstep " + data.getId());
+					continue;
+				}
+				step.setAgentData(agentdata);
+				step.setAgent(loadSkill(bean));
+			}
+			addContextValues(step);
+			byid.put(data.getId(), step);
+		}
+		Collection<AgentJobStep> roots = new ArrayList<AgentJobStep>();
+		for (AgentJobStep step : byid.values())
+		{
+			AgentJobStep parent = step.getParentAgent() == null ? null : byid.get(step.getParentAgent());
+			if (parent == null)
+			{
+				roots.add(step);
+			}
+			else
+			{
+				parent.addChild(step);
+			}
+		}
+		steps = roots;
+		allsteps = new ArrayList<AgentJobStep>();
+		addInRunOrder(roots, allsteps);
+	}
+
+	protected void addInRunOrder(Collection<AgentJobStep> inSteps, Collection<AgentJobStep> inOrdered)
+	{
+		for (AgentJobStep step : inSteps)
+		{
+			inOrdered.add(step);
+			addInRunOrder(step.getChildren(), inOrdered);
+		}
+	}
+
+	public Skill loadSkill(String inBean)
+	{
+		Skill skill = (Skill) getMediaArchive().getCacheManager().get("ai", "Agent" + inBean);
+		if (skill == null)
+		{
+			skill = (Skill) fieldModuleManager.getBean(fieldCatalogId, inBean);
+			getMediaArchive().getCacheManager().put("ai", "Agent" + inBean, skill);
+		}
+		return skill;
+	}
+
+	protected void addContextValues(AgentJobStep inStep)
+	{
+		String text = inStep.getAgentJobStepData().get("contextvalues");
+		if (text == null && inStep.getAgentData() != null)
+		{
+			text = inStep.getAgentData().get("contextvalues");
+		}
+		if (text == null)
+		{
+			return;
+		}
+		JSONParser parser = new JSONParser();
+		text = text.trim();
+		JSONObject json;
+		if (text.startsWith("["))
+		{
+			// [{"llmprompt":"..."},{...}] merges into one set of values
+			json = new JSONObject();
+			for (Object item : parser.parseJSONArray(text))
+			{
+				json.putAll((Map) item);
+			}
+		}
+		else
+		{
+			json = parser.parse(text);
+		}
+		inStep.setExtraContextValues(json);
+	}
+
+	/** Finds a step by its automationstep id (the chat function name) or its own agentjobstep id */
+	public AgentJobStep findEnabled(String inEnabledId)
+	{
+		return findEnabled(getSteps(), inEnabledId);
+	}
+
+	public AgentJobStep findEnabled(Collection<AgentJobStep> inSteps, String inEnabledId)
+	{
+		for (AgentJobStep step : inSteps)
+		{
+			if (inEnabledId.equals(step.getEnabledId()) || inEnabledId.equals(step.getId()))
+			{
+				return step;
+			}
+			AgentJobStep found = findEnabled(step.getChildren(), inEnabledId);
+			if (found != null)
+			{
+				return found;
+			}
+		}
+		return null;
+	}
 
 	public MediaArchive getMediaArchive()
 	{
 		return (MediaArchive) fieldModuleManager.getBean(fieldCatalogId, "mediaArchive");
 	}
 
-	public void setSteps(Collection<MultiValued> inSteps)
+	/** Pass null to reload the steps from the database */
+	public void setSteps(Collection<AgentJobStep> inSteps)
 	{
 		steps = inSteps;
+		allsteps = inSteps == null ? null : new ArrayList<AgentJobStep>(inSteps);
 	}
 
 	/**
 	 * The opencode form a step is waiting on ({id, title, fields:[{key, type, title, ...}]}), or null.
 	 */
+	public Map getPendingForm(AgentJobStep inStep)
+	{
+		return getPendingForm(inStep.getAgentJobStepData());
+	}
+
 	public Map getPendingForm(MultiValued inStep)
 	{
 		String json = inStep.get("pendingform");
@@ -71,13 +241,13 @@ public class AgentJob extends BaseData implements CatalogEnabled
 
 	public String findLastResponse()
 	{
-		steps = null; //Pull from database
-		ArrayList<MultiValued> reversed = new ArrayList<MultiValued>(getSteps());
+		setSteps(null); //Pull from database
+		ArrayList<AgentJobStep> reversed = new ArrayList<AgentJobStep>(getAllSteps());
 		java.util.Collections.reverse(reversed);
-		for(MultiValued step : reversed)
+		for(AgentJobStep step : reversed)
 		{
 			MultiValued refreshedstep = (MultiValued) getMediaArchive().getCachedData("agentjobstep", step.getId());
-			String lastresponse = refreshedstep.get("lastresponse");
+			String lastresponse = refreshedstep.get("markdowncontent");
 			if(lastresponse != null)
 			{
 				return lastresponse;
