@@ -3010,13 +3010,15 @@
 		</property>
 	</bean>
 
-	<bean id="chatMonitorSkill" class="org.entermediadb.ai.skills.LibraryCollectionChatMonitorSkill" scope="prototype">
+	<bean id="chatMonitorSkill" class="org.entermediadb.ai.skills.LibraryCollectionChatMonitorSkill"
+		scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>
 	</bean>
 
-	<bean id="chatMonitorConfirmationSkill" class="org.entermediadb.ai.skills.ChatMonitorConfirmationSkill" scope="prototype">
+	<bean id="chatMonitorConfirmationSkill"
+		class="org.entermediadb.ai.skills.ChatMonitorConfirmationSkill" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>
@@ -3477,6 +3479,13 @@
 	<bean id="directMessageManager" class="org.entermediadb.profile.DirectMessageManager"
 		lazy-init="default"
 		scope="prototype">
+		<property name="moduleManager">
+			<ref bean="moduleManager" />
+		</property>
+	</bean>
+
+	<bean id="EmeServerModule" class="org.entermediadb.asset.modules.EmeServerModule"
+		lazy-init="default">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>
