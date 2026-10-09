@@ -92,7 +92,16 @@ public class LibraryCollectionChatMonitorSkill extends BaseSkill
 
 		Object wait = findArgument(structuredResponse, "wait_minutes");
 		int minutes = wait == null ? 0 : Math.max(0, Math.min(5, Integer.parseInt(wait.toString())));
-		if (!waitBeforeResponding(inAgentContext, minutes * 60L * 1000L))
+
+		Long milli = minutes * 60L * 1000L;
+
+		//TODO: Divided by 10 for debuging
+		if ( inAgentContext.getChannel().get("user").equals("admin"))
+		{
+			milli = milli / 10; // Divided by 10 for debugging
+		}
+
+		if (!waitBeforeResponding(inAgentContext, milli))
 		{
 			log.info("Wait cancelled for " + inUserMessage.getId() + ", a newer message is being checked");
 			noResponse(inAgentContext);
