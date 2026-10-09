@@ -1,7 +1,11 @@
 package org.entermediadb.asset.modules;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 import org.entermediadb.asset.MediaArchive;
 import org.openedit.Data;
@@ -18,9 +22,9 @@ public class EmeServerModule extends BaseMediaModule
 		String searchquery = inReq.getRequestParameter("query");
 		String category = inReq.getRequestParameter("category");
 
-		Searcher searcher = archive.getSearcher("emeserver");
+		Searcher serversearcher = archive.getSearcher("emeserver");
 
-		QueryBuilder builder = searcher.query();
+		QueryBuilder builder = serversearcher.query();
 
 		if (searchquery != null)
 		{
@@ -33,16 +37,29 @@ public class EmeServerModule extends BaseMediaModule
 		}
 
 		Collection<Data> emeservers = builder.search();
-		Collection<Data> joinedEMEservers = searcher.query().exact("user", inReq.getUser().getId()).search();
-		Collection<String> joinedserverids = joinedEMEservers.stream().map(Data::getId).collect(Collectors.toList());
+
+		Collection<Map> emeserversmap = new ArrayList<>();
 		for (Data emeserver : emeservers)
 		{
-			if (joinedserverids.contains(emeserver.getId()))
+			Map map = emeserver.getProperties();
+			ArrayList categories = (ArrayList) map.get("category");
+			if (categories != null && !categories.isEmpty())
 			{
-				emeserver.setProperty("joined", "true");
+				map.put("category", categories.get(0));
+			}
+			emeserversmap.add(map);
+		}
+
+		Collection<Data> joinedEMEservers = archive.query("emeserveruser").exact("user", inReq.getUser().getId()).search();
+		Collection<String> joinedserverids = joinedEMEservers.stream().map(d -> d.get("emeserver")).collect(Collectors.toList());
+		for (Map emeserver : emeserversmap)
+		{
+			if (joinedserverids.contains(emeserver.get("id")))
+			{
+				emeserver.put("joined", "true");
 			}
 		}
-		inReq.putPageValue("emeservers", emeservers);
+		inReq.putPageValue("emeservers", emeserversmap);
 	}
 
 	public void getEMEServer(WebPageRequest inReq)
@@ -51,6 +68,16 @@ public class EmeServerModule extends BaseMediaModule
 		MediaArchive archive = getMediaArchive(inReq);
 		Searcher searcher = archive.getSearcher("emeserver");
 		Data server = searcher.loadData(serverid);
+
+		Data joined = archive.query("emeserveruser").exact("user", inReq.getUser().getId()).exact("emeserver", serverid).searchOne();
+		if (joined != null)
+		{
+			inReq.putPageValue("joined", true);
+		}
+		else
+		{
+			inReq.putPageValue("joined", false);
+		}
 		inReq.putPageValue("emeserver", server);
 	}
 
