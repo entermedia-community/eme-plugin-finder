@@ -27,9 +27,9 @@ public class EmeServerModule extends BaseMediaModule
 			builder.contains("name", searchquery);
 		}
 
-		if (category != null)
+		if (category != null && !category.equalsIgnoreCase("all"))
 		{
-			builder.exact("servercategory", category);
+			builder.exact("category", category);
 		}
 
 		Collection<Data> emeservers = builder.search();
