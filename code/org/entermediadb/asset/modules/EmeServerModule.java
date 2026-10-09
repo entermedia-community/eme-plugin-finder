@@ -137,8 +137,14 @@ public class EmeServerModule extends BaseMediaModule
 	public void getUserEMEServers(WebPageRequest inReq)
 	{
 		MediaArchive archive = getMediaArchive(inReq);
-		Searcher searcher = archive.getSearcher("emeserveruser");
-		Collection<Data> emeservers = searcher.query().exact("user", inReq.getUser().getId()).search();
+		Collection<Data> userservers = archive.query("emeserveruser").exact("user", inReq.getUser().getId()).search();
+		Collection<String> serverids = userservers.stream().map(d -> d.get("emeserver")).collect(Collectors.toList());
+		if (serverids.isEmpty())
+		{
+			inReq.putPageValue("emeservers", new ArrayList<>());
+			return;
+		}
+		Collection<Data> emeservers = archive.query("emeserver").ids(serverids).search();
 		inReq.putPageValue("emeservers", emeservers);
 	}
 
