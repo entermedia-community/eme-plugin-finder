@@ -598,11 +598,18 @@ public class ChatModule extends BaseMediaModule
 		MediaArchive archive = getMediaArchive(inReq);
 		Searcher channelsearcher = archive.getSearcher("channel");
 		String channel = inReq.findValue("channel");
+		MultiValued currentchannel = null;
+
 		if (channel == null)
 		{
 			channel = inReq.getRequestParameter("channel");
+
+			currentchannel = (MultiValued) inReq.getPageValue("currentchannel");
+			if (currentchannel != null)
+			{
+				return;
+			}
 		}
-		MultiValued currentchannel = null;
 
 		if (channel != null)
 		{

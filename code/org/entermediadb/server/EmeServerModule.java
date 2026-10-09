@@ -180,7 +180,7 @@ public class EmeServerModule extends BaseMediaModule
 			channelsearcher.saveData(channel, inReq.getUser());
 		}
 
-		inReq.putPageValue("channel", channel);
+		inReq.putPageValue("currentchannel", channel);
 	}
 
 	public void loadChat(WebPageRequest inReq)
