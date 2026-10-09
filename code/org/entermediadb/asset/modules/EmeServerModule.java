@@ -116,4 +116,12 @@ public class EmeServerModule extends BaseMediaModule
 		inReq.putPageValue("emeservers", emeservers);
 	}
 
+	public void getServerCategories(WebPageRequest inReq)
+	{
+		MediaArchive archive = getMediaArchive(inReq);
+		Searcher searcher = archive.getSearcher("servercategory");
+		Collection<Data> categories = searcher.query().all().search();
+		inReq.putPageValue("categories", categories);
+	}
+
 }
