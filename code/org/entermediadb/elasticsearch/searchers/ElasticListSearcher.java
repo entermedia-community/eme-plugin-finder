@@ -271,10 +271,16 @@ public class ElasticListSearcher extends BaseElasticSearcher implements Reloadab
 	@Override
 	public boolean initialize()
 	{
+		
 		if (!tableExists())
 		{
+			super.initialize();
 			reindexXml();
 			return true;
+		}
+		else
+		{
+			super.initialize();
 		}
 		return false;
 	}

@@ -152,6 +152,8 @@ public class BaseElasticSearcher extends BaseSearcher implements FullTextLoader
 	protected PageManager fieldPageManager;
 	protected Replacer fieldReplacer;
 
+	protected boolean fieldPutMappingsComplete;
+
 	public boolean isCheckLegacy()
 	{
 		return fieldCheckLegacy;
@@ -818,7 +820,7 @@ public class BaseElasticSearcher extends BaseSearcher implements FullTextLoader
 			boolean alreadyin = getClient().admin().indices().typesExists(new TypesExistsRequest(new String[] {getElasticIndexId()}, getSearchType())).actionGet().isExists();
 			if (!alreadyin)
 			{
-				log.info("initi mapping " + getCatalogId() + "/" + getSearchType());
+				log.info("Initialize mapping " + getCatalogId() + "/" + getSearchType());
 				putMappings();
 			}
 		}
@@ -827,6 +829,7 @@ public class BaseElasticSearcher extends BaseSearcher implements FullTextLoader
 			log.error("index could not be created ", ex);
 			return false;
 		}
+		fieldPutMappingsComplete = true;
 		return true;
 	}
 
@@ -1064,12 +1067,10 @@ public class BaseElasticSearcher extends BaseSearcher implements FullTextLoader
 						jsonproperties.startObject(id);
 						String analyzer = locale.get("analyzer");
 						jsonproperties.field("type", "string");
-						if (detail.isAnalyzed())
-						{
-							jsonproperties = createExactEnabledField(detail, jsonproperties);
-
-						}
-
+						//if (detail.isAnalyzed()){
+						jsonproperties = createExactEnabledField(detail, jsonproperties);
+						//}
+						
 						if (analyzer != null)
 						{
 							jsonproperties.field("analyzer", analyzer);
@@ -2716,6 +2717,10 @@ public class BaseElasticSearcher extends BaseSearcher implements FullTextLoader
 
 	protected void saveToElasticSearch(PropertyDetails details, Data data, boolean delete, User inUser)
 	{
+		if (!fieldPutMappingsComplete)
+		{
+			throw new OpenEditException("Field put mappings are not complete, cannot save to ElasticSearch.");
+		}
 		try
 		{
 			String catid = getElasticIndexId();
