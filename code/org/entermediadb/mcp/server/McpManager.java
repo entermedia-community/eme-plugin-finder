@@ -202,7 +202,7 @@ public class McpManager implements CatalogEnabled
                 {
                     //"enabledautomation";enabledautomation
 
-                    Collection automations = getMediaArchive().query("automationscenario").exact("connectedtop", "customerservicelabel").cachedSearch();
+                    Collection automations = getMediaArchive().query("automationscenario").exact("connectedtop", "eme_chat").cachedSearch();
                     inReq.putPageValue("enabledautomation", automations);
 
                     String fp = "/" + appid + "/ai/mcp/method/tools/list.json";

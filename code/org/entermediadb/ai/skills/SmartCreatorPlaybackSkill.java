@@ -492,7 +492,7 @@ public class SmartCreatorPlaybackSkill extends BaseSkill
 
 	public String renderToHtml(String inCdnPrefix, String inAppHome, MultiValued inEntityModule, MultiValued inEntity)
 	{
-		AgentContext context = new BaseAgentContext();
+		AgentContext context = (AgentContext) getMediaArchive().getBean("baseAgentContext", false);;
 		context.setCurrentEntityModule(inEntityModule);
 		context.setCurrentEntity(inEntity);
 		context.put("playbackentityid", inEntity.getId());
@@ -582,7 +582,7 @@ public class SmartCreatorPlaybackSkill extends BaseSkill
 			return;
 		}
 
-		AgentContext agentcontext = new BaseAgentContext();
+		AgentContext agentcontext = (AgentContext) getMediaArchive().getBean("baseAgentContext", false);;
 		agentcontext.put("paragraph", content);
 
 		LlmConnection llmconnection = getMediaArchive().getLlmConnection("thinking");
@@ -610,7 +610,7 @@ public class SmartCreatorPlaybackSkill extends BaseSkill
 			return;
 		}
 
-		AgentContext agentcontext = new BaseAgentContext();
+		AgentContext agentcontext = (AgentContext) getMediaArchive().getBean("baseAgentContext", false);;
 		agentcontext.put("paragraph", content);
 
 		LlmConnection llmconnection = getMediaArchive().getLlmConnection("thinking");
@@ -637,7 +637,7 @@ public class SmartCreatorPlaybackSkill extends BaseSkill
 			return;
 		}
 
-		AgentContext agentcontext = new BaseAgentContext();
+		AgentContext agentcontext = (AgentContext) getMediaArchive().getBean("baseAgentContext", false);;
 		agentcontext.put("prompt", inPrompt);
 
 		LlmConnection llmconnection = getMediaArchive().getLlmConnection("thinking");

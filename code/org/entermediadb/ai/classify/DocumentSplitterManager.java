@@ -100,7 +100,7 @@ public class DocumentSplitterManager extends BaseAiManager
 					// TODO: Create fulltext pulling from the PrimaryMedia description.
 					// Call a local ai function to render fields
 					fulltext = asset.get("longcaption");
-					AgentContext agentcontext = new BaseAgentContext();
+					AgentContext agentcontext = (AgentContext) getMediaArchive().getBean("baseAgentContext", false);;
 					Collection detailsfields = getMediaArchive().getSearcher("asset").getDetailsForView("assetgeneral");
 
 					Collection<PropertyDetail> contextFields = new ArrayList<PropertyDetail>();
@@ -301,7 +301,7 @@ public class DocumentSplitterManager extends BaseAiManager
 			return;
 		}
 
-		LlmResponse result = (LlmResponse) llmconnection.callOCRFunction(new BaseAgentContext(), base64Img, "generateMarkdown");
+		LlmResponse result = (LlmResponse) llmconnection.callOCRFunction((AgentContext) getMediaArchive().getBean("baseAgentContext", false), base64Img, "generateMarkdown");
 		String markdown = result.getMessage();
 
 		pageEntity.setValue("markdowncontent", markdown);

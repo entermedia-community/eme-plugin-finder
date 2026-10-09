@@ -77,7 +77,7 @@ public class AgentJobStatusSkill extends BaseSkill
 		else
 		{
 			//complete or error, go back to the chat monitor
-			String startup_scenario = (String) inContext.getContextValue("startup_scenario");
+			String startup_scenario = (String) inContext.getChannel().getValue("startup_scenario");
 			response.setNextAutomationStep(startup_scenario);
 
 		}

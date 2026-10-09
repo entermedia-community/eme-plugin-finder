@@ -14,6 +14,7 @@ import org.entermediadb.ai.classify.EmbeddingManager;
 import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.assistant.AssistantManager;
 import org.entermediadb.ai.assistant.GuideStatus;
+import org.entermediadb.ai.agentjobs.AgentJobStep;
 import org.entermediadb.ai.llm.LlmConnection;
 import org.entermediadb.ai.llm.LlmResponse;
 import org.entermediadb.asset.Asset;
@@ -35,7 +36,8 @@ public class QuestionsMakeSuggestionsSkill extends BaseSkill
 		ChatMessageContext messageContext = (ChatMessageContext) inAgentContext;
 		///
 		MultiValued inAgentMessage = messageContext.getAgentMessage();
-		String agentFn = messageContext.getCurrentAutomationStep().getEnabledId();
+		// Fixed template name so copies of chat_questions under other labels share it
+		String agentFn = "question_create_suggestions";
 
 		MultiValued usermessage = (MultiValued) getMediaArchive().getCachedData("chatterbox", inAgentMessage.get("replytoid"));
 		String query = usermessage.get("message");
@@ -72,7 +74,8 @@ public class QuestionsMakeSuggestionsSkill extends BaseSkill
 		}
 		else
 		{
-			response.setExecAutomationStep("chat_questions_welcome");
+			AgentJobStep welcome = messageContext.getCurrentAgentJob().findStepBySkill("questionsSkill");
+			response.setExecAutomationStep(welcome == null ? "chat_questions_welcome" : welcome.getEnabledId());
 		}
 		messageContext.setLastResponse(response);
 		return;

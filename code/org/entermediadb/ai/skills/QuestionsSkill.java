@@ -30,7 +30,8 @@ public class QuestionsSkill extends BaseSkill
 	{
 		ChatMessageContext messageContext = (ChatMessageContext) inAgentContext;
 		MultiValued inAgentMessage = messageContext.getAgentMessage();
-		String agentFn = messageContext.getCurrentAutomationStep().getEnabledId();
+		// Fixed template name so copies of chat_questions under other labels share it
+		String agentFn = "chat_questions_welcome";
 
 		inAgentMessage.setValue("chatmessagestatus", "completed");
 
@@ -60,13 +61,13 @@ public class QuestionsSkill extends BaseSkill
 		LlmResponse response = llmconnection.renderLocalAction(messageContext, agentFn);
 		if (aisuggestions.isEmpty())
 		{
-			response.setExecAutomationStep("question_create_suggestions");
+			response.setExecAutomationStep(stepIdForSkill(messageContext, "questionsMakeSuggestionsSkill", "question_create_suggestions"));
 			messageContext.setLastResponse(response);
 			super.process(inAgentContext);
 		}
 		else
 		{
-			response.setNextAutomationStep("question_ask");
+			response.setNextAutomationStep(stepIdForSkill(messageContext, "questionsAskSkill", "question_ask"));
 			messageContext.setLastResponse(response);
 			messageContext.setWaitTime(null);
 			AgentJobStep skillEnabled = messageContext.getCurrentAutomationStep();
@@ -76,6 +77,13 @@ public class QuestionsSkill extends BaseSkill
 
 		return;
 
+	}
+
+	/** The id of this job's step that runs inAiSkill, so copies of chat_questions with their own step ids work */
+	protected String stepIdForSkill(AgentContext inContext, String inAiSkill, String inDefaultStepId)
+	{
+		AgentJobStep step = inContext.getCurrentAgentJob() == null ? null : inContext.getCurrentAgentJob().findStepBySkill(inAiSkill);
+		return step == null ? inDefaultStepId : step.getEnabledId();
 	}
 
 }

@@ -472,7 +472,7 @@ public class SemanticTableManager extends BaseAiManager implements CatalogEnable
 			return null;
 		}
 
-		AgentContext agentcontext = new BaseAgentContext();
+		AgentContext agentcontext = (AgentContext) getMediaArchive().getBean("baseAgentContext", false);;
 		agentcontext.put("fieldparams", inConfig);
 
 		Collection<PropertyDetail> exclude = new ArrayList();

@@ -3010,15 +3010,7 @@
 		</property>
 	</bean>
 
-	<bean id="chatMonitorSkill" class="org.entermediadb.ai.skills.LibraryCollectionChatMonitorSkill"
-		scope="prototype">
-		<property name="moduleManager">
-			<ref bean="moduleManager" />
-		</property>
-	</bean>
-
-	<bean id="chatMonitorConfirmationSkill"
-		class="org.entermediadb.ai.skills.ChatMonitorConfirmationSkill" scope="prototype">
+	<bean id="libraryCollectionChatMonitorSkill" class="org.entermediadb.ai.skills.LibraryCollectionChatMonitorSkill" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>

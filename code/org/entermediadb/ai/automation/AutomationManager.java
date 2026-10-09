@@ -280,8 +280,8 @@ public class AutomationManager extends BaseAiManager implements WebEventListener
 			{
 				LlmConnection llmConnection = getMediaArchive().getLlmConnection("thinking");
 
-				AgentContext context = new BaseAgentContext();
-				context.addContext("skilloverview", skilloverview);
+				AgentContext context = (AgentContext) getMediaArchive().getBean("baseAgentContext", false);;
+				context.put("skilloverview", skilloverview);
 
 				LlmResponse res = llmConnection.callStructure(context, "agentparamsfromskill");
 
@@ -321,7 +321,7 @@ public class AutomationManager extends BaseAiManager implements WebEventListener
 				Collection<String> ids = findSceneriosForEvent(path);
 				if (!ids.isEmpty())
 				{
-					AgentContext context = new BaseAgentContext();
+					AgentContext context = (AgentContext) getMediaArchive().getBean("baseAgentContext", false);;
 					context.setCatalogId(getCatalogId());
 					context.setScriptLogger(trigger.getLogger());
 					context.put("webpagerequest", trigger.getWebPageRequest());

@@ -44,7 +44,7 @@ public class JavaSkillOrchestrator extends BaseAgentJobOrchestrator
 		inStep.setValue("status", "running");
 		getMediaArchive().saveData("agentjobstep", inStep);
 
-		AgentContext context = new BaseAgentContext();
+		AgentContext context = (AgentContext) getMediaArchive().getBean("baseAgentContext", false);;
 		context.setCatalogId(getCatalogId());
 		context.setModuleManager(getModuleManager());
 		context.put("agentjob", inAgentJob.getAgentJob());

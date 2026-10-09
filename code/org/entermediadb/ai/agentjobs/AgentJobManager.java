@@ -200,7 +200,7 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 
 				//Run it now
 				AgentJobRunnable torun = new AgentJobRunnable();
-				AgentContext context = new BaseAgentContext();
+				AgentContext context = createAgentContext();
 				context.setCatalogId(getCatalogId());
 				context.setModuleManager(getModuleManager());
 				context.put("agentjob", job);
@@ -597,6 +597,12 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 		return job;
 	}
 
+	public AgentContext createAgentContext()
+	{
+		String contextbeanname = "baseAgentContext";
+		AgentContext childContext = (AgentContext) getMediaArchive().getBean(contextbeanname, false);
+		return childContext;
+	}
 	public AgentContext createAgentContext(AgentJobStep inStep)
 	{
 		return createAgentContext(null, inStep);
@@ -621,14 +627,14 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 
 	public void runScenario(String inId, ScriptLogger inLogger)
 	{
-		AgentContext context = new BaseAgentContext();
+		AgentContext context = createAgentContext();
 		context.setScriptLogger(inLogger);
 		runScenario(inId, context);
 	}
 
 	public void runScenario(String inId, UserProfile inUserProfile, Map inContextMap, String inAutomationStepId, ScriptLogger inLogger)
 	{
-		AgentContext context = new BaseAgentContext();
+		AgentContext context = createAgentContext();
 		context.putContextValues(inContextMap);
 		context.setScriptLogger(inLogger);
 		context.setUserProfile(inUserProfile);

@@ -200,7 +200,7 @@ public class AgentModule extends BaseMediaModule
 				currentscenarioid = inReq.findValue("defaultscenarioid");
 				if (currentscenarioid == null)
 				{
-					currentscenarioid = "chat_detection";
+					currentscenarioid = "emeteamchat_responder";
 				}
 			}
 		}
@@ -217,6 +217,10 @@ public class AgentModule extends BaseMediaModule
 			AgentJob job = agentJobManager.importScenario(currentscenarioid, chatAgentContext);
 			chatAgentContext.setCurrentAgentJob(job);
 			mediaArchive.saveData("agentcontext", chatAgentContext);
+
+			String functionpath =  chatAgentContext.getCurrentAgentJob().getScenarioId() + "." + chatAgentContext.getCurrentAutomationStep().getEnabledId();
+			chatAgentContext.getChannel().setValue("startup_scenario", functionpath);
+			mediaArchive.saveData("channel", chatAgentContext.getChannel());
 
 			firesystemmessage = true;
 
@@ -260,6 +264,7 @@ public class AgentModule extends BaseMediaModule
 		}
 
 		mediaArchive.saveData("agentcontext", chatAgentContext);
+		inReq.putPageValue("currentfunction",functionname);
 		// assistantManager.sendSystemMessage(chatAgentContext, inReq.getUserName(), functionname);
 		assistantManager.sendSystemMessage(chatAgentContext, inReq.getUserName(), null, functionname);
 	}

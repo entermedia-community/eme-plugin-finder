@@ -209,6 +209,29 @@ public class AgentJob extends BaseData implements CatalogEnabled
 		return null;
 	}
 
+	/** Finds the first step that runs the given aiskill, so copied scenarios with their own step ids still work */
+	public AgentJobStep findStepBySkill(String inAiSkill)
+	{
+		return findStepBySkill(getSteps(), inAiSkill);
+	}
+
+	public AgentJobStep findStepBySkill(Collection<AgentJobStep> inSteps, String inAiSkill)
+	{
+		for (AgentJobStep step : inSteps)
+		{
+			if (inAiSkill.equals(step.get("aiskillid")))
+			{
+				return step;
+			}
+			AgentJobStep found = findStepBySkill(step.getChildren(), inAiSkill);
+			if (found != null)
+			{
+				return found;
+			}
+		}
+		return null;
+	}
+
 	public MediaArchive getMediaArchive()
 	{
 		return (MediaArchive) fieldModuleManager.getBean(fieldCatalogId, "mediaArchive");

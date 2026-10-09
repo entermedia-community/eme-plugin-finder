@@ -798,7 +798,7 @@ public class ChatModule extends BaseMediaModule
 			agentContext = (AgentContext) searcher.query().exact("channel", channelid).searchOne();
 			if (agentContext == null)
 			{
-				agentContext = new BaseAgentContext();
+				agentContext = (AgentContext) getMediaArchive(inReq).getBean("baseAgentContext", false);
 			}
 
 			Data channel = archive.getCachedData("channel", channelid);

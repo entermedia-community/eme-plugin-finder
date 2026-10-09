@@ -224,7 +224,7 @@ public class AssistantManager extends BaseAiManager
 			// hitory?
 			if (agentContext == null)
 			{
-				agentContext = new BaseAgentContext();
+				agentContext = (AgentContext)getMediaArchive().getBean("baseAgentContext");
 				Data channel = getMediaArchive().getCachedData("channel", inChannel.getId());
 				if (channel == null)
 				{
@@ -276,7 +276,7 @@ public class AssistantManager extends BaseAiManager
 		return agentContext;
 	}
 
-	public void respondToChannel(ScriptLogger inLog, Data inChannel, MultiValued usermessage)
+	public void respondToChannel(ScriptLogger inLog, Data inChannel, MultiValued recentmessage)
 	{
 		MediaArchive archive = getMediaArchive();
 
@@ -301,15 +301,24 @@ public class AssistantManager extends BaseAiManager
 		// String oldstatus = usermessage.get("chatmessagestatus");
 
 		// Update original message processing status
-		usermessage.setValue("chatmessagestatus", "completed");
-		getMediaArchive().saveData("chatterbox", usermessage); // Update the user message again to finish it
+		recentmessage.setValue("chatmessagestatus", "completed");
+		getMediaArchive().saveData("chatterbox", recentmessage); // Update the user message again to finish it
 
-		chatMessageContext.putContextValue("message", usermessage);
+		chatMessageContext.putContextValue("message", recentmessage);
 
 		chatMessageContext.putContextValue("assistant", this);
 
 		// Add new agentmessage
-		MultiValued agentmessage = newAgentMessage(usermessage, chatMessageContext);
+		MultiValued agentmessage = null;
+		if( "system".equals( recentmessage.get("messagetype") ) )
+		{
+			agentmessage = recentmessage;
+		}
+		else
+		{
+			 agentmessage = newAgentMessage(recentmessage, chatMessageContext);
+		}
+		
 		chatMessageContext.setAgentMessage(agentmessage);
 		// ChatServer server = (ChatServer) getMediaArchive().getBean("chatServer");
 		// Determine what will need to be processed
@@ -337,14 +346,14 @@ public class AssistantManager extends BaseAiManager
 					return;
 				}
 			}
-			String functionName = usermessage.get("functionname");
+			String functionName = recentmessage.get("functionname");
 			if (functionName == null)
 			{
 				log.error("Should we have a function");
 			}
 			if (functionName != null)
 			{
-				execCurrentFunctionFromChat(chatMessageContext, usermessage, functionName);
+				execCurrentFunctionFromChat(chatMessageContext, recentmessage, functionName);
 			}
 		}
 		catch (Exception ex)
@@ -355,11 +364,11 @@ public class AssistantManager extends BaseAiManager
 		}
 	}
 
-	public MultiValued newAgentMessage(MultiValued usermessage, ChatMessageContext chatMessageContext)
+	public MultiValued newAgentMessage(MultiValued recentmessage, ChatMessageContext chatMessageContext)
 	{
 		MultiValued agentmessage = (MultiValued) getMediaArchive().getSearcher("chatterbox").createNewData();
 		agentmessage.setValue("user", "agent");
-		agentmessage.setValue("replytoid", usermessage.getId());
+		agentmessage.setValue("replytoid", recentmessage.getId());
 		agentmessage.setValue("channel", chatMessageContext.getChannel().getId());
 		agentmessage.setValue("date", new Date());
 		agentmessage.setValue("chatmessagestatus", "processing");
@@ -983,13 +992,13 @@ public class AssistantManager extends BaseAiManager
 				scenario.setId("smartcreator_" + type);
 
 				// save isrunning="false" isvisible="true" ordering="50" scenarioicon="broadcast" enabled="true"
-				// connectedtop="chatlabel"
+				// connectedtop="entity_chat"
 				scenario.setValue("enabled", true);
 				scenario.setValue("isvisible", true);
 				scenario.setValue("scenarioicon", "broadcast");
 				scenario.setValue("isrunning", false);
 				scenario.setValue("ordering", 50);
-				scenario.setValue("connectedtop", "chatlabel");
+				scenario.setValue("connectedtop", "entity_chat");
 
 				scenario.setName("Smart Creator for " + module.getName());
 				tosave.add(scenario);

@@ -82,7 +82,7 @@ public class ContentModule extends BaseMediaModule
 
 		HitTracker hits = archive.query("contentcreator").exact("status", "new").search();
 
-		AgentContext params = new BaseAgentContext();
+		AgentContext params = (AgentContext) getMediaArchive(inReq).getBean("baseAgentContext", false);;
 		// params.addContext(inReq.getParameterMap()); //TODO: Not implemented
 
 		for (Iterator iterator = hits.iterator(); iterator.hasNext();)
@@ -289,7 +289,7 @@ public class ContentModule extends BaseMediaModule
 		}
 		LlmConnection llm = (LlmConnection) getMediaArchive(inReq).getBean(type);
 		String edithome = inReq.findPathValue("edithome");
-		String template = llm.loadInputFromTemplate(new BaseAgentContext(), edithome + "/aitools/createnewasset.html");
+		String template = llm.loadInputFromTemplate((AgentContext) getMediaArchive(inReq).getBean("baseAgentContext", false), edithome + "/aitools/createnewasset.html");
 
 		// manager.createAssetFromLLM(inReq, entitymodule.getId(), entity.getId(),
 		// template);

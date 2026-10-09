@@ -132,7 +132,7 @@ public class WhatsAppManager extends BaseAiManager implements ChatBroadcastListe
 			// }
 
 			// LlmConnection llmconnection = getMediaArchive().getLlmConnection("parse_ride_request");
-			// AgentContext context = new BaseAgentContext();
+			// AgentContext context = (AgentContext) getMediaArchive().getBean(contextbeanname, false);;
 			// context.put("userquery", message.getMessageText());
 
 			// LlmResponse response = llmconnection.callToolsFunction(context, "parse_ride_message");

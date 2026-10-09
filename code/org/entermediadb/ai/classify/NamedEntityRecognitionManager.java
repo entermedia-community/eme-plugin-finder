@@ -54,7 +54,7 @@ public class NamedEntityRecognitionManager extends ClassifyManager
 			return;
 		}
 
-		AgentContext agentcontext = new BaseAgentContext();
+		AgentContext agentcontext = (AgentContext) getMediaArchive().getBean("baseAgentContext", false);;
 		agentcontext.put("data", inData);
 		agentcontext.put("fieldparams", inConfig);
 
