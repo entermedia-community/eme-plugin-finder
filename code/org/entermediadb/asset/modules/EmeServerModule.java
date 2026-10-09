@@ -59,12 +59,13 @@ public class EmeServerModule extends BaseMediaModule
 		String serverid = inReq.getRequestParameter("serverid");
 		MediaArchive archive = getMediaArchive(inReq);
 		Searcher searcher = archive.getSearcher("emeserveruser");
-		Data emeserveruser = searcher.query().exact("user", inReq.getUser().getId()).exact("emeserver", serverid).searchOne();
+		String userid = inReq.getUser().getId();
+		Data emeserveruser = searcher.query().exact("user", userid).exact("emeserver", serverid).searchOne();
 		if (emeserveruser == null)
 		{
 			emeserveruser = searcher.createNewData();
 			emeserveruser.setValue("joined", new Date());
-			emeserveruser.setValue("user", inReq.getUser().getId());
+			emeserveruser.setValue("user", userid);
 			emeserveruser.setValue("emeserver", serverid);
 
 			MultiValued server = (MultiValued) archive.getData("emeserver", serverid);
@@ -79,9 +80,7 @@ public class EmeServerModule extends BaseMediaModule
 			}
 			server.setValue("membercount", membercount + 1);
 			searcher.saveData(server);
-
 		}
-		searcher.saveData(emeserveruser);
 	}
 
 	public void leaveEMEServer(WebPageRequest inReq)
