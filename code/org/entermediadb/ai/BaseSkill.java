@@ -92,7 +92,8 @@ public class BaseSkill extends BaseAiManager implements Skill, CatalogEnabled
 		}
 		try
 		{
-			log.info("Waiting " + inMillis + " milliseconds before responding on " + key);
+			
+			log.info("Waiting " + inMillis / 1000L + " seconds before responding on " + key);
 			return pending.await(inMillis);
 		}
 		catch (InterruptedException ex)
