@@ -27,7 +27,6 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.entermediadb.ai.AgentContext;
-import org.entermediadb.ai.llm.BaseAgentContext;
 import org.entermediadb.asset.Asset;
 import org.entermediadb.asset.MediaArchive;
 import org.entermediadb.asset.modules.BaseMediaModule;
@@ -643,7 +642,7 @@ public class ChatModule extends BaseMediaModule
 		}
 		if (entityid == null)
 		{
-			entity = (Data)inReq.getPageValue("emeprofile");
+			entity = (Data) inReq.getPageValue("emeprofile");
 			channeldatamodule = "emeprofile";
 			inReq.putPageValue("entity", entity);
 
@@ -863,9 +862,9 @@ public class ChatModule extends BaseMediaModule
 	}
 
 	/**
-	 * Returns the server's current VAPID public key so the browser always subscribes with the
-	 * key matching the private key WebPushManager actually signs with, instead of relying on a
-	 * copy hardcoded in JS that can drift if the server key is ever regenerated.
+	 * Returns the server's current VAPID public key so the browser always subscribes with the key
+	 * matching the private key WebPushManager actually signs with, instead of relying on a copy
+	 * hardcoded in JS that can drift if the server key is ever regenerated.
 	 */
 	public void loadPushPublicKey(WebPageRequest inReq) throws Exception
 	{
@@ -874,10 +873,9 @@ public class ChatModule extends BaseMediaModule
 	}
 
 	/**
-	 * Saves (or updates) the calling user's browser push subscription in the "userendpoint"
-	 * table. One record per user, keyed by user id, so a re-subscription overwrites the old
-	 * endpoint instead of creating a duplicate. The user id comes from the session, never
-	 * from the request parameters.
+	 * Saves (or updates) the calling user's browser push subscription in the "userendpoint" table. One
+	 * record per user, keyed by user id, so a re-subscription overwrites the old endpoint instead of
+	 * creating a duplicate. The user id comes from the session, never from the request parameters.
 	 */
 	public void savePushSubscription(WebPageRequest inReq)
 	{
@@ -913,8 +911,8 @@ public class ChatModule extends BaseMediaModule
 	}
 
 	/**
-	 * Removes the calling user's browser push subscription from the "userendpoint" table,
-	 * e.g. when the user unsubscribes in the browser.
+	 * Removes the calling user's browser push subscription from the "userendpoint" table, e.g. when the
+	 * user unsubscribes in the browser.
 	 */
 	public void deletePushSubscription(WebPageRequest inReq)
 	{

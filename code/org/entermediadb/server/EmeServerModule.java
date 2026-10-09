@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.entermediadb.asset.MediaArchive;
 import org.entermediadb.asset.modules.BaseMediaModule;
 import org.openedit.Data;
@@ -15,6 +17,8 @@ import org.openedit.data.Searcher;
 
 public class EmeServerModule extends BaseMediaModule
 {
+	private static final Log log = LogFactory.getLog(EmeServerModule.class);
+
 	public void getEMEServers(WebPageRequest inReq)
 	{
 		MediaArchive archive = getMediaArchive(inReq);
@@ -84,16 +88,18 @@ public class EmeServerModule extends BaseMediaModule
 	{
 		String serverid = inReq.getRequestParameter("serverid");
 		MediaArchive archive = getMediaArchive(inReq);
-		Searcher searcher = archive.getSearcher("emeserveruser");
+		Searcher usersearcher = archive.getSearcher("emeserveruser");
 		String userid = inReq.getUser().getId();
-		Data emeserveruser = searcher.query().exact("user", userid).exact("emeserver", serverid).searchOne();
+		Data emeserveruser = usersearcher.query().exact("user", userid).exact("emeserver", serverid).searchOne();
 		if (emeserveruser == null)
 		{
-			emeserveruser = searcher.createNewData();
+			emeserveruser = usersearcher.createNewData();
 			emeserveruser.setValue("joined", new Date());
 			emeserveruser.setValue("user", userid);
 			emeserveruser.setValue("emeserver", serverid);
+			usersearcher.saveData(emeserveruser);
 
+			Searcher serversearcher = archive.getSearcher("emeserver");
 			MultiValued server = (MultiValued) archive.getData("emeserver", serverid);
 			if (server == null)
 			{
@@ -105,7 +111,7 @@ public class EmeServerModule extends BaseMediaModule
 				membercount = 0;
 			}
 			server.setValue("membercount", membercount + 1);
-			searcher.saveData(server);
+			serversearcher.saveData(server, inReq.getUser());
 		}
 	}
 
@@ -153,6 +159,49 @@ public class EmeServerModule extends BaseMediaModule
 		Searcher searcher = archive.getSearcher("servercategory");
 		Collection<Data> categories = searcher.query().all().search();
 		inReq.putPageValue("categories", categories);
+	}
+
+	public void handleChatConnection(WebPageRequest inReq)
+	{
+		MediaArchive archive = getMediaArchive(inReq);
+		String serverid = inReq.getRequestParameter("serverid");
+
+		Searcher channelsearcher = archive.getSearcher("channel");
+		Data channel = channelsearcher.query().exact("searchtype", "emeserver").exact("dataid", serverid).searchOne();
+		if (channel == null)
+		{
+			MultiValued server = (MultiValued) archive.getData("emeserver", serverid);
+			channel = channelsearcher.createNewData();
+			channel.setName(inReq.getUser().getName() + " - " + server.getName());
+			channel.setValue("searchtype", "emeserver");
+			channel.setValue("dataid", serverid);
+			channel.setValue("channeltype", "emeteamchat");
+			channel.setValue("user", inReq.getUser().getId());
+			channelsearcher.saveData(channel, inReq.getUser());
+		}
+
+		inReq.putPageValue("channel", channel);
+	}
+
+	public void loadChat(WebPageRequest inReq)
+	{
+		String channelId = inReq.getRequestParameter("channel");
+		if (channelId == null)
+		{
+			log.warn("Missing channel in request for loadChat");
+			return;
+		}
+
+		Data channel = getMediaArchive(inReq).query("channel").exact("id", channelId).searchOne();
+		if (channel == null)
+		{
+			log.warn("Channel not found for id: " + channelId);
+			return;
+		}
+
+		Collection<Data> messages = getMediaArchive(inReq).query("chatterbox").exact("channel", channelId).sort("dateDown").search(inReq);
+
+		inReq.putPageValue("messages", messages);
 	}
 
 }
