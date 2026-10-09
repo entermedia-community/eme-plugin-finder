@@ -311,7 +311,14 @@ public class ClusterLockManager implements LockManager, Shutdownable
 			// people can go get it
 			// log.info(inLock.getId() +" being released Current version " +
 			// inLock.get(".version") + " Thread: " + Thread.currentThread().getId());
-			searcher.saveData(inLock, null);
+			try
+			{
+				searcher.saveData(inLock, null);
+			}
+			catch (Exception e)
+			{
+				// Already released
+			}
 			// log.info(inLock.getId() +" being saved on release. Current version " +
 			// inLock.get(".version") + "Thread: " + Thread.currentThread().getId());
 
