@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.stream.Collectors;
 import org.entermediadb.asset.MediaArchive;
 import org.openedit.Data;
+import org.openedit.MultiValued;
 import org.openedit.WebPageRequest;
 import org.openedit.data.QueryBuilder;
 import org.openedit.data.Searcher;
@@ -58,10 +59,28 @@ public class EmeServerModule extends BaseMediaModule
 		String serverid = inReq.getRequestParameter("serverid");
 		MediaArchive archive = getMediaArchive(inReq);
 		Searcher searcher = archive.getSearcher("emeserveruser");
-		Data emeserveruser = searcher.createNewData();
-		emeserveruser.setValue("user", inReq.getUser().getId());
-		emeserveruser.setValue("emeserver", serverid);
-		emeserveruser.setValue("joined", new Date());
+		Data emeserveruser = searcher.query().exact("user", inReq.getUser().getId()).exact("emeserver", serverid).searchOne();
+		if (emeserveruser == null)
+		{
+			emeserveruser = searcher.createNewData();
+			emeserveruser.setValue("joined", new Date());
+			emeserveruser.setValue("user", inReq.getUser().getId());
+			emeserveruser.setValue("emeserver", serverid);
+
+			MultiValued server = (MultiValued) archive.getData("emeserver", serverid);
+			if (server == null)
+			{
+				throw new RuntimeException("Server not found: " + serverid);
+			}
+			Integer membercount = server.getInt("membercount");
+			if (membercount == null)
+			{
+				membercount = 0;
+			}
+			server.setValue("membercount", membercount + 1);
+			searcher.saveData(server);
+
+		}
 		searcher.saveData(emeserveruser);
 	}
 
@@ -74,6 +93,18 @@ public class EmeServerModule extends BaseMediaModule
 		if (emeserveruser != null)
 		{
 			searcher.delete(emeserveruser, inReq.getUser());
+			MultiValued server = (MultiValued) archive.getData("emeserver", serverid);
+			if (server != null)
+			{
+				Integer membercount = server.getInt("membercount");
+				if (membercount == null)
+				{
+					membercount = 0;
+				}
+				server.setValue("membercount", membercount - 1);
+				searcher.saveData(server);
+			}
+
 		}
 	}
 
