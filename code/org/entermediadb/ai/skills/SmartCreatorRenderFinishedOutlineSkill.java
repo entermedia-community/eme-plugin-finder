@@ -24,7 +24,6 @@ public class SmartCreatorRenderFinishedOutlineSkill extends BaseSkill
 		messageContext.addContext("playbackentitymodule", instructions.getTargetModule());
 		LlmConnection llmconnection = getMediaArchive().getLlmConnection("localrender");
 		LlmResponse response = llmconnection.renderLocalAction(messageContext, "chat_smartcreator_renderfinishedoutline");
-		messageContext.setWaitTime(null);
 		messageContext.setLastResponse(response);
 
 		AgentJobStep skillEnabled = messageContext.getCurrentAutomationStep();

@@ -186,7 +186,6 @@ public class AdaptiveTutorialContinueSkill extends AdaptiveTutorialBaseSkill
 
 			if (shouldPause(topcomponent))
 			{
-				tutorMessageContext.setWaitTime(null);
 				return;
 			}
 

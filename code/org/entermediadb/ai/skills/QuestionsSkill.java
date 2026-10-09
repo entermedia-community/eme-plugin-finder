@@ -69,7 +69,6 @@ public class QuestionsSkill extends BaseSkill
 		{
 			response.setNextAutomationStep(stepIdForSkill(messageContext, "questionsAskSkill", "question_ask"));
 			messageContext.setLastResponse(response);
-			messageContext.setWaitTime(null);
 			AgentJobStep skillEnabled = messageContext.getCurrentAutomationStep();
 			messageContext.fireStatusComplete(skillEnabled);
 

@@ -38,10 +38,6 @@ public interface AgentContext extends Data
 
 	AgentContext getRootContext();
 
-	Long getWaitTime();
-
-	void setWaitTime(Long inWaitTime);
-
 	AgentJob getCurrentAgentJob();
 
 	void setCurrentAgentJob(AgentJob inCurrentAgentJob);
@@ -162,6 +158,8 @@ public interface AgentContext extends Data
 	public void addStatusListener(SkillStatusListener inListener);
 
 	public void fireStatusStarting(AgentJobStep inAutomationStep);
+
+	public void fireStatusUpdate(AgentJobStep inAutomationStep);
 
 	public void fireStatusComplete(AgentJobStep inAutomationStep);
 

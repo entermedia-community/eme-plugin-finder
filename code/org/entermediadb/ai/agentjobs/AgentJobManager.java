@@ -937,6 +937,26 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 	public void handleStatusComplete(AgentContext inContext, AgentJobStep inAutomationStep)
 	{
 		//Only chat contexts have an agentmessage to send back
+		if (inContext.getContextValue("agentmessage") == null)
+		{
+			return;
+		}
+		handleStatusUpdate(inContext, inAutomationStep);
+
+		LlmResponse response = inContext.getLastResponse();
+		if (inContext.getCurrentAgentJob() != null && response != null)
+		{
+			String runFunctionName = response.getExecAutomationStep();
+			if (runFunctionName != null)
+			{
+				runProcess(inContext, runFunctionName);
+			}
+		}
+	}
+
+	public void handleStatusUpdate(AgentContext inContext, AgentJobStep inAutomationStep)
+	{
+		//Only chat contexts have an agentmessage to send back
 		MultiValued agentmessage = (MultiValued) inContext.getContextValue("agentmessage");
 		if (agentmessage == null)
 		{
@@ -1043,34 +1063,7 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 		}
 		catch (Exception ex)
 		{
-			log.error("Error in fireStatusComplete", ex);
-		}
-
-		if (inContext.getCurrentAgentJob() != null)
-		{
-			Long wait = inContext.getWaitTime();
-			if (wait != null)
-			{
-				inContext.setWaitTime(null);
-				log.info("Previous function requested to wait " + wait + " milliseconds");
-				try
-				{
-					Thread.sleep(wait);
-				}
-				catch (InterruptedException ex)
-				{
-					log.warn("Sleep interrupted", ex);
-					Thread.currentThread().interrupt();
-				}
-			}
-			if (response != null)
-			{
-				String runFunctionName = response.getExecAutomationStep();
-				if (runFunctionName != null)
-				{
-					runProcess(inContext, runFunctionName);
-				}
-			}
+			log.error("Error in fireStatusUpdate", ex);
 		}
 	}
 

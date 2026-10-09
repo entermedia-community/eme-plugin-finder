@@ -6,8 +6,10 @@ public interface Skill
 
 	public void process(AgentContext inContext);
 
-	public void processCompleted(AgentContext inContext);
+	/** Broadcasts the last response while the skill keeps working */
+	public void processUpdate(AgentContext inContext);
 
-	
+	/** Broadcasts the last response, then runs its exec step */
+	public void processCompleted(AgentContext inContext);
 
 }

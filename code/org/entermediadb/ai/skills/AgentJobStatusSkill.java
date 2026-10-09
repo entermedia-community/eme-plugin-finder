@@ -26,14 +26,46 @@ public class AgentJobStatusSkill extends BaseSkill
 			return;
 		}
 
-		agentjob = (AgentJob)getMediaArchive().getCachedData("agentjob", agentjob.getId());
-		inContext.put("agentjob", agentjob);
+		//Show progress until the job is done, then go back to the chat monitor
+		for (int loops = 0; ; loops++)
+		{
+			if (loops > 500)
+			{
+				throw new OpenEditException("Agent job status skill has looped too many times. Something is wrong.");
+			}
+			agentjob = (AgentJob) getMediaArchive().getCachedData("agentjob", agentjob.getId());
+			LlmResponse response = renderStatus(inContext, agentjob);
+
+			//Complete means the answer is listed within the final text than can be added to the context for the next step
+			String status = agentjob.get("status");
+			if ("complete".equals(status) || "error".equals(status))
+			{
+				String startup_scenario = (String) inContext.getChannel().getValue("startup_scenario");
+				response.setNextAutomationStep(startup_scenario);
+				inContext.setLastResponse(response);
+				break;
+			}
+			log.info("Agent job not completed yet.");
+			inContext.setLastResponse(response);
+			processUpdate(inContext);
+			if (!waitBeforeResponding(inContext, 5000L))
+			{
+				noResponse(inContext);
+				return;
+			}
+		}
+
+		super.process(inContext);
+	}
+
+	protected LlmResponse renderStatus(AgentContext inContext, AgentJob inAgentJob)
+	{
+		inContext.put("agentjob", inAgentJob);
 		MarkdownUtil markdown = new MarkdownUtil();
 		inContext.put("markdown", markdown);
 
-
-		Date endtime = agentjob.getDate("enddate");
-		Date starttime = agentjob.getDate("submitteddate");
+		Date endtime = inAgentJob.getDate("enddate");
+		Date starttime = inAgentJob.getDate("submitteddate");
 		if( endtime != null && starttime != null)
 		{
 			double secondsTaken = (endtime.getTime() - starttime.getTime()) / 5000D;
@@ -42,47 +74,6 @@ public class AgentJobStatusSkill extends BaseSkill
 		}
 
 		LlmConnection llmconnection = getMediaArchive().getLlmConnection("localrender");
-		LlmResponse response = llmconnection.renderLocalAction(inContext, "agent_job_showjobplan");
-
-		//inContext.put("secondstaken", null);
-
-		Long countloops = (Long) inContext.getContextValue("jobcountloops");
-
-		if( countloops == null)
-		{
-			countloops = 0L;
-		}
-		else
-		{
-			countloops++;
-		}
-		inContext.put("jobcountloops", countloops);
-		if( countloops > 500)
-		{
-			inContext.put("jobcountloops", 0);
-			throw new OpenEditException("Agent job status skill has looped too many times. Something is wrong.");
-		}
-
-
-		//Complete means the answer is listed within the final text than can be added to the context for the next step
-		String status = agentjob.get("status");
-
-		//status = "complete";
-		if (!"complete".equals(status) && !"error".equals(status))
-		{
-			log.info("Agent job not completed yet.");
-			inContext.setWaitTime(5000L);
-			response.setExecAutomationStep("agentJobStatus");
-		}	
-		else
-		{
-			//complete or error, go back to the chat monitor
-			String startup_scenario = (String) inContext.getChannel().getValue("startup_scenario");
-			response.setNextAutomationStep(startup_scenario);
-
-		}
-		inContext.setLastResponse(response);
-
-		super.process(inContext);
+		return llmconnection.renderLocalAction(inContext, "agent_job_showjobplan");
 	}
 }

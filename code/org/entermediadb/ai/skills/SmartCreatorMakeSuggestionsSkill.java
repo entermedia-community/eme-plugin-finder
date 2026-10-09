@@ -72,7 +72,6 @@ public class SmartCreatorMakeSuggestionsSkill extends BaseSkill
 
 		LlmConnection llmconnection = getMediaArchive().getLlmConnection("thinking");
 		LlmResponse response = llmconnection.renderLocalAction(messageContext, "chat_smartcreator_suggest");
-		messageContext.setWaitTime(null);
 		// This is for the chat UI to pass it back
 		// response.setNextSkillEnabled("smartcreator_parse"); chat_smartcreator_parse_user_prompt
 		messageContext.setLastResponse(response);

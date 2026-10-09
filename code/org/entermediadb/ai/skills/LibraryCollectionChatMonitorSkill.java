@@ -17,9 +17,9 @@ import org.openedit.MultiValued;
 import org.openedit.hittracker.HitTracker;
 
 /**
- * Watches a team chat in two passes. The first pass asks library_collection_chat_monitor which menu options fit the
- * conversation and waits wait_minutes. The second pass runs after the wait: if nobody has spoken since, it renders the
- * recommended menu, otherwise it analyzes the newer message instead.
+ * Watches a team chat. Asks library_collection_chat_monitor which menu options fit the conversation, then sleeps
+ * wait_minutes on this thread. If nobody has spoken since, it renders the recommended menu. A newer message in the
+ * same channel cancels the wait and is analyzed instead, so nothing is broadcast for the older one.
  */
 public class LibraryCollectionChatMonitorSkill extends BaseSkill
 {
@@ -53,39 +53,25 @@ public class LibraryCollectionChatMonitorSkill extends BaseSkill
 	public void process(AgentContext inAgentContext)
 	{
 		ChatMessageContext messageContext = (ChatMessageContext) inAgentContext;
-
-		Map pending = (Map) inAgentContext.getContextValue("pendingstructuredresponse");
-		MultiValued pendinglastmessage = (MultiValued) inAgentContext.getContextValue("pendinglastmessage");
-		inAgentContext.put("pendingstructuredresponse", null);
+		//A newer message replaces whatever we were waiting on
+		cancelPendingWait(inAgentContext);
 
 		MultiValued usermessage = findLatestUserMessage(inAgentContext.getChannel().getId());
 		if (usermessage == null)
 		{
 			log.info("No user message to check");
+			noResponse(messageContext);
 			return;
-		}
-		if (pending != null && pendinglastmessage != null)
-		{
-			//Second pass, after the wait
-			if (usermessage.getId().equals(pendinglastmessage.getId()))
-			{
-
-				inAgentContext.put("pendingstructuredresponse",null);
-				inAgentContext.put("pendinglastmessage",null);
-
-				renderMenu(messageContext, pending);
-				return;
-			}
-			log.info("Team kept talking after " + pendinglastmessage.getId() + ", checking " + usermessage.getId());
 		}
 		checkMessage(messageContext, usermessage);
 	}
 
 	/**
-	 * Asks which menu options fit the conversation, then waits wait_minutes and runs this skill again.
+	 * Asks which menu options fit the conversation, waits wait_minutes, then renders the menu if nobody spoke since.
 	 */
 	protected void checkMessage(ChatMessageContext inAgentContext, MultiValued inUserMessage)
 	{
+		String channelid = inAgentContext.getChannel().getId();
 		inAgentContext.put("userquery", inUserMessage.get("message"));
 
 		MultiValued scenario = inAgentContext.getCurrentAgentJob().getScenarioData();
@@ -100,22 +86,27 @@ public class LibraryCollectionChatMonitorSkill extends BaseSkill
 		if (structuredResponse == null)
 		{
 			log.info("No menu recommendation for " + inUserMessage.getId());
+			noResponse(inAgentContext);
 			return;
 		}
 
-		inAgentContext.put("pendinglastmessage", inUserMessage);
-		inAgentContext.put("pendingstructuredresponse", structuredResponse);
-
 		Object wait = findArgument(structuredResponse, "wait_minutes");
 		int minutes = wait == null ? 0 : Math.max(0, Math.min(5, Integer.parseInt(wait.toString())));
-		inAgentContext.setWaitTime(minutes * 60L * 1000L);
+		if (!waitBeforeResponding(inAgentContext, minutes * 60L * 1000L))
+		{
+			log.info("Wait cancelled for " + inUserMessage.getId() + ", a newer message is being checked");
+			noResponse(inAgentContext);
+			return;
+		}
 
-		//Show nothing now, come back here after the wait
-		response.setNextAutomationStep(inAgentContext.getCurrentAutomationStep().getEnabledId());
-		response.setExecAutomationStep(inAgentContext.getCurrentAutomationStep().getEnabledId());
-		inAgentContext.setLastResponse(response);
-		inAgentContext.fireStatusComplete(inAgentContext.getCurrentAutomationStep());
-		
+		MultiValued latest = findLatestUserMessage(channelid);
+		if (latest != null && !latest.getId().equals(inUserMessage.getId()))
+		{
+			log.info("Team kept talking after " + inUserMessage.getId() + ", leaving it to " + latest.getId());
+			noResponse(inAgentContext);
+			return;
+		}
+		renderMenu(inAgentContext, structuredResponse);
 	}
 
 	protected void renderMenu(ChatMessageContext inAgentContext, Map inStructuredResponse)
@@ -140,6 +131,7 @@ public class LibraryCollectionChatMonitorSkill extends BaseSkill
 		if (recommended.isEmpty())
 		{
 			log.info("Nothing on the menu fits, staying quiet");
+			noResponse(inAgentContext);
 			return;
 		}
 		

@@ -88,6 +88,15 @@ public class BaseAgentContext extends BaseData implements CatalogEnabled, AgentC
 	}
 
 	@Override
+	public void fireStatusUpdate(AgentJobStep inAutomationStep)
+	{
+		for (SkillStatusListener listener : getStatusListeners())
+		{
+			listener.handleStatusUpdate(this, inAutomationStep);
+		}
+	}
+
+	@Override
 	public void fireStatusComplete(AgentJobStep inAutomationStep)
 	{
 		for (SkillStatusListener listener : getStatusListeners())
@@ -151,19 +160,7 @@ public class BaseAgentContext extends BaseData implements CatalogEnabled, AgentC
 	protected Map<String, Object> context;
 	// JSONObject arguments;
 
-	protected Long fieldWaitTime;
-
 	// TODO: Cache history here for performance
-
-	public Long getWaitTime()
-	{
-		return fieldWaitTime;
-	}
-
-	public void setWaitTime(Long inWaitTime)
-	{
-		fieldWaitTime = inWaitTime;
-	}
 
 	protected UserProfile fieldUserProfile;
 
