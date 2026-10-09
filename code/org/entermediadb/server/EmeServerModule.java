@@ -1,13 +1,12 @@
-package org.entermediadb.asset.modules;
+package org.entermediadb.server;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.entermediadb.asset.MediaArchive;
+import org.entermediadb.asset.modules.BaseMediaModule;
 import org.openedit.Data;
 import org.openedit.MultiValued;
 import org.openedit.WebPageRequest;

@@ -3010,7 +3010,8 @@
 		</property>
 	</bean>
 
-	<bean id="libraryCollectionChatMonitorSkill" class="org.entermediadb.ai.skills.LibraryCollectionChatMonitorSkill" scope="prototype">
+	<bean id="libraryCollectionChatMonitorSkill"
+		class="org.entermediadb.ai.skills.LibraryCollectionChatMonitorSkill" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>
@@ -3476,7 +3477,7 @@
 		</property>
 	</bean>
 
-	<bean id="EmeServerModule" class="org.entermediadb.asset.modules.EmeServerModule"
+	<bean id="EmeServerModule" class="org.entermediadb.server.EmeServerModule"
 		lazy-init="default">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
