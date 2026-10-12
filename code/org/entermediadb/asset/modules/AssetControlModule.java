@@ -101,6 +101,7 @@ public class AssetControlModule extends BaseMediaModule
 		}
 		if (asset == null)
 		{
+			log.error("Asset not found and no assetid provided in request: " + inReq);
 			return false;
 		}
 		Data module = getMediaArchive(inReq).getCachedData("module", "asset");
