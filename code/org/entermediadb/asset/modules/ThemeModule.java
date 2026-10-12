@@ -227,7 +227,8 @@ public class ThemeModule extends BaseMediaModule
 
 		inReq.putPageValue("themeid", themeid);
 		String appid = inReq.findValue("applicationid");
-		inReq.putPageValue("themeprefix", "/" + appid + "/" + themeid);
+		
+		inReq.putPageValue("themeprefix", "/" + appid + "/theme/" + themeid);
 	}
 
 	public void loadDefaultTheme(WebPageRequest inReq)
