@@ -206,10 +206,10 @@ public class BaseAgentContext extends BaseData implements CatalogEnabled, AgentC
 		{
 			return getParentContext().getCurrentAutomationStep();
 		}
-		if( fieldCurrentAutomationStep == null && getCurrentAgentJob() != null)
+		if (fieldCurrentAutomationStep == null && getCurrentAgentJob() != null)
 		{
 			Collection<AgentJobStep> enabled = getCurrentAgentJob().getSteps();
-			if( enabled != null && enabled.size() > 0)
+			if (enabled != null && enabled.size() > 0)
 			{
 				fieldCurrentAutomationStep = enabled.iterator().next();
 			}
@@ -373,6 +373,7 @@ public class BaseAgentContext extends BaseData implements CatalogEnabled, AgentC
 	}
 
 	/**
+	 * @deprecated use put()
 	 * @param inKey
 	 * @param inValue
 	 */
@@ -381,14 +382,6 @@ public class BaseAgentContext extends BaseData implements CatalogEnabled, AgentC
 		put(inKey, inValue);
 	}
 
-	public void putAl(Map<String,Object> inMap)
-	{
-		for (String key : inMap.keySet()) 
-		{
-			Object value = inMap.get(key);
-			put(key, value);
-		}
-	}
 	/**
 	 * @deprecated use put instead.
 	 * @param inKey
@@ -420,8 +413,8 @@ public class BaseAgentContext extends BaseData implements CatalogEnabled, AgentC
 		getRootContext().getContext().put(inKey, inValue); // Make sure everyone is updated
 	}
 
-	/**	(non-Javadoc)
-	 * @deprecated use put
+	/**
+	 * @deprecated use putAll
 	 * @see org.entermediadb.ai.AgentContext#putContextValues(java.util.Map)
 	 */
 	public void putContextValues(Map<String, Object> inValues)
@@ -437,7 +430,6 @@ public class BaseAgentContext extends BaseData implements CatalogEnabled, AgentC
 			put(key, value);
 		}
 	}
-	
 
 	// public JSONObject getArguments() {
 	// return arguments;
