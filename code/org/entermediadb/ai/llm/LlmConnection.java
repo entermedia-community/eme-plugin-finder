@@ -27,6 +27,8 @@ public interface LlmConnection
 
 	public LlmResponse renderLocalAction(AgentContext llmreuest, String inTemplate);
 
+	public LlmResponse renderLocalAction(AgentContext llmreuest, String inTemplate, String contentType);
+
 	public LlmResponse callCreateFunction(AgentContext agentcontext, String inFunction);
 
 	public LlmResponse callClassifyFunction(AgentContext agentcontext, String inFunction, String inBase64Image);

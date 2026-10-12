@@ -16,16 +16,11 @@ import org.apache.commons.logging.LogFactory;
 import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.BaseAiManager;
 import org.entermediadb.ai.ChatMessageContext;
-import org.entermediadb.ai.automation.AutomationManager;
 import org.entermediadb.ai.agentjobs.AgentJob;
+import org.entermediadb.ai.automation.AutomationManager;
 import org.entermediadb.ai.classify.EmbeddingManager;
-import org.entermediadb.ai.agentjobs.AgentJobStep;
-import org.entermediadb.ai.llm.BaseAgentContext;
-import org.entermediadb.ai.llm.LlmResponse;
 import org.entermediadb.asset.MediaArchive;
-import org.entermediadb.asset.util.JsonUtil;
 import org.entermediadb.find.EntityManager;
-import org.openedit.util.HttpSharedConnection;
 import org.entermediadb.scripts.ScriptLogger;
 import org.entermediadb.util.Inflector;
 import org.entermediadb.websocket.chat.ChatServer;
@@ -45,6 +40,7 @@ import org.openedit.hittracker.HitTracker;
 import org.openedit.profile.UserProfile;
 import org.openedit.users.User;
 import org.openedit.util.DateStorageUtil;
+import org.openedit.util.HttpSharedConnection;
 
 public class AssistantManager extends BaseAiManager
 {
@@ -80,10 +76,11 @@ public class AssistantManager extends BaseAiManager
 		// TODO: Only process one "open" channel at a time. What ever the last one they
 		// clicked on
 
-		HitTracker allchannels =
-			channels.query()
-			//.orgroup("channeltype", "agentchat,agententitychat,agenttutorchat,emeteamchat,emechat")
-			.after("refreshdate", now.getTime()).sort("refreshdateDown").search();
+		HitTracker allchannels = channels.query()
+			// .orgroup("channeltype", "agentchat,agententitychat,agenttutorchat,emeteamchat,emechat")
+			.after("refreshdate", now.getTime())
+			.sort("refreshdateDown")
+			.search();
 
 		Searcher chats = archive.getSearcher("chatterbox");
 		for (Iterator iterator = allchannels.iterator(); iterator.hasNext();)
@@ -200,7 +197,7 @@ public class AssistantManager extends BaseAiManager
 			}
 		}
 
-		//Older chats only saved the scenario id, so copy that scenario into a new agentjob
+		// Older chats only saved the scenario id, so copy that scenario into a new agentjob
 		Object currentscenario = chatMessageContext.getContextValue("currentscenario");
 		if (chatMessageContext.getCurrentAgentJob() == null && currentscenario instanceof String)
 		{
@@ -224,7 +221,7 @@ public class AssistantManager extends BaseAiManager
 			// hitory?
 			if (agentContext == null)
 			{
-				agentContext = (AgentContext)getMediaArchive().getBean("baseAgentContext");
+				agentContext = (AgentContext) getMediaArchive().getBean("baseAgentContext");
 				Data channel = getMediaArchive().getCachedData("channel", inChannel.getId());
 				if (channel == null)
 				{
@@ -310,15 +307,15 @@ public class AssistantManager extends BaseAiManager
 
 		// Add new agentmessage
 		MultiValued agentmessage = null;
-		if( "system".equals( recentmessage.get("messagetype") ) )
+		if ("system".equals(recentmessage.get("messagetype")))
 		{
 			agentmessage = recentmessage;
 		}
 		else
 		{
-			 agentmessage = newAgentMessage(recentmessage, chatMessageContext);
+			agentmessage = newAgentMessage(recentmessage, chatMessageContext);
 		}
-		
+
 		chatMessageContext.setAgentMessage(agentmessage);
 		// ChatServer server = (ChatServer) getMediaArchive().getBean("chatServer");
 		// Determine what will need to be processed
@@ -384,7 +381,7 @@ public class AssistantManager extends BaseAiManager
 		MediaArchive archive = getMediaArchive();
 
 		Data channel = archive.getCachedData("channel", agentmessage.get("channel"));
-		chatMessageContext.putContextValue("channel", channel);
+		chatMessageContext.put("channel", channel);
 
 		// Define alias on emeprofile chats
 		if ("emeprofile".equals(channel.get("searchtype")))
@@ -397,8 +394,8 @@ public class AssistantManager extends BaseAiManager
 			}
 		}
 
-		chatMessageContext.putContextValue("usermessage", usermessage);
-		chatMessageContext.putContextValue("agentmessage", agentmessage);
+		chatMessageContext.put("usermessage", usermessage);
+		chatMessageContext.put("agentmessage", agentmessage);
 
 		// chatMessageContext.putContextValue("aisearchparams", chatMessageContext.getAiSearchParams() );
 		// // ??
@@ -756,7 +753,8 @@ public class AssistantManager extends BaseAiManager
 		// Save a message
 		Data chat = archive.getSearcher("chatterbox").createNewData();
 		chat.setValue("messagetype", "system");
-		chat.setValue("user", inUser);
+		chat.setValue("user", "agent");
+		chat.setValue("useralias", inUser);
 		chat.setValue("date", new Date());
 		chat.setValue("functionname", functionname);
 		chat.setValue("chatmessagestatus", "received");

@@ -14,8 +14,8 @@ import org.openedit.MultiValued;
 import org.openedit.hittracker.HitTracker;
 
 /**
- * Renders a menu of the chat scenarios that sit under the same automationlabel
- * (connectedtop) as the running welcome_menu_* scenario.
+ * Renders a menu of the chat scenarios that sit under the same automationlabel (connectedtop) as
+ * the running welcome_menu_* scenario.
  */
 public class WelcomeMenuSkill extends BaseSkill
 {
@@ -30,7 +30,8 @@ public class WelcomeMenuSkill extends BaseSkill
 		Collection<Data> menuscenarios = new ArrayList<Data>();
 		if (labelid != null)
 		{
-			HitTracker scenarios = getMediaArchive().query("automationscenario").exact("connectedtop", labelid).exact("enabled", "true").exact("chatenabled", "true").exact("isvisible", "true").sort("ordering").search();
+			HitTracker scenarios =
+				getMediaArchive().query("automationscenario").exact("connectedtop", labelid).exact("enabled", "true").exact("chatenabled", "true").exact("isvisible", "true").sort("ordering").search();
 			for (Object object : scenarios)
 			{
 				Data hit = (Data) object;
@@ -43,11 +44,11 @@ public class WelcomeMenuSkill extends BaseSkill
 		}
 		messageContext.putContextValue("menuscenarios", menuscenarios);
 
+		String channelUser = messageContext.getChannel().get("user");
+		messageContext.getAgentMessage().setValue("useralias", channelUser);
 
-
-
-		
 		LlmConnection llmconnection = getMediaArchive().getLlmConnection("localrender");
+
 		LlmResponse response = llmconnection.renderLocalAction(inAgentContext, "welcome_menu");
 		messageContext.setLastResponse(response);
 

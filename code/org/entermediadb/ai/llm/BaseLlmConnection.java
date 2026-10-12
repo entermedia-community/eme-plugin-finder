@@ -285,9 +285,14 @@ public class BaseLlmConnection implements LlmConnection
 
 	public LlmResponse renderLocalAction(AgentContext agentcontext, String inTemplateName)
 	{
+		return renderLocalAction(agentcontext, inTemplateName, "html");
+	}
+
+	public LlmResponse renderLocalAction(AgentContext agentcontext, String inTemplateName, String contentType)
+	{
 		String apphome = "/" + getMediaArchive().getCatalogSettingValue("mediadbappid");
 
-		String templatepath = apphome + "/views/agentresponses/" + inTemplateName + ".html";
+		String templatepath = apphome + "/views/agentresponses/" + inTemplateName + "." + contentType;
 
 		try
 		{
@@ -295,7 +300,7 @@ public class BaseLlmConnection implements LlmConnection
 
 			if (!template.exists())
 			{
-				templatepath = "/mediadb/views/agentresponses/" + inTemplateName + ".html";
+				templatepath = "/mediadb/views/agentresponses/" + inTemplateName + "." + contentType;
 				template = getPageManager().getPage(templatepath);
 			}
 

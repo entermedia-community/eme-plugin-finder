@@ -175,7 +175,7 @@ public class EmeServerModule extends BaseMediaModule
 			channel.setName(inReq.getUser().getName() + " - " + server.getName());
 			channel.setValue("searchtype", "emeserver");
 			channel.setValue("dataid", serverid);
-			channel.setValue("channeltype", "emeteamchat");
+			channel.setValue("channeltype", "agentserverchat");
 			channel.setValue("user", inReq.getUser().getId());
 			channelsearcher.saveData(channel, inReq.getUser());
 		}
