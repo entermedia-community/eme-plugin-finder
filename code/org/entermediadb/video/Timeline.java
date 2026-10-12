@@ -212,9 +212,9 @@ public class Timeline
 	{
 		double ratio = (double) inClip.getLength() / (double) getLength();
 		double px = (double) getPxWidth() * ratio;
-		if (px < 90)
+		if (px < 100)
 		{
-			px = 90;
+			px = 100;
 		}
 		int pxi = (int) Math.round(px);
 		return pxi;

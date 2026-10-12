@@ -160,31 +160,50 @@
 
 .timecellcaption {
 	min-height: 30px;
-	padding: 8px;
+	padding: 8px 6px;
 	margin-right: 10px;
 	margin-bottom:8px;
 	font-size: 0.9rem;
 	font-style: normal;
-	font-weight: 500;
-	background-color: #444;
-	color: #fff;
+	font-weight: 400;
 	z-index: 6;
 	border-radius: 4px;
 	word-break: break-word;
 }
 
 .timecellcaption .cliptext {
-	font-size: 14px;
-	line-height: 18px;
+	line-height: 1.4;
 }
 
 .timecellcaption .cliptime {
-	font-size: 0.75rem;
+	font-size: 0.85em;
 	/* color: #ccc; */
 }
 
 .cc-data-selection.float-left {
 	float:left;
+}
+
+.timecellcaption {
+	background-color: #2c2c2c;
+	color: #fff;
+}
+.timecellcaption.SPEAKER_01 {
+	background-color: #414141;
+	color: #fff;
+}
+.timecellcaption.SPEAKER_02 {
+	background-color: #565656;
+	color: #fff;
+}
+.timecellcaption.SPEAKER_03 {
+	background-color: #6b6b6b;
+	color: #fff;
+}
+.clipspeaker {
+	font-size:0.85em;
+	margin-bottom:4px;
+	text-transform: capitalize;
 }
 
 /* ----- prompts ----- */
