@@ -125,8 +125,8 @@ public class TaskCreateChannelSkill extends BaseSkill
 				newMessage.setValue("messagetype", "message");
 				newMessage.setValue("user", goal.get("owner"));
 				newMessage.setValue("useralias", goal.get("owner"));
-				newMessage.setValue("functionname", "emeteamchat_responder_respond");
-				newMessage.setValue("agentcontextvalues", "{\"currentscenario\":\"emeteamchat_responder\"}");
+				newMessage.setValue("functionname", "team_chat_monitor_welcome");
+				newMessage.setValue("agentcontextvalues", "{\"currentscenario\":\"team_chat_monitor\"}");
 				getMediaArchive().saveData("chatterbox", newMessage);
 
 				channel.setValue("refreshdate", new Date());

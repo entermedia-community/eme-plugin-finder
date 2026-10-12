@@ -31,7 +31,8 @@ public class GoalTaskCreationSkill extends BaseSkill
 			getMediaArchive().saveData("projectgoal", goal);
 
 			BasicLlmResponse response = new BasicLlmResponse();
-			response.setNextAutomationStep("emeteamchat_responder_respond");
+			//Back to the quiet monitor for the next team message
+			response.setNextAutomationStep("team_chat_monitor.team_chat_monitor_welcome");
 
 			inContext.putContextValue("messagereload", true);
 			inContext.setLastResponse(response);

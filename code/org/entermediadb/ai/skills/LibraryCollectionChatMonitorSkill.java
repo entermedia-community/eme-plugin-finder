@@ -56,6 +56,14 @@ public class LibraryCollectionChatMonitorSkill extends BaseSkill
 		//A newer message replaces whatever we were waiting on
 		cancelPendingWait(inAgentContext);
 
+		//Opening the chat or choosing Not now sends a system message. Only team messages bring up the menu
+		MultiValued agentmessage = messageContext.getAgentMessage();
+		if (agentmessage != null && "system".equals(agentmessage.get("messagetype")))
+		{
+			noResponse(messageContext);
+			return;
+		}
+
 		MultiValued usermessage = findLatestUserMessage(inAgentContext.getChannel().getId());
 		if (usermessage == null)
 		{
@@ -148,7 +156,9 @@ public class LibraryCollectionChatMonitorSkill extends BaseSkill
 		inAgentContext.put("recommendedscenarios", recommended);
 		inAgentContext.put("helperrole", findArgument(inStructuredResponse, "helperrole"));
 		inAgentContext.put("confirmation", findArgument(inStructuredResponse, "confirmation"));
-		inAgentContext.put("instruction", findArgument(inStructuredResponse, "instruction"));
+		//Saved so the <scenario>_confirm page the team picks can say what was asked for
+		inAgentContext.putContextValue("teaminstruction", findArgument(inStructuredResponse, "instruction"));
+		inAgentContext.putContextValue("teamcontext", findArgument(inStructuredResponse, "context"));
 
 		LlmConnection llmconnection = getMediaArchive().getLlmConnection("localrender");
 		LlmResponse response = llmconnection.renderLocalAction(inAgentContext, "chat_monitor_menu");

@@ -200,7 +200,7 @@ public class AgentModule extends BaseMediaModule
 				currentscenarioid = inReq.findValue("defaultscenarioid");
 				if (currentscenarioid == null)
 				{
-					currentscenarioid = "emeteamchat_responder";
+					currentscenarioid = defaultScenarioFor(channel);
 				}
 			}
 		}
@@ -269,6 +269,23 @@ public class AgentModule extends BaseMediaModule
 		assistantManager.sendSystemMessage(chatAgentContext, inReq.getUserName(), null, functionname);
 	}
 
+	/**
+	 * Team chats start with the quiet monitor. Entity and EME chats start with their welcome menu.
+	 */
+	protected String defaultScenarioFor(Data inChannel)
+	{
+		String channeltype = inChannel == null ? null : inChannel.get("channeltype");
+		if ("emeteamchat".equals(channeltype))
+		{
+			return "team_chat_monitor";
+		}
+		if ("agententitychat".equals(channeltype))
+		{
+			return "entity_chat_welcome_menu";
+		}
+		return "eme_chat_welcome_menu";
+	}
+
 	public AgentContext loadAgentContext(WebPageRequest inReq) throws Exception
 	{
 		AssistantManager assistantManager = (AssistantManager) getMediaArchive(inReq).getBean("assistantManager");
@@ -293,9 +310,6 @@ public class AgentModule extends BaseMediaModule
 		inReq.putPageValue("agentcontext", context);
 
 		inReq.setRequestParameter("channel", currentchannel.getId());
-		// inReq.setRequestParameter("toplevelaifunctionid", "auto_detect_welcome");
-		// inReq.setRequestParameter("functionname", "auto_detect_welcome");
-
 		// if( toplevel != null )
 		// {
 		// context.setTopLevelFunctionName(toplevel);

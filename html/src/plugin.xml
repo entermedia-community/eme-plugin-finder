@@ -2989,13 +2989,6 @@
 		</property>
 	</bean>
 
-	<bean id="autoDetectWelcomeSkill" class="org.entermediadb.ai.skills.AutoDetectWelcomeSkill"
-		scope="prototype">
-		<property name="moduleManager">
-			<ref bean="moduleManager" />
-		</property>
-	</bean>
-
 	<bean id="welcomeMenuSkill" class="org.entermediadb.ai.skills.WelcomeMenuSkill"
 		scope="prototype">
 		<property name="moduleManager">
@@ -3010,15 +3003,15 @@
 		</property>
 	</bean>
 
-	<bean id="libraryCollectionChatMonitorSkill"
-		class="org.entermediadb.ai.skills.LibraryCollectionChatMonitorSkill" scope="prototype">
+	<bean id="chatGuessGoalSkill" class="org.entermediadb.ai.skills.ChatGuessGoalSkill"
+		scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>
 	</bean>
 
-	<bean id="chatMonitorResponseSkill" class="org.entermediadb.ai.skills.ChatMonitorResponseSkill"
-		scope="prototype">
+	<bean id="libraryCollectionChatMonitorSkill"
+		class="org.entermediadb.ai.skills.LibraryCollectionChatMonitorSkill" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>

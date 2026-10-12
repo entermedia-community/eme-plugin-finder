@@ -75,7 +75,7 @@ public class QuestionsMakeSuggestionsSkill extends BaseSkill
 		else
 		{
 			AgentJobStep welcome = messageContext.getCurrentAgentJob().findStepBySkill("questionsSkill");
-			response.setExecAutomationStep(welcome == null ? "chat_questions_welcome" : welcome.getEnabledId());
+			response.setExecAutomationStep(welcome == null ? "entity_chat_questions_welcome" : welcome.getEnabledId());
 		}
 		messageContext.setLastResponse(response);
 		return;

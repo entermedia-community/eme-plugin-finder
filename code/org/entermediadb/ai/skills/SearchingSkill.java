@@ -48,15 +48,23 @@ public class SearchingSkill extends BaseSkill
 		MultiValued inAgentMessage = messageContext.getAgentMessage();
 		String agentFn = messageContext.getCurrentAutomationStep().getEnabledId();
 
-		if ("chat_searching_welcome".equals(agentFn))
+		//Steps are named <scenario>_welcome, _parse, _tables and _semantic so more than one scenario can search
+		String prefix = "";
+		if (messageContext.getCurrentAgentJob() != null)
+		{
+			prefix = messageContext.getCurrentAgentJob().getScenarioId() + "_";
+		}
+		String action = agentFn.startsWith(prefix) ? agentFn.substring(prefix.length()) : agentFn;
+
+		if ("welcome".equals(action))
 		{
 			inAgentMessage.setValue("chatmessagestatus", "completed");
 			Schema schema = loadSchema();
 			messageContext.addContext("schema", schema);
 			LlmConnection llmconnection = getMediaArchive().getLlmConnection("localrender"); // Should stay
 																								// search_start
-			LlmResponse response = llmconnection.renderLocalAction(messageContext, agentFn);
-			response.setNextAutomationStep("search_parse");
+			LlmResponse response = llmconnection.renderLocalAction(messageContext, "chat_searching_welcome");
+			response.setNextAutomationStep(prefix + "parse");
 			messageContext.setLastResponse(response);
 			return;
 		}
@@ -82,7 +90,7 @@ public class SearchingSkill extends BaseSkill
 		 */
 
 		else
-			if ("search_parse".equals(agentFn))
+			if ("parse".equals(action))
 			{
 				// parse the search first
 				// If no parts then keep talking
@@ -94,7 +102,7 @@ public class SearchingSkill extends BaseSkill
 				inAgentContext.setAiSearchParams(null);
 
 				LlmConnection server = getMediaArchive().getLlmConnection("thinking");
-				LlmResponse res = server.callStructure(inAgentContext, agentFn);
+				LlmResponse res = server.callStructure(inAgentContext, "search_parse");
 				JSONObject messagestructured = (JSONObject) res.getResponsePayload();
 
 				loadSearchParts(inAgentContext, messagestructured);
@@ -106,29 +114,29 @@ public class SearchingSkill extends BaseSkill
 				}
 				else
 				{
-					res.setExecAutomationStep("search_tables");
+					res.setExecAutomationStep(prefix + "tables");
 				}
 				messageContext.setLastResponse(res);
 				return;
 			}
 
 			else
-				if ("search_tables".equals(agentFn))
+				if ("tables".equals(action))
 				{
 					LlmConnection llmconnection = getMediaArchive().getLlmConnection("localrender");
-					LlmResponse response = llmconnection.renderLocalAction(messageContext, agentFn); // TOREVIEW: This is rendering
+					LlmResponse response = llmconnection.renderLocalAction(messageContext, "search_tables"); // TOREVIEW: This is rendering
 					// previous searches results first
 
 					String message = response.getMessage();
 					messageContext.setMessagePrefix(message);
 
-					response.setExecAutomationStep("search_semantic");
+					response.setExecAutomationStep(prefix + "semantic");
 
 					messageContext.setLastResponse(response);
 					return;
 				}
 				else
-					if ("search_semantic".equals(agentFn))
+					if ("semantic".equals(action))
 					{
 
 						String semanticquery = "";
@@ -166,7 +174,7 @@ public class SearchingSkill extends BaseSkill
 							inAgentContext.addContext("semanticquery", semanticquery.trim());
 
 							LlmConnection llmconnection = getMediaArchive().getLlmConnection("thinking");
-							result = llmconnection.renderLocalAction(inAgentContext, agentFn);
+							result = llmconnection.renderLocalAction(inAgentContext, "search_semantic");
 						}
 						else
 						{
@@ -177,7 +185,7 @@ public class SearchingSkill extends BaseSkill
 						}
 						inAgentContext.setMessagePrefix(null);
 						// Set next function to be able to search again
-						result.setNextAutomationStep("search_parse");
+						result.setNextAutomationStep(prefix + "parse");
 						messageContext.setLastResponse(result);
 						return;
 
