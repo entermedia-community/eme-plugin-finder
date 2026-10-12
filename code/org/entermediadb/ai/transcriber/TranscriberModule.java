@@ -26,7 +26,7 @@ public class TranscriberModule extends BaseMediaModule
 	public TranscriberManager getTranscriberManager(WebPageRequest inReq)
 	{
 		String catalogid = inReq.findValue("catalogid");
-		TranscriberManager transcriberManager = (TranscriberManager) getMediaArchive(catalogid).getBean("whisperTranscriberManager");
+		TranscriberManager transcriberManager = (TranscriberManager) getMediaArchive(catalogid).getBean("transcriberManager");
 		return transcriberManager;
 	}
 
