@@ -283,7 +283,7 @@ public class AgentModule extends BaseMediaModule
 		{
 			return "entity_chat_welcome_menu";
 		}
-		return "eme_chat_welcome_menu";
+		return "eme_server_welcome_menu";
 	}
 
 	public AgentContext loadAgentContext(WebPageRequest inReq) throws Exception
