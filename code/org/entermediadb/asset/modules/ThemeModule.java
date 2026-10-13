@@ -55,7 +55,7 @@ public class ThemeModule extends BaseMediaModule
 		{
 			Data theme = (Data) iterator.next();
 
-			setTheme(inReq, theme);
+			saveTheme(inReq, theme);
 
 		}
 	}
@@ -64,16 +64,14 @@ public class ThemeModule extends BaseMediaModule
 	{
 		MediaArchive archive = getMediaArchive(inReq);
 		// Process all the themes
-		String catalogid = inReq.findPathValue("catalogid");
-		Collection themes = getSearcherManager().query(catalogid, "theme").all().search();
 		String themeid = inReq.getRequestParameter("themeid");
 		Data theme = (Data) archive.getCachedData("theme", themeid);
-		setTheme(inReq, theme);
+		saveTheme(inReq, theme);
 
 		
 	}
 
-	public  void setTheme(WebPageRequest inReq, Data theme) throws UnsupportedEncodingException
+	public  void saveTheme(WebPageRequest inReq, Data theme) throws UnsupportedEncodingException
 	{
 		MediaArchive archive = getMediaArchive(inReq);
 		String appid = inReq.findValue("applicationid");
@@ -162,28 +160,6 @@ public class ThemeModule extends BaseMediaModule
 		}
 	}
 
-	public void saveTheme(WebPageRequest inReq)
-	{
-		String catalogid = inReq.findPathValue("catalogid");
-		Searcher themeSearcher = getSearcherManager().getSearcher(catalogid, "theme");
-		String owner = inReq.findValue("applicationid");
-		if (owner != null)
-		{
-			Data theme = (Data) themeSearcher.searchById(owner + "theme");
-			if (theme == null)
-			{
-				theme = themeSearcher.createNewData();
-				theme.setId(owner + "theme");
-				theme.setSourcePath("themes");
-			}
-			String[] fields = inReq.getRequestParameters("field");
-			themeSearcher.updateData(inReq, fields, theme);
-			theme.setId(owner + "theme");
-			themeSearcher.saveData(theme, inReq.getUser());
-			inReq.putPageValue("theme", theme);
-		}
-	}
-
 	public Data loadTheme(WebPageRequest inReq)
 	{
 		String catalogid = inReq.findPathValue("catalogid");
@@ -263,7 +239,7 @@ public class ThemeModule extends BaseMediaModule
 			MediaArchive archive = getMediaArchive(inReq);
 			Data theme = archive.getData("theme", themeid);
 			inReq.putPageValue("defaulttheme", theme);
-			setTheme(inReq, theme);
+			saveTheme(inReq, theme);
 		}
 		catch (Exception e)
 		{

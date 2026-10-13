@@ -1152,7 +1152,7 @@ a.text-contrast:hover {
 
 .emtabs li a,
 .emsubnav > ul > li a {
-	background-color: var(--themed-tab-bar);
+	background-color: var(--themed-tab-btn);
 	color: var(--themed-tab-btn-text);
 }
 
