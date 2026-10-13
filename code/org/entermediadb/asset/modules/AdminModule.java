@@ -451,7 +451,24 @@ public class AdminModule extends BaseMediaModule
 		}
 		return null;
 	}
-
+	
+	public boolean canModule(WebPageRequest inReq)
+	{
+		String permission = inReq.findValue("permission");
+		
+		String moduleid = inReq.findValue("module");
+		if (moduleid != null)
+		{
+			Data module = getMediaArchive(inReq).getCachedData("module", moduleid);
+			
+			Permissions permissions = loadPermissionFinder(inReq);
+			boolean can = permissions.canModule(module, permission);
+			return can;
+		
+		}
+		return false;
+	}
+	
 	public boolean canEntity(WebPageRequest inReq)
 	{
 		String permission = inReq.findValue("permission");
@@ -475,9 +492,6 @@ public class AdminModule extends BaseMediaModule
 				boolean can = permissions.canEntity(module, data, permission);
 				return can;
 			}
-			
-
-
 		}
 		return false;
 	}
