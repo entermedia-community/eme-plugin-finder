@@ -56,40 +56,6 @@ public class SearchingSkill extends BaseSkill
 		}
 		String action = agentFn.startsWith(prefix) ? agentFn.substring(prefix.length()) : agentFn;
 
-		if ("welcome".equals(action))
-		{
-			inAgentMessage.setValue("chatmessagestatus", "completed");
-			Schema schema = loadSchema();
-			messageContext.addContext("schema", schema);
-			LlmConnection llmconnection = getMediaArchive().getLlmConnection("localrender"); // Should stay
-																								// search_start
-			LlmResponse response = llmconnection.renderLocalAction(messageContext, "chat_searching_welcome");
-			response.setNextAutomationStep(prefix + "parse");
-			messageContext.setLastResponse(response);
-			return;
-		}
-		/*
-		 * if ("search_start".equals(agentFn)) { MultiValued usermessage =
-		 * (MultiValued)getMediaArchive().getCachedData("chatterbox", inAgentMessage.get("replytoid"));
-		 * MultiValued function = (MultiValued)getMediaArchive().getCachedData("aifunction", agentFn);
-		 * 
-		 * LlmResponse response = startChat(inAgentContext, usermessage, inAgentMessage, function);
-		 * 
-		 * //Handle right now String responseFn = response.getFunctionName(); if
-		 * ("conversation".equals(responseFn)) { inAgentMessage.setValue("chatmessagestatus", "completed");
-		 * 
-		 * String generalresponse = response.getMessage(); if(generalresponse != null) { MarkdownUtil md =
-		 * new MarkdownUtil(); generalresponse = md.render(generalresponse);
-		 * //inAgentMessage.setValue("message",generalresponse); } //LlmResponse respond = new
-		 * EMediaAIResponse(); response.setMessage(generalresponse);
-		 * 
-		 * inAgentContext.setRunFunctionName(null);
-		 * 
-		 * } else { response.setMessage(""); inAgentContext.setRunFunctionName(responseFn); } return
-		 * response; }
-		 */
-
-		else
 			if ("parse".equals(action))
 			{
 				// parse the search first

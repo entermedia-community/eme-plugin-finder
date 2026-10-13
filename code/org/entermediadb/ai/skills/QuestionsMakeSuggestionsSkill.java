@@ -39,8 +39,8 @@ public class QuestionsMakeSuggestionsSkill extends BaseSkill
 		// Fixed template name so copies of chat_questions under other labels share it
 		String agentFn = "question_create_suggestions";
 
-		MultiValued usermessage = (MultiValued) getMediaArchive().getCachedData("chatterbox", inAgentMessage.get("replytoid"));
-		String query = usermessage.get("message");
+		//MultiValued usermessage = (MultiValued) getMediaArchive().getCachedData("chatterbox", inAgentMessage.get("replytoid"));
+		//String query = usermessage.get("message");
 
 		Data entity = (Data) messageContext.getContextValue("entity");
 		Data entitymodule = (Data) messageContext.getContextValue("entitymodule");
