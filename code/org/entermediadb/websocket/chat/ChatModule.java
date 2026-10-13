@@ -571,28 +571,11 @@ public class ChatModule extends BaseMediaModule
 		}
 	}
 
-	// //deprecated? not used?
-	// public LlmConnection loadManager(WebPageRequest inReq)
-	// {
-	// MediaArchive archive = getMediaArchive(inReq);
-	// AssistantManager assistantManager = (AssistantManager)
-	// archive.getBean("assistantManager");
-	//
-	//// String model = inReq.findValue("aimodel");
-	//// if( model == null)
-	//// {
-	//// model = archive.getCatalogSettingValue("ai_default_chat_model");
-	//// }
-	// LlmConnection llmconnection =
-	// assistantManager.getLlmConnection();//(LlmConnection)
-	// archive.getLlmConnection(model);
-	// inReq.putPageValue("gpt", llmconnection); //Deprecated
-	// inReq.putPageValue("llmconnection", llmconnection);
-	// inReq.putPageValue("assistantManager", assistantManager);
-	//
-	// return llmconnection;
-	// }
-
+	/**
+	 * Load existing channel or creates new
+	 * 
+	 * @param inReq
+	 */
 	public void loadChatChannel(WebPageRequest inReq)
 	{
 		MediaArchive archive = getMediaArchive(inReq);
@@ -719,6 +702,80 @@ public class ChatModule extends BaseMediaModule
 		inReq.putPageValue("createnew", false);
 	}
 
+	/**
+	 * Gets the chat history of a channel
+	 * @param inReq
+	 */
+	public void loadChannelHistory(WebPageRequest inReq)
+	{
+		MediaArchive archive = getMediaArchive(inReq);
+		String channelid = inReq.getRequestParameter("channelid");
+		if (channelid == null)
+		{
+			return;
+		}
+		AgentContext agentContext = (AgentContext) archive.getCacheManager().get("agentContext", channelid);
+
+		Searcher searcher = archive.getSearcher("agentcontext");
+
+		if (agentContext == null)
+		{
+			agentContext = (AgentContext) searcher.query().exact("channel", channelid).searchOne();
+			if (agentContext == null)
+			{
+				agentContext = (AgentContext) getMediaArchive(inReq).getBean("baseAgentContext", false);
+			}
+
+			Data channel = archive.getCachedData("channel", channelid);
+			if (channel == null)
+			{
+				return;
+			}
+
+			agentContext.setValue("channel", channel.getId());
+			String entitymoduleid = channel.get("searchtype");
+			if (channel.get("dataid") != null)
+			{
+				agentContext.setValue("entityid", channel.get("dataid"));
+				agentContext.setValue("entitymoduleid", entitymoduleid);
+			}
+			agentContext.setChannel(channel);
+
+			searcher.saveData(agentContext);
+
+		}
+
+		String sortby = inReq.findActionValue("sortorder");
+		if (sortby == null)
+		{
+			sortby = "dateDown";
+		}
+
+		QueryBuilder builder = archive.query("chatterbox");
+
+		builder.named("messagesthitracker").exact("channel", agentContext.getChannel().getId()).not("messagetype", "system").sort(sortby);
+
+		UserProfile prof = inReq.getUserProfile();
+		if (prof != null)
+		{
+			Collection blocked = prof.getValues("blockedusers");
+			if (blocked != null && !blocked.isEmpty())
+			{
+				builder.notgroup("user", blocked);
+			}
+		}
+
+		HitTracker results = builder.search(inReq);
+		if (results != null)
+		{
+			results.setHitsPerPage(20);
+			inReq.putPageValue("messages", results);
+		}
+	}
+
+
+
+
 	protected MultiValued findExistingChannel(WebPageRequest inReq, Searcher channelsearcher, Data entity, String channeldatamodule, String channeltype)
 	{
 		MultiValued currentchannel = null;
@@ -785,73 +842,6 @@ public class ChatModule extends BaseMediaModule
 		Searcher channelsearcher = archive.getSearcher("channel");
 		Collection channels = channelsearcher.query().exact("user", inReq.getUserName()).sort("refreshdateDown").search();
 		inReq.putPageValue("userchannels", channels);
-	}
-
-	public void loadChannelChat(WebPageRequest inReq)
-	{
-		MediaArchive archive = getMediaArchive(inReq);
-		String channelid = inReq.getRequestParameter("channelid");
-		if (channelid == null)
-		{
-			return;
-		}
-		AgentContext agentContext = (AgentContext) archive.getCacheManager().get("agentContext", channelid);
-
-		Searcher searcher = archive.getSearcher("agentcontext");
-
-		if (agentContext == null)
-		{
-			agentContext = (AgentContext) searcher.query().exact("channel", channelid).searchOne();
-			if (agentContext == null)
-			{
-				agentContext = (AgentContext) getMediaArchive(inReq).getBean("baseAgentContext", false);
-			}
-
-			Data channel = archive.getCachedData("channel", channelid);
-			if (channel == null)
-			{
-				return;
-			}
-
-			agentContext.setValue("channel", channel.getId());
-			String entitymoduleid = channel.get("searchtype");
-			if (channel.get("dataid") != null)
-			{
-				agentContext.setValue("entityid", channel.get("dataid"));
-				agentContext.setValue("entitymoduleid", entitymoduleid);
-			}
-			agentContext.setChannel(channel);
-
-			searcher.saveData(agentContext);
-
-		}
-
-		String sortby = inReq.findActionValue("sortorder");
-		if (sortby == null)
-		{
-			sortby = "dateDown";
-		}
-
-		QueryBuilder builder = archive.query("chatterbox");
-
-		builder.named("messagesthitracker").exact("channel", agentContext.getChannel().getId()).not("messagetype", "system").sort(sortby);
-
-		UserProfile prof = inReq.getUserProfile();
-		if (prof != null)
-		{
-			Collection blocked = prof.getValues("blockedusers");
-			if (blocked != null && !blocked.isEmpty())
-			{
-				builder.notgroup("user", blocked);
-			}
-		}
-
-		HitTracker results = builder.search(inReq);
-		if (results != null)
-		{
-			results.setHitsPerPage(20);
-			inReq.putPageValue("messages", results);
-		}
 	}
 
 	public void createMessage(WebPageRequest inReq)

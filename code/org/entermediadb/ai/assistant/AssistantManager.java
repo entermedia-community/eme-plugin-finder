@@ -171,6 +171,10 @@ public class AssistantManager extends BaseAiManager
 
 			cache.put("chatMessageContext", inChannel.getId(), chatMessageContext);
 		}
+		else
+		{
+			log.info("existing " + chatMessageContext.hashCode());
+		}
 		if (chatMessageContext.getChannel() == null)
 		{
 
@@ -221,7 +225,7 @@ public class AssistantManager extends BaseAiManager
 			// hitory?
 			if (agentContext == null)
 			{
-				agentContext = (AgentContext) getMediaArchive().getBean("baseAgentContext");
+				agentContext = (AgentContext) getMediaArchive().getBean("baseAgentContext",false);
 				Data channel = getMediaArchive().getCachedData("channel", inChannel.getId());
 				if (channel == null)
 				{

@@ -14,6 +14,7 @@ import org.entermediadb.asset.convert.ConvertInstructions;
 import org.entermediadb.asset.convert.ConvertResult;
 import org.openedit.repository.ContentItem;
 import org.openedit.util.ExecResult;
+import org.openedit.util.MathUtils;
 import org.openedit.util.PathUtilities;
 
 public class FfmpegAudioTranscoder extends BaseTranscoder
@@ -141,6 +142,30 @@ public class FfmpegAudioTranscoder extends BaseTranscoder
 		long start = System.currentTimeMillis();
 
 		ArrayList<String> comm = new ArrayList<String>();
+
+		// Fast input seek to within one second of the offset, then an accurate output seek for the remainder
+		String offset = inStructions.getTimeOffset();
+		int framewindow = 1;
+		int seconds = 0;
+		double jumpoff = 0;
+		if (offset != null)
+		{
+			try
+			{
+				jumpoff = Double.parseDouble(offset);
+				seconds = (int) jumpoff;
+			}
+			catch (NumberFormatException e)
+			{
+				// Not plain seconds (e.g. hh:mm:ss), let ffmpeg handle it as an output seek
+			}
+		}
+		if (seconds > framewindow)
+		{
+			comm.add("-ss");
+			comm.add(String.valueOf(seconds - framewindow)); // This is the whole number minus 1
+		}
+
 		comm.add("-i");
 		comm.add(input.getAbsolutePath());
 		comm.add("-y");
@@ -172,11 +197,15 @@ public class FfmpegAudioTranscoder extends BaseTranscoder
 
 		// ffmpeg -ss 10 -t 6 -i input.mp3 output.mp3
 
-		if (inStructions.getTimeOffset() != null)
+		if (seconds > framewindow)
 		{
 			comm.add("-ss");
-			comm.add(inStructions.getTimeOffset());
-
+			comm.add(MathUtils.toString(jumpoff - (double) seconds + (double) framewindow, 3));
+		}
+		else if (offset != null)
+		{
+			comm.add("-ss");
+			comm.add(offset);
 		}
 		if (inStructions.get("compressionlevel") != null)
 		{

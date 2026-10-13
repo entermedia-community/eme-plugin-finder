@@ -232,6 +232,8 @@ public class TranscriberManager extends BaseAiManager
 					captions.add(cuemap);
 
 				}
+				inTrack.setValue("captions", captions);
+				archive.getSearcher("videotrack").saveData(inTrack);
 
 				log.info("Transcribed " + (timeoffset - 300) + "s - " + timeoffset + "s of " + inAsset);
 
@@ -248,11 +250,9 @@ public class TranscriberManager extends BaseAiManager
 			{
 				archive.getPageManager().removePage(page);
 			}
-
-		}
-
-		inTrack.setValue("captions", captions);
+  		}
 	}
+
 
 	public JSONObject getTranscribedData(ContentItem audio) throws FileNotFoundException, Exception
 	{
@@ -270,6 +270,7 @@ public class TranscriberManager extends BaseAiManager
 		Map params = new HashMap();
 		params.put("file", audioFile);
 
+		log.info("Transcribing audio file: " + audio.getPath());
 		LlmResponse resp = connection.callJson("/transcribe", headers, params);
 
 		JSONObject result = (JSONObject) resp.getRawResponse();
