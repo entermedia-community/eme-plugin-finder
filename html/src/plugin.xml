@@ -2893,7 +2893,7 @@
 		</property>
 	</bean>
 
-	<bean id="agentJobStatusSkill" class="org.entermediadb.ai.skills.AgentJobStatusSkill"
+	<bean id="openCodeStatusSkill" class="org.entermediadb.ai.skills.OpenCodeStatusSkill"
 		scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />

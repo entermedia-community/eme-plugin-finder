@@ -137,7 +137,7 @@ public class OpenCodeJobCreatorSkill extends BaseSkill
 			response = llmconnection.renderLocalAction(inAgentContext, "agent_job_showjobplan");
 
 			//This needs to be set so we come back here, not to the chat
-			response.setNextAutomationStep(inAgentContext.getCurrentAgentJob().getScenarioId() + ".agentJobCreator");
+			response.setNextAutomationStep(inAgentContext.getCurrentAgentJob().getScenarioId() + ".openCodeJobCreator");
 			inAgentContext.setLastResponse(response);
 
 			AgentJobStep skillEnabled = inAgentContext.getCurrentAutomationStep();

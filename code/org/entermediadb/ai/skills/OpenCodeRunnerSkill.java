@@ -7,6 +7,7 @@ import org.apache.commons.logging.LogFactory;
 import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.BaseSkill;
 import org.entermediadb.ai.agentjobs.AgentJobManager;
+import org.entermediadb.ai.agentjobs.AgentJobStep;
 import org.entermediadb.ai.llm.BasicLlmResponse;
 import org.entermediadb.ai.llm.LlmResponse;
 import org.entermediadb.mcp.client.OpenCodeClient;
@@ -14,7 +15,6 @@ import org.entermediadb.mcp.client.SessionStatus;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.openedit.Data;
-import org.openedit.MultiValued;
 import org.openedit.OpenEditException;
 import org.openedit.repository.ContentItem;
 
@@ -61,7 +61,7 @@ public class OpenCodeRunnerSkill extends BaseSkill
 			log.info("OpenCodeRunnerSkill: No workingpath provided, defaulting to " + workingpath);
 		}
 
-		MultiValued agentjobstep = (MultiValued) inContext.getContextValue("agentjobstep");
+		AgentJobStep agentjobstep = inContext.getCurrentAutomationStep();
 		String query = (String) agentjobstep.get("userrequest");
 		SessionStatus status;
 		OpenCodeClient client;

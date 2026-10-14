@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.entermediadb.ai.agentjobs.AgentJobStep;
 import org.entermediadb.asset.MediaArchive;
 import org.entermediadb.jsonrpc.JsonRpcScanner;
 import org.entermediadb.scripts.ScriptLogger;
@@ -796,7 +797,7 @@ public class OpenCodeClient implements CatalogEnabled
 
     Map<String, SessionStatus> sessionMap = new HashMap<>(); //Expire old ones?
 
-    public SessionStatus startSessionId(Data agentJobStep, String workingpath, String query) {
+    public SessionStatus startSessionId(AgentJobStep agentJobStep, String workingpath, String query) {
         // Implementation for starting a session with the given parameters
         String title = query.length() > 200 ? query.substring(0, 200) : query;
 
@@ -806,7 +807,7 @@ public class OpenCodeClient implements CatalogEnabled
         SessionStatus status = new SessionStatus();
         status.setSessionId(sessionId);
         status.setStartDate(new Date());
-        status.setAgentJobStep(agentJobStep); // You can set this to the appropriate Data object if available
+        status.setAgentJobStep(agentJobStep.getAgentJobStepData()); // You can set this to the appropriate Data object if available
         status.setCompleted(false);
         // Only events from this point on are relevant to this session's run.
         synchronized (fieldRecentEvents)

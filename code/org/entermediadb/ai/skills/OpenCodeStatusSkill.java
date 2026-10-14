@@ -11,14 +11,14 @@ import org.entermediadb.ai.llm.LlmResponse;
 import org.entermediadb.markdown.MarkdownUtil;
 import org.openedit.OpenEditException;
 
-public class AgentJobStatusSkill extends BaseSkill
+public class OpenCodeStatusSkill extends BaseSkill
 {
-	private static final Log log = LogFactory.getLog(AgentJobStatusSkill.class);
+	private static final Log log = LogFactory.getLog(OpenCodeStatusSkill.class);
 
 	@Override
 	public void process(AgentContext inContext)
 	{
-		log.info("AgentJobStatusSkill running for catalog: " + getCatalogId());
+		log.info("OpenCodeStatusSkill running for catalog: " + getCatalogId());
 		AgentJob agentjob = (AgentJob) inContext.getContextValue("agentjob");
 		if( agentjob == null)
 		{
