@@ -198,33 +198,33 @@ public class BaseAgentContext extends BaseData implements CatalogEnabled, AgentC
 		}
 	}
 
-	protected AgentJobStep fieldCurrentAutomationStep;
+	protected AgentJobStep fieldCurrentAgentJobStep;
 
-	public AgentJobStep getCurrentAutomationStep()
+	public AgentJobStep getCurrentAgentJobStep()
 	{
-		if (fieldCurrentAutomationStep == null && getParentContext() != null)
+		if (fieldCurrentAgentJobStep == null && getParentContext() != null)
 		{
-			return getParentContext().getCurrentAutomationStep();
+			return getParentContext().getCurrentAgentJobStep();
 		}
-		if (fieldCurrentAutomationStep == null && getCurrentAgentJob() != null)
+		if (fieldCurrentAgentJobStep == null && getCurrentAgentJob() != null)
 		{
 			Collection<AgentJobStep> enabled = getCurrentAgentJob().getSteps();
 			if (enabled != null && enabled.size() > 0)
 			{
-				fieldCurrentAutomationStep = enabled.iterator().next();
+				fieldCurrentAgentJobStep = enabled.iterator().next();
 			}
 		}
-		return fieldCurrentAutomationStep;
+		return fieldCurrentAgentJobStep;
 	}
 
-	public void setCurrentAutomationStep(AgentJobStep inCurrentAutomationStep)
+	public void setCurrentAgentJobStep(AgentJobStep inCurrentAgentJobStep)
 	{
-		fieldCurrentAutomationStep = inCurrentAutomationStep;
-		if (inCurrentAutomationStep != null)
+		fieldCurrentAgentJobStep = inCurrentAgentJobStep;
+		if (inCurrentAgentJobStep != null)
 		{
-			if (inCurrentAutomationStep.getExtraContextValues() != null)
+			if (inCurrentAgentJobStep.getExtraContextValues() != null)
 			{
-				JSONObject json = inCurrentAutomationStep.getExtraContextValues();
+				JSONObject json = inCurrentAgentJobStep.getExtraContextValues();
 				for (Object key : json.keySet())
 				{
 					Object value = json.get(key);
@@ -619,10 +619,10 @@ public class BaseAgentContext extends BaseData implements CatalogEnabled, AgentC
 	{
 		LogEntry entry = new LogEntry(inString, inLog);
 		entry.setDate(new Date());
-		if (getCurrentAutomationStep() != null)
+		if (getCurrentAgentJobStep() != null)
 		{
-			entry.setCurrentAutomationStepData(getCurrentAutomationStep().getAgentJobStepData());
-			entry.setAgentData(getCurrentAutomationStep().getAgentData());
+			entry.setCurrentAgentJobStepData(getCurrentAgentJobStep().getAgentJobStepData());
+			entry.setAgentData(getCurrentAgentJobStep().getAgentData());
 		}
 		getLogs().add(entry);
 	}

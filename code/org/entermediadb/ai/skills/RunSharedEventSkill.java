@@ -13,7 +13,7 @@ public class RunSharedEventSkill extends RunEventSkill
 	public void process(AgentContext inContext)
 	{
 		PathEventManager manager = (PathEventManager) getModuleManager().getBean(getCatalogId(), "pathEventManager");
-		String operation = inContext.getCurrentAutomationStep().getAgentData().get("runoperation");
+		String operation = inContext.getCurrentAgentJobStep().getAgentData().get("runoperation");
 
 		manager.runSharedPathEvent(getMediaArchive().getCatalogHome() + "/events/" + operation + ".html");
 

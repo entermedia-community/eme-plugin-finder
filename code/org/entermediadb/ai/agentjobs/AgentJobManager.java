@@ -617,7 +617,7 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 			contextbeanname = "baseAgentContext";
 		}
 		AgentContext childContext = (AgentContext) getMediaArchive().getBean(contextbeanname, false);
-		childContext.setCurrentAutomationStep(inStep);
+		childContext.setCurrentAgentJobStep(inStep);
 		if (inParentContext != null)
 		{
 			childContext.setParentContext(inParentContext);
@@ -675,7 +675,7 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 		getAutomationManager().addContext(inJob.getScenarioId(), inContext);
 		inContext.setCurrentAgentJob(inJob);
 
-		AgentJobStep step = inContext.getCurrentAutomationStep();
+		AgentJobStep step = inContext.getCurrentAgentJobStep();
 		if (step == null)
 		{
 			log.error("Scenario " + inJob.getScenarioId() + " has no enabled steps");
@@ -735,7 +735,7 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 	 */
 	public boolean runProcess(AgentContext inContext, AgentJobStep inStep, boolean inSkipStatusStart)
 	{
-		inContext.setCurrentAutomationStep(inStep);
+		inContext.setCurrentAgentJobStep(inStep);
 		inContext.addStatusListener(this);
 
 		AgentJob job = inContext.getCurrentAgentJob();

@@ -39,7 +39,7 @@ public class NamedEntityRecognitionManager extends ClassifyManager
 		Collection<PropertyDetail> autocreatefields = getMediaArchive().getSearcher(inModuleId).getPropertyDetails().findAiAutoCreatedProperties();
 
 		// TODO: Load the right AgentJobStep and config for this context
-		MultiValued inConfig = inContext.getCurrentAutomationStep().getAgentData();
+		MultiValued inConfig = inContext.getCurrentAgentJobStep().getAgentData();
 		// Validate tables
 		if (autocreatefields.isEmpty())
 		{

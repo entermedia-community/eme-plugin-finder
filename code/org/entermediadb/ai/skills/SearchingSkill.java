@@ -46,7 +46,7 @@ public class SearchingSkill extends BaseSkill
 		ChatMessageContext messageContext = (ChatMessageContext) inAgentContext;
 
 		MultiValued inAgentMessage = messageContext.getAgentMessage();
-		String agentFn = messageContext.getCurrentAutomationStep().getEnabledId();
+		String agentFn = messageContext.getCurrentAgentJobStep().getEnabledId();
 
 		//Steps are named <scenario>_welcome, _parse, _tables and _semantic so more than one scenario can search
 		String prefix = "";

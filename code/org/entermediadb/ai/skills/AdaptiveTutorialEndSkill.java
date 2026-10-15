@@ -32,7 +32,7 @@ public class AdaptiveTutorialEndSkill extends AdaptiveTutorialBaseSkill
 		channel.setValue("channelstatus", "finished");
 		getMediaArchive().getSearcher("channel").saveData(channel, null);
 
-		AgentJobStep skillEnabled = tutorMessageContext.getCurrentAutomationStep();
+		AgentJobStep skillEnabled = tutorMessageContext.getCurrentAgentJobStep();
 		tutorMessageContext.fireStatusComplete(skillEnabled);
 	}
 }

@@ -51,10 +51,10 @@ public class ChatGuessGoalSkill extends BaseSkill
 		messageContext.putContextValue("teaminstruction", null);
 
 		LlmConnection render = getMediaArchive().getLlmConnection("localrender");
-		LlmResponse response = render.renderLocalAction(inAgentContext, messageContext.getCurrentAutomationStep().getEnabledId());
+		LlmResponse response = render.renderLocalAction(inAgentContext, messageContext.getCurrentAgentJobStep().getEnabledId());
 		messageContext.setLastResponse(response);
 		//Do not run the create step yet, a typed reply or the Create button runs it
-		messageContext.fireStatusComplete(messageContext.getCurrentAutomationStep());
+		messageContext.fireStatusComplete(messageContext.getCurrentAgentJobStep());
 	}
 
 	protected Object findArgument(Map inStructuredResponse, String inKey)

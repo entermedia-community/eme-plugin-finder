@@ -52,7 +52,7 @@ public class WelcomeMenuSkill extends BaseSkill
 		LlmResponse response = llmconnection.renderLocalAction(inAgentContext, "welcome_menu");
 		messageContext.setLastResponse(response);
 
-		AgentJobStep skillEnabled = messageContext.getCurrentAutomationStep();
+		AgentJobStep skillEnabled = messageContext.getCurrentAgentJobStep();
 		messageContext.fireStatusComplete(skillEnabled);
 		super.process(messageContext);
 	}

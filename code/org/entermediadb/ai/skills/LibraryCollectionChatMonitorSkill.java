@@ -164,9 +164,9 @@ public class LibraryCollectionChatMonitorSkill extends BaseSkill
 		LlmResponse response = llmconnection.renderLocalAction(inAgentContext, "chat_monitor_menu");
 
 		//Next team message comes back here
-		response.setNextAutomationStep(inAgentContext.getCurrentAutomationStep().getEnabledId());
+		response.setNextAutomationStep(inAgentContext.getCurrentAgentJobStep().getEnabledId());
 		inAgentContext.setLastResponse(response);
-		inAgentContext.fireStatusComplete(inAgentContext.getCurrentAutomationStep());
+		inAgentContext.fireStatusComplete(inAgentContext.getCurrentAgentJobStep());
 	}
 
 	protected MultiValued findLatestUserMessage(String inChannelId)

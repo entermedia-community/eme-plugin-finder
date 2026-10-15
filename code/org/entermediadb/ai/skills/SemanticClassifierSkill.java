@@ -22,7 +22,7 @@ public class SemanticClassifierSkill extends BaseSkill
 	{
 		// MultiValued inConfig, Collection<MultiValued> inRecords
 		InformaticsContext informatic = new InformaticsContext(inContext);
-		MultiValued inConfig = inContext.getCurrentAutomationStep().getAgentData();
+		MultiValued inConfig = inContext.getCurrentAgentJobStep().getAgentData();
 		// Try both assets and records
 		Collection<Asset> inAssets = informatic.getAssetsToProcess();
 		long startTime = System.currentTimeMillis();

@@ -47,7 +47,7 @@ public class QuestionsConfirmSkill extends BaseSkill
 		messageContext.addContext("statuses", statuses);
 
 		LlmConnection llmconnection = getMediaArchive().getLlmConnection("localrender");
-		String template = messageContext.getCurrentAutomationStep().getAgentJobStepData().get("automationstep");
+		String template = messageContext.getCurrentAgentJobStep().getAgentJobStepData().get("automationstep");
 		LlmResponse response = llmconnection.renderLocalAction(messageContext, template);
 
 		messageContext.setLastResponse(response);
@@ -55,7 +55,7 @@ public class QuestionsConfirmSkill extends BaseSkill
 		String userquery = (String) messageContext.getParentContext().getContextValue("userquery");
 		messageContext.put("userquery", userquery);
 
-		AgentJobStep skillEnabled = messageContext.getCurrentAutomationStep();
+		AgentJobStep skillEnabled = messageContext.getCurrentAgentJobStep();
 		messageContext.fireStatusComplete(skillEnabled);
 
 		return;

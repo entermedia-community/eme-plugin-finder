@@ -42,9 +42,9 @@ public interface AgentContext extends Data
 
 	void setCurrentAgentJob(AgentJob inCurrentAgentJob);
 
-	AgentJobStep getCurrentAutomationStep();
+	AgentJobStep getCurrentAgentJobStep();
 
-	void setCurrentAutomationStep(AgentJobStep inCurrentAutomationStep);
+	void setCurrentAgentJobStep(AgentJobStep inCurrentAgentJobStep);
 
 	String getCatalogId();
 

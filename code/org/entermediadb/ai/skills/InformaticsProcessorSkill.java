@@ -64,13 +64,13 @@ public class InformaticsProcessorSkill extends BaseSkill
 	{
 		if (!(inContext instanceof InformaticsContext))
 		{
-			log.error(inContext.getCatalogId() + " Can't process Agent: " + inContext.getCurrentAutomationStep() + " wrong context");
+			log.error(inContext.getCatalogId() + " Can't process Agent: " + inContext.getCurrentAgentJobStep() + " wrong context");
 			return;
 
 		}
 		InformaticsContext informatic = (InformaticsContext) inContext;
 
-		log.info(inContext.getCatalogId() + " Processing Informatics Agent: " + inContext.getCurrentAutomationStep() + " in Scenario: " + inContext.getCurrentAgentJob());
+		log.info(inContext.getCatalogId() + " Processing Informatics Agent: " + inContext.getCurrentAgentJobStep() + " in Scenario: " + inContext.getCurrentAgentJob());
 
 		if (informatic.getAssetsToProcess() == null && informatic.getRecordsToProcess() == null)
 		{

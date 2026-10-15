@@ -77,7 +77,7 @@ public class MediaCreationSkill extends BaseSkill
 	public void processX(AgentContext inAgentContext)
 	{
 		ChatMessageContext messageContext = (ChatMessageContext) inAgentContext;
-		String agentFn = messageContext.getCurrentAutomationStep().getEnabledId();
+		String agentFn = messageContext.getCurrentAgentJobStep().getEnabledId();
 		if ("creation_image_welcome".equals(agentFn))
 		{
 			String entityid = inAgentContext.get("entityid");

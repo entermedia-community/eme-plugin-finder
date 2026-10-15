@@ -218,7 +218,7 @@ public class AgentModule extends BaseMediaModule
 			chatAgentContext.setCurrentAgentJob(job);
 			mediaArchive.saveData("agentcontext", chatAgentContext);
 
-			String functionpath =  chatAgentContext.getCurrentAgentJob().getScenarioId() + "." + chatAgentContext.getCurrentAutomationStep().getEnabledId();
+			String functionpath =  chatAgentContext.getCurrentAgentJob().getScenarioId() + "." + chatAgentContext.getCurrentAgentJobStep().getEnabledId();
 			chatAgentContext.getChannel().setValue("startup_scenario", functionpath);
 			mediaArchive.saveData("channel", chatAgentContext.getChannel());
 

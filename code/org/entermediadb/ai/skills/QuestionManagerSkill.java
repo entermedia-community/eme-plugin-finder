@@ -13,7 +13,7 @@ public class QuestionManagerSkill extends ToolsCallingSkill
     @Override
     public void process(AgentContext inContext)
     {
-        AgentJobStep currentEnabled = inContext.getCurrentAutomationStep();
+        AgentJobStep currentEnabled = inContext.getCurrentAgentJobStep();
         JSONObject params = currentEnabled.getAgentParameterValues();
 
         if (params != null)

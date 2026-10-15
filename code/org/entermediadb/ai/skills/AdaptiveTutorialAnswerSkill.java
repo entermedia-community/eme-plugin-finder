@@ -90,7 +90,7 @@ public class AdaptiveTutorialAnswerSkill extends AdaptiveTutorialBaseSkill
 
 		tutorMessageContext.putContextValue("messagerendertype", "answereval");
 
-		AgentJobStep skillEnabled = tutorMessageContext.getCurrentAutomationStep();
+		AgentJobStep skillEnabled = tutorMessageContext.getCurrentAgentJobStep();
 		tutorMessageContext.fireStatusComplete(skillEnabled);
 
 		Data agentmessage = tutorMessageContext.getAgentMessage();

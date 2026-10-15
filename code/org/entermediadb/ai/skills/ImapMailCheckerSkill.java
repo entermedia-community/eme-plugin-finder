@@ -16,7 +16,7 @@ public class ImapMailCheckerSkill extends ToolsCallingSkill
   @Override
   public void process(AgentContext inContext)
   {
-    AgentJobStep currentEnabled = inContext.getCurrentAutomationStep();
+    AgentJobStep currentEnabled = inContext.getCurrentAgentJobStep();
 
     String server = (String) inContext.getContextValue("mailserver");
     int serverport = ((Long) inContext.getContextValue("mailport")).intValue();

@@ -181,7 +181,7 @@ public class AdaptiveTutorialContinueSkill extends AdaptiveTutorialBaseSkill
 				tutorMessageContext.putContextValue("messagerendertype", "text");
 			}
 
-			AgentJobStep skillEnabled = tutorMessageContext.getCurrentAutomationStep();
+			AgentJobStep skillEnabled = tutorMessageContext.getCurrentAgentJobStep();
 			tutorMessageContext.fireStatusComplete(skillEnabled);
 
 			if (shouldPause(topcomponent))

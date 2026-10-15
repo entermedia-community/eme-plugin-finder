@@ -120,19 +120,19 @@ public class BaseSkill extends BaseAiManager implements Skill, CatalogEnabled
 
 	public void processStarting(AgentContext inContext)
 	{
-		Boolean cancelStarting = (Boolean) inContext.getContextValue("cancelstartup" + inContext.getCurrentAutomationStep().getEnabledId());
+		Boolean cancelStarting = (Boolean) inContext.getContextValue("cancelstartup" + inContext.getCurrentAgentJobStep().getEnabledId());
 		if (cancelStarting != null && cancelStarting.booleanValue())
 		{
 			return;
 		}
-		AgentJobStep skillEnabled = inContext.getCurrentAutomationStep();
+		AgentJobStep skillEnabled = inContext.getCurrentAgentJobStep();
 		inContext.fireStatusStarting(skillEnabled);
 
 	}
 
 	public void processUpdate(AgentContext inContext)
 	{
-		AgentJobStep skillEnabled = inContext.getCurrentAutomationStep();
+		AgentJobStep skillEnabled = inContext.getCurrentAgentJobStep();
 		if (skillEnabled != null)
 		{
 			inContext.fireStatusUpdate(skillEnabled);
@@ -141,7 +141,7 @@ public class BaseSkill extends BaseAiManager implements Skill, CatalogEnabled
 
 	public void processCompleted(AgentContext inContext)
 	{
-		AgentJobStep skillEnabled = inContext.getCurrentAutomationStep();
+		AgentJobStep skillEnabled = inContext.getCurrentAgentJobStep();
 		if (skillEnabled != null)
 		{
 			inContext.fireStatusComplete(skillEnabled);
@@ -154,7 +154,7 @@ public class BaseSkill extends BaseAiManager implements Skill, CatalogEnabled
 	@Override
 	public void process(AgentContext inContext)
 	{
-		AgentJobStep skillEnabled = inContext.getCurrentAutomationStep();
+		AgentJobStep skillEnabled = inContext.getCurrentAgentJobStep();
 		if( skillEnabled == null )
 		{
 			return;
@@ -162,7 +162,7 @@ public class BaseSkill extends BaseAiManager implements Skill, CatalogEnabled
 
 		processCompleted(inContext);
 
-		Collection<AgentJobStep> children = inContext.getCurrentAutomationStep().getChildren();
+		Collection<AgentJobStep> children = inContext.getCurrentAgentJobStep().getChildren();
 
 		for (AgentJobStep agentEnabled : children)
 		{

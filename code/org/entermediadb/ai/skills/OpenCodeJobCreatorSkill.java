@@ -53,7 +53,7 @@ public class OpenCodeJobCreatorSkill extends BaseSkill
 		inAgentContext.put("query", userRequest); // required
 
 		// Needed?
-		messageContext.fireStatusStarting(messageContext.getCurrentAutomationStep());
+		messageContext.fireStatusStarting(messageContext.getCurrentAgentJobStep());
 
 		Collection<String> docids = loadSkillDocIds();
 		EmbeddingManager embeddings = (EmbeddingManager) getMediaArchive().getBean("embeddingManager");
@@ -140,7 +140,7 @@ public class OpenCodeJobCreatorSkill extends BaseSkill
 			response.setNextAutomationStep(inAgentContext.getCurrentAgentJob().getScenarioId() + ".openCodeJobCreator");
 			inAgentContext.setLastResponse(response);
 
-			AgentJobStep skillEnabled = inAgentContext.getCurrentAutomationStep();
+			AgentJobStep skillEnabled = inAgentContext.getCurrentAgentJobStep();
 			inAgentContext.fireStatusComplete(skillEnabled);
 			return;
 		}

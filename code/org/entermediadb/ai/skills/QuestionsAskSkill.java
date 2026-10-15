@@ -76,7 +76,7 @@ public class QuestionsAskSkill extends BaseSkill
 				}
 
 				messageContext.setLastResponse(response);
-				AgentJobStep skillEnabled = messageContext.getCurrentAutomationStep();
+				AgentJobStep skillEnabled = messageContext.getCurrentAgentJobStep();
 				messageContext.fireStatusComplete(skillEnabled);
 				return;
 			}

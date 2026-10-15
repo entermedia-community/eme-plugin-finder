@@ -26,7 +26,7 @@ public class HandleErrorSkill extends BaseSkill
         //TODO: Return to start
         
 
-        AgentJobStep skillEnabled = inAgentContext.getCurrentAutomationStep();
+        AgentJobStep skillEnabled = inAgentContext.getCurrentAgentJobStep();
 		if( skillEnabled == null )
 		{
             log.error("No current automation step found in context. Cannot continue after error.");

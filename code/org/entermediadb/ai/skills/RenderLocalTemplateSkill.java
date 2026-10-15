@@ -22,7 +22,7 @@ public class RenderLocalTemplateSkill extends BaseSkill
 
 		LlmConnection llmconnection = getMediaArchive().getLlmConnection("localrender"); // Should stay
 		// search_start
-		String template = inAgentContext.getCurrentAutomationStep().getEnabledId();
+		String template = inAgentContext.getCurrentAgentJobStep().getEnabledId();
 		LlmResponse response = llmconnection.renderLocalAction(inAgentContext, template);
 
 		// String nextskill = (String) inAgentContext.getContextValue("nextskillenabled");
@@ -34,7 +34,7 @@ public class RenderLocalTemplateSkill extends BaseSkill
 		messageContext.setLastResponse(response);
 		// messageContext.log("sent" + response.getMessagePlain());
 
-		AgentJobStep skillEnabled = messageContext.getCurrentAutomationStep();
+		AgentJobStep skillEnabled = messageContext.getCurrentAgentJobStep();
 		messageContext.fireStatusComplete(skillEnabled);
 	}
 

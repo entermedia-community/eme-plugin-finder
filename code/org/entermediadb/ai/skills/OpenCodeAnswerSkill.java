@@ -25,7 +25,17 @@ public class OpenCodeAnswerSkill extends BaseSkill
 	@Override
 	public void process(AgentContext inContext)
 	{
-		MultiValued step = (MultiValued) inContext.getContextValue("agentjobstep");
+		// The status form posts the runner's step id; the root "agentjobstep" can be a different step
+		MultiValued step = null;
+		String stepid = (String) inContext.getContextValue("currentagentjobstepid");
+		if (stepid != null)
+		{
+			step = (MultiValued) getMediaArchive().getCachedData("agentjobstep", stepid);
+		}
+		if (step == null)
+		{
+			step = (MultiValued) inContext.getContextValue("agentjobstep");
+		}
 		if (step == null || !"question".equals(step.get("status")))
 		{
 			throw new OpenEditException("OpenCodeAnswerSkill: step " + step.get("id") + " is not waiting on a question");
@@ -59,6 +69,8 @@ public class OpenCodeAnswerSkill extends BaseSkill
 
 		LlmResponse response = new BasicLlmResponse();
 		response.setMessage("Question answered: " + answer.toJSONString());
+		// Go back to the status step so it keeps showing the session's progress
+		response.setExecAutomationStep(OpenCodeStatusSkill.findFunctionForSkill(inContext.getCurrentAgentJob(), "openCodeStatusSkill", null));
 		inContext.setLastResponse(response);
 		super.process(inContext);
 	}

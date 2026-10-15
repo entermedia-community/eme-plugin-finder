@@ -32,9 +32,9 @@ public class McpClientSkill extends BaseSkill
     @Override
     public void process(AgentContext inContext)
     {
-        McpClient client = getClient(inContext.getCurrentAutomationStep());
+        McpClient client = getClient(inContext.getCurrentAgentJobStep());
 
-        String operation = inContext.getCurrentAutomationStep().getAgentData().get("runoperation");
+        String operation = inContext.getCurrentAgentJobStep().getAgentData().get("runoperation");
         client.calltool(operation, inContext);
 
         // String operation = structure.get("operation");

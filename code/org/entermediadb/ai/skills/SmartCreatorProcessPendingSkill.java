@@ -23,7 +23,7 @@ public class SmartCreatorProcessPendingSkill extends BaseSkill
 	public void process(AgentContext inContext)
 	{
 
-		Collection<String> values = inContext.getCurrentAutomationStep().getAgentJobStepData().getValues("searchtypes");
+		Collection<String> values = inContext.getCurrentAgentJobStep().getAgentJobStepData().getValues("searchtypes");
 		if (values == null)
 		{
 			inContext.error("No Agents Enabled");
@@ -48,10 +48,10 @@ public class SmartCreatorProcessPendingSkill extends BaseSkill
 			String llmprompt = (String) inContext.getContextValue("llmprompt"); // From contextvalues
 			if (llmprompt == null)
 			{
-				llmprompt = inContext.getCurrentAutomationStep().getAgentJobStepData().get("llmprompt");
+				llmprompt = inContext.getCurrentAgentJobStep().getAgentJobStepData().get("llmprompt");
 			}
 
-			inContext.info("Found " + found.size() + " records in " + inContext.getCurrentAutomationStep().getAgentJobStepData());
+			inContext.info("Found " + found.size() + " records in " + inContext.getCurrentAgentJobStep().getAgentJobStepData());
 
 			for (Iterator iterator = found.iterator(); iterator.hasNext();)
 			{

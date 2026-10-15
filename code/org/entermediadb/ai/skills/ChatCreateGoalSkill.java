@@ -29,7 +29,7 @@ public class ChatCreateGoalSkill extends BaseSkill
 			return;
 		}
 
-		messageContext.fireStatusStarting(messageContext.getCurrentAutomationStep());
+		messageContext.fireStatusStarting(messageContext.getCurrentAgentJobStep());
 
 		//A typed reply is the goal. The Create button sends a system message with goaltext instead
 		MultiValued goalmessage = null;

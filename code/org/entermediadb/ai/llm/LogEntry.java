@@ -45,23 +45,23 @@ public class LogEntry
 		fieldMessage = inMessage;
 	}
 
-	public Data getCurrentAutomationStepData()
+	public Data getCurrentAgentJobStepData()
 	{
-		return fieldCurrentAutomationStepData;
+		return fieldCurrentAgentJobStepData;
 	}
 
-	public void setCurrentAutomationStepData(Data inCurrentAutomationStepData)
+	public void setCurrentAgentJobStepData(Data inCurrentAgentJobStepData)
 	{
-		fieldCurrentAutomationStepData = inCurrentAutomationStepData;
+		fieldCurrentAgentJobStepData = inCurrentAgentJobStepData;
 	}
 
 	protected String fieldMessage;
-	protected Data fieldCurrentAutomationStepData;
+	protected Data fieldCurrentAgentJobStepData;
 	protected Data fieldCurrentAgentData;
 
 	public Object getValue(String inField)
 	{
-		Object value = getCurrentAutomationStepData().getValue(inField);
+		Object value = getCurrentAgentJobStepData().getValue(inField);
 		if (value == null)
 		{
 			value = getAgentData().getValue(inField);
@@ -81,7 +81,7 @@ public class LogEntry
 
 	public String get(String inField)
 	{
-		String value = getCurrentAutomationStepData().get(inField);
+		String value = getCurrentAgentJobStepData().get(inField);
 		if (value == null)
 		{
 			value = getAgentData().get(inField);

@@ -162,7 +162,7 @@ public class AdaptiveTutorialProgressSkill extends AdaptiveTutorialBaseSkill
 
 		agentmessage.setValue("message", "Progress updated for tutorial " + tutorialid);
 
-		AgentJobStep skillEnabled = tutorMessageContext.getCurrentAutomationStep();
+		AgentJobStep skillEnabled = tutorMessageContext.getCurrentAgentJobStep();
 		tutorMessageContext.fireStatusComplete(skillEnabled);
 
 	}
