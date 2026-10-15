@@ -66,18 +66,18 @@ public class SessionStatus
 
     // Id of an outstanding opencode "permission.updated" event (a tool call awaiting approval)
     // that currentQuestion is describing. Null once answered (permission.replied) or never asked.
-    protected String fieldPendingPermissionId;
+    protected String fieldConfirmationPendingId;
 
-    public String getPendingPermissionId() {
-        return fieldPendingPermissionId;
+    public String getConfirmationPendingId() {
+        return fieldConfirmationPendingId;
     }
 
-    public void setPendingPermissionId(String pendingPermissionId) {
-        this.fieldPendingPermissionId = pendingPermissionId;
+    public void setConfirmationPendingId(String confirmationPendingId) {
+        this.fieldConfirmationPendingId = confirmationPendingId;
     }
 
     // Job status the pending request maps to: "securityprompt" (permission.asked) or "question"
-    // (form.created). Only meaningful while getPendingPermissionId() is not null.
+    // (form.created). Only meaningful while getConfirmationPendingId() is not null.
     protected String fieldPendingStatus;
 
     public String getPendingStatus() {

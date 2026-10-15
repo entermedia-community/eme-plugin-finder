@@ -19,7 +19,7 @@ public class OpenCodeStatusSkill extends BaseSkill
 	public void process(AgentContext inContext)
 	{
 		log.info("OpenCodeStatusSkill running for catalog: " + getCatalogId());
-		AgentJob agentjob = (AgentJob) inContext.getContextValue("agentjob");
+		AgentJob agentjob = (AgentJob) inContext.getCurrentAgentJob();
 		if( agentjob == null)
 		{
 			log.warn("No agent job found in context.");
@@ -74,6 +74,6 @@ public class OpenCodeStatusSkill extends BaseSkill
 		}
 
 		LlmConnection llmconnection = getMediaArchive().getLlmConnection("localrender");
-		return llmconnection.renderLocalAction(inContext, "agent_job_showjobplan");
+		return llmconnection.renderLocalAction(inContext, "agent_job_showstatus");
 	}
 }

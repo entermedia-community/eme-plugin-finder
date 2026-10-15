@@ -820,7 +820,7 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 			// we determine we dont need to do anything.
 			return false;
 		}
-		else if ("runskill".equals(state))
+		else if ("runskill".equals(state) || response.getExecAutomationStep() != null) 
 		{
 			runProcess(inContext, response.getExecAutomationStep());
 			return false;

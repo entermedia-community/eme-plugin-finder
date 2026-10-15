@@ -799,6 +799,9 @@ public class OpenCodeClient implements CatalogEnabled
 
     public SessionStatus startSessionId(AgentJobStep agentJobStep, String workingpath, String query) {
         // Implementation for starting a session with the given parameters
+        if( query == null || query.trim().isEmpty()) {
+            throw new IllegalArgumentException("Query cannot be null or empty");
+        }
         String title = query.length() > 200 ? query.substring(0, 200) : query;
 
         JSONObject session = createSession(title,workingpath);
@@ -854,7 +857,7 @@ public class OpenCodeClient implements CatalogEnabled
                     applySessionEvent(inLog,status, event);
                     status.setLastEventSeq(seq);
                 }
-                if (status.isCompleted() || status.getPendingPermissionId() != null)
+                if (status.isCompleted() || status.getConfirmationPendingId() != null)
                 {
                     return status;
                 }
@@ -890,7 +893,7 @@ public class OpenCodeClient implements CatalogEnabled
         {
             if (inStatus.getSessionId().equals(stringOf(data.get("sessionID"))))
             {
-                inStatus.setPendingPermissionId(stringOf(data.get("id")));
+                inStatus.setConfirmationPendingId(stringOf(data.get("id")));
                 // message is optional in permission.asked; otherwise use what opencode gave: action + resources
                 String text = stringOf(data.get("message"));
                 if (text == null || text.isEmpty())
@@ -912,7 +915,7 @@ public class OpenCodeClient implements CatalogEnabled
             JSONObject form = asObject(data.get("form"));
             if (form != null && inStatus.getSessionId().equals(stringOf(form.get("sessionID"))))
             {
-                inStatus.setPendingPermissionId(stringOf(form.get("id")));
+                inStatus.setConfirmationPendingId(stringOf(form.get("id")));
                 inStatus.setCurrentQuestion(stringOf(form.get("title")));
                 inStatus.setPendingForm(form);
                 inStatus.setPendingStatus("question");
@@ -921,9 +924,9 @@ public class OpenCodeClient implements CatalogEnabled
         else if ("permission.replied".equals(type))
         {
             String permissionId = stringOf(data.get("requestID"));
-            if (permissionId != null && permissionId.equals(inStatus.getPendingPermissionId()))
+            if (permissionId != null && permissionId.equals(inStatus.getConfirmationPendingId()))
             {
-                inStatus.setPendingPermissionId(null);
+                inStatus.setConfirmationPendingId(null);
                 inStatus.setCurrentQuestion(null);
             }
         }
@@ -931,9 +934,9 @@ public class OpenCodeClient implements CatalogEnabled
         {
             // data = {id, sessionID, answer?}; id is the form id
             String formId = stringOf(data.get("id"));
-            if (formId != null && formId.equals(inStatus.getPendingPermissionId()))
+            if (formId != null && formId.equals(inStatus.getConfirmationPendingId()))
             {
-                inStatus.setPendingPermissionId(null);
+                inStatus.setConfirmationPendingId(null);
                 inStatus.setCurrentQuestion(null);
                 inStatus.setPendingForm(null);
             }
@@ -947,7 +950,7 @@ public class OpenCodeClient implements CatalogEnabled
                 String message = error == null ? null : stringOf(error.get("message"));
                 inStatus.setError(message != null ? message : stringOf(data.get("error")));
                 // The run is over, so any permission still pending can no longer be answered.
-                inStatus.setPendingPermissionId(null);
+                inStatus.setConfirmationPendingId(null);
                 inStatus.setCurrentQuestion(null);
                 inStatus.setCompleted(true);
             }
@@ -958,7 +961,7 @@ public class OpenCodeClient implements CatalogEnabled
             {
                 // A cancelled run did not finish the task; report it as an error, not a success.
                 inStatus.setError("Session was interrupted before completing");
-                inStatus.setPendingPermissionId(null);
+                inStatus.setConfirmationPendingId(null);
                 inStatus.setCurrentQuestion(null);
                 inStatus.setCompleted(true);
             }
@@ -968,7 +971,7 @@ public class OpenCodeClient implements CatalogEnabled
             // succeeded ends the turn; failed and interrupted are handled above. The agent can be
             // blocked on a permission when the turn ends, so only mark completed when nothing is
             // pending — after replyToPermission the run resumes and ends again.
-            if (inStatus.getPendingPermissionId() == null)
+            if (inStatus.getConfirmationPendingId() == null)
             {
                 inStatus.setCompleted(true);
             }

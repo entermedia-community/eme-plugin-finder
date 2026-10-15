@@ -32,7 +32,7 @@ import org.openedit.repository.ContentItem;
  * Results: - On completion, "commandoutput" holds the assistant's final reply text and it's also
  * set as inContext.getLastResponse(). - If opencode raises a permission request (a tool call
  * awaiting approval) that isn't resolved within the wait budget, the agentjobstep is left with
- * status "question" or "securityprompt" plus "pendingquestion"/"pendingpermissionid", and this method returns
+ * status "question" or "securityprompt" plus "pendingquestion"/"confirmationpendingid", and this method returns
  * without marking the step complete. Answering that question (via
  * OpenCodeClient#replyToPermission) and re-running this step resumes the same session.
  */
@@ -63,6 +63,9 @@ public class OpenCodeRunnerSkill extends BaseSkill
 
 		AgentJobStep agentjobstep = inContext.getCurrentAutomationStep();
 		String query = (String) agentjobstep.get("userrequest");
+		if( query == null || query.trim().isEmpty()) {
+			query = (String)inContext.getContextValue("userrequest");
+		}
 		SessionStatus status;
 		OpenCodeClient client;
 		try
@@ -82,7 +85,7 @@ public class OpenCodeRunnerSkill extends BaseSkill
 				// Save progress from time to time so the step shows what opencode has said so far.
 				saveMarkdown(client, status);
 			}
-			while (!status.isCompleted() && status.getPendingPermissionId() == null
+			while (!status.isCompleted() && status.getConfirmationPendingId() == null
 					&& System.currentTimeMillis() < deadline);
 		}
 		catch (InterruptedException e)
@@ -96,7 +99,7 @@ public class OpenCodeRunnerSkill extends BaseSkill
 			throw new OpenEditException("OpenCodeRunnerSkill error running opencode in " + workingpath, e);
 		}
 
-		if (status.getPendingPermissionId() != null)
+		if (status.getConfirmationPendingId() != null)
 		{
 			// opencode is blocked on a tool-call approval. Leave the step for a human to answer
 			// instead of marking it complete; the orchestrator only stamps "complete"
@@ -106,14 +109,15 @@ public class OpenCodeRunnerSkill extends BaseSkill
 			agentjobstep.setValue("status", pendingStatus);
 			agentjobstep.setValue("markdowncontent", status.getCurrentQuestion());
 			agentjobstep.setValue("pendingquestion", status.getCurrentQuestion());
-			agentjobstep.setValue("pendingpermissionid", status.getPendingPermissionId());
+			agentjobstep.setValue("confirmationpendingid", status.getConfirmationPendingId());
 			// The form's fields are rendered by agent_job_showjobplan.html via AgentJob.getPendingForm
 			JSONObject form = status.getPendingForm();
 			agentjobstep.setValue("pendingform", form == null ? null : form.toJSONString());
-			getMediaArchive().saveData("agentjobstep", agentjobstep);
+			getMediaArchive().saveData("agentjobstep", agentjobstep.getAgentJobStepData());
 
 			LlmResponse response = new BasicLlmResponse();
 			response.setMessage(status.getCurrentQuestion());
+			response.setExecAutomationStep("eme_server_custom_skills_status");
 			inContext.setLastResponse(response);
 			return;
 		}

@@ -39,7 +39,7 @@ public class OpenCodeApproveSkill extends BaseSkill
 		AgentJobManager manager = (AgentJobManager) getMediaArchive().getBean("agentJobManager");
 		OpenCodeClient client = manager.getOpenCodeClient();
 		SessionStatus status = client.loadStatus(step.get("id"));
-		String requestid = step.get("pendingpermissionid");
+		String requestid = step.get("confirmationpendingid");
 		if (status == null || requestid == null)
 		{
 			throw new OpenEditException("OpenCodeApproveSkill: no opencode session waiting for step " + step.get("id"));
@@ -51,7 +51,7 @@ public class OpenCodeApproveSkill extends BaseSkill
 
 		step.setValue("status", "running");
 		step.setValue("pendingquestion", null);
-		step.setValue("pendingpermissionid", null);
+		step.setValue("confirmationpendingid", null);
 		getMediaArchive().saveData("agentjobstep", step);
 
 		LlmResponse response = new BasicLlmResponse();

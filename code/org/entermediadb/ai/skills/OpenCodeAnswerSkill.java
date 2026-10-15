@@ -53,7 +53,7 @@ public class OpenCodeAnswerSkill extends BaseSkill
 
 		step.setValue("status", "running");
 		step.setValue("pendingquestion", null);
-		step.setValue("pendingpermissionid", null);
+		step.setValue("confirmationpendingid", null);
 		step.setValue("pendingform", null);
 		getMediaArchive().saveData("agentjobstep", step);
 
