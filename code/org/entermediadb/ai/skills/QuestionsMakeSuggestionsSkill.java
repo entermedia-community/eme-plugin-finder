@@ -35,9 +35,10 @@ public class QuestionsMakeSuggestionsSkill extends BaseSkill
 	{
 		ChatMessageContext messageContext = (ChatMessageContext) inAgentContext;
 		///
+		
 		MultiValued inAgentMessage = messageContext.getAgentMessage();
 		// Fixed template name so copies of chat_questions under other labels share it
-		String agentFn = "question_create_suggestions";
+		
 
 		//MultiValued usermessage = (MultiValued) getMediaArchive().getCachedData("chatterbox", inAgentMessage.get("replytoid"));
 		//String query = usermessage.get("message");
@@ -45,9 +46,18 @@ public class QuestionsMakeSuggestionsSkill extends BaseSkill
 		Data entity = (Data) messageContext.getContextValue("entity");
 		Data entitymodule = (Data) messageContext.getContextValue("entitymodule");
 
+		Collection aisuggestions = getMediaArchive().query("aisuggestion").exact("entityid", entity).search();
+		if (aisuggestions != null && !aisuggestions.isEmpty())
+		{
+			messageContext.put("suggestions", aisuggestions);
+			super.process(messageContext);
+			return;
+		}
+
 		String text = findSampleOfEmbeddedData(entitymodule, entity);
 		messageContext.addContext("embeddedtext", text);
 
+		String agentFn = "question_create_suggestions";
 		LlmConnection llmconnection = getMediaArchive().getLlmConnection("thinking");
 		LlmResponse response = llmconnection.callStructure(messageContext, agentFn);
 
@@ -70,15 +80,15 @@ public class QuestionsMakeSuggestionsSkill extends BaseSkill
 		{
 			LlmResponse response2 = llmconnection.renderLocalAction(messageContext, "question_nosuggestions");
 			messageContext.setLastResponse(response2);
+			super.process(messageContext);	
 			return;
 		}
-		else
-		{
-			AgentJobStep welcome = messageContext.getCurrentAgentJob().findStepBySkill("questionsSkill");
-			response.setExecAutomationStep(welcome == null ? "entity_chat_questions_welcome" : welcome.getEnabledId());
+		else {
+			messageContext.put("suggestions", aisuggestions);
 		}
 		messageContext.setLastResponse(response);
-		return;
+		
+		super.process(messageContext);
 
 	}
 

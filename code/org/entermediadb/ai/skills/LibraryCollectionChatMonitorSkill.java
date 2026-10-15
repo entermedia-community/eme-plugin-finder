@@ -157,8 +157,8 @@ public class LibraryCollectionChatMonitorSkill extends BaseSkill
 		inAgentContext.put("helperrole", findArgument(inStructuredResponse, "helperrole"));
 		inAgentContext.put("confirmation", findArgument(inStructuredResponse, "confirmation"));
 		//Saved so the <scenario>_confirm page the team picks can say what was asked for
-		inAgentContext.putContextValue("teaminstruction", findArgument(inStructuredResponse, "instruction"));
-		inAgentContext.putContextValue("teamcontext", findArgument(inStructuredResponse, "context"));
+		inAgentContext.put("teaminstruction", findArgument(inStructuredResponse, "instruction"));
+		inAgentContext.put("teamcontext", findArgument(inStructuredResponse, "context"));
 
 		LlmConnection llmconnection = getMediaArchive().getLlmConnection("localrender");
 		LlmResponse response = llmconnection.renderLocalAction(inAgentContext, "chat_monitor_menu");

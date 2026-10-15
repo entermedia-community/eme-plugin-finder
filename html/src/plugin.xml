@@ -2859,7 +2859,7 @@
 		</property>
 	</bean>
 
-	<bean id="questionsSkill" class="org.entermediadb.ai.skills.QuestionsSkill" scope="prototype">
+	<bean id="questionsConfirmSkill" class="org.entermediadb.ai.skills.QuestionsConfirmSkill" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>

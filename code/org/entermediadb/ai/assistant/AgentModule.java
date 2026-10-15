@@ -12,7 +12,7 @@ import org.entermediadb.ai.agentjobs.AgentJob;
 import org.entermediadb.ai.agentjobs.AgentJobManager;
 import org.entermediadb.ai.informatics.InformaticsProcessorManager;
 import org.entermediadb.ai.skills.MediaCreationSkill;
-import org.entermediadb.ai.skills.QuestionsSkill;
+import org.entermediadb.ai.skills.QuestionsConfirmSkill;
 import org.entermediadb.ai.skills.SearchingSkill;
 import org.entermediadb.asset.MediaArchive;
 import org.entermediadb.asset.modules.BaseMediaModule;
@@ -42,10 +42,10 @@ public class AgentModule extends BaseMediaModule
 		return creationManager;
 	}
 
-	public QuestionsSkill getQuestionsSkill(WebPageRequest inReq)
+	public QuestionsConfirmSkill getQuestionsSkill(WebPageRequest inReq)
 	{
 		String catalogid = inReq.findValue("catalogid");
-		QuestionsSkill questionsManager = (QuestionsSkill) getMediaArchive(catalogid).getBean("questionsSkill");
+		QuestionsConfirmSkill questionsManager = (QuestionsConfirmSkill) getMediaArchive(catalogid).getBean("questionsConfirmSkill");
 		return questionsManager;
 	}
 

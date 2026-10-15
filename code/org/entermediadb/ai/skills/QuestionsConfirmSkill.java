@@ -12,6 +12,7 @@ import org.entermediadb.ai.assistant.AssistantManager;
 import org.entermediadb.ai.assistant.GuideStatus;
 import org.entermediadb.ai.classify.EmbeddingManager;
 import org.entermediadb.ai.agentjobs.AgentJobStep;
+import org.entermediadb.ai.llm.BasicLlmResponse;
 import org.entermediadb.ai.llm.LlmConnection;
 import org.entermediadb.ai.llm.LlmResponse;
 import org.entermediadb.asset.Asset;
@@ -21,17 +22,15 @@ import org.openedit.MultiValued;
 import org.openedit.OpenEditException;
 import org.openedit.hittracker.HitTracker;
 
-public class QuestionsSkill extends BaseSkill
+public class QuestionsConfirmSkill extends BaseSkill
 {
-	private static final Log log = LogFactory.getLog(QuestionsSkill.class);
+	private static final Log log = LogFactory.getLog(QuestionsConfirmSkill.class);
 
 	@Override
 	public void process(AgentContext inAgentContext)
 	{
 		ChatMessageContext messageContext = (ChatMessageContext) inAgentContext;
 		MultiValued inAgentMessage = messageContext.getAgentMessage();
-		// Fixed template name so copies of chat_questions under other labels share it
-		String agentFn = "chat_questions_welcome";
 
 		inAgentMessage.setValue("chatmessagestatus", "completed");
 
@@ -47,32 +46,17 @@ public class QuestionsSkill extends BaseSkill
 		Collection<GuideStatus> statuses = getAssistantManager().getGuideStatus(entitymodule, entity);
 		messageContext.addContext("statuses", statuses);
 
-		/*
-		 * for(GuideStatus stat : statuses) { if(!stat.isReady()) { messageContext.setValue("wait", 1000L);
-		 * messageContext.setRunFunctionName(messageContext.getFunctionName());
-		 * 
-		 * return null; } }
-		 */
+		LlmConnection llmconnection = getMediaArchive().getLlmConnection("localrender");
+		String template = messageContext.getCurrentAutomationStep().getAgentJobStepData().get("automationstep");
+		LlmResponse response = llmconnection.renderLocalAction(messageContext, template);
 
-		Collection aisuggestions = getMediaArchive().query("aisuggestion").exact("entityid", entity).search();
-		messageContext.addContext("suggestions", aisuggestions);
+		messageContext.setLastResponse(response);
 
-		LlmConnection llmconnection = getMediaArchive().getLlmConnection("localrender"); // Should stay
-		LlmResponse response = llmconnection.renderLocalAction(messageContext, agentFn);
-		if (aisuggestions.isEmpty())
-		{
-			response.setExecAutomationStep(stepIdForSkill(messageContext, "questionsMakeSuggestionsSkill", "entity_chat_questions_create_suggestions"));
-			messageContext.setLastResponse(response);
-			super.process(inAgentContext);
-		}
-		else
-		{
-			response.setNextAutomationStep(stepIdForSkill(messageContext, "questionsAskSkill", "entity_chat_questions_ask"));
-			messageContext.setLastResponse(response);
-			AgentJobStep skillEnabled = messageContext.getCurrentAutomationStep();
-			messageContext.fireStatusComplete(skillEnabled);
+		String userquery = (String) messageContext.getParentContext().getContextValue("userquery");
+		messageContext.put("userquery", userquery);
 
-		}
+		AgentJobStep skillEnabled = messageContext.getCurrentAutomationStep();
+		messageContext.fireStatusComplete(skillEnabled);
 
 		return;
 

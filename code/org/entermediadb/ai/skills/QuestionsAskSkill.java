@@ -33,7 +33,16 @@ public class QuestionsAskSkill extends BaseSkill
 		MultiValued inAgentMessage = messageContext.getAgentMessage();
 
 		MultiValued usermessage = (MultiValued) getMediaArchive().getCachedData("chatterbox", inAgentMessage.get("replytoid"));
-		String query = usermessage.get("message");
+
+		String query = null;
+		if (usermessage != null)
+		{
+			query = usermessage.get("message");
+		}
+		else 
+		{
+			query = (String) messageContext.getParentContext().getContextValue("userquery");
+		}
 
 		// Make sure they have already picked the documents
 		String entiyid = messageContext.get("entityid");

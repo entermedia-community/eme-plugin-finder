@@ -7,7 +7,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.entermediadb.ai.assistant.AssistantManager;
-import org.entermediadb.ai.skills.QuestionsSkill;
+import org.entermediadb.ai.skills.QuestionsConfirmSkill;
 import org.entermediadb.ai.skills.SearchingSkill;
 import org.entermediadb.ai.skills.SmartCreatorPlaybackSkill;
 import org.entermediadb.asset.MediaArchive;
@@ -34,10 +34,10 @@ public class SmartCreatorModule extends BaseMediaModule
 		return smartCreatorManager;
 	}
 
-	public QuestionsSkill getQuestionsSkill(WebPageRequest inReq)
+	public QuestionsConfirmSkill getQuestionsSkill(WebPageRequest inReq)
 	{
 		String catalogid = inReq.findValue("catalogid");
-		QuestionsSkill questionsManager = (QuestionsSkill) getMediaArchive(catalogid).getBean("questionsSkill");
+		QuestionsConfirmSkill questionsManager = (QuestionsConfirmSkill) getMediaArchive(catalogid).getBean("questionsConfirmSkill");
 		return questionsManager;
 	}
 
