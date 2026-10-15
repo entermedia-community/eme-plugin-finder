@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -20,8 +21,6 @@ import org.entermediadb.ai.ChatMessageContext;
 import org.entermediadb.ai.Skill;
 import org.entermediadb.ai.SkillStatusListener;
 import org.entermediadb.ai.automation.AutomationManager;
-import org.entermediadb.ai.agentjobs.AgentJobStep;
-import org.entermediadb.ai.llm.BaseAgentContext;
 import org.entermediadb.ai.llm.LlmResponse;
 import org.entermediadb.asset.MediaArchive;
 import org.entermediadb.asset.util.JsonUtil;
@@ -33,7 +32,6 @@ import org.openedit.CatalogEnabled;
 import org.openedit.Data;
 import org.openedit.ModuleManager;
 import org.openedit.MultiValued;
-import org.openedit.OpenEditException;
 import org.openedit.data.QueryBuilder;
 import org.openedit.data.Searcher;
 import org.openedit.hittracker.HitTracker;
@@ -391,10 +389,12 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 		for (Iterator iterator = jobs.iterator(); iterator.hasNext();)
 		{
 			Data hit = (Data) iterator.next();
+
 			try
 			{
 				AgentJob job = (AgentJob) getMediaArchive().getCachedData("agentjob", hit.getId());
 				String status = job.get("status");
+				
 				//Only repeat jobs that are finished. Skip running, queued or ones waiting on a person
 				if( status != null && !"complete".equals(status) && !"error".equals(status))
 				{
@@ -543,6 +543,12 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 	public AgentJob importScenario(String inScenarioId, AgentContext inContext)
 	{
 		AgentJob job = (AgentJob) getMediaArchive().getSearcher("agentjob").createNewData();
+		
+		//set expirationdate 30 days from today
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.DAY_OF_MONTH, 30);
+		job.setValue("expirationdate", cal.getTime());
+
 		job.setValue("automationscenario", inScenarioId);
 		MultiValued scenariodata = (MultiValued) getMediaArchive().getCachedData("automationscenario", inScenarioId);
 		job.setValue("name", scenariodata == null ? inScenarioId : scenariodata.getName());
