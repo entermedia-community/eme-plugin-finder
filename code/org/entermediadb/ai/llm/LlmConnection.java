@@ -1,10 +1,10 @@
 package org.entermediadb.ai.llm;
 
 import java.util.Map;
-
 import org.entermediadb.ai.AgentContext;
 import org.json.simple.JSONObject;
 import org.openedit.Data;
+import org.openedit.page.Page;
 
 public interface LlmConnection
 {
@@ -27,7 +27,7 @@ public interface LlmConnection
 
 	public LlmResponse renderLocalAction(AgentContext llmreuest, String inTemplate);
 
-	public LlmResponse renderLocalAction(AgentContext llmreuest, String inTemplate, String contentType);
+	public LlmResponse renderLocalAction(AgentContext llmreuest, Page inTemplate);
 
 	public LlmResponse callCreateFunction(AgentContext agentcontext, String inFunction);
 

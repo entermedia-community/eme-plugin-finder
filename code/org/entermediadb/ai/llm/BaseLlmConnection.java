@@ -285,25 +285,27 @@ public class BaseLlmConnection implements LlmConnection
 
 	public LlmResponse renderLocalAction(AgentContext agentcontext, String inTemplateName)
 	{
-		return renderLocalAction(agentcontext, inTemplateName, "html");
-	}
-
-	public LlmResponse renderLocalAction(AgentContext agentcontext, String inTemplateName, String contentType)
-	{
 		String apphome = "/" + getMediaArchive().getCatalogSettingValue("mediadbappid");
 
-		String templatepath = apphome + "/views/agentresponses/" + inTemplateName + "." + contentType;
+		String[] paths = {"/views/agentresponses/" + inTemplateName + ".json", "/mediadb/views/agentresponses/" + inTemplateName + ".json", "/views/agentresponses/" + inTemplateName + ".html",
+			"/mediadb/views/agentresponses/" + inTemplateName + ".html"};
 
+		for (String path : paths)
+		{
+			Page template = getPageManager().getPage(apphome + path);
+			if (template.exists())
+			{
+				return renderLocalAction(agentcontext, template);
+			}
+		}
+
+		throw new OpenEditException("Template not found: " + paths[paths.length - 1]);
+	}
+
+	public LlmResponse renderLocalAction(AgentContext agentcontext, Page template)
+	{
 		try
 		{
-			Page template = getPageManager().getPage(templatepath);
-
-			if (!template.exists())
-			{
-				templatepath = "/mediadb/views/agentresponses/" + inTemplateName + "." + contentType;
-				template = getPageManager().getPage(templatepath);
-			}
-
 			User user = getMediaArchive().getUserManager().getUser("agent");
 
 			WebPageRequest inReq = getRequestUtils().createPageRequest(template, user);
@@ -328,7 +330,7 @@ public class BaseLlmConnection implements LlmConnection
 			streamer.include(template, inReq);
 
 			String string = output.toString();
-			log.info("Loading response for function: " + inTemplateName + " Output: " + string);
+			log.info("Loading response from: " + template.getPath() + " Output: " + string);
 
 			BasicLlmResponse response = new BasicLlmResponse();
 
