@@ -7,7 +7,6 @@ import java.util.Set;
 import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.BaseSkill;
 import org.entermediadb.ai.assistant.AssistantManager;
-import org.entermediadb.ai.skills.SearchingSkill;
 import org.entermediadb.ai.llm.BasicLlmResponse;
 import org.json.simple.JSONArray;
 import org.openedit.Data;
@@ -16,12 +15,6 @@ import org.openedit.hittracker.HitTracker;
 
 public class SmartCreatorFindMemoryFilesSkill extends BaseSkill
 {
-
-	public SearchingSkill getSearchingSkill()
-	{
-		SearchingSkill searchingManager = (SearchingSkill) getMediaArchive().getBean("searchingSkill");
-		return searchingManager;
-	}
 
 	public ChatSmartCreatorConfirmationSkill getSmartCreatorSkill()
 	{

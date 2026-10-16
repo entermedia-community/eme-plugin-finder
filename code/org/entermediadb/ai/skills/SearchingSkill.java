@@ -98,6 +98,7 @@ public class SearchingSkill extends BaseSkill
 				res.setExecAutomationStep(prefix + "tables");
 			}
 			messageContext.setLastResponse(res);
+			
 			return;
 		}
 
@@ -110,9 +111,10 @@ public class SearchingSkill extends BaseSkill
 			String message = response.getMessage();
 			messageContext.setMessagePrefix(message);
 
-			response.setExecAutomationStep(prefix + "semantic");
-
+			//response.setExecAutomationStep(prefix + "semantic");
 			messageContext.setLastResponse(response);
+			
+			super.processCompleted(messageContext);
 			return;
 		}
 		else if ("semantic".equals(action))
@@ -164,16 +166,18 @@ public class SearchingSkill extends BaseSkill
 			}
 			inAgentContext.setMessagePrefix(null);
 			// Set next function to be able to search again
-			result.setNextAutomationStep(prefix + "parse");
+			result.setNextAutomationStep("view_related_records");
 			messageContext.setLastResponse(result);
+			messageContext.fireStatusComplete(messageContext.getCurrentAgentJobStep());
 			return;
 
 		}
-		else if (agentFn.startsWith("view_related_record"))
+		else if (agentFn.startsWith("view_related_records"))
 		{
 			LlmConnection llmconnection = getMediaArchive().getLlmConnection("localrender");
 			LlmResponse response = llmconnection.renderLocalAction(inAgentContext, agentFn);
 			messageContext.setLastResponse(response);
+			messageContext.fireStatusComplete(messageContext.getCurrentAgentJobStep());
 			return;
 		}
 

@@ -8,7 +8,6 @@ import java.util.Map;
 
 import org.entermediadb.ai.assistant.AssistantManager;
 import org.entermediadb.ai.skills.QuestionsConfirmSkill;
-import org.entermediadb.ai.skills.SearchingSkill;
 import org.entermediadb.ai.skills.SmartCreatorPlaybackSkill;
 import org.entermediadb.asset.MediaArchive;
 import org.entermediadb.asset.modules.BaseMediaModule;
@@ -39,13 +38,6 @@ public class SmartCreatorModule extends BaseMediaModule
 		String catalogid = inReq.findValue("catalogid");
 		QuestionsConfirmSkill questionsManager = (QuestionsConfirmSkill) getMediaArchive(catalogid).getBean("questionsConfirmSkill");
 		return questionsManager;
-	}
-
-	public SearchingSkill getSearchingSkill(WebPageRequest inReq)
-	{
-		String catalogid = inReq.findValue("catalogid");
-		SearchingSkill searchingManager = (SearchingSkill) getMediaArchive(catalogid).getBean("searchingSkill");
-		return searchingManager;
 	}
 
 	public void loadTutorials(WebPageRequest inReq) throws Exception

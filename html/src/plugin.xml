@@ -2847,7 +2847,25 @@
 		</property>
 	</bean>
 
-	<bean id="searchingSkill" class="org.entermediadb.ai.skills.SearchingSkill" scope="prototype">
+	<bean id="searchingParseSkill" class="org.entermediadb.ai.skills.SearchingParseSkill" scope="prototype">
+		<property name="moduleManager">
+			<ref bean="moduleManager" />
+		</property>
+	</bean>
+
+	<bean id="searchingTablesSkill" class="org.entermediadb.ai.skills.SearchingTablesSkill" scope="prototype">
+		<property name="moduleManager">
+			<ref bean="moduleManager" />
+		</property>
+	</bean>
+
+	<bean id="searchingSemanticSkill" class="org.entermediadb.ai.skills.SearchingSemanticSkill" scope="prototype">
+		<property name="moduleManager">
+			<ref bean="moduleManager" />
+		</property>
+	</bean>
+
+	<bean id="searchingViewRelatedSkill" class="org.entermediadb.ai.skills.SearchingViewRelatedSkill" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>

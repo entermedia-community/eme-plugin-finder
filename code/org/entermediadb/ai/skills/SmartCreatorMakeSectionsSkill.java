@@ -155,8 +155,8 @@ public class SmartCreatorMakeSectionsSkill extends BaseSkill
 			// exportAsAsset(messageContext, exportContent.toString());
 
 			/*
-			 * Improve speed // try semantically matching an asset to the section SearchingSkill
-			 * searchingmanager = (SearchingSkill) getMediaArchive().getBean("searchingSkill"); String
+			 * Improve speed // try semantically matching an asset to the section SearchingSemanticSkill
+			 * searchingmanager = (SearchingSemanticSkill) getMediaArchive().getBean("searchingSemanticSkill"); String
 			 * playbackentityid = section.get("playbackentityid"); String playbackentitymoduleid =
 			 * section.get("playbackentitymoduleid"); Data playbackentity =
 			 * getMediaArchive().getCachedData(playbackentitymoduleid, playbackentityid); String creatorName =
