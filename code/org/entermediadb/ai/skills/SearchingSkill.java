@@ -63,7 +63,17 @@ public class SearchingSkill extends BaseSkill
 			// If no parts then keep talking
 			MultiValued usermessage = (MultiValued) getMediaArchive().getCachedData("chatterbox", inAgentMessage.get("replytoid"));
 
-			inAgentContext.put("userquery", usermessage.get("message"));
+			String query = null;
+			if (usermessage != null)
+			{
+				query = usermessage.get("message");
+			}
+			else 
+			{
+				query = (String) messageContext.getContextValue("userquery");
+			}
+
+			inAgentContext.put("userquery", query);
 
 			inAgentContext.setMessagePrefix(null);
 			inAgentContext.setAiSearchParams(null);
@@ -77,6 +87,10 @@ public class SearchingSkill extends BaseSkill
 			{
 				Map details = (Map) messagestructured.get("step_details");
 				String friendly_response = (String) details.get("friendly_response");
+				if (friendly_response == null)
+				{
+					friendly_response = (String)((Map)details.get("conversation")).get("friendly_response");
+				}
 				res.setRawMessage(friendly_response);
 			}
 			else
