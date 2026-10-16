@@ -118,7 +118,7 @@ public class ElasticListSearcher extends BaseElasticSearcher implements Reloadab
 
 			return data;
 		}
-		return (Data) getModuleManager().getBean(getNewDataName());
+		return (Data) getModuleManager().getBean(getCatalogId(), getNewDataName(), false);
 	}
 
 	public synchronized void reindexXml() throws OpenEditException
