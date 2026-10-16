@@ -80,8 +80,10 @@ public class SearchingSemanticSkill extends BaseSkill
 
 		}
 		inAgentContext.setMessagePrefix(null);
+		// Set next function to be able to search again
+		result.setNextAutomationStep("view_related_records");
 		messageContext.setLastResponse(result);
-		super.process(messageContext);
+		messageContext.fireStatusComplete(messageContext.getCurrentAgentJobStep());
 		return;
 
 	}

@@ -56,10 +56,10 @@ public class SearchingTablesSkill extends BaseSkill
 			String message = response.getMessage();
 			messageContext.setMessagePrefix(message);
 
-			response.setExecAutomationStep(prefix + "semantic");
-
+			//response.setExecAutomationStep(prefix + "semantic");
 			messageContext.setLastResponse(response);
-			
+
+			super.processCompleted(messageContext);
 			return;
 		}
 

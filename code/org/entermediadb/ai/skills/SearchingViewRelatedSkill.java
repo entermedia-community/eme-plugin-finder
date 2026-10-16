@@ -25,6 +25,9 @@ public class SearchingViewRelatedSkill extends BaseSkill
 	public void process(AgentContext inAgentContext)
 	{
 		ChatMessageContext messageContext = (ChatMessageContext) inAgentContext;
+
+		String agentFn = messageContext.getCurrentAgentJobStep().getEnabledId();
+
 		LlmConnection llmconnection = getMediaArchive().getLlmConnection("localrender");
 		LlmResponse response = llmconnection.renderLocalAction(inAgentContext, agentFn);
 		messageContext.setLastResponse(response);
