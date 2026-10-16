@@ -27,6 +27,11 @@ public class AgentJob extends BaseData implements CatalogEnabled
 	{
 		fieldCatalogId =inId;	
 	}
+	public String getCatalogId()
+	{
+		return fieldCatalogId;
+	}
+
 	ModuleManager fieldModuleManager;
 	
 	public void setModuleManager(ModuleManager inModuleManager)
@@ -234,7 +239,7 @@ public class AgentJob extends BaseData implements CatalogEnabled
 
 	public MediaArchive getMediaArchive()
 	{
-		return (MediaArchive) fieldModuleManager.getBean(fieldCatalogId, "mediaArchive");
+		return (MediaArchive) fieldModuleManager.getBean(getCatalogId(), "mediaArchive");
 	}
 
 	/** Pass null to reload the steps from the database */
