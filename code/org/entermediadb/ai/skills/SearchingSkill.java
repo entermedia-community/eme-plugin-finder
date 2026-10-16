@@ -48,7 +48,8 @@ public class SearchingSkill extends BaseSkill
 		MultiValued inAgentMessage = messageContext.getAgentMessage();
 		String agentFn = messageContext.getCurrentAgentJobStep().getEnabledId();
 
-		//Steps are named <scenario>_welcome, _parse, _tables and _semantic so more than one scenario can search
+		// Steps are named <scenario>_welcome, _parse, _tables and _semantic so more than one scenario can
+		// search
 		String prefix = "";
 		if (messageContext.getCurrentAgentJob() != null)
 		{
@@ -56,114 +57,111 @@ public class SearchingSkill extends BaseSkill
 		}
 		String action = agentFn.startsWith(prefix) ? agentFn.substring(prefix.length()) : agentFn;
 
-			if ("parse".equals(action))
+		if ("parse".equals(action))
+		{
+			// parse the search first
+			// If no parts then keep talking
+			MultiValued usermessage = (MultiValued) getMediaArchive().getCachedData("chatterbox", inAgentMessage.get("replytoid"));
+
+			inAgentContext.put("userquery", usermessage.get("message"));
+
+			inAgentContext.setMessagePrefix(null);
+			inAgentContext.setAiSearchParams(null);
+
+			LlmConnection server = getMediaArchive().getLlmConnection("thinking");
+			LlmResponse res = server.callStructure(inAgentContext, "search_parse");
+			JSONObject messagestructured = (JSONObject) res.getResponsePayload();
+
+			loadSearchParts(inAgentContext, messagestructured);
+			if (inAgentContext.getAiSearchParams() == null)
 			{
-				// parse the search first
-				// If no parts then keep talking
-				MultiValued usermessage = (MultiValued) getMediaArchive().getCachedData("chatterbox", inAgentMessage.get("replytoid"));
-
-				inAgentContext.addContext("userquery", usermessage.get("message"));
-
-				inAgentContext.setMessagePrefix(null);
-				inAgentContext.setAiSearchParams(null);
-
-				LlmConnection server = getMediaArchive().getLlmConnection("thinking");
-				LlmResponse res = server.callStructure(inAgentContext, "search_parse");
-				JSONObject messagestructured = (JSONObject) res.getResponsePayload();
-
-				loadSearchParts(inAgentContext, messagestructured);
-				if (inAgentContext.getAiSearchParams() == null)
-				{
-					Map details = (Map) messagestructured.get("step_details");
-					String friendly_response = (String) details.get("friendly_response");
-					res.setRawMessage(friendly_response);
-				}
-				else
-				{
-					res.setExecAutomationStep(prefix + "tables");
-				}
-				messageContext.setLastResponse(res);
-				return;
+				Map details = (Map) messagestructured.get("step_details");
+				String friendly_response = (String) details.get("friendly_response");
+				res.setRawMessage(friendly_response);
 			}
-
 			else
-				if ("tables".equals(action))
+			{
+				res.setExecAutomationStep(prefix + "tables");
+			}
+			messageContext.setLastResponse(res);
+			return;
+		}
+
+		else if ("tables".equals(action))
+		{
+			LlmConnection llmconnection = getMediaArchive().getLlmConnection("localrender");
+			LlmResponse response = llmconnection.renderLocalAction(messageContext, "search_tables"); // TOREVIEW: This is rendering
+			// previous searches results first
+
+			String message = response.getMessage();
+			messageContext.setMessagePrefix(message);
+
+			response.setExecAutomationStep(prefix + "semantic");
+
+			messageContext.setLastResponse(response);
+			return;
+		}
+		else if ("semantic".equals(action))
+		{
+
+			String semanticquery = "";
+
+			AiSearch searchParams = inAgentContext.getAiSearchParams();
+			AiSearchTable step1 = searchParams.getStep1();
+
+			String step1Keyword = step1.getParameterValues();
+
+			if (step1Keyword != null)
+			{
+				semanticquery = step1Keyword;
+			}
+			AiSearchTable step2 = searchParams.getStep2();
+			if (step2 != null)
+			{
+				String step2Keyword = step2.getParameterValues();
+				if (step2Keyword != null)
 				{
-					LlmConnection llmconnection = getMediaArchive().getLlmConnection("localrender");
-					LlmResponse response = llmconnection.renderLocalAction(messageContext, "search_tables"); // TOREVIEW: This is rendering
-					// previous searches results first
-
-					String message = response.getMessage();
-					messageContext.setMessagePrefix(message);
-
-					response.setExecAutomationStep(prefix + "semantic");
-
-					messageContext.setLastResponse(response);
-					return;
+					semanticquery = semanticquery + " " + step2Keyword;
 				}
-				else
-					if ("semantic".equals(action))
-					{
+			}
+			if (semanticquery.isBlank())
+			{
+				String originalQuery = searchParams.getOriginalSearchString();
+				if (originalQuery != null)
+				{
+					originalQuery = originalQuery.replaceAll("search|find|look for|show me", "").trim();
+					semanticquery = originalQuery;
+				}
+			}
+			LlmResponse result = null;
+			if (!semanticquery.isBlank())
+			{
+				inAgentContext.addContext("semanticquery", semanticquery.trim());
 
-						String semanticquery = "";
+				LlmConnection llmconnection = getMediaArchive().getLlmConnection("thinking");
+				result = llmconnection.renderLocalAction(inAgentContext, "search_semantic");
+			}
+			else
+			{
+				String messageprefix = inAgentContext.getMessagePrefix();
+				result = new BasicLlmResponse();
+				result.setRawMessage(messageprefix);
 
-						AiSearch searchParams = inAgentContext.getAiSearchParams();
-						AiSearchTable step1 = searchParams.getStep1();
+			}
+			inAgentContext.setMessagePrefix(null);
+			// Set next function to be able to search again
+			result.setNextAutomationStep(prefix + "parse");
+			messageContext.setLastResponse(result);
+			return;
 
-						String step1Keyword = step1.getParameterValues();
-
-						if (step1Keyword != null)
-						{
-							semanticquery = step1Keyword;
-						}
-						AiSearchTable step2 = searchParams.getStep2();
-						if (step2 != null)
-						{
-							String step2Keyword = step2.getParameterValues();
-							if (step2Keyword != null)
-							{
-								semanticquery = semanticquery + " " + step2Keyword;
-							}
-						}
-						if (semanticquery.isBlank())
-						{
-							String originalQuery = searchParams.getOriginalSearchString();
-							if (originalQuery != null)
-							{
-								originalQuery = originalQuery.replaceAll("search|find|look for|show me", "").trim();
-								semanticquery = originalQuery;
-							}
-						}
-						LlmResponse result = null;
-						if (!semanticquery.isBlank())
-						{
-							inAgentContext.addContext("semanticquery", semanticquery.trim());
-
-							LlmConnection llmconnection = getMediaArchive().getLlmConnection("thinking");
-							result = llmconnection.renderLocalAction(inAgentContext, "search_semantic");
-						}
-						else
-						{
-							String messageprefix = inAgentContext.getMessagePrefix();
-							result = new BasicLlmResponse();
-							result.setRawMessage(messageprefix);
-
-						}
-						inAgentContext.setMessagePrefix(null);
-						// Set next function to be able to search again
-						result.setNextAutomationStep(prefix + "parse");
-						messageContext.setLastResponse(result);
-						return;
-
-					}
-					else
-						if (agentFn.startsWith("view_related_record"))
-						{
-							LlmConnection llmconnection = getMediaArchive().getLlmConnection("localrender");
-							LlmResponse response = llmconnection.renderLocalAction(inAgentContext, agentFn);
-							messageContext.setLastResponse(response);
-							return;
-						}
+		}
+		else if (agentFn.startsWith("view_related_record"))
+		{
+			LlmConnection llmconnection = getMediaArchive().getLlmConnection("localrender");
+			LlmResponse response = llmconnection.renderLocalAction(inAgentContext, agentFn);
+			messageContext.setLastResponse(response);
+			return;
+		}
 
 		throw new OpenEditException("Function not supported " + agentFn);
 	}
@@ -217,77 +215,75 @@ public class SearchingSkill extends BaseSkill
 			// inReq.putPageValue( finalhits.getSessionId(), finalhits);
 
 		}
-		else
-			if (step1 != null)
+		else if (step1 != null)
+		{
+
+			step1Keyword = step1.getParameterValues();
+
+			inReq.putPageValue("module", step1.getModule());
+			if (step1Keyword != null)
 			{
+				QueryBuilder search = null;
 
-				step1Keyword = step1.getParameterValues();
-
-				inReq.putPageValue("module", step1.getModule());
-				if (step1Keyword != null)
+				Schema schema = loadSchema();
+				Collection<Data> modules = schema.getChildrenOf(step1.getModule().getId());
+				Collection<String> moduleids = new ArrayList<String>();
+				moduleids.add(step1.getModule().getId());
+				// step1.addModule(step1.getModule());
+				for (Iterator iterator = modules.iterator(); iterator.hasNext();)
 				{
-					QueryBuilder search = null;
+					Data mod = (Data) iterator.next();
+					moduleids.add(mod.getId());
+					step1.addModule(mod);
+				}
 
-					Schema schema = loadSchema();
-					Collection<Data> modules = schema.getChildrenOf(step1.getModule().getId());
-					Collection<String> moduleids = new ArrayList<String>();
-					moduleids.add(step1.getModule().getId());
-					// step1.addModule(step1.getModule());
-					for (Iterator iterator = modules.iterator(); iterator.hasNext();)
+				if (moduleids.contains("modulesearch") || moduleids.size() > 1)
+				{
+
+					if (moduleids.size() == 1 || moduleids.contains("modulesearch"))
 					{
-						Data mod = (Data) iterator.next();
-						moduleids.add(mod.getId());
-						step1.addModule(mod);
+						moduleids = schema.getModuleIds();
 					}
 
-					if (moduleids.contains("modulesearch") || moduleids.size() > 1)
+					search = getMediaArchive().query("modulesearch").addFacet("entitysourcetype").put("searchtypes", moduleids).includeDescription(true);
+					entityhits = search.freeform("description", step1Keyword).search();
+					log.info(" Here:  " + entityhits.getActiveFilterValues());
+					// TODO: Not sure this is needed or works
+					if (moduleids.contains("asset"))
 					{
-
-						if (moduleids.size() == 1 || moduleids.contains("modulesearch"))
-						{
-							moduleids = schema.getModuleIds();
-						}
-
-						search = getMediaArchive().query("modulesearch").addFacet("entitysourcetype").put("searchtypes", moduleids).includeDescription(true);
-						entityhits = search.freeform("description", step1Keyword).search();
-						log.info(" Here:  " + entityhits.getActiveFilterValues());
-						// TODO: Not sure this is needed or works
-						if (moduleids.contains("asset"))
-						{
-							// Loop over the categories in these entityhits
-							Collection categories = entityhits.collectValues("rootcategory");
-							search = getMediaArchive().query("asset").orgroup("category", categories);
-							assethits = search.freeform("description", step1Keyword).search();
-							step1.setCount((long) (entityhits.size() + assethits.size()));
-						}
-						else
-						{
-							step1.setCount((long) entityhits.size());
-						}
-
+						// Loop over the categories in these entityhits
+						Collection categories = entityhits.collectValues("rootcategory");
+						search = getMediaArchive().query("asset").orgroup("category", categories);
+						assethits = search.freeform("description", step1Keyword).search();
+						step1.setCount((long) (entityhits.size() + assethits.size()));
 					}
 					else
-						if ("asset".equals(step1.getModule().getId()))
-						{
-							search = getMediaArchive().query(step1.getModule().getId());
-							assethits = search.freeform("description", step1Keyword).search();
-							step1.setCount((long) assethits.size());
-						}
-						else
-						{
-							search = getMediaArchive().query(step1.getModule().getId());
-							entityhits = search.freeform("description", step1Keyword).search();
-							step1.setCount((long) entityhits.size());
-						}
+					{
+						step1.setCount((long) entityhits.size());
+					}
+
+				}
+				else if ("asset".equals(step1.getModule().getId()))
+				{
+					search = getMediaArchive().query(step1.getModule().getId());
+					assethits = search.freeform("description", step1Keyword).search();
+					step1.setCount((long) assethits.size());
 				}
 				else
 				{
-					// step1.addModule(step1.getModule());
-					entityhits = getMediaArchive().query(step1.getModule().getId()).all().search();
+					search = getMediaArchive().query(step1.getModule().getId());
+					entityhits = search.freeform("description", step1Keyword).search();
 					step1.setCount((long) entityhits.size());
 				}
-
 			}
+			else
+			{
+				// step1.addModule(step1.getModule());
+				entityhits = getMediaArchive().query(step1.getModule().getId()).all().search();
+				step1.setCount((long) entityhits.size());
+			}
+
+		}
 
 		if (entityhits != null)
 		{
@@ -320,15 +316,14 @@ public class SearchingSkill extends BaseSkill
 		{
 			inReq.putPageValue("totalhits", entityhits.size());
 		}
+		else if (entityhits == null && assetunsorted != null)
+		{
+			inReq.putPageValue("totalhits", assetunsorted.size());
+		}
 		else
-			if (entityhits == null && assetunsorted != null)
-			{
-				inReq.putPageValue("totalhits", assetunsorted.size());
-			}
-			else
-			{
-				inReq.putPageValue("totalhits", entityhits.size() + assetunsorted.size());
-			}
+		{
+			inReq.putPageValue("totalhits", entityhits.size() + assetunsorted.size());
+		}
 
 		getResultsManager().loadOrganizedResults(inReq, entityhits, assetunsorted);
 
@@ -603,11 +598,10 @@ public class SearchingSkill extends BaseSkill
 				{
 					search.setStep2(searchtable);
 				}
-				else
-					if (search.getStep3() == null)
-					{
-						search.setStep3(searchtable);
-					}
+				else if (search.getStep3() == null)
+				{
+					search.setStep3(searchtable);
+				}
 			}
 
 			// if("all".equals(targetTable))
@@ -638,11 +632,10 @@ public class SearchingSkill extends BaseSkill
 			{
 				text = text + " for " + search.getStep2().getTargetTable() + " in " + search.getStep1().getTargetTable();
 			}
-			else
-				if (search.getStep1() != null)
-				{
-					text = text + " for " + search.getStep1().getTargetTable();
-				}
+			else if (search.getStep1() != null)
+			{
+				text = text + " for " + search.getStep1().getTargetTable();
+			}
 
 			SemanticTableManager manager = loadSemanticTableManager("aifunctionparameter");
 			List<Double> tosearch = manager.makeVector(text);

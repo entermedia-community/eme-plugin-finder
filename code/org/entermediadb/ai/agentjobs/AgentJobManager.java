@@ -46,10 +46,12 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 
 	public static final String DEFAULT_ORCHESTRATOR = "javaskillOrchestrator";
 
-	/** automationstep fields that are not copied to the agentjobstep. runafter and aiskill are mapped instead */
+	/**
+	 * automationstep fields that are not copied to the agentjobstep. runafter and aiskill are mapped
+	 * instead
+	 */
 	protected static final Set<String> TEMPLATE_ONLY_FIELDS = Set.of("id", "enabled", "aiskill", "runafter", "ordering", "offsetx", "offsety");
 
-	
 	protected MediaArchive fieldMediaArchive;
 	protected ModuleManager fieldModuleManager;
 	protected Map currentJobsRunning = new ConcurrentHashMap();
@@ -124,6 +126,7 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 		}
 		return fieldMediaArchive;
 	}
+
 	public OpenCodeClient getOpenCodeClient()
 	{
 		if (fieldOpenCodeClient == null)
@@ -137,6 +140,7 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 	{
 		fieldOpenCodeClient = inOpenCodeClient;
 	}
+
 	public void setMediaArchive(MediaArchive inMediaArchive)
 	{
 		fieldMediaArchive = inMediaArchive;
@@ -173,8 +177,8 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 				}
 				Data hit = (Data) iterator.next();
 
-				AgentJob job = (AgentJob)getMediaArchive().getCachedData("agentjob", hit.getId());
-				if( job.getValue("status") != null && job.getValue("status").equals("running"))
+				AgentJob job = (AgentJob) getMediaArchive().getCachedData("agentjob", hit.getId());
+				if (job.getValue("status") != null && job.getValue("status").equals("running"))
 				{
 					log.info("Skipping job " + job + " as it is already running");
 					continue;
@@ -193,10 +197,10 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 					continue;
 				}
 
-				job.setValue("status","running");
+				job.setValue("status", "running");
 				getMediaArchive().saveData("agentjob", job);
 
-				//Run it now
+				// Run it now
 				AgentJobRunnable torun = new AgentJobRunnable();
 				AgentContext context = createAgentContext();
 				context.setCatalogId(getCatalogId());
@@ -221,10 +225,10 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 		Searcher jobsearcher = getMediaArchive().getSearcher("agentjob");
 
 		QueryBuilder query = getMediaArchive().localQuery("agentjob");
-		query.orgroup("status", "new"); 
+		query.orgroup("status", "new");
 		query.sort("submitteddateDown");
 
-		if (hasRunningAgentJob()) //Skip these just in case
+		if (hasRunningAgentJob()) // Skip these just in case
 		{
 			query.notgroup("id", getRunningIds());
 		}
@@ -270,7 +274,7 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 	{
 		if (currentJobsRunning.size() >= availableProcessors())
 		{
-			//Should we save?
+			// Should we save?
 			return;
 		}
 
@@ -279,17 +283,17 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 	}
 
 	/**
-	 * Picks the orchestrator bean named by the agentjob's "orchestrator" field (see the chosenorchestrator list).
-	 * Jobs without one run their steps as Java skills.
+	 * Picks the orchestrator bean named by the agentjob's "orchestrator" field (see the
+	 * chosenorchestrator list). Jobs without one run their steps as Java skills.
 	 */
 	public AgentJobOrchestrator getOrchestrator(AgentJob inJob)
 	{
 		String orchestratorid = inJob.get("orchestrator");
-		if( orchestratorid == null || orchestratorid.trim().isEmpty())
+		if (orchestratorid == null || orchestratorid.trim().isEmpty())
 		{
 			orchestratorid = DEFAULT_ORCHESTRATOR;
 		}
-		Object bean = getModuleManager().getBean(getCatalogId(), orchestratorid, true);		
+		Object bean = getModuleManager().getBean(getCatalogId(), orchestratorid, true);
 		return (AgentJobOrchestrator) bean;
 	}
 
@@ -300,11 +304,11 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 		{
 			currentJobsRunning.remove(inAgentJob.getId());
 			log.info("RELEASED " + inAgentJob.getId());
-			//Save job
-			//Do we have this last response from the steps?
-			//String lastresponse = inAgentJob.getAgentJob().findLastResponse();
-			//inAgentJob.getAgentJob().setValue("lastresponse", lastresponse);
-			
+			// Save job
+			// Do we have this last response from the steps?
+			// String lastresponse = inAgentJob.getAgentJob().findLastResponse();
+			// inAgentJob.getAgentJob().setValue("lastresponse", lastresponse);
+
 			inAgentJob.getAgentJob().setValue("status", "complete");
 			inAgentJob.getAgentJob().setValue("enddate", new Date());
 			getMediaArchive().saveData("agentjob", inAgentJob.getAgentJob());
@@ -317,14 +321,12 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 		}
 	}
 
-
-
 	/** Called by the orchestrator when the job exits, even after an error */
 	public void finishedRun(AgentJobRunnable inAgentJob)
 	{
-		currentJobsRunning.remove(inAgentJob.getId()); //Also released when a step threw an error
+		currentJobsRunning.remove(inAgentJob.getId()); // Also released when a step threw an error
 		Data run = inAgentJob.getAgentJobRun();
-		if( run == null)
+		if (run == null)
 		{
 			return;
 		}
@@ -336,9 +338,9 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 			{
 				Data saved = getMediaArchive().getCachedData("agentjobstep", step.getId());
 				String content = saved == null ? null : saved.get("markdowncontent");
-				if( content != null && !content.isEmpty())
+				if (content != null && !content.isEmpty())
 				{
-					if( markdown.length() > 0)
+					if (markdown.length() > 0)
 					{
 						markdown.append("\n\n---\n\n");
 					}
@@ -369,7 +371,7 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 	/** Lucene rejects terms over 32766 bytes, so cut the end off long logs */
 	protected String trimToFit(String inText)
 	{
-		if( inText == null || inText.getBytes(StandardCharsets.UTF_8).length <= 30000)
+		if (inText == null || inText.getBytes(StandardCharsets.UTF_8).length <= 30000)
 		{
 			return inText;
 		}
@@ -377,8 +379,9 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 	}
 
 	/**
-	 * Queues any agentjob whose repeatperiod (daily, weekly, monthly) and repeattime (HH:mm) say it is due.
-	 * Due jobs are set back to "new" so checkQueue picks them up.
+	 * Queues any agentjob whose repeatperiod (daily, weekly, monthly) and repeattime (HH:mm) say it is
+	 * due. Due jobs are set back to "new" so checkQueue picks them up.
+	 * 
 	 * @return how many jobs were queued
 	 */
 	public int checkRepeatingJobs()
@@ -394,13 +397,12 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 			{
 				AgentJob job = (AgentJob) getMediaArchive().getCachedData("agentjob", hit.getId());
 				String status = job.get("status");
-				
-				//Only repeat jobs that are finished. Skip running, queued or ones waiting on a person
-				if( status != null && !"complete".equals(status) && !"error".equals(status))
+				// Only repeat jobs that are finished. Skip running, queued or ones waiting on a person
+				if (status != null && !"complete".equals(status) && !"error".equals(status))
 				{
 					continue;
 				}
-				if( currentJobsRunning.containsKey(job.getId()) || !isRepeatDue(job, new Date()))
+				if (currentJobsRunning.containsKey(job.getId()) || !isRepeatDue(job, new Date()))
 				{
 					continue;
 				}
@@ -412,7 +414,7 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 				log.error("Could not check repeating agentjob " + hit.getId(), ex);
 			}
 		}
-		if( count > 0)
+		if (count > 0)
 		{
 			checkQueue();
 		}
@@ -423,7 +425,7 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 	{
 		String period = inJob.get("repeatperiod");
 		LocalTime time = parseRepeatTime(inJob.get("repeattime"));
-		if( period == null || time == null)
+		if (period == null || time == null)
 		{
 			return false;
 		}
@@ -432,12 +434,12 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 
 		Data lastrun = getMediaArchive().query("agentjobrun").exact("agentjob", inJob.getId()).sort("startdateDown").searchOne();
 		Date laststart = lastrun == null ? null : ((MultiValued) lastrun).getDate("startdate");
-		if( laststart == null)
+		if (laststart == null)
 		{
-			//Never run before, start at the next repeattime
+			// Never run before, start at the next repeattime
 			return !now.isBefore(LocalDateTime.of(now.toLocalDate(), time));
 		}
-		//Snap to repeattime on the day of the last run so late runs do not drift
+		// Snap to repeattime on the day of the last run so late runs do not drift
 		LocalDate lastday = LocalDateTime.ofInstant(laststart.toInstant(), zone).toLocalDate();
 		LocalDateTime next;
 		switch (period)
@@ -460,7 +462,7 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 
 	protected LocalTime parseRepeatTime(String inTime)
 	{
-		if( inTime == null || inTime.trim().isEmpty())
+		if (inTime == null || inTime.trim().isEmpty())
 		{
 			return null;
 		}
@@ -480,12 +482,12 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 
 	protected void resetForRepeat(AgentJob inJob)
 	{
-		inJob.setSteps(null); //Reload from database
+		inJob.setSteps(null); // Reload from database
 		for (AgentJobStep step : inJob.getAllSteps())
 		{
 			step.setValue("status", "new");
 			step.setValue("errordetails", null);
-			getOpenCodeClient().clearStatus(step.getId()); //Start a new opencode session
+			getOpenCodeClient().clearStatus(step.getId()); // Start a new opencode session
 			getMediaArchive().saveData("agentjobstep", step.getAgentJobStepData());
 		}
 		inJob.setValue("status", "new");
@@ -537,14 +539,15 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 	}
 
 	/**
-	 * Saves a new agentjob with a copy of each enabled automationstep of the scenario as an agentjobstep.
-	 * Each copy keeps the automationstep id and its "runafter" points at the copied parent step.
+	 * Saves a new agentjob with a copy of each enabled automationstep of the scenario as an
+	 * agentjobstep. Each copy keeps the automationstep id and its "runafter" points at the copied
+	 * parent step.
 	 */
 	public AgentJob importScenario(String inScenarioId, AgentContext inContext)
 	{
 		AgentJob job = (AgentJob) getMediaArchive().getSearcher("agentjob").createNewData();
-		
-		//set expirationdate 30 days from today
+
+		// set expirationdate 30 days from today
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.DAY_OF_MONTH, 30);
 		job.setValue("expirationdate", cal.getTime());
@@ -561,7 +564,7 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 		{
 			job.setValue("userrequest", userrequest);
 		}
-		job.setValue("submitteddate", new Date()); //No status so checkQueue leaves it alone until it runs
+		job.setValue("submitteddate", new Date()); // No status so checkQueue leaves it alone until it runs
 		getMediaArchive().saveData("agentjob", job);
 
 		Collection<MultiValued> templates = getMediaArchive().query("automationstep").exact("automationscenario", inScenarioId).exact("enabled", true).sort("orderingUp").search();
@@ -587,7 +590,7 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 		}
 		getMediaArchive().saveData("agentjobstep", tosave);
 
-		//Now that the copies have ids point runafter at them
+		// Now that the copies have ids point runafter at them
 		for (MultiValued template : templates)
 		{
 			String runafter = template.get("runafter");
@@ -609,6 +612,7 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 		AgentContext childContext = (AgentContext) getMediaArchive().getBean(contextbeanname, false);
 		return childContext;
 	}
+
 	public AgentContext createAgentContext(AgentJobStep inStep)
 	{
 		return createAgentContext(null, inStep);
@@ -692,8 +696,8 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 	}
 
 	/**
-	 * Runs a step by its automationstep id. Use "scenario.stepid" to switch to a new agentjob copied from
-	 * that scenario, or just "stepid" to stay in the context's current agentjob.
+	 * Runs a step by its automationstep id. Use "scenario.stepid" to switch to a new agentjob copied
+	 * from that scenario, or just "stepid" to stay in the context's current agentjob.
 	 */
 	public boolean runProcess(AgentContext inContext, String inFunctionParts)
 	{
@@ -806,7 +810,7 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 		LlmResponse response = inContext.getLastResponse();
 		if (response == null)
 		{
-			//Skills that do not call an LLM leave no response, so the step still completes
+			// Skills that do not call an LLM leave no response, so the step still completes
 			log.error("No response from " + inContext.getCurrentAgentJob() + " running " + inStep.getEnabledId());
 			return false;
 		}
@@ -826,7 +830,7 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 			// we determine we dont need to do anything.
 			return false;
 		}
-		else if ("runskill".equals(state) || response.getExecAutomationStep() != null) 
+		else if ("runskill".equals(state) || response.getExecAutomationStep() != null)
 		{
 			runProcess(inContext, response.getExecAutomationStep());
 			return false;
@@ -859,7 +863,7 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 			}
 			getMediaArchive().saveData("agentjobstep", inStep.getAgentJobStepData());
 
-			//The job keeps the first error or question
+			// The job keeps the first error or question
 			String status = inStep.get("status");
 			if (inJob != null && !"complete".equals(status) && "running".equals(inJob.get("status")))
 			{
@@ -908,8 +912,6 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 
 		MultiValued function = inAutomationStep.getAgentJobStepData();
 
-		JsonUtil jsonUtil = (JsonUtil) getMediaArchive().getBean("jsonUtil");
-
 		String processingmessage = null;
 		if (function != null)
 		{
@@ -920,21 +922,20 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 			processingmessage = "Analyzing";
 		}
 
-		String processingtype = (String) inContext.getContextValue("processingtype");
-		if (processingtype != null)
-		{
-			processingmessage += " " + processingtype;
-		}
-		String loader = jsonUtil.escape("<i class='fas fa-spinner fa-spin'></i> ");
-		processingmessage = loader + processingmessage + "...";
-		processingmessage = "<span class='processing-message'>" + processingmessage + "</span>";
-
 		MultiValued agentmessage = chatMessageContext.getAgentMessage();
 
-		String message = inContext.getMessagePrefix() + processingmessage;
-		agentmessage.setValue("message", message);
-		agentmessage.setValue("messagetype", "status");
+		String jsonMsg = """
+			{
+				"ops": [
+					{ "attributes": { "color": "#444444" }, "insert": "%s" },
+					{ "insert": "\n" }
+				]
+			}""".formatted(processingmessage);
+
+		agentmessage.setValue("message", jsonMsg);
+		agentmessage.setValue("messagetype", "message");
 		agentmessage.setValue("functionname", inAutomationStep.getEnabledId());
+
 		getMediaArchive().saveData("chatterbox", agentmessage);
 		ChatServer server = (ChatServer) getMediaArchive().getBean("chatServer");
 		server.broadcastMessage(getMediaArchive().getCatalogId(), agentmessage);
@@ -942,7 +943,7 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 
 	public void handleStatusComplete(AgentContext inContext, AgentJobStep inAutomationStep)
 	{
-		//Only chat contexts have an agentmessage to send back
+		// Only chat contexts have an agentmessage to send back
 		if (inContext.getContextValue("agentmessage") == null)
 		{
 			return;
@@ -962,7 +963,7 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 
 	public void handleStatusUpdate(AgentContext inContext, AgentJobStep inAutomationStep)
 	{
-		//Only chat contexts have an agentmessage to send back
+		// Only chat contexts have an agentmessage to send back
 		MultiValued agentmessage = (MultiValued) inContext.getContextValue("agentmessage");
 		if (agentmessage == null)
 		{
@@ -1028,8 +1029,8 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 				}
 			}
 
-			//Make functioname be the last functio
-			//and next be the next
+			// Make functioname be the last functio
+			// and next be the next
 			agentmessage.setValue("functionname", inAutomationStep.getEnabledId());
 			agentmessage.setValue("nextfunctionname", nextFunctionName);
 			agentmessage.setValue("chatmessagestatus", "completed");
@@ -1039,7 +1040,7 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 			getMediaArchive().saveData("chatterbox", agentmessage);
 
 			Map<String, String> functionMessageUpdate = new HashMap<>();
-			functionMessageUpdate.put("messagetype", "airesponse");
+			functionMessageUpdate.put("messagetype", "message");
 			functionMessageUpdate.put("catalogid", getMediaArchive().getCatalogId());
 			functionMessageUpdate.put("user", "agent");
 			functionMessageUpdate.put("channel", agentmessage.get("channel"));
