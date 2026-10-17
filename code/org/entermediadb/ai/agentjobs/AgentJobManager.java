@@ -23,7 +23,6 @@ import org.entermediadb.ai.SkillStatusListener;
 import org.entermediadb.ai.automation.AutomationManager;
 import org.entermediadb.ai.llm.LlmResponse;
 import org.entermediadb.asset.MediaArchive;
-import org.entermediadb.asset.util.JsonUtil;
 import org.entermediadb.mcp.client.OpenCodeClient;
 import org.entermediadb.scripts.ScriptLogger;
 import org.entermediadb.websocket.chat.ChatServer;
@@ -32,6 +31,7 @@ import org.openedit.CatalogEnabled;
 import org.openedit.Data;
 import org.openedit.ModuleManager;
 import org.openedit.MultiValued;
+import org.openedit.WebPageRequest;
 import org.openedit.data.QueryBuilder;
 import org.openedit.data.Searcher;
 import org.openedit.hittracker.HitTracker;
@@ -419,6 +419,90 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 			checkQueue();
 		}
 		return count;
+	}
+
+	public void getFilteredJobs(WebPageRequest inReq)
+	{
+		// filters
+		String searchquery = inReq.getRequestParameter("search");
+		String status = inReq.getRequestParameter("status");
+		String timerange = inReq.getRequestParameter("timerange");
+		String sortby = inReq.getRequestParameter("sortby");
+		String sortorder = inReq.getRequestParameter("sortorder");
+
+		Searcher searcher = getMediaArchive().getSearcher("agentjob");
+		QueryBuilder query = searcher.query();
+
+		if (status != null && !status.isEmpty())
+		{
+			String[] stats = status.split(",");
+
+			if (stats.length == 1)
+			{
+				query.exact("status", stats[0]);
+			}
+			else
+			{
+				query.orgroup("status", stats);
+			}
+		}
+
+		if (searchquery != null && !searchquery.isEmpty())
+		{
+			query.contains("name", searchquery);
+		}
+
+		if (timerange != null && !timerange.isEmpty() && !"all".equals(timerange))
+		{
+			Date start;
+			Calendar cal = Calendar.getInstance();
+
+			switch (timerange)
+			{
+				case "today":
+				case "last24hours":
+					cal.add(Calendar.DAY_OF_YEAR, -1);
+					start = cal.getTime();
+					break;
+				case "lastweek":
+				case "last7days":
+					cal.add(Calendar.DAY_OF_YEAR, -7);
+					start = cal.getTime();
+					break;
+				case "lastmonth":
+				case "last30days":
+					cal.add(Calendar.DAY_OF_YEAR, -30);
+					start = cal.getTime();
+					break;
+				default:
+					start = null;
+
+			}
+			if (start != null)
+			{
+				query.after("enddate", start);
+			}
+		}
+
+		if (sortby != null && !sortby.isEmpty())
+		{
+			String sorter = sortby;
+			if ("asc".equals(sortorder))
+			{
+				sorter += "Asc";
+			}
+			else if ("desc".equals(sortorder))
+			{
+				sorter += "Desc";
+			}
+			query.sort(sorter);
+		}
+		else
+		{
+			query.sort("enddateDesc");
+		}
+		Collection<AgentJob> jobs = query.search();
+		inReq.putPageValue("jobs", jobs);
 	}
 
 	public boolean isRepeatDue(AgentJob inJob, Date inNow)

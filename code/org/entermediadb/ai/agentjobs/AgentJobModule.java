@@ -6,7 +6,7 @@ import org.openedit.WebPageRequest;
 
 public class AgentJobModule extends BaseMediaModule
 {
-    
+
     public void checkQueue(WebPageRequest inReq)
     {
         String catalogid = inReq.findValue("catalogid");
@@ -16,7 +16,7 @@ public class AgentJobModule extends BaseMediaModule
         manager.checkQueue();
 
         ScriptLogger logger = (ScriptLogger) inReq.getPageValue("log");
-        if( logger != null)
+        if (logger != null)
         {
             int pendingnew = manager.getNewjobs().size();
             logger.info("Job queue " + count + " jobs are running, " + pendingnew + " new jobs pending");
@@ -30,10 +30,17 @@ public class AgentJobModule extends BaseMediaModule
         int count = manager.checkRepeatingJobs();
 
         ScriptLogger logger = (ScriptLogger) inReq.getPageValue("log");
-        if( logger != null)
+        if (logger != null)
         {
             logger.info("Repeating agent jobs " + count + " due to run");
         }
+    }
+
+    public void getFilteredJobs(WebPageRequest inReq)
+    {
+        String catalogid = inReq.findValue("catalogid");
+        AgentJobManager manager = (AgentJobManager) getModuleManager().getBean(catalogid, "agentJobManager", true);
+        manager.getFilteredJobs(inReq);
     }
 
 }
