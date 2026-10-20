@@ -25,20 +25,20 @@ public class AgentJob extends BaseData implements CatalogEnabled
 	@Override
 	public void setCatalogId(String inId)
 	{
-		fieldCatalogId =inId;	
+		fieldCatalogId = inId;
 	}
+
 	public String getCatalogId()
 	{
 		return fieldCatalogId;
 	}
 
 	ModuleManager fieldModuleManager;
-	
+
 	public void setModuleManager(ModuleManager inModuleManager)
 	{
 		fieldModuleManager = inModuleManager;
-	}	
-
+	}
 
 	private Collection<AgentJobStep> steps;
 	private Collection<AgentJobStep> allsteps;
@@ -113,7 +113,7 @@ public class AgentJob extends BaseData implements CatalogEnabled
 				String bean = agentdata == null ? null : agentdata.get("bean");
 				if (bean == null)
 				{
-					//Skip it like the old scenario loader did, so its children still run as top level steps
+					// Skip it like the old scenario loader did, so its children still run as top level steps
 					log.error("Could not find aiskill bean " + aiskillid + " for agentjobstep " + data.getId());
 					continue;
 				}
@@ -214,7 +214,10 @@ public class AgentJob extends BaseData implements CatalogEnabled
 		return null;
 	}
 
-	/** Finds the first step that runs the given aiskill, so copied scenarios with their own step ids still work */
+	/**
+	 * Finds the first step that runs the given aiskill, so copied scenarios with their own step ids
+	 * still work
+	 */
 	public AgentJobStep findStepBySkill(String inAiSkill)
 	{
 		return findStepBySkill(getSteps(), inAiSkill);
@@ -269,39 +272,48 @@ public class AgentJob extends BaseData implements CatalogEnabled
 
 	public String findLastResponse()
 	{
-		setSteps(null); //Pull from database
+		setSteps(null); // Pull from database
 		ArrayList<AgentJobStep> reversed = new ArrayList<AgentJobStep>(getAllSteps());
 		java.util.Collections.reverse(reversed);
-		for(AgentJobStep step : reversed)
+		for (AgentJobStep step : reversed)
 		{
 			MultiValued refreshedstep = (MultiValued) getMediaArchive().getCachedData("agentjobstep", step.getId());
 			String lastresponse = refreshedstep.get("markdowncontent");
-			if(lastresponse != null)
+			if (lastresponse != null)
 			{
 				return lastresponse;
 			}
-		}	
+		}
 		return null;
 	}
 
-/*
-
-"type":"step_start","timestamp":1789512487122,"sessionID":"ses_f58be861affeXndBz5ovsVDMms","part":{"id":"prt_0a74190c5001wE9mE0Hfpbe1BO","messageID":"msg_0a7417e7a0016KFWxQ4PREnns0","sessionID":"ses_f58be861affeXndBz5ovsVDMms","snapshot":"c38236e41ebdd89818fa03d8f43b3c3ec4774c22","type":"step-start"}}
-{"type":"tool_use","timestamp":1789512488222,"sessionID":"ses_f58be861affeXndBz5ovsVDMms","part":{"type":"tool","tool":"bash","callID":"6Xe5SVwnIIZqL25tCLdmVOcYv1zqgDrS","state":{"status":"completed","input":{"command":"ls -la bin/"},"output":"total 76\ndrwxrwxr-x  4 shanti shanti 4096 Sep 15 12:02 .\ndrwxrwxr-x 11 shanti shanti 4096 Sep 15 12:02 ..\n-rwxrwxr-x  1 shanti shanti  182 Aug 10 11:13 bash.sh\ndrwxrwxr-x  2 shanti shanti 4096 Aug 13 10:45 build\n-rwxrwxr-x  1 shanti shanti  746 Aug 12 12:30 compile.sh\n-rwxrwxr-x  1 shanti shanti 9661 Sep 15 12:02 eme
-*/
+	/*
+	 * 
+	 * "type":"step_start","timestamp":1789512487122,"sessionID":"ses_f58be861affeXndBz5ovsVDMms","part"
+	 * :{"id":"prt_0a74190c5001wE9mE0Hfpbe1BO","messageID":"msg_0a7417e7a0016KFWxQ4PREnns0","sessionID":
+	 * "ses_f58be861affeXndBz5ovsVDMms","snapshot":"c38236e41ebdd89818fa03d8f43b3c3ec4774c22","type":
+	 * "step-start"}}
+	 * {"type":"tool_use","timestamp":1789512488222,"sessionID":"ses_f58be861affeXndBz5ovsVDMms","part":
+	 * {"type":"tool","tool":"bash","callID":"6Xe5SVwnIIZqL25tCLdmVOcYv1zqgDrS","state":{"status":
+	 * "completed","input":{"command":"ls -la bin/"},"output":"total 76\ndrwxrwxr-x 4 shanti shanti 4096
+	 * Sep 15 12:02 .\ndrwxrwxr-x 11 shanti shanti 4096 Sep 15 12:02 ..\n-rwxrwxr-x 1 shanti shanti 182
+	 * Aug 10 11:13 bash.sh\ndrwxrwxr-x 2 shanti shanti 4096 Aug 13 10:45 build\n-rwxrwxr-x 1 shanti
+	 * shanti 746 Aug 12 12:30 compile.sh\n-rwxrwxr-x 1 shanti shanti 9661 Sep 15 12:02 eme
+	 */
 
 	public String summaryLog()
 	{
 		String json = findLastResponse();
-		if( json == null )
+		if (json == null)
 		{
 			return null;
 		}
-		//Only include json that that starts  with { and ends with }
+		// Only include json that that starts with { and ends with }
 		StringBuffer cleanJson = new StringBuffer();
 
 		json.lines().forEach(line -> {
-			if(line.startsWith("{") && line.endsWith("}")) {
+			if (line.startsWith("{") && line.endsWith("}"))
+			{
 				cleanJson.append(line);
 				cleanJson.append("\n");
 			}
@@ -309,17 +321,17 @@ public class AgentJob extends BaseData implements CatalogEnabled
 
 		Collection<Map> parsed = new JSONParser().parseCollection("[" + cleanJson.toString() + "]");
 
-		StringBuffer clean  = new StringBuffer();
+		StringBuffer clean = new StringBuffer();
 
-		for(Map map : parsed)
+		for (Map map : parsed)
 		{
 			// Process each map as needed
 			String type = (String) map.get("type");
-			if( type.equals("tool_use"))
+			if (type.equals("tool_use"))
 			{
 				Map input = (Map) JsonUtil.getObjectFromMaps("part.state.input", map);
 				String stringoutput = (String) JsonUtil.getObjectFromMaps("part.state.output", map);
-				clean.append("**Input:**\n").append(input.toString()).append("\n");	
+				clean.append("**Input:**\n").append(input.toString()).append("\n");
 				clean.append("**Output:**\n").append(stringoutput).append("\n");
 			}
 		}

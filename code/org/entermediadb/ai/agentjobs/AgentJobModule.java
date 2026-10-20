@@ -1,5 +1,7 @@
 package org.entermediadb.ai.agentjobs;
 
+import java.util.Collection;
+import java.util.Map;
 import org.entermediadb.asset.modules.BaseMediaModule;
 import org.entermediadb.scripts.ScriptLogger;
 import org.openedit.WebPageRequest;
@@ -7,10 +9,15 @@ import org.openedit.WebPageRequest;
 public class AgentJobModule extends BaseMediaModule
 {
 
-    public void checkQueue(WebPageRequest inReq)
+    protected AgentJobManager getAgentJobManager(WebPageRequest inReq)
     {
         String catalogid = inReq.findValue("catalogid");
-        AgentJobManager manager = (AgentJobManager) getModuleManager().getBean(catalogid, "agentJobManager", true);
+        return (AgentJobManager) getModuleManager().getBean(catalogid, "agentJobManager", true);
+    }
+
+    public void checkQueue(WebPageRequest inReq)
+    {
+        AgentJobManager manager = getAgentJobManager(inReq);
         int count = manager.runningProcesses();
         inReq.putPageValue("runningcount", count);
         manager.checkQueue();
@@ -25,8 +32,7 @@ public class AgentJobModule extends BaseMediaModule
 
     public void checkRepeatingJobs(WebPageRequest inReq)
     {
-        String catalogid = inReq.findValue("catalogid");
-        AgentJobManager manager = (AgentJobManager) getModuleManager().getBean(catalogid, "agentJobManager", true);
+        AgentJobManager manager = getAgentJobManager(inReq);
         int count = manager.checkRepeatingJobs();
 
         ScriptLogger logger = (ScriptLogger) inReq.getPageValue("log");
@@ -36,11 +42,25 @@ public class AgentJobModule extends BaseMediaModule
         }
     }
 
+    public void rerunJob(WebPageRequest inReq)
+    {
+        AgentJobManager manager = getAgentJobManager(inReq);
+        String jobid = inReq.getRequestParameter("jobid");
+        manager.rerunJob(jobid);
+    }
+
     public void getFilteredJobs(WebPageRequest inReq)
     {
-        String catalogid = inReq.findValue("catalogid");
-        AgentJobManager manager = (AgentJobManager) getModuleManager().getBean(catalogid, "agentJobManager", true);
+        AgentJobManager manager = getAgentJobManager(inReq);
         manager.getFilteredJobs(inReq);
+    }
+
+    public void getAgentJobLogs(WebPageRequest inReq)
+    {
+        AgentJobManager manager = getAgentJobManager(inReq);
+        String jobid = inReq.getRequestParameter("jobid");
+        Collection<Map<String, String>> jobLogs = manager.getJobLogs(jobid);
+        inReq.putPageValue("joblogs", jobLogs);
     }
 
 }

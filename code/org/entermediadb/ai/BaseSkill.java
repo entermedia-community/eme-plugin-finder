@@ -72,7 +72,9 @@ public class BaseSkill extends BaseAiManager implements Skill, CatalogEnabled
 
 	/**
 	 * Sleeps on this thread before responding. Call processUpdate first to show progress while waiting.
-	 * @return true if the wait finished, false if cancelPendingWait was called for the same skill and channel
+	 * 
+	 * @return true if the wait finished, false if cancelPendingWait was called for the same skill and
+	 *         channel
 	 */
 	protected boolean waitBeforeResponding(AgentContext inContext, long inMillis)
 	{
@@ -92,7 +94,7 @@ public class BaseSkill extends BaseAiManager implements Skill, CatalogEnabled
 		}
 		try
 		{
-			
+
 			log.info("Waiting " + inMillis / 1000L + " seconds before responding on " + key);
 			return pending.await(inMillis);
 		}
@@ -155,7 +157,7 @@ public class BaseSkill extends BaseAiManager implements Skill, CatalogEnabled
 	public void process(AgentContext inContext)
 	{
 		AgentJobStep skillEnabled = inContext.getCurrentAgentJobStep();
-		if( skillEnabled == null )
+		if (skillEnabled == null)
 		{
 			return;
 		}

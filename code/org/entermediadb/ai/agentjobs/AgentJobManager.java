@@ -38,6 +38,7 @@ import org.openedit.hittracker.HitTracker;
 import org.openedit.profile.UserProfile;
 import org.openedit.util.DateStorageUtil;
 import org.openedit.util.ExecutorManager;
+import org.openedit.util.JSONParser;
 import org.openedit.util.OutputFiller;
 
 public class AgentJobManager implements SkillStatusListener, CatalogEnabled
@@ -224,7 +225,7 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 	{
 		Searcher jobsearcher = getMediaArchive().getSearcher("agentjob");
 
-		QueryBuilder query = getMediaArchive().localQuery("agentjob");
+		QueryBuilder query = getMediaArchive().query("agentjob");
 		query.orgroup("status", "new");
 		query.sort("submitteddateDown");
 
@@ -398,10 +399,10 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 				AgentJob job = (AgentJob) getMediaArchive().getCachedData("agentjob", hit.getId());
 				String status = job.get("status");
 				// Only repeat jobs that are finished. Skip running, queued or ones waiting on a person
-				if (status != null && !"complete".equals(status) && !"error".equals(status))
-				{
-					continue;
-				}
+				// if (status != null && !"complete".equals(status) && !"error".equals(status))
+				// {
+				// continue;
+				// }
 				if (currentJobsRunning.containsKey(job.getId()) || !isRepeatDue(job, new Date()))
 				{
 					continue;
@@ -419,6 +420,64 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 			checkQueue();
 		}
 		return count;
+	}
+
+	public void rerunJob(String inJobId)
+	{
+		AgentJob job = (AgentJob) getMediaArchive().getCachedData("agentjob", inJobId);
+		if (job == null)
+		{
+			log.error("Could not find agentjob " + inJobId);
+			return;
+		}
+		try
+		{
+			// String status = job.get("status");
+			// Only repeat jobs that are finished. Skip running, queued or ones waiting on a person
+			// if (status != null && !"complete".equals(status) && !"error".equals(status))
+			// {
+			// return;
+			// }
+			// if (currentJobsRunning.containsKey(job.getId()) || !isRepeatDue(job, new Date()))
+			// {
+			// return;
+			// }
+			resetForRepeat(job);
+		}
+		catch (Exception ex)
+		{
+			log.error("Could not run agentjob " + job.getId(), ex);
+		}
+		checkQueue();
+	}
+
+	public Collection<Map<String, String>> getJobLogs(String inJobId)
+	{
+		Data agentJobRun = getMediaArchive().query("agentjobrun").exact("agentjob", inJobId).searchOne();
+		if (agentJobRun == null)
+		{
+			return new ArrayList<>();
+		}
+		Collection<String> rawLogs = agentJobRun.getValues("agentlogs");
+		if (rawLogs == null)
+		{
+			return new ArrayList<>();
+		}
+		JSONParser parser = new JSONParser();
+		Collection<Map<String, String>> agentJobLogs = new ArrayList<>();
+		for (String agentJobLog : rawLogs)
+		{
+			try
+			{
+				Map<String, String> datamap = (Map<String, String>) parser.parse(agentJobLog);
+				agentJobLogs.add(datamap);
+			}
+			catch (Exception ex)
+			{
+				log.error("Could not parse agentjoblog " + agentJobLog + " for " + inJobId);
+			}
+		}
+		return agentJobLogs;
 	}
 
 	public void getFilteredJobs(WebPageRequest inReq)
@@ -517,7 +576,11 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 		LocalDateTime now = LocalDateTime.ofInstant(inNow.toInstant(), zone);
 
 		Data lastrun = getMediaArchive().query("agentjobrun").exact("agentjob", inJob.getId()).sort("startdateDown").searchOne();
-		Date laststart = lastrun == null ? null : ((MultiValued) lastrun).getDate("startdate");
+		if (lastrun == null)
+		{
+			return true;
+		}
+		Date laststart = ((MultiValued) lastrun).getDate("startdate");
 		if (laststart == null)
 		{
 			// Never run before, start at the next repeattime
@@ -932,6 +995,30 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 		return true;
 	}
 
+	protected void createAgentLog(String inJobId, String inStepId, String inType, String inLog)
+	{
+		AgentJobRunnable agentjobrunnable = (AgentJobRunnable) currentJobsRunning.get(inJobId);
+		if (agentjobrunnable != null)
+		{
+			JSONObject agentlog = new JSONObject();
+			agentlog.put("step", inStepId);
+			agentlog.put("type", inType);
+			agentlog.put("log", inLog);
+			agentlog.put("timestamp", String.valueOf(System.currentTimeMillis()));
+
+			MultiValued agentjobrun = (MultiValued) agentjobrunnable.getAgentJobRun();
+
+			agentjobrun.addValue("agentlogs", agentlog.toJSONString());
+
+			getMediaArchive().saveData("agentjobrun", agentjobrun);
+		}
+		else
+		{
+			log.error("No agentjobrun found for job " + inJobId);
+		}
+
+	}
+
 	protected void finishStep(AgentJob inJob, AgentJobStep inStep, AgentContext inContext)
 	{
 		try
@@ -939,6 +1026,8 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 			if ("running".equals(inStep.get("status")))
 			{
 				inStep.setValue("status", "complete");
+
+				createAgentLog(inContext.getCurrentAgentJob().getId(), inStep.getId(), "success", "Completed " + inStep.getId());
 			}
 			LlmResponse response = inContext.getLastResponse();
 			if (response != null && response.getMessage() != null)
@@ -953,6 +1042,8 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 			{
 				inJob.setValue("status", status);
 				inJob.setValue("errordetails", inStep.get("errordetails"));
+
+				createAgentLog(inContext.getCurrentAgentJob().getId(), inStep.getId(), "error", inStep.get("errordetails"));
 			}
 		}
 		catch (Exception ex)
@@ -980,6 +1071,8 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 
 	public void handleStatusStarting(AgentContext inContext, AgentJobStep inAutomationStep)
 	{
+		createAgentLog(inContext.getCurrentAgentJob().getId(), inAutomationStep.getId(), "log", "Starting " + inAutomationStep.getId());
+
 		if (!(inContext instanceof ChatMessageContext))
 		{
 			return;
