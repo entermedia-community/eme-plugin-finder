@@ -156,8 +156,10 @@ public class ElasticListSearcher extends BaseElasticSearcher implements Reloadab
 			ScriptLogger logger = new ScriptLogger();
 			csvimporter.setLog(logger);
 			csvimporter.setMakeId(false);
+			csvimporter.setLookUpLists(false);
 			//csvimporter.setNewdDetailPrefix("user"); //In case new ids come in
 			csvimporter.importData();
+			clearIndex();
 		}
 
 

@@ -93,7 +93,7 @@ public class BaseImporter extends EnterMediaObject
 		return fieldLookUpLists;
 	}
 
-	protected void setLookUpLists(boolean inLookUpLists)
+	public void setLookUpLists(boolean inLookUpLists)
 	{
 		fieldLookUpLists = inLookUpLists;
 	}
