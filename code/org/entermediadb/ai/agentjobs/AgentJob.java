@@ -91,7 +91,7 @@ public class AgentJob extends BaseData implements CatalogEnabled
 	/** Every step, each followed by the steps that run after it */
 	public Collection<AgentJobStep> getAllSteps()
 	{
-		if (allsteps == null)
+		if (allsteps == null || allsteps.isEmpty())
 		{
 			loadSteps();
 		}
