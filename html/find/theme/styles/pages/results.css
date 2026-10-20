@@ -80,11 +80,6 @@ ul.table-positions-top {
 	background: var(--themed-tab-btn);
 	/* overflow: hidden; */
 }
-.themelight .emsubnav ul.resultsnavright li a,
-.themelight .summary-opener {
-	background: var(--light-bg);
-	color: var(--default-text);
-}
 .resultsnavitem {
 	background: var(--themed-tab-btn);
 }
@@ -4842,10 +4837,6 @@ ul.summary-secondary-nav li a:hover {
 .sidebar-component {
 	color: var(--default-text);
 }
-.filter-box {
-	border-bottom-left-radius: 4px;
-	border-bottom-right-radius: 4px;
-}
 .filter-box a,
 .filter-box a:visited {
 	color: var(--default-text);
@@ -4867,21 +4858,12 @@ ul.summary-secondary-nav li a:hover {
 }
 .themelight .filter-box-header {
 	color: var(--default-text);
-	background: var(--light-bg);
-	border: var(--1px-light);
 }
-.themelight .filter-box-header:hover {
-	background: var(--light-hover);
-}
+
 .filter-box-options {
 	margin: 0;
 	max-height: 380px;
-}
-.themelight .filter-box-options {
-	padding: 0;
 	margin-bottom: 8px;
-	border: var(--1px-light);
-	border-top: none;
 }
 .filter-box-remove i {
 	color: var(--pale-grey);
