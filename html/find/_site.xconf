@@ -120,6 +120,10 @@
   <script src="/${applicationid}/components/javascript/jquery.cuepoint.js" id="jscuepoint"/>
   <script src="/${applicationid}/views/modules/asset/editor/closedcaptions/closedcaptions.js" id="jsclosedcaptions"/>
 
+  <script defer="true" src="/${applicationid}/components/javascript/simpleLightbox/simple-lightbox.jquery.min.js" id="simpleLightbox"/>
+
+  <style id="simpleLightbox-css" href="/${applicationid}/components/javascript/simpleLightbox/simple-lightbox.min.css"/>
+
   <permission name="quicksearch">
     <userprofile name="quicksearch" value="true"/>
   </permission>
