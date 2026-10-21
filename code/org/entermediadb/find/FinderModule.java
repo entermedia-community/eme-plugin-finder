@@ -976,17 +976,14 @@ public class FinderModule extends BaseMediaModule
 
 	public void startPicker(WebPageRequest inReq)
 	{
-		String targettype = inReq.getRequestParameter("pickingtargettype");
-		if (targettype == null)
-		{
-			targettype = "asset";
-		}
+		String pickingtype = inReq.getRequestParameter("pickingtype");
+
 		String moduleid = inReq.getRequestParameter("pickingmoduleid");
 		if (moduleid == null)
 		{
 			moduleid = "asset";
 		}
-		String targetfieldid = inReq.getRequestParameter("targetfieldid");
+		String pickigtargetid = inReq.getRequestParameter("pickigtargetid");
 
 		Picker picker = (Picker) inReq.getPageValue("picker");
 		if (picker == null)
@@ -994,18 +991,30 @@ public class FinderModule extends BaseMediaModule
 			picker = (Picker) inReq.getSessionValue("picker");
 		}
 
-		if (picker != null && targettype.equals(picker.getTargetType()))
+		if (picker != null)
 		{
-			return;
+			if (pickigtargetid != null)
+			{
+				picker.setTargetFieldId(pickigtargetid);
+			}
+			if(pickingtype == null || pickingtype.equals(picker.getTargetType()))
+			{
+				return;
+			}
 		}
 
-		if (targettype != null)
+		if (pickingtype == null)
+		{
+			pickingtype = "asset";
+		}
+
+		if (pickingtype != null)
 		{
 			picker = new Picker();
-			picker.setTargetType(targettype);
-			if (targetfieldid != null)
+			picker.setTargetType(pickingtype);
+			if (pickigtargetid != null)
 			{
-				picker.setTargetFieldId(targetfieldid);
+				picker.setTargetFieldId(pickigtargetid);
 			}
 			picker.setTargetModuleId(moduleid);
 

@@ -1791,18 +1791,31 @@ public class ProjectModule extends BaseMediaModule
 
 		MediaArchive archive = getMediaArchive(inReq);
 
-		Collection savedassets = (Collection) inReq.getPageValue("savedassets");
+		Collection<Asset> savedassets = (Collection) inReq.getPageValue("savedassets");
 
 		Data message = null;
 		// Check if messageid is passed in
 		String messageid = inReq.getRequestParameter("messageid");
 		message = archive.getData("chatterbox", messageid);
+
+		if (savedassets == null)
+		{
+			savedassets = new ArrayList<Asset>();
+			String assetid = inReq.getRequestParameter("assetid");
+			if (assetid != null)
+			{
+				//Picked Asset
+				Asset asset = archive.getCachedAsset(assetid);
+				savedassets.add(asset); 
+			}
+		}
+		if (savedassets == null || savedassets.isEmpty())
+		{
+			return;
+		}
 		Boolean broadcast = false;
 		if (message == null)
 		{
-			// Attachment only
-			if (savedassets != null && !savedassets.isEmpty())
-			{
 				// Create message as the user
 				String channel = inReq.getRequestParameter("channel");
 
@@ -1822,7 +1835,6 @@ public class ProjectModule extends BaseMediaModule
 				broadcast = true;
 				// inReq.putPageValue("messageid", message.getId());
 				inReq.putPageValue("chat", message);
-			}
 		}
 		if (message == null)
 		{
