@@ -225,12 +225,12 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 	{
 		Searcher jobsearcher = getMediaArchive().getSearcher("agentjob");
 
-		//QueryBuilder query = getMediaArchive().query("agentjob");
+		// QueryBuilder query = getMediaArchive().query("agentjob");
 		QueryBuilder query = getMediaArchive().query("agentjob");
 		query.exact("status", "new");
 		query.sort("submitteddateDown");
 
-		if (hasRunningAgentJob()) // Skip these just in case 
+		if (hasRunningAgentJob()) // Skip these just in case
 		{
 			query.notgroup("id", getRunningIds());
 		}
