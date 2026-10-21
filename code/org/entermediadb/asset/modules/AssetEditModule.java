@@ -1456,7 +1456,7 @@ public class AssetEditModule extends BaseMediaModule
 		Searcher searcher = null;
 		String searchtype = inReq.findValue("searchtype");
 		String pageval = inReq.findActionValue("pageval");
-		Boolean savetarget = true;
+		Boolean savetarget = Boolean.valueOf(inReq.findValue("savetarget"));
 		if (pageval == null)
 		{
 			pageval = "data";

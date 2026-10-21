@@ -1816,7 +1816,7 @@ public class ProjectModule extends BaseMediaModule
 
 				message.setValue("message", messagetext);
 				String entityid = inReq.getRequestParameter("entityid");
-				message.setValue("entityid", entityid);
+				message.setValue("dataid", entityid);
 
 				chatterboxsearcher.saveData(message);
 				broadcast = true;
