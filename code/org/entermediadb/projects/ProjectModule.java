@@ -1804,9 +1804,14 @@ public class ProjectModule extends BaseMediaModule
 			String assetid = inReq.getRequestParameter("assetid");
 			if (assetid != null)
 			{
-				//Picked Asset
-				Asset asset = archive.getCachedAsset(assetid);
-				savedassets.add(asset); 
+				//Picked Assets
+				for (String aid : assetid.split(",")) {
+					Asset asset = archive.getCachedAsset(aid);
+					if (asset != null)
+					{
+						savedassets.add(asset); 
+					}
+				}
 			}
 		}
 		if (savedassets == null || savedassets.isEmpty())
@@ -1847,22 +1852,10 @@ public class ProjectModule extends BaseMediaModule
 		{
 			for (Iterator iterator = savedassets.iterator(); iterator.hasNext();)
 			{
-				Data hit = (Data) iterator.next();
-				Asset asset = archive.getCachedAsset(hit.getId());
+				//Data hit = (Data) iterator.next();
+				//Asset asset = archive.getCachedAsset(hit.getId());
+				Asset asset = (Asset) iterator.next();
 
-				asset.addValue("attachedtomessageid", message.getId());
-				tosave.add(asset);
-			}
-		}
-
-		// When is getting here?
-		String[] assetids = inReq.getRequestParameters("assetid");
-		if (assetids != null)
-		{
-			for (int i = 0; i < assetids.length; i++)
-			{
-				String assetid = assetids[i];
-				Asset asset = archive.getCachedAsset(assetid);
 				asset.addValue("attachedtomessageid", message.getId());
 				tosave.add(asset);
 			}
