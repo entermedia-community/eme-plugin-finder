@@ -37,7 +37,10 @@ public class TranscriberManager extends BaseAiManager
 
 	private static final Log log = LogFactory.getLog(TranscriberManager.class);
 
-	public void transcribeAssets(ScriptLogger inLog, MultiValued inConfig, Collection<Asset> inAssets)
+	/** Extra time on top of the asset length before an inprogress track is considered abandoned */
+	protected static final long STALE_GRACE_MS = 60L * 60L * 1000L;
+
+	public void transcribeAssets(ScriptLogger inLog, Collection<Asset> inAssets)
 	{
 		Collection<MultiValued> toprocess = new ArrayList<MultiValued>();
 
@@ -99,10 +102,19 @@ public class TranscriberManager extends BaseAiManager
 		if (inTrack != null)
 		{
 			String status = inTrack.get("transcribestatus");
-			if ("complete".equals(status) || "inprogress".equals(status))
+			if ("complete".equals(status))
 			{
-				inLog.info("Asset already assigned to a videotrack");
-				return false; // already done or in progress
+				inLog.info("Asset already transcribed");
+				return false;
+			}
+			if ("inprogress".equals(status))
+			{
+				if (!isStale(inTrack, inAsset))
+				{
+					inLog.info("Asset transcription already in progress");
+					return false;
+				}
+				inLog.info("Restarting abandoned transcription for " + inAsset);
 			}
 
 		}
@@ -129,6 +141,7 @@ public class TranscriberManager extends BaseAiManager
 		{
 			inLog.error("Could not transcribe " + inAsset, e);
 			inTrack.setValue("transcribestatus", "error");
+			inAsset.setValue("llmerror", true); // So the skill drops it from later steps
 			return false;
 		}
 		finally
@@ -136,6 +149,20 @@ public class TranscriberManager extends BaseAiManager
 			inTrack.setValue("completeddate", new Date());
 			captionSearcher.saveData(inTrack);
 		}
+	}
+
+	/** An inprogress track is abandoned (for example after a restart) once it has run longer than the asset length plus an hour */
+	protected boolean isStale(Data inTrack, MultiValued inAsset)
+	{
+		Date requested = (Date) inTrack.getValue("requesteddate");
+		if (requested == null)
+		{
+			return true;
+		}
+		Object length = inAsset.getValue("length");
+		long lengthms = length instanceof Number ? Math.round(((Number) length).doubleValue() * 1000d) : 0L;
+		long running = System.currentTimeMillis() - requested.getTime();
+		return running > lengthms + STALE_GRACE_MS;
 	}
 
 	public void transcribe(MultiValued inAsset, Data inTrack) throws RepositoryException, IOException
@@ -201,10 +228,10 @@ public class TranscriberManager extends BaseAiManager
 					inTrack.setValue("sourcelang", language);
 				}
 
-				Long speakercount = (Long) transcriptions.get("num_speakers");
+				Number speakercount = (Number) transcriptions.get("num_speakers");
 				if (speakercount != null)
 				{
-					inTrack.setValue("speakercount", speakercount);
+					inTrack.setValue("speakercount", speakercount.longValue());
 				}
 
 				JSONArray segments = (JSONArray) transcriptions.get("segments");
@@ -214,8 +241,9 @@ public class TranscriberManager extends BaseAiManager
 					Map cuemap = new HashMap();
 					JSONObject transcription = (JSONObject) iterator2.next();
 
-					double start = (double) transcription.get("start");
-					double end = (double) transcription.get("end");
+					// json-simple returns Long for whole numbers such as 0
+					double start = ((Number) transcription.get("start")).doubleValue();
+					double end = ((Number) transcription.get("end")).doubleValue();
 					String text = (String) transcription.get("text");
 					String speaker = (String) transcription.get("speaker");
 
@@ -235,7 +263,7 @@ public class TranscriberManager extends BaseAiManager
 				inTrack.setValue("captions", captions);
 				archive.getSearcher("videotrack").saveData(inTrack);
 
-				log.info("Transcribed " + (timeoffset - 300) + "s - " + timeoffset + "s of " + inAsset);
+				log.info("Transcribed " + timeoffset + "s - " + Math.min(timeoffset + 300, length) + "s of " + inAsset);
 
 			}
 			catch (Exception e)
