@@ -1155,6 +1155,94 @@ public class AdminModule extends BaseMediaModule
 		}
 	}
 
+
+
+	public void loadAccessPrivateToken(WebPageRequest inReq)
+	{
+		String account = inReq.getRequestParameter("id");
+		if (Boolean.parseBoolean(inReq.findValue("forcelowercaseusername")))
+		{
+			account = account.toLowerCase();
+		}
+
+		UserManager userManager = getUserManager(inReq);
+		User user = null;
+
+		String templogincode = inReq.getRequestParameter("templogincode");
+
+		if (templogincode != null)
+		{
+			String allow = inReq.getPage().get("allowguestregistration");
+			if (allow == null)
+			{
+				log.error("allowguestregistration must be set to login with temp codes");
+			}
+			else
+			{
+				String email = inReq.getRequestParameter("email");
+				if (email == null)
+				{
+					log.info("No user id or email found " + account);
+					inReq.putPageValue("oe-exception", "No user id or email found");
+					inReq.putPageValue("commandSucceeded", "nouser");
+					return;
+				}
+				user = userManager.getUserByEmail(email);
+			}
+		}
+
+		String password = inReq.getRequestParameter("password");
+		if (user == null && password != null && account != null)
+		{
+			user = userManager.getUser(account);
+		}
+
+		if (user != null)
+		{
+			AuthenticationRequest aReq = userManager.createAuthenticationRequest(inReq, password, user);
+
+			aReq.putProperty("templogincode", templogincode);
+
+			if (userManager.authenticate(aReq))
+			{
+				String accessprivatetoken = user.get("accessprivatetoken");
+				if (accessprivatetoken == null)
+				{
+					accessprivatetoken = getCookieEncryption().randomCharacterString();
+					user.setProperty("accessprivatetoken", accessprivatetoken);
+					userManager.saveUser(user);
+				}
+				String value = user.getUserName() + "privatetoken" + accessprivatetoken;
+				inReq.putPageValue("accessprivatetoken", value);
+				inReq.putPageValue("user", user);
+			}
+		}
+	}
+
+	public void createRefreshToken(WebPageRequest inReq)
+	{
+		String accessprivatetoken = inReq.getRequestParameter("accessprivatetoken");
+		if (accessprivatetoken == null)
+		{
+			log.error("Access private token is missing");
+			return;
+		}
+
+		// Here you would implement the logic to create a refresh token using the access private token
+		String refreshToken = getCookieEncryption().encrypt(accessprivatetoken);
+
+		String tsenc = getUserManager(inReq).getStringEncryption().encrypt(String.valueOf(new Date().getTime()));
+		if (tsenc != null && !tsenc.isEmpty())
+		{
+			refreshToken += StringEncryption.TIMESTAMP + tsenc;
+		}
+		else
+		{
+			log.info("Unable to append encrypted timestamp.");
+		}
+		inReq.putPageValue("refreshtoken", refreshToken);
+	}
+
 	public void logout(WebPageRequest inReq) throws OpenEditException
 	{
 		UserManager usermanager = getUserManager(inReq);
