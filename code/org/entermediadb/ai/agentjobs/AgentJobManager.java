@@ -783,6 +783,28 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 		return childContext;
 	}
 
+	protected void createAgentLog(String inJobId, String inStepId, String inType, String inLog)
+	{
+		MultiValued agentjobrun = (MultiValued) getMediaArchive().query("agentjobrun").exact("agentjob", inJobId).searchOne();
+		if (agentjobrun != null)
+		{
+			JSONObject agentlog = new JSONObject();
+			agentlog.put("step", inStepId);
+			agentlog.put("type", inType);
+			agentlog.put("log", inLog);
+			agentlog.put("timestamp", String.valueOf(System.currentTimeMillis()));
+
+			agentjobrun.addValue("agentlogs", agentlog.toJSONString());
+
+			getMediaArchive().saveData("agentjobrun", agentjobrun);
+		}
+		else
+		{
+			log.error("No agentjobrun found for job " + inJobId);
+		}
+
+	}
+
 	public void runScenario(String inId, ScriptLogger inLogger)
 	{
 		AgentContext context = createAgentContext();
@@ -914,6 +936,8 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 		inStep.setValue("errordetails", null);
 		getMediaArchive().saveData("agentjobstep", inStep.getAgentJobStepData());
 
+		createAgentLog(job.getId(), inStep.getId(), "log", "Starting " + inStep.getId());
+
 		try
 		{
 			return runStep(inContext, inStep, inSkipStatusStart);
@@ -922,6 +946,7 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 		{
 			inStep.setValue("status", "error");
 			inStep.setValue("errordetails", ex.getMessage());
+			createAgentLog(job.getId(), inStep.getId(), "error", "Failed " + inStep.getId() + " with errror: " + ex.getMessage());
 			throw ex;
 		}
 		finally
@@ -996,30 +1021,6 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 		return true;
 	}
 
-	protected void createAgentLog(String inJobId, String inStepId, String inType, String inLog)
-	{
-		AgentJobRunnable agentjobrunnable = (AgentJobRunnable) currentJobsRunning.get(inJobId);
-		if (agentjobrunnable != null)
-		{
-			JSONObject agentlog = new JSONObject();
-			agentlog.put("step", inStepId);
-			agentlog.put("type", inType);
-			agentlog.put("log", inLog);
-			agentlog.put("timestamp", String.valueOf(System.currentTimeMillis()));
-
-			MultiValued agentjobrun = (MultiValued) agentjobrunnable.getAgentJobRun();
-
-			agentjobrun.addValue("agentlogs", agentlog.toJSONString());
-
-			getMediaArchive().saveData("agentjobrun", agentjobrun);
-		}
-		else
-		{
-			log.error("No agentjobrun found for job " + inJobId);
-		}
-
-	}
-
 	protected void finishStep(AgentJob inJob, AgentJobStep inStep, AgentContext inContext)
 	{
 		try
@@ -1046,10 +1047,13 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 
 				createAgentLog(inContext.getCurrentAgentJob().getId(), inStep.getId(), "error", inStep.get("errordetails"));
 			}
+
+			createAgentLog(inJob.getId(), inStep.getId(), "success", "Finished " + inStep.getId() + " with status: " + inStep.get("status"));
 		}
 		catch (Exception ex)
 		{
 			log.error("Could not save agentjobstep " + inStep.getId(), ex);
+			createAgentLog(inJob.getId(), inStep.getId(), "error", "Failed " + inStep.getId() + " with errror: " + ex.getMessage());
 		}
 	}
 
@@ -1072,8 +1076,6 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 
 	public void handleStatusStarting(AgentContext inContext, AgentJobStep inAutomationStep)
 	{
-		createAgentLog(inContext.getCurrentAgentJob().getId(), inAutomationStep.getId(), "log", "Starting " + inAutomationStep.getId());
-
 		if (!(inContext instanceof ChatMessageContext))
 		{
 			return;

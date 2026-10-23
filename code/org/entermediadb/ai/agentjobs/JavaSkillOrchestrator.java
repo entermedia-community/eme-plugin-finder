@@ -6,7 +6,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.entermediadb.ai.AgentContext;
 import org.entermediadb.ai.Skill;
-import org.entermediadb.ai.llm.BaseAgentContext;
 import org.openedit.Data;
 import org.openedit.MultiValued;
 import org.openedit.util.JSONParser;
@@ -21,15 +20,15 @@ public class JavaSkillOrchestrator extends BaseAgentJobOrchestrator
 	protected void processStep(AgentJobRunnable inAgentJob, MultiValued inStep)
 	{
 		String aiskillid = inStep.get("aiskillid");
-		if( aiskillid != null )
+		if (aiskillid != null)
 		{
-			runSkill(inAgentJob,inStep);
+			runSkill(inAgentJob, inStep);
 			return;
 		}
 		String automationscenario = inStep.get("automationscenario");
-		if( automationscenario != null )
+		if (automationscenario != null)
 		{
-			runScenario(inAgentJob,inStep);
+			runScenario(inAgentJob, inStep);
 			return;
 		}
 		log.error("No aiskillid or automationscenario on agentjobstep " + inStep.getId());
@@ -50,7 +49,7 @@ public class JavaSkillOrchestrator extends BaseAgentJobOrchestrator
 		context.put("agentjob", inAgentJob.getAgentJob());
 		context.put("agentjobstep", inStep);
 		String userrequest = inStep.get("userrequest");
-		if( userrequest == null)
+		if (userrequest == null)
 		{
 			userrequest = inAgentJob.getAgentJob().get("userrequest");
 		}
@@ -61,21 +60,22 @@ public class JavaSkillOrchestrator extends BaseAgentJobOrchestrator
 		completeIfRunning(inStep);
 	}
 
-	protected void runSkill( AgentJobRunnable inAgentJob, MultiValued inStep)
+	protected void runSkill(AgentJobRunnable inAgentJob, MultiValued inStep)
 	{
 		String aiskillid = inStep.get("aiskillid");
 		Data aiskill = getMediaArchive().query("aiskill").exact("id", aiskillid).searchOne();
 		inStep.setValue("status", "running");
 		getMediaArchive().saveData("agentjobstep", inStep);
 
-		inAgentJob.getContext().put("agentjobstep",inStep);
+		inAgentJob.getContext().put("agentjobstep", inStep);
 
-		String userrequest = inStep.get("markdowncontent"); //Starting point for each job
-		if( inAgentJob.getAgentJob().get("repeatperiod") != null)
+		String userrequest = inStep.get("markdowncontent"); // Starting point for each job
+		if (inAgentJob.getAgentJob().get("repeatperiod") != null)
 		{
-			//Skills may replace markdowncontent with their output, so keep the original request for the next repeat
+			// Skills may replace markdowncontent with their output, so keep the original request for the next
+			// repeat
 			String original = inStep.get("userrequest");
-			if( original == null)
+			if (original == null)
 			{
 				inStep.setValue("userrequest", userrequest);
 			}
@@ -88,46 +88,46 @@ public class JavaSkillOrchestrator extends BaseAgentJobOrchestrator
 
 		Skill skill = (Skill) getModuleManager().getBean(getCatalogId(), aiskill.get("bean"));
 		String json = inStep.get("parameters");
-		Collection<Map<String,Object>> parameters = null;
-		if( json != null)
+		Collection<Map<String, Object>> parameters = null;
+		if (json != null)
 		{
-			parameters = (Collection<Map<String,Object>>)new JSONParser().parseCollection(json);
+			parameters = (Collection<Map<String, Object>>) new JSONParser().parseCollection(json);
 		}
 
-		if(  parameters != null)
+		if (parameters != null)
 		{
-			for (Map<String,Object> map : parameters) 
+			for (Map<String, Object> map : parameters)
 			{
-				String key = (String)map.get("input_id");
-				String value = (String)map.get("value");
-				if( value == null)
+				String key = (String) map.get("input_id");
+				String value = (String) map.get("value");
+				if (value == null)
 				{
-					String oldkey  = (String)map.get("variable");
-					if( oldkey == null)
+					String oldkey = (String) map.get("variable");
+					if (oldkey == null)
 					{
 						oldkey = key;
 					}
-					value = (String)inAgentJob.getContext().getContextValue(oldkey);
+					value = (String) inAgentJob.getContext().getContextValue(oldkey);
 				}
-				if( value == null)
+				if (value == null)
 				{
 					continue;
 				}
-				if( value.startsWith("${"))
+				if (value.startsWith("${"))
 				{
 					String[] parts = value.split("\\.");
-					if( parts.length > 1)
+					if (parts.length > 1)
 					{
-						String oldkey = parts[parts.length -1];
-						if( oldkey.endsWith("}"))
+						String oldkey = parts[parts.length - 1];
+						if (oldkey.endsWith("}"))
 						{
-							oldkey = oldkey.substring(0,oldkey.length() -1);
+							oldkey = oldkey.substring(0, oldkey.length() - 1);
 						}
-						value = (String)inAgentJob.getContext().getContextValue(oldkey);
+						value = (String) inAgentJob.getContext().getContextValue(oldkey);
 					}
 				}
 
-				inAgentJob.getContext().put(key,value);
+				inAgentJob.getContext().put(key, value);
 			}
 		}
 

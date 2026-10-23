@@ -3486,6 +3486,13 @@
 		</property>
 	</bean>
 
+	<bean id="EmeProjectModule" class="org.entermediadb.server.EmeProjectModule"
+		lazy-init="default">
+		<property name="moduleManager">
+			<ref bean="moduleManager" />
+		</property>
+	</bean>
+
 
 	<bean id="cssutils" class="org.openedit.util.CSSUtils" />
 	<bean id="inflector" class="org.entermediadb.util.Inflector" />
