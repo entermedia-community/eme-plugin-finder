@@ -152,18 +152,6 @@ public class ElasticUserSearcher extends ElasticListSearcher implements UserSear
 	}
 
 	@Override
-	public String encryptPassword(User inUser)
-	{
-		return getXmlUserArchive().encryptPassword(inUser);
-	}
-
-	@Override
-	public String decryptPassword(User inUser)
-	{
-		return getXmlUserArchive().decryptPassword(inUser);
-	}
-
-	@Override
 	public boolean initialize()
 	{
 		// TODO Auto-generated method stub

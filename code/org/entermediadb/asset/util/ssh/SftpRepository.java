@@ -345,13 +345,10 @@ public class SftpRepository extends FileRepository
 		}
 
 		String ftpuser = getUserName();
-		User user = getUserManager().getUser(ftpuser);
-
-		String password = getUserManager().decryptPassword(user);
 
 		log.info("trying to connect to : " + serverName);
-		getSftpUtil().setUsername(user.getName());
-		getSftpUtil().setPassword(password);
+		getSftpUtil().setUsername(ftpuser);
+		getSftpUtil().setPassword(getPassword());
 		getSftpUtil().setHost(serverName);
 
 		getSftpUtil().openSession();
@@ -390,6 +387,16 @@ public class SftpRepository extends FileRepository
 	public String getUserName()
 	{
 		return getProperty("username");
+	}
+
+	public String getPassword()
+	{
+		return getProperty("password");
+	}
+
+	public void setPassword(String inPassword)
+	{
+		setProperty("password", inPassword);
 	}
 
 	public void setUserName(String userName)

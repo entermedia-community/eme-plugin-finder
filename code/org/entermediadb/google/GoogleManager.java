@@ -9,6 +9,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.UUID;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -58,7 +59,6 @@ import org.openedit.page.Page;
 import org.openedit.repository.ContentItem;
 import org.openedit.users.User;
 import org.openedit.users.UserSearcher;
-import org.openedit.users.authenticate.PasswordGenerator;
 import org.openedit.util.DateStorageUtil;
 import org.openedit.util.ExecutorManager;
 import org.openedit.util.HttpMimeBuilder;
@@ -1171,7 +1171,7 @@ public class GoogleManager implements CatalogEnabled
 		JSONObject createrequest = new JSONObject();
 		createrequest.put("email", inUser.getEmail());
 
-		String firebasepassword = new PasswordGenerator().generate();
+		String firebasepassword = UUID.randomUUID().toString() + UUID.randomUUID().toString();
 		createrequest.put("password", firebasepassword);
 		createrequest.put("returnSecureToken", true);
 

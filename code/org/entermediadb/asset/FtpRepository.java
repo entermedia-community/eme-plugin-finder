@@ -342,17 +342,16 @@ public class FtpRepository extends BaseRepository
 
 			String ftpuser = getUserName();
 
-			User user = getUserManager().getUser(ftpuser);
 
-			if (user == null)
+			if (ftpuser == null)
 			{
-				log.info("No user found -trying anonymous login");
+				log.info("No username configured -trying anonymous login");
 				connected = getFTPClient().login("anonymous", "anonymous");
 
 			}
 			else
 			{
-				connected = getFTPClient().login(ftpuser, getUserManager().decryptPassword(user));
+				connected = getFTPClient().login(ftpuser, getPassword());
 			}
 			if (connected)
 			{
@@ -379,6 +378,16 @@ public class FtpRepository extends BaseRepository
 	public String getUserName()
 	{
 		return getProperty("username");
+	}
+
+	public String getPassword()
+	{
+		return getProperty("password");
+	}
+
+	public void setPassword(String inPassword)
+	{
+		setProperty("password", inPassword);
 	}
 
 	public void setUserName(String userName)

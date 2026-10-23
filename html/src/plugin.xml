@@ -627,15 +627,8 @@
 		<property name="authenticators">
 			<list>
 				<ref bean="tempSecurityKeyAuthenticator" />
-				<ref bean="fileAuthenticator" />
-				<ref bean="windowsAuthenticator" />
-				<ref bean="ldapAuthenticator" />
-				<ref bean="jaasAuthenticator" />
 			</list>
 		</property>
-	</bean>
-
-	<bean id="windowsAuthenticator" class="org.entermediadb.asset.util.WindowsAuthenticator">
 	</bean>
 
 	<bean id="assetUtilities" class="org.entermediadb.asset.AssetUtilities">

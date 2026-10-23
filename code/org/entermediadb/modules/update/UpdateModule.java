@@ -174,13 +174,12 @@ public class UpdateModule extends BaseMediaModule
 		Site selected = new Site();
 		selected.setHref(url);
 		selected.setId(url);
-		// set password
+		// set app password
 		if (selected != null)
 		{
 			String username = inSync.get("accountname");
-			String password = getUserManager(inReq).getUser(username).getPassword();
 			selected.setUsername(username);
-			selected.setPassword(password);
+			selected.setAppPassword(inSync.get("apppassword"));
 		}
 		inReq.putPageValue("sitetopush", selected);
 		return selected;
@@ -205,7 +204,6 @@ public class UpdateModule extends BaseMediaModule
 	// PostMethod postMethod = new PostMethod(url);
 	//
 	// Part[] parts = { new StringPart("username", toUpgrade.getUsername()), new
-	// StringPart("password", toUpgrade.getPassword()), new
 	// StringPart("savedas", backup.getName()),
 	// new FilePart("file", backup) };
 	//
@@ -292,17 +290,9 @@ public class UpdateModule extends BaseMediaModule
 			log.error("Nothing posted");
 			return;
 		}
-		String username = inReq.getRequestParameter("username");
-		String password = inReq.getRequestParameter("password");
-
-		User admin = getUserManager(inReq).getUser(username);
-		if (!getUserManager(inReq).authenticate(admin, password))
+		if (inReq.getUser() == null)
 		{
-			throw new OpenEditException("Did not authenticate: " + username);
-		}
-		else
-		{
-			inReq.setUser(admin);
+			throw new OpenEditException("Did not authenticate, send Authorization: Bearer with an application password");
 		}
 		String id = (String) inReq.getRequestParameter("savedas");
 		if (id != null && id.length() > 0)
@@ -543,18 +533,7 @@ public class UpdateModule extends BaseMediaModule
 	{
 		if (inReq.getUser() == null)
 		{
-			String username = inReq.getRequestParameter("accountname");
-			String password = inReq.getRequestParameter("password");
-
-			User admin = getUserManager(inReq).getUser(username);
-			if (!getUserManager(inReq).authenticate(admin, password))
-			{
-				throw new OpenEditException("Did not authenticate: " + username);
-			}
-			else
-			{
-				inReq.setUser(admin);
-			}
+			throw new OpenEditException("Did not authenticate, send Authorization: Bearer with an application password");
 		}
 	}
 

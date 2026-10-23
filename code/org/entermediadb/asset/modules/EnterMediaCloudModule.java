@@ -26,7 +26,6 @@ import org.openedit.page.Page;
 import org.openedit.profile.UserProfile;
 import org.openedit.users.User;
 import org.openedit.users.UserManager;
-import org.openedit.users.authenticate.PasswordGenerator;
 
 public class EnterMediaCloudModule extends BaseJsonModule
 {
@@ -144,13 +143,12 @@ public class EnterMediaCloudModule extends BaseJsonModule
 			User user = userManager.getUserByEmail(email);
 			if (user == null)
 			{
-				user = userManager.createUser("em" + userid, null);
+				user = userManager.createUser("em" + userid);
 				user.setEmail(email);
 				user.setEnabled(true);
 			}
 			user.setFirstName((String) data.get("firstname"));
 			user.setLastName((String) data.get("lastname"));
-			user.setPassword((String) data.get("password"));
 			userManager.saveUser(user);
 
 			String catalogid = inReq.findPathValue("catalogid");

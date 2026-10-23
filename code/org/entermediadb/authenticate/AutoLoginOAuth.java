@@ -108,7 +108,7 @@ public class AutoLoginOAuth extends BaseAutoLogin implements AutoLoginProvider
 
 		if (user == null)
 		{
-			user = getUserManager().createUser(userid, null);
+			user = getUserManager().createUser(userid);
 			user.setFirstName(firstname);
 			user.setLastName(lastname);
 			user.setEmail(email);

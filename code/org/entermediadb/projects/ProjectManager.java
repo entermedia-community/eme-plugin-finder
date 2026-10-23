@@ -39,7 +39,6 @@ import org.openedit.hittracker.SearchQuery;
 import org.openedit.hittracker.Term;
 import org.openedit.profile.UserProfile;
 import org.openedit.users.User;
-import org.openedit.users.authenticate.PasswordGenerator;
 import org.openedit.util.DateStorageUtil;
 
 public class ProjectManager implements CatalogEnabled
@@ -1599,8 +1598,7 @@ public class ProjectManager implements CatalogEnabled
 		User teamuser = archive.getUserManager().getUserByEmail(email);
 		if (teamuser == null)
 		{
-			String password = new PasswordGenerator().generate();
-			teamuser = archive.getUserManager().createUser(null, password);
+			teamuser = archive.getUserManager().createUser(null);
 			teamuser.setFirstName(firstName);
 			teamuser.setLastName(lastName);
 			teamuser.setEmail(email.trim().toLowerCase());

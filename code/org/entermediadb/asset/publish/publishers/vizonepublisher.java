@@ -97,12 +97,10 @@ public class vizonepublisher extends BasePublisher implements Publisher
 			log.info("Publishing ${asset} to ftp server ${servername}, with username ${username}.");
 
 			String password = inDestination.get("password");
-			// get password and login
 			if (password == null)
 			{
-				UserManager userManager = mediaArchive.getUserManager();
-				User user = userManager.getUser(username);
-				password = userManager.decryptPassword(user);
+				result.setErrorMessage("password is required on publish destination " + inDestination.getId());
+				return result;
 			}
 			String enc = username + ":" + password;
 			byte[] encodedBytes = Base64.encodeBase64(enc.getBytes());

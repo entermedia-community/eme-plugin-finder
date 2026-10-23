@@ -23,13 +23,6 @@ public class GoogleTwoFactorAuthenticator implements Authenticator
 	}
 
 	@Override
-	public boolean authenticate(String inCatalogId, User inUser, String inPassword) throws UserManagerException
-	{
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
 	public boolean authenticate(AuthenticationRequest inReq) throws UserManagerException
 	{
 

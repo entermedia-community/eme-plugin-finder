@@ -9,7 +9,7 @@ public class Site
 	protected String fieldText;
 	protected String fieldHref;
 	protected String fieldUsername;
-	protected String fieldPassword;
+	protected String fieldAppPassword;
 
 	public String getHref()
 	{
@@ -41,14 +41,14 @@ public class Site
 		fieldText = inText;
 	}
 
-	public String getPassword()
+	public String getAppPassword()
 	{
-		return fieldPassword;
+		return fieldAppPassword;
 	}
 
-	public void setPassword(String inPassword)
+	public void setAppPassword(String inAppPassword)
 	{
-		fieldPassword = inPassword;
+		fieldAppPassword = inAppPassword;
 	}
 
 	public String getUsername()

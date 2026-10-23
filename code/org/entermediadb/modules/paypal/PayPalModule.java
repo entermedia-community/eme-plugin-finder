@@ -73,7 +73,7 @@ public class PayPalModule extends BaseMediaModule
 		{
 			String first = inReq.getRequestParameter("firstName.value");
 			String last = inReq.getRequestParameter("lastName.value");
-			user = archive.getUserManager().createGuestUser(null, null, "paypal");
+			user = archive.getUserManager().createGuestUser(null, "paypal");
 			user.setVirtual(false);
 			user.setEnabled(true); // Allow to log into OI
 			user.setFirstName(first);

@@ -17,7 +17,6 @@ import org.entermediadb.asset.Category;
 import org.entermediadb.asset.MediaArchive;
 import org.entermediadb.email.PostMail;
 import org.entermediadb.email.TemplateWebEmail;
-import org.entermediadb.modules.admin.users.PasswordMismatchException;
 import org.entermediadb.modules.admin.users.PropertyContainerManipulator;
 import org.entermediadb.modules.admin.users.Question;
 import org.entermediadb.modules.admin.users.QuestionArchive;
@@ -39,7 +38,6 @@ import org.openedit.users.Group;
 import org.openedit.users.User;
 import org.openedit.users.UserManager;
 import org.openedit.users.UserManagerException;
-import org.openedit.users.authenticate.PasswordGenerator;
 import org.openedit.util.PathUtilities;
 import org.openedit.util.strainer.Filter;
 import org.openedit.util.strainer.FilterReader;
@@ -292,28 +290,13 @@ public class UserManagerModule extends BaseMediaModule
 			if (newUser != null)
 			{
 				inReq.putPageValue("newuser", newUser);
-				String password = "";
-				if (newUser.getPassword().startsWith("DES:"))
-				{
-					password = getUserManager(inReq).getStringEncryption().decrypt(newUser.getPassword());
-				}
-				else
-				{
-					password = newUser.getPassword();
-				}
-				inReq.putPageValue("password", password);
 
 				emailPassword(newUser, inReq);
 				return;
 			}
 
-			String password = new PasswordGenerator().generate();// Integer.toString((int)(100000 +
-																	// generator.nextDouble() * 899999D));
-
-			newUser = getUserManager(inReq).createUser(null, password); // username may be null, in fact it always is
-			newUser.setPassword(password);
+			newUser = getUserManager(inReq).createUser(null); // username may be null, in fact it always is
 			getPropertyContainerManipulator().updateProperties(inReq.getParameterMap(), newUser.getProperties());
-			inReq.putPageValue("password", password);
 			newUser.setValue("refererurl", inReq.getSessionValue("refererurl"));
 
 			Group group = getGroupSearcher(inReq).getGroup("guest");
@@ -413,48 +396,28 @@ public class UserManagerModule extends BaseMediaModule
 		checkAdminPermission(inReq);
 
 		String username = inReq.getRequiredParameter(USERNAME_PARAMETER);
-		String password = inReq.getRequestParameter("newpassword");
-		if (password == null)
+		try
 		{
-			password = inReq.getRequestParameter("password");
-		}
-		String retypedPassword = inReq.getRequestParameter("retypedPassword");
-
-		if (password == null || password.equals(retypedPassword))
-		{
-			try
+			User user = getUserManager(inReq).createUser(username);
+			user.setEnabled(true);
+			getPropertyContainerManipulator().updateProperties(inReq.getParameterMap(), user.getProperties());
+			// groups
+			String groups[] = inReq.getRequestParameters(GROUPS);
+			if (groups != null)
 			{
-				if (password == null)
+				for (int i = 0; i < groups.length; i++)
 				{
-					password = new PasswordGenerator().generate();
+					Group group = getGroupSearcher(inReq).getGroup(groups[i]);
+					user.addGroup(group);
+					getUserManager(inReq).saveGroup(group);
 				}
-				User user = getUserManager(inReq).createUser(username, password);
-				user.setPassword(password);
-				user.setEnabled(true);
-				getPropertyContainerManipulator().updateProperties(inReq.getParameterMap(), user.getProperties());
-				// groups
-				String groups[] = inReq.getRequestParameters(GROUPS);
-				if (groups != null)
-				{
-					for (int i = 0; i < groups.length; i++)
-					{
-						Group group = getGroupSearcher(inReq).getGroup(groups[i]);
-						user.addGroup(group);
-						getUserManager(inReq).saveGroup(group);
-					}
-				}
-				getUserSearcher(inReq).saveData(user, inReq.getUser());
-				inReq.putPageValue("newUser", user);
 			}
-			catch (UserManagerException ume)
-			{
-				throw new OpenEditException(ume);
-			}
-
+			getUserSearcher(inReq).saveData(user, inReq.getUser());
+			inReq.putPageValue("newUser", user);
 		}
-		else
+		catch (UserManagerException ume)
 		{
-			throw new PasswordMismatchException("The two passwords did not match.");
+			throw new OpenEditException(ume);
 		}
 	}
 
@@ -742,85 +705,7 @@ public class UserManagerModule extends BaseMediaModule
 			getPageManager().putPage(settings);
 		}
 
-		// See if they want to try to log in
-		String password = inReq.getRequestParameter("password");
-		if (password == null || password.length() == 0)
-		{
-			String phone = inReq.getRequestParameter("phone1");
-			password = clean(phone); // this might be thier default password
-		}
-		if (password != null)
-		{
-			boolean ok = getUserManager(inReq).authenticate(user, password);
-			// Phone1
-			if (ok)
-			{
-				inReq.putSessionValue("user", user);
-			}
-			else
-			{
-				String error = "Incorrect information entered for editing";
-				inReq.putPageValue("errorMessage", error);
-				log.error(error);
-				return;
-			}
-		}
 		inReq.redirect(homePage.getPath());
-	}
-
-	public void setUserPassword(WebPageRequest inReq) throws UserManagerException, OpenEditException
-	{
-		String password = inReq.getRequestParameter("password");
-		String retypedPassword = inReq.getRequestParameter("retypedPassword");
-
-		if (password == null || retypedPassword == null)
-		{
-			inReq.putPageValue("errors", "novalues");
-			return;
-		}
-		if (password.equals(retypedPassword))
-		{
-
-			MediaArchive archive = getMediaArchive(inReq);
-			if (archive != null)
-			{
-				Data regex = archive.getCatalogSetting("passwordregex");
-				if (regex != null)
-				{
-					String value = regex.get("value");
-					if (!password.matches(value))
-					{
-						String label = regex.getName();
-						inReq.putPageValue("errors", "regex");
-
-						inReq.putPageValue("regexerror", label);
-						return;
-					}
-				}
-
-			}
-
-			User user = getUser(inReq);
-			if (user == null)
-			{
-				inReq.putPageValue("errors", "mismatch user");
-				return;
-			}
-			User target = inReq.getUser();
-			if (!user.getId().equals(target.getId()))
-			{
-				checkAdminPermission(inReq);
-			}
-			user.setPassword(password);
-			getUserSearcher(inReq).saveData(user, target);
-			inReq.putPageValue("message", "passwordchanged");
-
-		}
-		else
-		{
-			inReq.putPageValue("errors", "mismatch");
-			// throw new PasswordMismatchException( "The two passwords do not match." );
-		}
 	}
 
 	/**
@@ -1227,8 +1112,7 @@ public class UserManagerModule extends BaseMediaModule
 		User user = getUserSearcher(inReq).getUserByEmail(email);
 		if (user == null)
 		{
-			String password = new PasswordGenerator().generate();
-			user = getUserManager(inReq).createUser(email, password);
+			user = getUserManager(inReq).createUser(email);
 			user.setEmail(email);
 			user.setVirtual(false);
 		}

@@ -61,8 +61,12 @@ public class LdapSearcher extends BaseSearcher
 			String username = ldapconfig.get("username");
 			if (username != null)
 			{
+				String password = ldapconfig.get("password");
+				if (password == null)
+				{
+					throw new OpenEditException("password is required in ldap.xml for user " + username);
+				}
 				User user = getUserManager().getUser(username);
-				String password = getUserManager().decryptPassword(user);
 				server.authenticate(user, password);
 				if (!server.connect())
 				{

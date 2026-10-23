@@ -557,8 +557,6 @@ public class AdminModule extends BaseMediaModule
 		}
 		String email = inReq.getRequestParameter("email");
 
-		String password = inReq.getRequestParameter("password");
-
 		if (Boolean.parseBoolean(inReq.findValue("forcelowercaseusername")))
 		{
 			if (account != null)
@@ -644,19 +642,11 @@ public class AdminModule extends BaseMediaModule
 					String groupid = inReq.getPage().get("autologingroup");
 					user = userManager.checkForNewUser(email, templogincode, groupid);
 				}
-
-				// if (groupname != null)
-				// {
-				// //we dont want to save the real password since it might be NT based
-				// String tmppassword = new PasswordGenerator().generate();
-				// user = userManager.createGuestUser(account, tmppassword, groupname);
-				// log.info("Username not found. Creating guest user.");
-				// }
 			}
-			if (password == null && templogincode == null)
+			if (templogincode == null)
 			{
 				inReq.putPageValue("oe-exception", "No credentials provided");
-				log.info(" Password cannot be blank ");
+				log.info(" Login code cannot be blank ");
 				inReq.putPageValue("commandSucceeded", "nopassword");
 				return;
 			}
@@ -667,7 +657,7 @@ public class AdminModule extends BaseMediaModule
 				{
 					log.info("Checking server for user " + server);
 					String groupid = inReq.getPage().get("autologingroup");
-					user = userManager.createGuestUser(account, null, groupid);
+					user = userManager.createGuestUser(account, groupid);
 					user.setEnabled(true);
 				}
 				else
@@ -679,7 +669,7 @@ public class AdminModule extends BaseMediaModule
 					return;
 				}
 			}
-			AuthenticationRequest aReq = userManager.createAuthenticationRequest(inReq, password, user);
+			AuthenticationRequest aReq = userManager.createAuthenticationRequest(inReq, user);
 
 			aReq.putProperty("templogincode", templogincode);
 
@@ -690,7 +680,7 @@ public class AdminModule extends BaseMediaModule
 				inReq.putPageValue("commandSucceeded", "ok");
 				if (inReq.getRequestParameter("publickey") != null || "apppassword".equals(inReq.getRequestParameter("keytype")))
 				{
-					// Legacy login can register a key in the same call, so the client never needs the password again.
+					// A code login can register a key in the same call, so the client never needs the code again.
 					// Failures are reported as key_error; the login itself still succeeded.
 					Data key = createUserKey(inReq, user);
 					if (key != null)
@@ -736,62 +726,6 @@ public class AdminModule extends BaseMediaModule
 		}
 	}
 
-	// TODO: Remove this, its duplicates login
-	public boolean authenticate(WebPageRequest inReq) throws Exception
-	{
-		String account = inReq.getRequestParameter("id");
-		String email = inReq.getRequestParameter("email");
-
-		if (Boolean.parseBoolean(inReq.findValue("forcelowercaseusername")))
-		{
-			account = account.toLowerCase();
-		}
-		String password = inReq.getRequestParameter("password");
-		UserManager userManager = getUserManager(inReq);
-		User user = null;
-		if (account != null)
-		{
-			user = userManager.getUser(account);
-		}
-		else if (email != null)
-		{
-			userManager.getUserByEmail(email);
-		}
-		Boolean ok = false;
-		if (user != null)
-		{
-			AuthenticationRequest aReq = userManager.createAuthenticationRequest(inReq, password, user);
-
-			String templogincode = inReq.getRequestParameter("templogincode");
-			aReq.putProperty("templogincode", templogincode);
-
-			if (userManager.authenticate(aReq))
-			{
-				ok = true;
-				inReq.putSessionValue(aReq.getCatalogId() + "user", user);
-				inReq.putPageValue("user", user);
-				inReq.putPageValue("commandSucceeded", "ok");
-			}
-			else
-			{
-				inReq.putPageValue("oe-exception", "Invalid Login");
-				inReq.putPageValue("commandSucceeded", "invalidlogin");
-			}
-		}
-		else
-		{
-			log.info("No such user" + account);
-			inReq.putPageValue("commandSucceeded", "nouser");
-			// String catalogid =user.get("catalogid");
-			// inReq.putSessionValue(catalogid + "user", null);
-		}
-
-		inReq.putPageValue("id", account);
-		inReq.putPageValue("authenticated", ok);
-		return ok;
-
-	}
-
 	// OAuth2-style token endpoint. grant_type=key signs in with a registered key; grant_type=otp redeems an emailed
 	// code and registers the caller's public key in the same call. Both return a one week Bearer token.
 	public void oauthToken(WebPageRequest inReq) throws Exception
@@ -820,7 +754,7 @@ public class AdminModule extends BaseMediaModule
 				return;
 			}
 
-			AuthenticationRequest aReq = userManager.createAuthenticationRequest(inReq, null, user);
+			AuthenticationRequest aReq = userManager.createAuthenticationRequest(inReq, user);
 			aReq.putProperty("templogincode", code);
 
 			boolean success = loginAndRedirect(aReq, inReq);
@@ -975,7 +909,7 @@ public class AdminModule extends BaseMediaModule
 		{
 			// Save our logged-in user in the session,
 			// because we use it again later
-			if (inAReq.getPassword() != null || inUser.getPassword() != null || inAReq.get("templogincode") != null)
+			if (inAReq.get("templogincode") != null)
 			{
 				if (inUser.isEnabled())
 				{
@@ -1137,7 +1071,7 @@ public class AdminModule extends BaseMediaModule
 				putOauthError(inReq, "invalid_grant", "Invalid or expired code");
 				return;
 			}
-			AuthenticationRequest aReq = userManager.createAuthenticationRequest(inReq, null, user);
+			AuthenticationRequest aReq = userManager.createAuthenticationRequest(inReq, user);
 			aReq.putProperty("templogincode", code);
 			if (!loginAndRedirect(aReq, inReq))
 			{
@@ -1341,41 +1275,6 @@ public class AdminModule extends BaseMediaModule
 
 		return user;
 
-	}
-
-	protected void quickLogin(WebPageRequest inReq) throws OpenEditException
-	{
-		if (inReq.getUser() == null)
-		{
-			String username = inReq.getRequestParameter("accountname");
-			if (Boolean.parseBoolean(inReq.findValue("forcelowercaseusername")))
-			{
-				username = username.toLowerCase();
-			}
-			String password = inReq.getRequestParameter("password");
-			if (password == null)
-			{
-				password = inReq.getRequestParameter("code");
-				password = getUserManager(inReq).getStringEncryption().decrypt(password);
-			}
-			if (password == null)
-			{
-				return;
-			}
-			User user = getUserManager(inReq).getUser(username);
-			if (user == null)
-			{
-				return;
-			}
-			if (!getUserManager(inReq).authenticate(user, password))
-			{
-				throw new OpenEditException("Did not authenticate: " + username);
-			}
-			else
-			{
-				inReq.setUser(user);
-			}
-		}
 	}
 
 	public void forwardToSecureSocketsLayer(WebPageRequest inReq)
@@ -1764,7 +1663,7 @@ public class AdminModule extends BaseMediaModule
 				getUserManager(inReq).createGroup("guest", "Guest");
 			}
 
-			user = getUserManager(inReq).createGuestUser(null, null, "guest");
+			user = getUserManager(inReq).createGuestUser(null, "guest");
 			String catalogid = getUserManager(inReq).getUserSearcher().getCatalogId();
 			user.setVirtual(true);
 			user.setProperty("catalogid", catalogid);
@@ -1856,55 +1755,32 @@ public class AdminModule extends BaseMediaModule
 
 	public void generateKey(WebPageRequest inReq)
 	{
-
-		String account = inReq.getRequestParameter("accountname");
-		String password = inReq.getRequestParameter("password");
-
-		if (Boolean.parseBoolean(inReq.findValue("forcelowercaseusername")))
+		User user = inReq.getUser();
+		if (user == null)
 		{
-			if (account != null)
-			{
-				account = account.toLowerCase();
-			}
+			inReq.putPageValue("error", "You must be logged in to generate a code");
+			return;
 		}
-		UserManager userManager = getUserManager(inReq);
-
-		User user = userManager.getUser(account);
 		if (user.get("googlesecretkey") != null)
 		{
 			inReq.putPageValue("error", "Sorry, your code has already been generated.  IF you need it reset contact your administrator");
 			return;
 		}
 
-		AuthenticationRequest aReq = getUserManager(inReq).createAuthenticationRequest(inReq, password, user);
-		if (userManager.getAuthenticator().authenticate(aReq))
+		GoogleAuthenticator gAuth = new GoogleAuthenticator();
+		final GoogleAuthenticatorKey key = gAuth.createCredentials();
+		String secret = key.getKey();
+		user.setValue("googlesecretkey", secret);
+		getSearcherManager().getSearcher(getUserManager(inReq).getUserSearcher().getCatalogId(), "user").saveData(user);
+		inReq.putPageValue("googlesecret", secret);
+		String sitename = getMediaArchive(inReq).getCatalogSettingValue("sitename");
+		if (sitename == null)
 		{
-
-			GoogleAuthenticator gAuth = new GoogleAuthenticator();
-			final GoogleAuthenticatorKey key = gAuth.createCredentials();
-			String secret = key.getKey();
-			user.setValue("googlesecretkey", secret);
-			getSearcherManager().getSearcher(aReq.getCatalogId(), "user").saveData(user);
-			inReq.putPageValue("googlesecret", secret);
-			String sitename = getMediaArchive(inReq).getCatalogSettingValue("sitename");
-			// if(sitename == null) {
-			// sitename = inReq.findValue("siteroot");
-			// }
-			// if(sitename == null) {
-			// sitename = inReq.getSiteRoot();
-			// }
-			if (sitename == null)
-			{
-				sitename = "Entermedia";
-			}
-
-			String qr = GoogleAuthenticatorQRGenerator.getOtpAuthURL(sitename, user.getEmail(), key);
-			inReq.putPageValue("qrcode", qr);
+			sitename = "Entermedia";
 		}
-		else
-		{
-			inReq.putPageValue("invalid", "Sorry, couldn't login.  Please try again.");
-		}
+
+		String qr = GoogleAuthenticatorQRGenerator.getOtpAuthURL(sitename, user.getEmail(), key);
+		inReq.putPageValue("qrcode", qr);
 	}
 
 	public void resetKey(WebPageRequest inReq)

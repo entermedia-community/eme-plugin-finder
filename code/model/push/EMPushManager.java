@@ -412,10 +412,7 @@ public class EMPushManager extends BasePushManager implements PushManager
 	public Map<String, String> upload(Asset inAsset, MediaArchive inArchive, String inUploadType, List<ContentItem> inFiles)
 	{
 		String server = inArchive.getCatalogSettingValue("push_server_url");
-		// String account = inArchive.getCatalogSettingValue("push_server_username");
 		String targetcatalogid = inArchive.getCatalogSettingValue("push_target_catalogid");
-		// String password =
-		// getUserManager().decryptPassword(getUserManager().getUser(account));
 
 		String url = server + "/media/services/rest/" + "handlesync.xml?dontclear=true&catalogid=" + targetcatalogid;
 		HttpPost method = new HttpPost(url);
@@ -467,8 +464,6 @@ public class EMPushManager extends BasePushManager implements PushManager
 			// Charset.forName("UTF-8"));
 			// Charset set = Charset.forName("UTF-8");
 
-			// parts.add(new BasicNameValuePair("username", account));
-			// parts.add(new BasicNameValuePair("password", password));
 			for (Iterator iterator = inAsset.keySet().iterator(); iterator.hasNext();)
 			{
 				String key = (String) iterator.next();

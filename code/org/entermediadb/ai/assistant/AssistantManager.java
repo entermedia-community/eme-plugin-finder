@@ -58,7 +58,7 @@ public class AssistantManager extends BaseAiManager
 		// TODO: REmove after a while, we checked in one for new installs
 		if (agent == null)
 		{
-			agent = archive.getUserManager().createUser("agent", null);
+			agent = archive.getUserManager().createUser("agent");
 			agent.setFirstName("AI");
 			agent.setLastName("Guide");
 			agent.setValue("screenname", "AI Guide");

@@ -42,12 +42,10 @@ public class sftppublisher extends BasePublisher implements Publisher
 			sftp.setHost(servername);
 			sftp.setUsername(username);
 
-			// get password and login
 			if (password == null)
 			{
-				UserManager userManager = mediaArchive.getUserManager();
-				User user = userManager.getUser(username);
-				password = userManager.decryptPassword(user);
+				result.setErrorMessage("password is required on publish destination " + inDestination.getId());
+				return result;
 			}
 			sftp.setPassword(password);
 			log.info("Publishing ${asset} to sftp server ${servername}, with username ${username}.");

@@ -53,12 +53,10 @@ public class ftppublisher extends BasePublisher implements Publisher
 				return result;
 			}
 			String password = inDestination.get("password");
-			// get password and login
 			if (password == null)
 			{
-				UserManager userManager = mediaArchive.getUserManager();
-				User user = userManager.getUser(username);
-				password = userManager.decryptPassword(user);
+				result.setErrorMessage("password is required on publish destination " + inDestination.getId());
+				return result;
 			}
 
 			ftp.login(username, password);

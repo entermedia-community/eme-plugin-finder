@@ -145,7 +145,7 @@ public class AutoLoginLti extends BaseAutoLogin implements AutoLoginProvider
 				User user = getUserManager(inReq).getUser(username);
 				if (user == null)
 				{
-					user = getUserManager(inReq).createUser(username, null);
+					user = getUserManager(inReq).createUser(username);
 				}
 				if (email != null)
 				{

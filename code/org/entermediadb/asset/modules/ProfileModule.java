@@ -499,11 +499,10 @@ public class ProfileModule extends MediaArchiveModule
 		{
 			return;
 		}
-		String password = inReq.getRequestParameter("password");
 		User user = getUserManager(inReq).getUser(username);
 		if (user == null)
 		{
-			user = getUserManager(inReq).createUser(username, password);
+			user = getUserManager(inReq).createUser(username);
 
 		}
 
