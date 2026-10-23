@@ -53,8 +53,7 @@ public abstract class BasePuller
 	protected HttpSharedConnection createConnection(Data node)
 	{
 		HttpSharedConnection connection = new HttpSharedConnection();
-		connection.addSharedHeader("X-token", node.get("entermediakey"));
-		connection.addSharedHeader("X-tokentype", "entermedia");
+		connection.addSharedHeader("Authorization", "Bearer " + node.get("apppassword"));
 		return connection;
 	}
 

@@ -706,16 +706,14 @@ public class MediaAdminModule extends BaseMediaModule
 		// ZipGenerator
 		// Check on the path and user
 		// Cancel if not the right user. Otherwise put in as temp user varible
-		String key = inReq.getRequestParameter("entermedia.key");
-		User admin = getUserManager(inReq).getUser("admin");
-		String hash = getUserManager(inReq).getStringEncryption().getPasswordMd5(admin.getPassword());
-		if (!key.equals(hash))
+		// Authenticated by AutoLogin (session, key token or application password); administrators only
+		User admin = inReq.getUser();
+		if (admin == null || !admin.isInGroup("administrators"))
 		{
 			inReq.redirect("/manager/");
-			log.error("Invalid key");
+			log.error("Administrator login required for snapshot download");
 			return;
 		}
-		inReq.setUser(admin);
 
 		String snapid = inReq.getContentPage().getDirectoryName();
 		Data snap = getSearcherManager().getData("system", "sitesnapshot", snapid);

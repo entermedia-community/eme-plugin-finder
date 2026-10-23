@@ -50,9 +50,6 @@ public class GoogleModule extends BaseMediaModule
 		{
 			getGoogleManager(inReq).createFireBaseUser(user);
 			// update Firebase
-			String value = getMediaArchive(inReq).getUserManager().getEnterMediaKey(user);
-
-			inReq.putPageValue("entermediakey", value);
 			inReq.putPageValue("user", user);
 
 			String firebasepassword = user.get("firebasepassword");
@@ -82,8 +79,6 @@ public class GoogleModule extends BaseMediaModule
 			if (email != null)
 			{
 				User user = manager.createUserIfNeeded(email);
-				String value = getMediaArchive(inReq).getUserManager().getEnterMediaKey(user);
-				inReq.putPageValue("entermediakey", value);
 				inReq.putPageValue("user", user);
 			}
 		}

@@ -32,6 +32,7 @@ import org.entermediadb.users.PasswordHelper;
 import org.openedit.Data;
 import org.openedit.OpenEditException;
 import org.openedit.WebPageRequest;
+import org.openedit.data.Searcher;
 import org.openedit.data.SearcherManager;
 import org.openedit.page.Page;
 import org.openedit.page.PageRequestKeys;
@@ -150,6 +151,29 @@ public class AdminModule extends BaseMediaModule
 			emailaddress = inReq.getRequestParameter("email"); // Move to using this
 		}
 
+		if( emailaddress == null)
+		{
+			String username = inReq.getRequestParameter("username");
+			if (username != null)
+			{
+				User user = getUserManager(inReq).getUser(username);
+				if (user != null)
+				{
+					emailaddress = user.getEmail();
+				}
+			}
+		}
+
+		if (emailaddress == null && inReq.getRequestParameter(UNAME) != null)
+		{
+			// Callers that only know the username (e.g. bin/refreshtoken.sh); the code is still emailed to the address on file
+			User byname = getUserManager(inReq).getUser(inReq.getRequestParameter(UNAME));
+			if (byname != null)
+			{
+				emailaddress = byname.getEmail();
+			}
+		}
+
 		if (emailaddress == null)
 		{
 			inReq.putPageValue("commandSucceeded", "missingparam");
@@ -184,6 +208,7 @@ public class AdminModule extends BaseMediaModule
 			if (foundUser.isEnabled())
 			{
 				String userCode = getUserManager(inReq).createNewTempLoginKey(username, emailaddress, firstName, lastName, screenName, false);
+				inReq.putPageValue("loginlinktoken", getUserManager(inReq).createNewTempLoginLink(username, emailaddress, firstName, lastName, screenName));
 
 				if (userCategory != null)
 				{
@@ -196,6 +221,7 @@ public class AdminModule extends BaseMediaModule
 				{
 					passwordHelper.emailPasswordReminder(inReq, getPageManager(), userCode, emailaddress);
 				}
+				inReq.putPageValue("username", username);
 			}
 			else
 			{
@@ -228,6 +254,7 @@ public class AdminModule extends BaseMediaModule
 
 				screenName = inReq.getRequestParameter("screenName");
 				String userCode = getUserManager(inReq).createNewTempLoginKey(null, emailaddress, firstName, lastName, screenName, false);
+				inReq.putPageValue("loginlinktoken", getUserManager(inReq).createNewTempLoginLink(null, emailaddress, firstName, lastName, screenName));
 				String subject = "Login Code";
 				inReq.putPageValue("subject", subject);
 				passwordHelper.emailPasswordReminder(inReq, getPageManager(), userCode, emailaddress);
@@ -311,21 +338,16 @@ public class AdminModule extends BaseMediaModule
 			}
 
 			String tempsecuritykey = getUserManager(inReq).createNewTempLoginKey(username, emailaddress, firstName, lastName, screenName, false);
+			inReq.putPageValue("loginlinktoken", getUserManager(inReq).createNewTempLoginLink(username, emailaddress, firstName, lastName, screenName));
 
 			PasswordHelper passwordHelper = getPasswordHelper(inReq);
-			String key = null;
-			if (foundUser != null)
-			{
-				key = getUserManager(inReq).getStringEncryption().getTempEnterMediaKey(foundUser); // Optional
-			}
-
 			if (foundUser != null && foundUser.isEnabled())
 			{
 				/*
 				 * if(userCategory != null) { foundUser.setValue("logincategoryid",userCategory.getId());
 				 * getUserManager(inReq).saveUser(foundUser); }
 				 */
-				passwordHelper.emailPasswordReminder(inReq, getPageManager(), tempsecuritykey, key, emailaddress);
+				passwordHelper.emailPasswordReminder(inReq, getPageManager(), tempsecuritykey, emailaddress);
 			}
 			else
 			{
@@ -368,50 +390,6 @@ public class AdminModule extends BaseMediaModule
 			log.info("Unable to append encrypted timestamp. Autologin URL does not have an expiry.");
 		}
 
-	}
-
-	/**
-	 * @deprecated use String passenc =
-	 *             getUserManager(inReq).getStringEncryption().getPasswordMd5(foundUser.getPassword());
-	 * @param inReq
-	 */
-	public void getKey(WebPageRequest inReq)
-	{
-		User foundUser = inReq.getUser();
-		if (foundUser == null)
-		{
-			return;
-		}
-		String passenc = getUserManager(inReq).getStringEncryption().getPasswordMd5(foundUser.getPassword());
-		passenc = foundUser.getUserName() + "md542" + passenc;
-		try
-		{
-			String expiry = inReq.getPageProperty("temporary_password_expiry");
-			if (expiry == null || expiry.isEmpty())
-			{
-				log.info("Temporary password expiry is not enabled.");
-			}
-			else
-			{
-				String tsenc = getUserManager(inReq).getStringEncryption().encrypt(String.valueOf(new Date().getTime()));
-				if (tsenc != null && !tsenc.isEmpty())
-				{
-					if (tsenc.startsWith("DES:"))
-						tsenc = tsenc.substring("DES:".length());// kloog: remove DES: prefix since appended to URL
-					passenc += StringEncryption.TIMESTAMP + tsenc;
-				}
-				else
-				{
-					log.info("Unable to append encrypted timestamp. Autologin URL does not have an expiry.");
-				}
-			}
-			inReq.putPageValue("userKey", passenc);
-		}
-		catch (OpenEditException oex)
-		{
-			log.error(oex.getMessage(), oex);
-			log.info("Unable to append encrypted timestamp. Autologin URL does not have an expiry.");
-		}
 	}
 
 	public void loadPermissions(WebPageRequest inReq) throws Exception
@@ -572,11 +550,6 @@ public class AdminModule extends BaseMediaModule
 	 */
 	public void login(WebPageRequest inReq) throws Exception
 	{
-		String entermediakey = inReq.getRequestParameter("entermedia.key");
-		if (entermediakey == null)
-		{
-			entermediakey = inReq.getRequestParameter("entermediakey");
-		}
 		String account = inReq.getRequestParameter("accountname");
 		if (account == null)
 		{
@@ -606,14 +579,14 @@ public class AdminModule extends BaseMediaModule
 			}
 			String siteRoot = inReq.getSiteRoot();
 
-			if (sendTo != null && !sendTo.contains("authentication") && siteRoot != null && sendTo.startsWith(siteRoot) && (sendTo.endsWith("html") || sendTo.endsWith("jpg")))
+			if (sendTo != null && !sendTo.contains("authentication") && siteRoot != null && sendTo.startsWith(siteRoot) && (sendTo.endsWith("html") || sendTo.endsWith("jpg") || sendTo.contains(".html?")))
 			{ // the original page someone might have
 				// been on
 				inReq.putSessionValue("fullOriginalEntryPage", sendTo);
 			}
 		}
 
-		if (entermediakey == null && account == null && email == null && inReq.getRequest() != null)
+		if (account == null && email == null && inReq.getRequest() != null)
 		{
 			// log.info("Missing parameters " + entermediakey + " and " + account + "
 			// email:" + email );
@@ -621,13 +594,6 @@ public class AdminModule extends BaseMediaModule
 		}
 		else
 		{
-			if (entermediakey != null)
-			{
-				if (entermediakey.indexOf("md5") != -1)
-				{
-					account = entermediakey.substring(0, entermediakey.indexOf("md5"));
-				}
-			}
 			UserManager userManager = getUserManager(inReq);
 			User user = null;
 			if (account == null)
@@ -658,6 +624,13 @@ public class AdminModule extends BaseMediaModule
 				}
 			}
 			String templogincode = inReq.getRequestParameter("templogincode");
+			if (templogincode != null && templogincode.length() > 6 && inReq.getRequest() != null && !"POST".equalsIgnoreCase(inReq.getRequest().getMethod()))
+			{
+				// Link tokens only work from the confirmation page's POST: mail scanners and link previews GET every URL in an email
+				inReq.putPageValue("oe-exception", "Please use the Continue button on the login confirmation page");
+				inReq.putPageValue("commandSucceeded", "invalidlogin");
+				return;
+			}
 			if (user == null && templogincode != null) // Allow guest user?
 			{
 				String allow = inReq.getPage().get("allowguestregistration");
@@ -680,11 +653,6 @@ public class AdminModule extends BaseMediaModule
 				// log.info("Username not found. Creating guest user.");
 				// }
 			}
-			if (password == null)
-			{
-				password = entermediakey;
-			}
-
 			if (password == null && templogincode == null)
 			{
 				inReq.putPageValue("oe-exception", "No credentials provided");
@@ -720,6 +688,34 @@ public class AdminModule extends BaseMediaModule
 				user.setVirtual(false);
 				userManager.saveUser(user);
 				inReq.putPageValue("commandSucceeded", "ok");
+				if (inReq.getRequestParameter("publickey") != null || "apppassword".equals(inReq.getRequestParameter("keytype")))
+				{
+					// Legacy login can register a key in the same call, so the client never needs the password again.
+					// Failures are reported as key_error; the login itself still succeeded.
+					Data key = createUserKey(inReq, user);
+					if (key != null)
+					{
+						if ("publickey".equals(key.get("keytype")))
+						{
+							mintKeyToken(inReq, user, key);
+						}
+						else
+						{
+							inReq.putPageValue("key_id", key.getId()); // the app password itself is in page value "apppassword"
+						}
+					}
+					else
+					{
+						inReq.putPageValue("key_error", inReq.getPageValue("oauth_error_description"));
+						inReq.removePageValue("oauth_error");
+						inReq.removePageValue("oauth_error_description");
+						inReq.putPageValue("commandSucceeded", "ok");
+						if (inReq.getResponse() != null)
+						{
+							inReq.getResponse().setStatus(HttpServletResponse.SC_OK);
+						}
+					}
+				}
 			}
 			else
 			{
@@ -772,9 +768,6 @@ public class AdminModule extends BaseMediaModule
 			if (userManager.authenticate(aReq))
 			{
 				ok = true;
-				String md5 = getCookieEncryption().getPasswordMd5(user.getPassword());
-				String value = user.getUserName() + "md542" + md5;
-				inReq.putPageValue("entermediakey", value); // TODO: Remove this, its slow
 				inReq.putSessionValue(aReq.getCatalogId() + "user", user);
 				inReq.putPageValue("user", user);
 				inReq.putPageValue("commandSucceeded", "ok");
@@ -799,7 +792,8 @@ public class AdminModule extends BaseMediaModule
 
 	}
 
-	// OAuth2-style token endpoint for first-party clients (grant_type=password / refresh_token)
+	// OAuth2-style token endpoint. grant_type=key signs in with a registered key; grant_type=otp redeems an emailed
+	// code and registers the caller's public key in the same call. Both return a one week Bearer token.
 	public void oauthToken(WebPageRequest inReq) throws Exception
 	{
 		String grantType = inReq.getRequestParameter("grant_type");
@@ -811,9 +805,9 @@ public class AdminModule extends BaseMediaModule
 			String email = inReq.getRequestParameter("email");
 			String code = inReq.getRequestParameter("code");
 
-			if (email == null || code == null)
+			if (email == null || code == null || inReq.getRequestParameter("publickey") == null)
 			{
-				putOauthError(inReq, "invalid_request", "email and code are required");
+				putOauthError(inReq, "invalid_request", "email, code and publickey are required");
 				log.info("Missing parameters " + email + " and " + code);
 				return;
 			}
@@ -833,7 +827,12 @@ public class AdminModule extends BaseMediaModule
 
 			if (success)
 			{
-				mintTokens(inReq, user);
+				Data key = createUserKey(inReq, user);
+				if (key == null)
+				{
+					return; // error already reported
+				}
+				mintKeyToken(inReq, user, key);
 				boolean firebaseenabled = Boolean.parseBoolean(inReq.getRequestParameter("firebaseenabled"));
 				if (firebaseenabled)
 				{
@@ -851,45 +850,90 @@ public class AdminModule extends BaseMediaModule
 					}
 				}
 			}
-		}
-		else if ("refresh_token".equals(grantType))
-		{
-			String refreshToken = inReq.getRequestParameter("refresh_token");
-			BaseAutoLogin autologin = (BaseAutoLogin) getModuleManager().getBean(inReq.findPathValue("catalogid"), "autoLoginWithCookie");
-
-			User user = refreshToken == null ? null : autologin.validateEnterMediaKey(inReq, refreshToken);
-			if (user != null && user.isEnabled())
-			{
-				mintTokens(inReq, user);
-			}
 			else
 			{
-				putOauthError(inReq, "invalid_grant", "Invalid or expired refresh token");
-				log.info("Invalid or expired refresh token " + refreshToken + " for user " + (user == null ? "null" : user.getUserName()));
+				putOauthError(inReq, "invalid_grant", "Invalid or expired code");
+			}
+		}
+		else if ("key".equals(grantType))
+		{
+			// Public/private key grant (like SSH). The client registered a public key (Admin.registerKey) and keeps
+			// the private one. It signs "{username}\n{key_id}\n{timestamp}\n{nonce}" and gets a one week bearer token.
+			// Browsers add createsession=true to also start a server session for page requests.
+			String username = inReq.getRequestParameter("username");
+			String keyid = inReq.getRequestParameter("key_id");
+			String timestamp = inReq.getRequestParameter("timestamp");
+			String nonce = inReq.getRequestParameter("nonce");
+			String signature = inReq.getRequestParameter("signature");
+
+			if (username == null || keyid == null || timestamp == null || nonce == null || signature == null)
+			{
+				putOauthError(inReq, "invalid_request", "username, key_id, timestamp, nonce and signature are required");
 				return;
+			}
+
+			Searcher keys = getSearcherManager().getSearcher("system", "userkey");
+			Data key = (Data) keys.searchById(keyid);
+			User user = userManager.getUser(username);
+			StringEncryption encryption = userManager.getStringEncryption();
+			// Same error for every failure: do not leak which part was wrong
+			if (key == null || user == null || !user.isEnabled() || !Boolean.parseBoolean(key.get("enabled")) || !username.equals(key.get("userid"))
+				|| !encryption.verifyKeyLogin(username, keyid, key.get("publickey"), timestamp, nonce, signature))
+			{
+				putOauthError(inReq, "invalid_grant", "Invalid key signature");
+				log.info("Invalid key login for " + username);
+				return;
+			}
+
+			key.setValue("lastused", new Date());
+			keys.saveData(key);
+			mintKeyToken(inReq, user, key);
+			if (Boolean.parseBoolean(inReq.getRequestParameter("createsession")))
+			{
+				startSession(inReq, user);
 			}
 		}
 		else
 		{
-			putOauthError(inReq, "unsupported_grant_type", "grant_type must be 'password', 'otp', or 'refresh_token'");
+			putOauthError(inReq, "unsupported_grant_type", "grant_type must be 'otp' or 'key'");
 			log.info("Unsupported grant_type " + grantType);
-			return;
 		}
-
-		log.info("No authentication request created for grant_type " + grantType);
 	}
 
-	protected void mintTokens(WebPageRequest inReq, User inUser) throws Exception
+	protected void mintKeyToken(WebPageRequest inReq, User inUser, Data inKey)
 	{
-		BaseAutoLogin autologin = (BaseAutoLogin) getModuleManager().getBean(inReq.findPathValue("catalogid"), "autoLoginWithCookie");
-		int days = autologin.getPasswordExpiryDays(inReq);
-		inReq.putPageValue("access_token", getCookieEncryption().getTempEnterMediaKey(inUser));
+		StringEncryption encryption = getUserManager(inReq).getStringEncryption();
+		inReq.putPageValue("access_token", encryption.createAccessToken(inUser.getId(), inKey.getId(), inKey.get("publickey"), StringEncryption.ACCESS_TOKEN_LIFETIME_MILLIS));
 		inReq.putPageValue("token_type", "Bearer");
-		inReq.putPageValue("expires_in", days * 86400);
-
-		inReq.putPageValue("refresh_token", getCookieEncryption().getEnterMediaKey(inUser));
-
+		inReq.putPageValue("expires_in", StringEncryption.ACCESS_TOKEN_LIFETIME_MILLIS / 1000);
+		inReq.putPageValue("key_id", inKey.getId());
+		inReq.putPageValue("user", inUser);
 		inReq.putPageValue("commandSucceeded", "ok");
+	}
+
+	/**
+	 * Puts the user in the server session (no persistent cookie). Used by browsers that signed in with their key.
+	 */
+	protected void startSession(WebPageRequest inReq, User inUser)
+	{
+		UserManager userManager = getUserManager(inReq);
+		inReq.removeSessionValue("userprofile");
+		String catalogid = userManager.getUserSearcher().getCatalogId();
+		inUser.setProperty("catalogid", catalogid);
+		inReq.putSessionValue(catalogid + "user", inUser);
+		String realcatalog = inReq.findPathValue("catalogid");
+		inReq.putSessionValue(realcatalog + "user", inUser);
+		inReq.putPageValue("user", inUser);
+
+		// AllowViewing remembers the page that was refused before it sent the browser to the login page.
+		// Hand it back so the script can go there instead of reloading the login page.
+		String sendTo = (String) inReq.getSessionValue("fullOriginalEntryPage");
+		if (sendTo != null)
+		{
+			inReq.removeSessionValue("fullOriginalEntryPage");
+			String home = (String) inReq.getPageValue("home");
+			inReq.putPageValue("loginredirect", (home == null ? "" : home) + sendTo.replace("oemaxlevel=", "canceloemaxlevel="));
+		}
 	}
 
 	protected void putOauthError(WebPageRequest inReq, String inError, String inDescription)
@@ -1017,7 +1061,6 @@ public class AdminModule extends BaseMediaModule
 			createUserSession(inReq);
 			// user is now logged in
 			log.info("User logged in " + inReq.getUser());
-			savePasswordAsCookie(inUser, inReq);
 
 			String cancelredirect = inReq.findValue("cancelredirect");
 			if (!Boolean.parseBoolean(cancelredirect))
@@ -1055,15 +1098,6 @@ public class AdminModule extends BaseMediaModule
 				inUser.setProperty("failedlogincount", String.valueOf(fails));
 				if (fails >= maxattemps)
 				{
-					{
-						User user = inReq.getUser();
-						if (user != null)
-						{
-							String md5 = getCookieEncryption().getPasswordMd5(user.getPassword());
-							String value = user.getUserName() + "md542" + md5;
-							inReq.putPageValue("entermediakey", value);
-						}
-					}
 					inUser.setEnabled(false);
 				}
 				userManager.saveUser(inUser);
@@ -1077,170 +1111,131 @@ public class AdminModule extends BaseMediaModule
 
 	}
 
-	public void savePasswordAsCookie(WebPageRequest inReq)
+	/**
+	 * Registers a key for the logged in user (or the user proving themselves with an emailed code):
+	 * keytype=publickey (default) uploads a public key, keytype=apppassword makes a secret for tools that cannot
+	 * sign. The app or browser generates its own key pair and uploads only the public half, so the private key
+	 * never leaves the device. Keys do not expire; revoke one with revokeKey.
+	 */
+	public void registerKey(WebPageRequest inReq) throws Exception
 	{
-		User user = getUserSearcher(inReq).getUser(inReq.getUserName());
-		// Latest one
-		savePasswordAsCookie(user, inReq);
-		String catalogid = getUserManager(inReq).getUserSearcher().getCatalogId();
-		inReq.putSessionValue(catalogid + "user", user);
-		inReq.putPageValue("user", user);
-
-	}
-
-	public void savePasswordAsCookie(User user, WebPageRequest inReq) throws OpenEditException
-	{
-		if (user.isVirtual())
+		User user = inReq.getUser();
+		if (user == null && "otp".equals(inReq.getRequestParameter("grant_type")))
 		{
-			log.debug("User is virtual. Not saving cookie");
+			// Emailed code proves who is registering. Request one via services/authentication/sendusercode.json
+			String username = inReq.getRequestParameter("username");
+			String code = inReq.getRequestParameter("code");
+			if (username == null || code == null)
+			{
+				putOauthError(inReq, "invalid_request", "username and code are required");
+				return;
+			}
+			UserManager userManager = getUserManager(inReq);
+			user = userManager.getUser(username);
+			if (user == null || !user.isEnabled())
+			{
+				putOauthError(inReq, "invalid_grant", "Invalid or expired code");
+				return;
+			}
+			AuthenticationRequest aReq = userManager.createAuthenticationRequest(inReq, null, user);
+			aReq.putProperty("templogincode", code);
+			if (!loginAndRedirect(aReq, inReq))
+			{
+				putOauthError(inReq, "invalid_grant", "Invalid or expired code");
+				return;
+			}
+		}
+		if (user == null)
+		{
+			putOauthError(inReq, "invalid_request", "Login required");
 			return;
 		}
-		BaseAutoLogin autologin = (BaseAutoLogin) getModuleManager().getBean(inReq.findPathValue("catalogid"), "autoLoginWithCookie");
-		autologin.saveCookieForUser(inReq, user);
-	}
-
-	public void loadEnterMediaKey(WebPageRequest inReq)
-	{
-		String account = inReq.getRequestParameter("id");
-		if (Boolean.parseBoolean(inReq.findValue("forcelowercaseusername")))
+		if (createUserKey(inReq, user) != null)
 		{
-			account = account.toLowerCase();
-		}
-
-		UserManager userManager = getUserManager(inReq);
-		User user = null;
-
-		String templogincode = inReq.getRequestParameter("templogincode");
-
-		if (templogincode != null)
-		{
-			String allow = inReq.getPage().get("allowguestregistration");
-			if (allow == null)
-			{
-				log.error("allowguestregistration must be set to login with temp codes");
-			}
-			else
-			{
-				String email = inReq.getRequestParameter("email");
-				if (email == null)
-				{
-					log.info("No user id or email found " + account);
-					inReq.putPageValue("oe-exception", "No user id or email found");
-					inReq.putPageValue("commandSucceeded", "nouser");
-					return;
-				}
-				user = userManager.getUserByEmail(email);
-			}
-		}
-
-		String password = inReq.getRequestParameter("password");
-		if (user == null && password != null && account != null)
-		{
-			user = userManager.getUser(account);
-		}
-
-		if (user != null)
-		{
-			AuthenticationRequest aReq = userManager.createAuthenticationRequest(inReq, password, user);
-
-			aReq.putProperty("templogincode", templogincode);
-
-			if (userManager.authenticate(aReq))
-			{
-				String md5 = getCookieEncryption().getPasswordMd5(user.getPassword());
-				String value = user.getUserName() + "md542" + md5;
-				inReq.putPageValue("entermediakey", value);
-				inReq.putPageValue("user", user);
-			}
+			inReq.putPageValue("commandSucceeded", "ok");
 		}
 	}
 
-
-
-	public void loadAccessPrivateToken(WebPageRequest inReq)
+	/**
+	 * @return the saved userkey row, or null after reporting the problem
+	 */
+	protected Data createUserKey(WebPageRequest inReq, User user)
 	{
-		String account = inReq.getRequestParameter("id");
-		if (Boolean.parseBoolean(inReq.findValue("forcelowercaseusername")))
+		if ("apppassword".equals(inReq.getPageValue("loginvia")))
 		{
-			account = account.toLowerCase();
+			// An application password must not be able to mint further credentials that outlive its own revocation
+			putOauthError(inReq, "access_denied", "Application passwords cannot register keys");
+			return null;
 		}
-
-		UserManager userManager = getUserManager(inReq);
-		User user = null;
-
-		String templogincode = inReq.getRequestParameter("templogincode");
-
-		if (templogincode != null)
+		if (inReq.getSessionValue("realuser") != null)
 		{
-			String allow = inReq.getPage().get("allowguestregistration");
-			if (allow == null)
-			{
-				log.error("allowguestregistration must be set to login with temp codes");
-			}
-			else
-			{
-				String email = inReq.getRequestParameter("email");
-				if (email == null)
-				{
-					log.info("No user id or email found " + account);
-					inReq.putPageValue("oe-exception", "No user id or email found");
-					inReq.putPageValue("commandSucceeded", "nouser");
-					return;
-				}
-				user = userManager.getUserByEmail(email);
-			}
+			// Admin "switch to user": the browser belongs to the administrator, not the impersonated user
+			putOauthError(inReq, "access_denied", "Cannot register keys while switched to another user");
+			return null;
 		}
+		StringEncryption encryption = getUserManager(inReq).getStringEncryption();
+		Searcher keys = getSearcherManager().getSearcher("system", "userkey");
+		Data key = keys.createNewData();
+		key.setId(encryption.randomCharacterString());
+		key.setValue("userid", user.getId());
+		key.setValue("label", inReq.getRequestParameter("label"));
+		key.setValue("created", new Date());
+		key.setValue("enabled", true);
 
-		String password = inReq.getRequestParameter("password");
-		if (user == null && password != null && account != null)
+		if ("apppassword".equals(inReq.getRequestParameter("keytype")))
 		{
-			user = userManager.getUser(account);
-		}
-
-		if (user != null)
-		{
-			AuthenticationRequest aReq = userManager.createAuthenticationRequest(inReq, password, user);
-
-			aReq.putProperty("templogincode", templogincode);
-
-			if (userManager.authenticate(aReq))
-			{
-				String accessprivatetoken = user.get("accessprivatetoken");
-				if (accessprivatetoken == null)
-				{
-					accessprivatetoken = getCookieEncryption().randomCharacterString();
-					user.setProperty("accessprivatetoken", accessprivatetoken);
-					userManager.saveUser(user);
-				}
-				String value = user.getUserName() + "privatetoken" + accessprivatetoken;
-				inReq.putPageValue("accessprivatetoken", value);
-				inReq.putPageValue("user", user);
-			}
-		}
-	}
-
-	public void createRefreshToken(WebPageRequest inReq)
-	{
-		String accessprivatetoken = inReq.getRequestParameter("accessprivatetoken");
-		if (accessprivatetoken == null)
-		{
-			log.error("Access private token is missing");
-			return;
-		}
-
-		// Here you would implement the logic to create a refresh token using the access private token
-		String refreshToken = getCookieEncryption().encrypt(accessprivatetoken);
-
-		String tsenc = getUserManager(inReq).getStringEncryption().encrypt(String.valueOf(new Date().getTime()));
-		if (tsenc != null && !tsenc.isEmpty())
-		{
-			refreshToken += StringEncryption.TIMESTAMP + tsenc;
+			// Server generated secret for tools that cannot sign. Returned once, only its hash is kept.
+			String secret = encryption.generateAppSecret();
+			key.setValue("keytype", "apppassword");
+			key.setValue("algorithm", "SHA-256"); // how the stored secret is hashed
+			key.setValue("secrethash", encryption.getSha256(secret));
+			keys.saveData(key);
+			inReq.putPageValue("apppassword", encryption.createAppPassword(key.getId(), secret));
 		}
 		else
 		{
-			log.info("Unable to append encrypted timestamp.");
+			String publickey = inReq.getRequestParameter("publickey");
+			if (publickey == null || !encryption.isValidPublicKey(publickey))
+			{
+				putOauthError(inReq, "invalid_request", "publickey must be a base64url X.509 encoded Ed25519 or P-256 public key");
+				return null;
+			}
+			key.setValue("keytype", "publickey");
+			key.setValue("algorithm", encryption.getPublicKeyAlgorithm(publickey)); // detected from the key, not taken from the client
+			key.setValue("publickey", publickey);
+			keys.saveData(key);
 		}
-		inReq.putPageValue("refreshtoken", refreshToken);
+		inReq.putPageValue("userkey", key);
+		return key;
+	}
+
+	public void listKeys(WebPageRequest inReq)
+	{
+		User user = inReq.getUser();
+		if (user == null)
+		{
+			putOauthError(inReq, "invalid_request", "Login required");
+			return;
+		}
+		Searcher keys = getSearcherManager().getSearcher("system", "userkey");
+		inReq.putPageValue("userkeys", keys.query().exact("userid", user.getId()).sort("createdDown").search().getPageOfHits());
+		inReq.putPageValue("commandSucceeded", "ok");
+	}
+
+	public void revokeKey(WebPageRequest inReq)
+	{
+		User user = inReq.getUser();
+		String keyid = inReq.getRequestParameter("keyid");
+		Searcher keys = getSearcherManager().getSearcher("system", "userkey");
+		Data key = keyid == null ? null : (Data) keys.searchById(keyid);
+		if (user == null || key == null || !user.getId().equals(key.get("userid")))
+		{
+			putOauthError(inReq, "invalid_request", "No such key");
+			return;
+		}
+		key.setValue("enabled", false);
+		keys.saveData(key);
+		inReq.putPageValue("commandSucceeded", "ok");
 	}
 
 	public void logout(WebPageRequest inReq) throws OpenEditException
@@ -1924,33 +1919,6 @@ public class AdminModule extends BaseMediaModule
 		userManager.saveUser(user);
 		return;
 
-	}
-
-	public void loadTemporaryKey(WebPageRequest inReq)
-	{
-		StringEncryption encoder = getUserManager(inReq).getStringEncryption();
-
-		String foruser = inReq.getRequestParameter("username");
-		if (foruser != null)
-		{
-			Object canUpload = inReq.getPageValue("caneditusersgroups");
-			if (!Boolean.parseBoolean(String.valueOf(canUpload)))
-			{
-				throw new OpenEditException("No permissions to view keys of other users");
-			}
-		}
-		if (foruser == null)
-		{
-			foruser = inReq.getUserName();
-		}
-		User user = getUserManager(inReq).getUser(foruser);
-		String entermediakey = "";
-		if (user != null)
-		{
-			entermediakey = encoder.getTempEnterMediaKey(user);
-		}
-
-		inReq.putPageValue("tempentermediakey", entermediakey);
 	}
 
 	public static String VALID_METHODS = "DELETE, HEAD, GET, OPTIONS, POST, PUT";

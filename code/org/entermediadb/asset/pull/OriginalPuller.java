@@ -79,7 +79,6 @@ public class OriginalPuller extends BasePuller implements CatalogEnabled
 				String finalurl = url + "/mediadb/services/module/asset/downloads/originals/" + inArchive.asLinkToOriginal(inAsset);
 				finalurl = URLUtilities.urlEscape(finalurl);
 				Map params = new HashMap();
-				finalurl = finalurl.concat("?entermedia.key=" + node.get("entermediakey"));
 
 				CloseableHttpResponse genfile = connection.sharedPost(finalurl, params);
 				try
@@ -186,9 +185,9 @@ public class OriginalPuller extends BasePuller implements CatalogEnabled
 			{
 				node = (MultiValued) iterator.next();
 
-				if (node.get("entermediakey") == null)
+				if (node.get("apppassword") == null)
 				{
-					log.error("entermediakey is required");
+					log.error("apppassword is required");
 					continue;
 				}
 				String url = node.get("baseurl");

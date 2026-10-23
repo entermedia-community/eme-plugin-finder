@@ -19,7 +19,6 @@
 		</property>
 		<property name="autoLoginProviders">
 			<list>
-				<ref bean="autoLoginWithCookie" />
 				<ref bean="autoLoginByHeader" />
 				<ref bean="autoLoginLti" />
 				<ref bean="autoLoginByToken" />
@@ -33,14 +32,6 @@
 		</property>
 		<property name="cacheManager">
 			<ref bean="cacheManager" />
-		</property>
-		<property name="cookieEncryption">
-			<ref bean="stringEncryption" />
-		</property>
-	</bean>
-	<bean id="autoLoginWithCookie" class="org.entermediadb.authenticate.AutoLoginWithCookie">
-		<property name="moduleManager">
-			<ref bean="moduleManager" />
 		</property>
 		<property name="cookieEncryption">
 			<ref bean="stringEncryption" />

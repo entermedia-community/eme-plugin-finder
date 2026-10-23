@@ -362,9 +362,7 @@ public class UserManagerModule extends BaseMediaModule
 				return;
 			}
 
-			String md5 = getUserManager(inReq).getStringEncryption().getPasswordMd5(inNewUser.getPassword());
-
-			inReq.putPageValue("entermediakey", inNewUser.getUserName() + "md542" + md5);
+			inReq.putPageValue("loginlinktoken", getUserManager(inReq).createNewTempLoginLink(inNewUser.getId(), inNewUser.getEmail(), inNewUser.getFirstName(), inNewUser.getLastName(), inNewUser.getScreenName()));
 
 			TemplateWebEmail mailer = postMail.getTemplateWebEmail();
 			// String email = inReq.getRequestParameter("value-email");

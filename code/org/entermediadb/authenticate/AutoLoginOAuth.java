@@ -11,7 +11,7 @@ import org.openedit.users.User;
 import org.openedit.users.UserManager;
 import org.openedit.util.HttpSharedConnection;
 
-public class AutoLoginOAuth extends AutoLoginWithCookie implements AutoLoginProvider
+public class AutoLoginOAuth extends BaseAutoLogin implements AutoLoginProvider
 {
 	static final Log log = LogFactory.getLog(AutoLoginOAuth.class);
 	CacheManager fieldCacheManager;
@@ -33,23 +33,29 @@ public class AutoLoginOAuth extends AutoLoginWithCookie implements AutoLoginProv
 
 		User ok = null;
 
-		if (ok == null && inReq.getRequest() != null)
+		if (inReq.getRequest() != null)
 		{
 			String auth = inReq.getRequest().getHeader("Authorization");
 			if (auth != null && auth.regionMatches(true, 0, "Bearer ", 0, 7))
 			{
-				ok = autoLoginFromMd5Value(inReq, auth.substring(7).trim());
-
-				if (ok == null)
+				String token = auth.substring(7).trim();
+				ok = validateBearer(getUserManager(inReq), token);
+				if (ok != null)
+				{
+					if (getCookieEncryption().isAppPassword(token))
+					{
+						inReq.putPageValue("loginvia", "apppassword"); // lets Admin.registerKey refuse to mint more credentials
+					}
+				}
+				else
 				{
 					// Go check the upstream server
-					ok = autoLoginRemoteFromMd5Value(inReq, auth.substring(7).trim());
+					ok = autoLoginRemoteFromBearer(inReq, token);
 				}
 			}
 		}
 		if (ok != null)
 		{
-			saveCookieForUser(inReq, ok); // For next time
 			AutoLoginResult result = new AutoLoginResult();
 			result.setUser(ok);
 			return result;
@@ -74,7 +80,7 @@ public class AutoLoginOAuth extends AutoLoginWithCookie implements AutoLoginProv
 		return connection;
 	}
 
-	protected synchronized User autoLoginRemoteFromMd5Value(WebPageRequest inReq, String uandpass)
+	protected synchronized User autoLoginRemoteFromBearer(WebPageRequest inReq, String uandpass)
 	{
 		// Rest API call?
 		Data remote = getSearcherManager().getCachedData("system", "systemsettings", "upstream_authentication_mediadb");

@@ -13,6 +13,7 @@ import org.json.simple.JSONObject;
 import org.openedit.ModuleManager;
 import org.openedit.data.SearcherManager;
 import org.openedit.users.User;
+import org.openedit.users.UserManager;
 import org.openedit.util.StringEncryption;
 
 public class UserNotifyManager
@@ -63,30 +64,16 @@ public class UserNotifyManager
 		}
 		// setDesktop(getDesktop());
 		// authenticated
-		String keyorpasswordentered = (String) map.get("entermediakey");
-		User user = (User) getSearcherManager().getData("system", "user", username);
-		if (user == null) // TODO: Authenticate key (with expiration)
+		// The client sends a key token (grant_type=key) or an application password as "token"
+		String token = (String) map.get("token");
+		User user = token == null ? null : ((UserManager) getModuleManager().getBean("system", "userManager")).getUserByBearerToken(token);
+		if (user == null || !user.getId().equals(username))
 		{
 			JSONObject authenticated = new JSONObject();
 			authenticated.put("command", "authenticatefail");
-			authenticated.put("reason", "User did not exist");
+			authenticated.put("reason", "Invalid or expired token");
 			inConnection.sendMessage(authenticated);
 			return;
-		}
-		String key = getStringEncrytion().getEnterMediaKey(user);
-
-		if (!key.equals(keyorpasswordentered))
-		{
-			// check password
-			String clearpassword = getStringEncrytion().decryptIfNeeded(user.getPassword());
-			if (!keyorpasswordentered.equals(clearpassword))
-			{
-				JSONObject authenticated = new JSONObject();
-				authenticated.put("command", "authenticatefail");
-				authenticated.put("reason", "Password did not match");
-				inConnection.sendMessage(authenticated);
-				return;
-			}
 		}
 		inConnection.setUserId(username);
 
@@ -106,7 +93,6 @@ public class UserNotifyManager
 
 		JSONObject authenticated = new JSONObject();
 		authenticated.put("command", "authenticated");
-		authenticated.put("entermedia.key", key);
 		inConnection.sendMessage(authenticated);
 	}
 

@@ -28,6 +28,7 @@ import org.openedit.ModuleManager;
 import org.openedit.OpenEditException;
 import org.openedit.data.SearcherManager;
 import org.openedit.users.User;
+import org.openedit.users.UserManager;
 import org.openedit.util.StringEncryption;
 
 public class MediaBoatConnection extends Endpoint implements MessageHandler.Partial<String>, DesktopEventListener
@@ -233,17 +234,7 @@ public class MediaBoatConnection extends Endpoint implements MessageHandler.Part
 				receiveLogin(map);
 			}
 			else
-				if ("renew_entermediakey".equals(command)) // Return all the annotation on this asset
-				{
-					String newkey = getStringEncrytion().getTempEnterMediaKey(getDesktop().getUser());
-					JSONObject authenticated = new JSONObject();
-					authenticated.put("command", "renew_completed");
-					authenticated.put("entermedia.key", newkey); // TODO: Refresh every 24hours
-
-					sendMessage(authenticated);
-				}
-				else
-					if ("folderedited".equals(command)) // Return all the annotation on this asset
+				if ("folderedited".equals(command)) // Return all the annotation on this asset
 					{
 						String foldername = (String) map.get("foldername");
 						getDesktop().addEditedCollection(foldername);
@@ -308,10 +299,11 @@ public class MediaBoatConnection extends Endpoint implements MessageHandler.Part
 		getDesktop().setListener(this);
 		getDesktopManager().setDesktop(getDesktop());
 		// authenticated
-		String keyonly = (String) map.get("entermedia.key");
-		if (keyonly == null)
+		// The desktop app sends a key token (grant_type=key) or an application password as "token"
+		String token = (String) map.get("token");
+		if (token == null)
 		{
-			throw new OpenEditException("Key not found");
+			throw new OpenEditException("Token not found");
 		}
 		if (user == null) // TODO: Authenticate key (with expiration)
 		{
@@ -321,22 +313,20 @@ public class MediaBoatConnection extends Endpoint implements MessageHandler.Part
 			sendMessage(authenticated);
 			return;
 		}
-		boolean ok = getStringEncrytion().verifyEnterMediaKey(user, user.getPassword(), keyonly);
-
-		if (!ok)
+		User tokenuser = ((UserManager) getModuleManager().getBean("system", "userManager")).getUserByBearerToken(token);
+		if (tokenuser == null || !tokenuser.getId().equals(user.getId()))
 		{
-			// check password
 			JSONObject authenticated = new JSONObject();
 			authenticated.put("command", "authenticatefail");
-			authenticated.put("reason", "Key was not validated or was expired");
+			authenticated.put("reason", "Token was not validated or was expired");
 			sendMessage(authenticated);
+			return;
 		}
 		String connectionid = (String) map.get("connectionid");
 		setCurrentConnectionId(connectionid);
 
 		JSONObject authenticated = new JSONObject();
 		authenticated.put("command", "authenticated");
-		authenticated.put("entermedia.key", keyonly); // TODO: Refresh every 24hours
 
 		Collection existing = (Collection) map.get("existingcollections");
 		for (Iterator iterator = existing.iterator(); iterator.hasNext();)

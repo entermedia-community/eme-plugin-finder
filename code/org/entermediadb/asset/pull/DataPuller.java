@@ -200,9 +200,9 @@ public class DataPuller extends BasePuller implements CatalogEnabled
 					log.error("skipping " + node);
 					continue;
 				}
-				if (node.get("entermediakey") == null)
+				if (node.get("apppassword") == null)
 				{
-					log.error("entermediakey is required");
+					log.error("apppassword is required");
 					continue;
 				}
 
@@ -288,9 +288,7 @@ public class DataPuller extends BasePuller implements CatalogEnabled
 		String url = baseurl + "/mediadb/services/cluster/listalldocs.json";
 		StringBuffer debugurl = new StringBuffer();
 		debugurl.append("?");
-		debugurl.append("entermedia.key=");
-		debugurl.append(node.get("entermediakey"));
-		debugurl.append("&lastpullago=");
+		debugurl.append("lastpullago=");
 		String last = params.get("lastpullago");
 
 		if (params.get("lastpullago") != null)

@@ -95,16 +95,11 @@ public class EnterMediaCloudModule extends BaseJsonModule
 			inReq.putPageValue("status", "No key found on request");
 			return;
 		}
-		String userid = userkey.substring(0, userkey.indexOf("md5"));
 
 		// TODO: Make this configurable
-
-		log.info("Validate user key: " + userkey + " | user: " + userid);
-
+		// The cloud key is now an application password; the provider answers with who it belongs to
 		JSONObject params = new JSONObject();
-		params.put("accountname", userid);
-		params.put("entermedia.key", userkey); // TODO: Some problem parsing this in NGINX/TOmacat without the .
-		params.put("entermediakey", userkey);
+		params.put("entermediacloudkey", userkey);
 		// TODO: Make sure this user is part of this collection
 		String collectionid = inReq.getRequestParameter("collectionid");
 
@@ -140,6 +135,11 @@ public class EnterMediaCloudModule extends BaseJsonModule
 		{
 			UserManager userManager = (UserManager) getModuleManager().getBean("system", "userManager");
 			String email = (String) data.get("email");
+			String userid = (String) data.get("userid");
+			if (userid == null)
+			{
+				userid = email;
+			}
 
 			User user = userManager.getUserByEmail(email);
 			if (user == null)
@@ -172,9 +172,6 @@ public class EnterMediaCloudModule extends BaseJsonModule
 			inReq.putSessionValue(catalogid + "user", user);
 			inReq.putPageValue("user", user);
 
-			BaseAutoLogin autologin = (BaseAutoLogin) getModuleManager().getBean(archive.getCatalogId(), "autoLoginWithCookie");
-			autologin.saveCookieForUser(inReq, user);
-
 		}
 		else
 		{
@@ -182,23 +179,6 @@ public class EnterMediaCloudModule extends BaseJsonModule
 			inReq.setCancelActions(true);
 		}
 		inReq.putPageValue("status", status);
-	}
-
-	public void getAdminKey(WebPageRequest inReq)
-	{
-		UserManager userManager = (UserManager) getModuleManager().getBean("system", "userManager");
-
-		User user = userManager.getUser("admin");
-		String password = user.getPassword();
-		if (password.equals("admin") || password.equals("DES:2JPGMLB8Y60="))
-		{
-			// reset their password to something better
-			String tmppassword = new PasswordGenerator().generate();
-			user.setPassword(tmppassword);
-		}
-
-		String key = userManager.getStringEncryption().getEnterMediaKey(user);
-		inReq.putPageValue("adminkey", key);
 	}
 
 	public boolean validateCloudKey(WebPageRequest inReq)
@@ -229,8 +209,7 @@ public class EnterMediaCloudModule extends BaseJsonModule
 			}
 
 		JSONObject params = new JSONObject();
-		params.put("entermedia.key", userkey);
-		params.put("entermediakey", userkey);
+		params.put("entermediacloudkey", userkey);
 		params.put("collectionid", collectionid);
 
 		String base = archive.getCatalogSettingValue("workspace-provider-mediadb");

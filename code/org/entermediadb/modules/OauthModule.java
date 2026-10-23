@@ -840,9 +840,6 @@ public class OauthModule extends BaseMediaModule
 		if (target != null)
 		{
 			inReq.putSessionValue(searcher.getCatalogId() + "user", target);
-			String md5 = getCookieEncryption().getPasswordMd5(target.getPassword());
-			String value = target.getUserName() + "md542" + md5;
-			inReq.putPageValue("entermediakey", value);
 			inReq.putPageValue("user", target);
 			if (refreshtoken != null)
 			{
@@ -852,9 +849,6 @@ public class OauthModule extends BaseMediaModule
 			}
 			target.setProperty("httprefreshtoken", null);
 			archive.getSearcher("user").saveData(target);
-
-			BaseAutoLogin autologin = (BaseAutoLogin) getModuleManager().getBean(inReq.findPathValue("catalogid"), "autoLoginWithCookie");
-			autologin.saveCookieForUser(inReq, target);
 
 			if (getEventManager() != null)
 			{

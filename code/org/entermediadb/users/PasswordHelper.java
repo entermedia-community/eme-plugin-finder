@@ -40,11 +40,6 @@ public class PasswordHelper implements Serializable
 
 	public void emailPasswordReminder(WebPageRequest inContext, PageManager inManager, String inUserCode, String inEmail)
 	{
-		emailPasswordReminder(inContext, inManager, inUserCode, null, inEmail);
-	}
-
-	public void emailPasswordReminder(WebPageRequest inContext, PageManager inManager, String inUserCode, String inEnterMediaKey, String inEmail)
-	{
 
 		// TO
 		inContext.setRequestParameter("to", inEmail);
@@ -69,7 +64,6 @@ public class PasswordHelper implements Serializable
 		inContext.putPageValue(SendMailModule.EMAIL_SETTINGS, email);
 
 		inContext.putPageValue("templogincode", inUserCode);
-		inContext.putPageValue("entermediakey", inEnterMediaKey);
 
 		if (inEmail != null)
 		{

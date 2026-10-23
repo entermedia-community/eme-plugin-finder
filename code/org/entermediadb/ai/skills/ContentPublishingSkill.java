@@ -145,7 +145,6 @@ public class ContentPublishingSkill extends BaseSkill implements CatalogEnabled
 
 		Data entity = getMediaArchive().getData(inModuleid, inEntityid);
 
-		// https://oneliveweb.com/oneliveweb/ditachat/llm/api/ditapayload.json?inputdata=Fish%20Recipie&entermedia.key=adminmd5420b06b0ea0d5066b0bb413837460f409108a0be38tstampeMxOa62cNXmuVomBh0oFNw==
 
 		Map inputdata = new HashMap();
 
@@ -205,7 +204,6 @@ public class ContentPublishingSkill extends BaseSkill implements CatalogEnabled
 		inputdata.put("metadata", entitymetadata);
 
 		// =Fish%20Recipie&
-		// entermedia.key=adminmd5420b06b0ea0d5066b0bb413837460f409108a0be38tstampeMxOa62cNXmuVomBh0oFNw==
 
 		String url = "https://oneliveweb.com/oneliveweb/ditachat";
 		CloseableHttpResponse resp = null;
@@ -213,7 +211,13 @@ public class ContentPublishingSkill extends BaseSkill implements CatalogEnabled
 		JSONObject obj = new JSONObject();
 		obj.put("inputdata", inputdata);
 		log.info("Sending: \n" + obj.toJSONString());
-		resp = getSharedConnection().sharedPostWithJson(url + "/llm/api/ditapayload.json?entermedia.key=adminmd5420b06b0ea0d5066b0bb413837460f409108a0be38tstampeMxOa62cNXmuVomBh0oFNw==", obj);
+		// Application password for the remote server, from the catalog settings (never hardcode credentials)
+		String apppassword = getMediaArchive().getCatalogSettingValue("ditachat-apppassword");
+		if (apppassword != null)
+		{
+			getSharedConnection().putSharedHeader("Authorization", "Bearer " + apppassword);
+		}
+		resp = getSharedConnection().sharedPostWithJson(url + "/llm/api/ditapayload.json", obj);
 		if (resp.getStatusLine().getStatusCode() != 200)
 		{
 			// error
@@ -675,7 +679,6 @@ public class ContentPublishingSkill extends BaseSkill implements CatalogEnabled
 	// Data entity = getMediaArchive().getData(inModuleid, inEntityid);
 	//
 	// //
-	// https://oneliveweb.com/oneliveweb/ditachat/llm/api/ditapayload.json?inputdata=Fish%20Recipie&entermedia.key=adminmd5420b06b0ea0d5066b0bb413837460f409108a0be38tstampeMxOa62cNXmuVomBh0oFNw==
 	// MediaArchive archive = getMediaArchive();
 	// Map inputdata = new HashMap();
 	// Data parentmodule = getMediaArchive().getCachedData("module", inModuleid);

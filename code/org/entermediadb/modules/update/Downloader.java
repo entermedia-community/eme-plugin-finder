@@ -35,6 +35,12 @@ public class Downloader
 	private static final Log log = LogFactory.getLog(Downloader.class);
 
 	HttpSharedConnection fieldSharedConnections;
+	String fieldBearerToken; // application password or key token sent as Authorization: Bearer
+
+	public void setBearerToken(String inBearerToken)
+	{
+		fieldBearerToken = inBearerToken;
+	}
 
 	public HttpSharedConnection getSharedConnections()
 	{
@@ -129,6 +135,10 @@ public class Downloader
 			HttpClient client = HttpClients.custom().setDefaultRequestConfig(globalConfig).build();
 
 			method = new HttpGet(inStrUrl);
+			if (fieldBearerToken != null)
+			{
+				method.addHeader("Authorization", "Bearer " + fieldBearerToken);
+			}
 
 			// HttpRequestBuilder builder = new HttpRequestBuilder();
 
