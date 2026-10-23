@@ -15,6 +15,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.StatusLine;
@@ -24,6 +25,7 @@ import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
@@ -63,44 +65,17 @@ public class EMPushManager extends BasePushManager implements PushManager
 		// System.getProperties().put("proxyPort", "8082");
 
 		RequestConfig globalConfig = RequestConfig.custom().setCookieSpec(CookieSpecs.DEFAULT).build();
-		HttpClient client = HttpClients.custom().setDefaultRequestConfig(globalConfig).build();
 
 		String server = getSearcherManager().getData(inCatalogId, "catalogsettings", "push_server_url").get("value");
-		String account = getSearcherManager().getData(inCatalogId, "catalogsettings", "push_server_username").get("value");
-		User user = getUserManager(inCatalogId).getUser(account);
-		if (user == null)
+		String apppassword = getSearcherManager().getData(inCatalogId, "catalogsettings", "push_server_apppassword").get("value");
+		if (apppassword == null || apppassword.isEmpty())
 		{
-			log.info("No such user " + account);
-			return null;
+			throw new OpenEditException("push_server_apppassword is required to push to " + server);
 		}
-		String password = getUserManager(inCatalogId).decryptPassword(user);
-		HttpPost method = new HttpPost(server + "/media/services/rest/login.xml");
-
-		List<org.apache.http.NameValuePair> nvps = new ArrayList<NameValuePair>();
-		nvps.add(new BasicNameValuePair("accountname", account));
-		nvps.add(new BasicNameValuePair("password", password));
-
-		// add(new BasicNameValuePair(
-
-		// TODO: Support a session key and ssl
-		// execute(inCatalogId, method);
-
-		try
-		{
-			method.setEntity(new UrlEncodedFormEntity(nvps));
-			HttpResponse response2 = client.execute(method);
-			StatusLine sl = response2.getStatusLine();
-			// int status = client.executeMethod(method);
-			if (sl.getStatusCode() != 200)
-			{
-				throw new Exception(" ${method} Request failed: status code ${status}");
-			}
-		}
-		catch (Exception ex)
-		{
-			throw new OpenEditException(ex);
-		}
-		log.info("Login sucessful");
+		// An application password is sent with every request, there is no login call or session
+		List<Header> headers = new ArrayList<Header>();
+		headers.add(new BasicHeader("Authorization", "Bearer " + apppassword));
+		HttpClient client = HttpClients.custom().setDefaultRequestConfig(globalConfig).setDefaultHeaders(headers).build();
 		return client;
 	}
 

@@ -11,24 +11,24 @@ import org.entermediadb.net.HttpMimeBuilder;
 import org.openedit.util.HttpSharedConnection;
 import org.json.simple.JSONObject;
 import org.openedit.Data;
-import org.openedit.users.User;
+import org.openedit.OpenEditException;
 
 public class EnterMediaUploader implements MediaUploader
 {
-	protected HttpSharedConnection fieldHttpSharedConnection;
-
-	protected HttpSharedConnection getHttpSharedConnection()
+	protected HttpSharedConnection createConnection(Data inPublishDestination)
 	{
-		return fieldHttpSharedConnection;
-	}
-
-	protected void setHttpSharedConnection(HttpSharedConnection inHttpSharedConnection)
-	{
-		fieldHttpSharedConnection = inHttpSharedConnection;
+		String apppassword = inPublishDestination.get("apppassword");
+		if (apppassword == null)
+		{
+			throw new OpenEditException("apppassword is required on publish destination " + inPublishDestination.getId());
+		}
+		HttpSharedConnection connection = new HttpSharedConnection();
+		connection.addSharedHeader("Authorization", "Bearer " + apppassword);
+		return connection;
 	}
 
 	@Override
-	public boolean uploadOriginal(MediaArchive inArchive, Asset inAsset, Data inPublishDestination, User inUser)
+	public boolean uploadOriginal(MediaArchive inArchive, Asset inAsset, Data inPublishDestination)
 	{
 		try
 		{
@@ -57,13 +57,14 @@ public class EnterMediaUploader implements MediaUploader
 			// builder.addPart("path", url);
 			method.setEntity(builder.build());
 
-			CloseableHttpResponse resp = getHttpSharedConnection().sharedPost(method);
+			HttpSharedConnection connection = createConnection(inPublishDestination);
+			CloseableHttpResponse resp = connection.sharedPost(method);
 
 			if (resp.getStatusLine().getStatusCode() != 200)
 			{
 				String returned = EntityUtils.toString(resp.getEntity());
-				getHttpSharedConnection().release(resp);
-
+				connection.release(resp);
+				throw new OpenEditException("Upload failed with status " + resp.getStatusLine().getStatusCode() + ": " + returned);
 			}
 
 		}
@@ -77,7 +78,7 @@ public class EnterMediaUploader implements MediaUploader
 	}
 
 	@Override
-	public boolean uploadGenerated(MediaArchive inArchive, Asset inAsset, Data inPublishDestination, User inUser)
+	public boolean uploadGenerated(MediaArchive inArchive, Asset inAsset, Data inPublishDestination)
 	{
 		// TODO Auto-generated method stub
 		return false;

@@ -11,8 +11,6 @@ import org.entermediadb.asset.publishing.PublishResult;
 import org.entermediadb.asset.publishing.Publisher;
 import org.entermediadb.asset.push.MediaUploader;
 import org.openedit.Data;
-import org.openedit.users.User;
-import org.openedit.users.UserManager;
 
 public class entermediapublisher extends BasePublisher implements Publisher
 {
@@ -24,20 +22,15 @@ public class entermediapublisher extends BasePublisher implements Publisher
 		PublishResult result = new PublishResult();
 
 		String servername = inDestination.get("server");
-		String username = inDestination.get("username");
 		// String url = destination.get("url");
 
-		log.info("Publishing ${asset} to EnterMedia server ${servername}, with username ${username}.");
+		log.info("Publishing ${asset} to EnterMedia server ${servername}.");
 
-		UserManager userManager = (UserManager) mediaArchive.getModuleManager().getBean("userManager");
-		User user = userManager.getUser(username);
-		if (user == null)
+		if (inDestination.get("apppassword") == null)
 		{
-			result.setErrorMessage("Unknown user, ${username}");
+			result.setErrorMessage("apppassword is required on publish destination " + inDestination.getId());
 			return result;
 		}
-
-		String password = userManager.decryptPassword(user);
 
 		MediaUploader uploader = (MediaUploader) mediaArchive.getModuleManager().getBean("mediaUploader");
 
@@ -52,8 +45,8 @@ public class entermediapublisher extends BasePublisher implements Publisher
 
 		try
 		{
-			// MediaArchive archive, Asset inAsset, Data inPublishDestination, User inUser )
-			uploader.uploadOriginal(mediaArchive, inAsset, inDestination, user);
+			// MediaArchive archive, Asset inAsset, Data inPublishDestination )
+			uploader.uploadOriginal(mediaArchive, inAsset, inDestination);
 			result.setComplete(true);
 			log.info("publishished  ${asset} to EnterMedia server ${servername}");
 		}
