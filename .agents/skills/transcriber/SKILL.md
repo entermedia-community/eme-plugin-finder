@@ -51,7 +51,7 @@ Because the connection is cached, changing the row (for example pointing `server
 server) needs the data reset **and** a cache clear (see `reload-list-data`):
 
 ```bash
-AUTH='Authorization: Bearer adminmd5421c0af185908a6c0c40d50fd5e3f16760d5580bc'
+AUTH="Authorization: Bearer $(bin/refreshtoken.sh | tail -n1)"
 curl -H "$AUTH" "http://localhost:8080/site/find/views/settings/lists/datamanager/list/restoredata.html?searchtype=aiserver&oemaxlevel=1"
 curl -H "$AUTH" http://localhost:8080/site/find/views/settings/status/tools/clearcaches.html
 ```
