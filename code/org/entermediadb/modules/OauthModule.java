@@ -32,7 +32,7 @@ public class OauthModule extends BaseMediaModule
 {
 	private static final Log log = LogFactory.getLog(OauthModule.class);
 
-	protected StringEncryption fieldCookieEncryption;
+	protected StringEncryption fieldStringEncryption;
 	protected EventManager fieldEventManager;
 
 	public EventManager getEventManager()
@@ -45,14 +45,14 @@ public class OauthModule extends BaseMediaModule
 		fieldEventManager = inEventManager;
 	}
 
-	public StringEncryption getCookieEncryption()
+	public StringEncryption getStringEncryption()
 	{
-		return fieldCookieEncryption;
+		return fieldStringEncryption;
 	}
 
-	public void setCookieEncryption(StringEncryption inCookieEncryption)
+	public void setStringEncryption(StringEncryption inStringEncryption)
 	{
-		fieldCookieEncryption = inCookieEncryption;
+		fieldStringEncryption = inStringEncryption;
 	}
 
 	public void redirectToHost(WebPageRequest inReq)

@@ -42,7 +42,7 @@ public class AutoLoginOAuth extends BaseAutoLogin implements AutoLoginProvider
 				ok = validateBearer(getUserManager(inReq), token);
 				if (ok != null)
 				{
-					if (getCookieEncryption().isAppPassword(token))
+					if (getStringEncryption().isAppPassword(token))
 					{
 						inReq.putPageValue("loginvia", "apppassword"); // lets Admin.registerKey refuse to mint more credentials
 					}

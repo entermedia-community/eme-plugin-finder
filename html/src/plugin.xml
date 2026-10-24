@@ -5,7 +5,7 @@
 		<property name="sendMailModule">
 			<ref bean="Email" />
 		</property>
-		<property name="cookieEncryption">
+		<property name="stringEncryption">
 			<ref bean="stringEncryption" />
 		</property>
 		<property name="welcomeFiles">
@@ -33,7 +33,7 @@
 		<property name="cacheManager">
 			<ref bean="cacheManager" />
 		</property>
-		<property name="cookieEncryption">
+		<property name="stringEncryption">
 			<ref bean="stringEncryption" />
 		</property>
 	</bean>
@@ -60,7 +60,7 @@
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>
-		<property name="cookieEncryption">
+		<property name="stringEncryption">
 			<ref bean="stringEncryption" />
 		</property>
 	</bean>
@@ -1293,7 +1293,7 @@
 
 
 	<bean id="OauthModule" class="org.entermediadb.modules.OauthModule">
-		<property name="cookieEncryption">
+		<property name="stringEncryption">
 			<ref bean="stringEncryption" />
 		</property>
 		<property name="eventManager">

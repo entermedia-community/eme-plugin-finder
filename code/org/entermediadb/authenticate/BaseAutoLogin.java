@@ -18,7 +18,7 @@ public abstract class BaseAutoLogin implements AutoLoginProvider
 	static final Log log = LogFactory.getLog(BaseAutoLogin.class);
 
 	protected ModuleManager fieldModuleManager;
-	protected StringEncryption fieldCookieEncryption;
+	protected StringEncryption fieldStringEncryption;
 
 	public ModuleManager getModuleManager()
 	{
@@ -45,14 +45,14 @@ public abstract class BaseAutoLogin implements AutoLoginProvider
 		return (UserManager) getModuleManager().getBean(catalogid, "userManager");
 	}
 
-	public StringEncryption getCookieEncryption()
+	public StringEncryption getStringEncryption()
 	{
-		return fieldCookieEncryption;
+		return fieldStringEncryption;
 	}
 
-	public void setCookieEncryption(StringEncryption inCookieEncryption)
+	public void setStringEncryption(StringEncryption inStringEncryption)
 	{
-		fieldCookieEncryption = inCookieEncryption;
+		fieldStringEncryption = inStringEncryption;
 	}
 
 	/**

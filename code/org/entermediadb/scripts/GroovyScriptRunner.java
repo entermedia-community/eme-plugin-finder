@@ -124,7 +124,7 @@ public class GroovyScriptRunner implements ScriptRunner
 			// iterator.hasNext();) {
 			// Configuration beanconfig = (Configuration) iterator.next();
 			//// <!--
-			//// <property name="cookieEncryption">
+			//// <property name="stringEncryption">
 			//// <ref bean="stringEncryption" />
 			//// </property>
 			//// -->
@@ -243,7 +243,7 @@ public class GroovyScriptRunner implements ScriptRunner
 				{
 					Configuration beanconfig = (Configuration) iterator.next();
 					// <!--
-					// <property name="cookieEncryption">
+					// <property name="stringEncryption">
 					// <ref bean="stringEncryption" />
 					// </property>
 					// -->

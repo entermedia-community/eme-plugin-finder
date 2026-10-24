@@ -67,7 +67,7 @@ public class AdminModule extends BaseMediaModule
 	protected String fieldRootFTPURL;
 	protected static final String UNAME = "username";
 	protected static final String EMAIL = "to";
-	protected StringEncryption fieldCookieEncryption;
+	protected StringEncryption fieldStringEncryption;
 	protected SendMailModule sendMailModule;
 	protected List fieldWelcomeFiles;
 	protected List fieldAutoLoginProviders;
@@ -1209,12 +1209,12 @@ public class AdminModule extends BaseMediaModule
 
 		inReq.removePageValue("user");
 		inReq.removePageValue("userprofile");
-		getCookieEncryption().removeAllCookies(inReq);
-		// String name = getCookieEncryption().createMd5CookieName(inReq);
+		getStringEncryption().removeAllCookies(inReq);
+		// String name = getStringEncryption().createMd5CookieName(inReq);
 
-		// getCookieEncryption().removeCookie(inReq, "eme");
-		// getCookieEncryption().removeCookie(inReq, "entermedia.keyopenedit");
-		// getCookieEncryption().removeCookie(inReq, "JSESSIONID"); // Added this to try and logout of all
+		// getStringEncryption().removeCookie(inReq, "eme");
+		// getStringEncryption().removeCookie(inReq, "entermedia.keyopenedit");
+		// getStringEncryption().removeCookie(inReq, "JSESSIONID"); // Added this to try and logout of all
 		// the sub-domains
 
 		String referrer = inReq.findPathValue("logoutredirect");
@@ -1498,20 +1498,20 @@ public class AdminModule extends BaseMediaModule
 		redirectToOriginal(inReq);
 	}
 
-	public StringEncryption getCookieEncryption()
+	public StringEncryption getStringEncryption()
 	{
-		// if (fieldCookieEncryption == null)
+		// if (fieldStringEncryption == null)
 		// {
-		// fieldCookieEncryption = new StringEncryption();
+		// fieldStringEncryption = new StringEncryption();
 		//// String KEY = "SomeWeirdReallyLongStringYUITYGFNERDF343dfdGDFGSDGGD";
-		//// fieldCookieEncryption.setEncryptionKey(KEY);
+		//// fieldStringEncryption.setEncryptionKey(KEY);
 		// }
-		return fieldCookieEncryption;
+		return fieldStringEncryption;
 	}
 
-	public void setCookieEncryption(StringEncryption inCookieEncryption)
+	public void setStringEncryption(StringEncryption inStringEncryption)
 	{
-		fieldCookieEncryption = inCookieEncryption;
+		fieldStringEncryption = inStringEncryption;
 	}
 
 	public void toggleProperty(WebPageRequest inReq) throws Exception
