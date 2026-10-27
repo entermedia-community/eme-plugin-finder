@@ -1,7 +1,6 @@
 package org.entermediadb.ai.agentjobs;
 
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -162,7 +161,7 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 			setTotalPending(newjobs.size());
 			if (newjobs.size() > 0)
 			{
-				log.info("processing " + newjobs.size() + " AgentJob with statuses: new submitted retry missinginput");
+				log.info("Processing " + newjobs.size() + " AgentJob with statuses: new submitted retry missinginput");
 			}
 			else
 			{
@@ -381,8 +380,9 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 	}
 
 	/**
-	 * Queues any agentjob whose repeatperiod (daily, weekly, monthly) and repeattime (HH:mm) say it is
-	 * due. Due jobs are set back to "new" so checkQueue picks them up.
+	 * Queues any agentjob whose repeatperiod (hour, minute, daily, weekly, monthly) and repeattime (HH:mm)
+	 * say it is due. Hourly and minute repeats count from the last run; the others anchor to repeattime.
+	 * Due jobs are set back to "new" so checkQueue picks them up.
 	 * 
 	 * @return how many jobs were queued
 	 */
@@ -568,8 +568,13 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 	public boolean isRepeatDue(AgentJob inJob, Date inNow)
 	{
 		String period = inJob.get("repeatperiod");
+		if (period == null)
+		{
+			return false;
+		}
+		boolean subday = "hour".equals(period) || "hours".equals(period) || "minute".equals(period);
 		LocalTime time = parseRepeatTime(inJob.get("repeattime"));
-		if (period == null || time == null)
+		if (!subday && time == null)
 		{
 			return false;
 		}
@@ -584,22 +589,34 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 		Date laststart = ((MultiValued) lastrun).getDate("startdate");
 		if (laststart == null)
 		{
-			// Never run before, start at the next repeattime
+			// Never run before. Sub-day periods have no wall-clock anchor, so start right away;
+			// the others start at the next repeattime today
+			if (subday)
+			{
+				return true;
+			}
 			return !now.isBefore(LocalDateTime.of(now.toLocalDate(), time));
 		}
-		// Snap to repeattime on the day of the last run so late runs do not drift
-		LocalDate lastday = LocalDateTime.ofInstant(laststart.toInstant(), zone).toLocalDate();
+		LocalDateTime last = LocalDateTime.ofInstant(laststart.toInstant(), zone);
 		LocalDateTime next;
 		switch (period)
 		{
+			case "hour":
+				// Sub-day periods count from the last run so they are not pinned to a wall-clock time
+				next = last.plusHours(1);
+				break;
+			case "minute":
+				next = last.plusMinutes(1);
+				break;
 			case "daily":
-				next = LocalDateTime.of(lastday.plusDays(1), time);
+				// Snap to repeattime on the day of the last run so late runs do not drift
+				next = LocalDateTime.of(last.toLocalDate().plusDays(1), time);
 				break;
 			case "weekly":
-				next = LocalDateTime.of(lastday.plusWeeks(1), time);
+				next = LocalDateTime.of(last.toLocalDate().plusWeeks(1), time);
 				break;
 			case "monthly":
-				next = LocalDateTime.of(lastday.plusMonths(1), time);
+				next = LocalDateTime.of(last.toLocalDate().plusMonths(1), time);
 				break;
 			default:
 				log.error("Unknown repeatperiod " + period + " on agentjob " + inJob.getId());
@@ -644,7 +661,7 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 		inJob.setValue("startdate", new Date());
 		inJob.setValue("enddate", null);
 		getMediaArchive().saveData("agentjob", inJob);
-		log.info("Queued repeating agentjob " + inJob.getId());
+		log.info("Queued repeating agentjob " + inJob.getName() + " (" + inJob.getId() + ")");
 	}
 
 	public ExecutorManager getThreads()
@@ -686,31 +703,77 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 		return (AutomationManager) getModuleManager().getBean(getCatalogId(), "automationManager", true);
 	}
 
+	public AgentJob importRecurringScenario(String inScenarioId, String userid)
+	{
+		//search a current agentjob with same inScenarioId, if not exist create new
+		AgentJob job = (AgentJob) getMediaArchive().query("agentjob").exact("id", inScenarioId).searchOne();
+		if (job == null)
+		{
+			job = (AgentJob) getMediaArchive().getSearcher("agentjob").createNewData();
+			job.setId(inScenarioId);
+		}
+		MultiValued scenariodata = (MultiValued) getMediaArchive().getCachedData("automationscenario", inScenarioId);
+		job.setValue("name", scenariodata == null ? inScenarioId : scenariodata.getName());
+		importScenario(inScenarioId, userid, null, job);
+		String period = scenariodata.get("repeatperiod");
+		String startdate = scenariodata.get("startdate");
+		if (period != null && period.length() > 0)
+		{
+			job.setValue("startdate", startdate);
+			job.setValue("repeatperiod", period);
+			job.setValue("repeattime", scenariodata.get("repeattime"));
+		}
+		getMediaArchive().saveData("agentjob", job);
+		return job;
+	}
+
+	public AgentJob importScenario(String inScenarioId, AgentContext inContext)
+	{
+		AgentJob job = (AgentJob) getMediaArchive().getSearcher("agentjob").createNewData();
+		MultiValued scenariodata = (MultiValued) getMediaArchive().getCachedData("automationscenario", inScenarioId);
+		job.setValue("name", scenariodata == null ? inScenarioId : scenariodata.getName());
+		return importScenario(inScenarioId, inContext, job);
+	}
+
+	public AgentJob importScenario(String inScenarioId, AgentContext inContext, AgentJob job)
+	{
+		String userid = null;
+		if (inContext != null && inContext.getUserProfile() != null)
+		{
+			userid = inContext.getUserProfile().getUserId();
+		}
+		String userrequest = null;
+		Object contextObject = inContext == null ? null : inContext.getContextValue("userrequest");
+		if (contextObject instanceof String)
+		{
+			userrequest = (String) contextObject;
+		}
+		return importScenario(inScenarioId, userid, userrequest, job);
+	}	
+
 	/**
 	 * Saves a new agentjob with a copy of each enabled automationstep of the scenario as an
 	 * agentjobstep. Each copy keeps the automationstep id and its "runafter" points at the copied
 	 * parent step.
 	 */
-	public AgentJob importScenario(String inScenarioId, AgentContext inContext)
-	{
-		AgentJob job = (AgentJob) getMediaArchive().getSearcher("agentjob").createNewData();
 
+	public AgentJob importScenario(String inScenarioId, String inUserId, String inUserContext, AgentJob job)
+	{
 		// set expirationdate 30 days from today
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.DAY_OF_MONTH, 30);
 		job.setValue("expirationdate", cal.getTime());
 
 		job.setValue("automationscenario", inScenarioId);
-		MultiValued scenariodata = (MultiValued) getMediaArchive().getCachedData("automationscenario", inScenarioId);
-		job.setValue("name", scenariodata == null ? inScenarioId : scenariodata.getName());
-		if (inContext != null && inContext.getUserProfile() != null)
+		
+		if (inUserId != null)
 		{
-			job.setValue("owner", inContext.getUserProfile().getUserId());
+			job.setValue("owner", inUserId);
 		}
-		Object userrequest = inContext == null ? null : inContext.getContextValue("userrequest");
-		if (userrequest instanceof String)
+		
+		if (inUserContext != null)
 		{
-			job.setValue("userrequest", userrequest);
+			job.setValue("userrequest", inUserContext);
 		}
 		job.setValue("submitteddate", new Date()); // No status so checkQueue leaves it alone until it runs
 		getMediaArchive().saveData("agentjob", job);

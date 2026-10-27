@@ -478,7 +478,9 @@ li.assettabnav {
 	height: calc(100% - 45px);
 }
 .assetpanel-editor .languagesadd a,
-.assetpanel-editor .languagesadd a:hover {
+.assetpanel-editor .languagesadd a:hover,
+.assetpanel-editor .languagesfieldexpand,
+.assetpanel-editor .languagesfieldexpand:hover {
 	color: #fff;
 }
 .asset-editor-actions-container {
