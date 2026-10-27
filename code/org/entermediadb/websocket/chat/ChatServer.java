@@ -187,12 +187,14 @@ public class ChatServer
 		inMap.put("messageid", inData.getId());
 		inMap.put("command", "messagereceived");
 
-		String message = inData.get("messageplain");
-		inMap.put("messageplain", message);
+		// Clients render "message" (Quill Delta JSON or HTML); "messageplain" is for previews and notifications
+		String messageplain = inData.get("messageplain");
+		inMap.put("messageplain", messageplain);
 
+		String message = inData.get("message");
 		if (message == null)
 		{
-			message = inData.get("message");
+			message = messageplain;
 		}
 		inMap.put("message", message);
 		inMap.put("messagetype", inData.get("messagetype"));

@@ -3,13 +3,19 @@ package org.entermediadb.ai.llm;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.entermediadb.ai.assistant.AiSearch;
 import org.entermediadb.ai.knn.RankedResult;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 public class BasicLlmResponse implements LlmResponse
 {
+	private static Log log = LogFactory.getLog(BasicLlmResponse.class);
+
 	protected String fieldMessage;
 	protected String fieldMessagePlain;
 	protected String fieldRunFunctionName;
@@ -236,9 +242,38 @@ public class BasicLlmResponse implements LlmResponse
 		mainMessage = mainMessage.replaceAll("(?s)<messageplain>.*?</messageplain>", "");
 		setMessage(mainMessage);
 
+		if (dataMessage.length() == 0)
+		{
+			dataMessage = readJsonMessagePlain(mainMessage);
+		}
+
 		if (dataMessage.length() > 0 && getMessagePlain() == null)
 		{
 			setMessagePlain(dataMessage.trim());
 		}
+	}
+
+	// Hybrid Quill Delta + form responses (views/agentresponses/*.json) carry their plain text in a "messageplain" key
+	protected String readJsonMessagePlain(String inMessage)
+	{
+		String trimmed = inMessage.trim();
+		if (!trimmed.startsWith("{"))
+		{
+			return "";
+		}
+		try
+		{
+			JSONObject json = (JSONObject) new JSONParser().parse(trimmed);
+			Object plain = json.get("messageplain");
+			if (plain != null)
+			{
+				return plain.toString();
+			}
+		}
+		catch (ParseException | ClassCastException ex)
+		{
+			log.warn("Response starts with { but is not a JSON object: " + ex);
+		}
+		return "";
 	}
 }
