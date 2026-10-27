@@ -33,12 +33,20 @@ public class AgentJobModule extends BaseMediaModule
     public void checkRepeatingJobs(WebPageRequest inReq)
     {
         AgentJobManager manager = getAgentJobManager(inReq);
+        
         int count = manager.checkRepeatingJobs();
 
         ScriptLogger logger = (ScriptLogger) inReq.getPageValue("log");
         if (logger != null)
         {
-            logger.info("Repeating agent jobs " + count + " due to run");
+            if (count > 0)
+            {
+                logger.info("Repeating agent jobs " + count + " due to run");
+            }
+            else
+            {
+                logger.info("No repeating agent jobs due to run");
+            }
         }
     }
 
@@ -63,4 +71,11 @@ public class AgentJobModule extends BaseMediaModule
         inReq.putPageValue("joblogs", jobLogs);
     }
 
+
+    public void importRecurringScenario(WebPageRequest inReq)
+    {
+        AgentJobManager manager = getAgentJobManager(inReq);
+        String scenarioId = inReq.getRequestParameter("scenarioid");
+        AgentJob job =manager.importRecurringScenario(scenarioId, inReq.findValue("userid"));
+    }
 }
