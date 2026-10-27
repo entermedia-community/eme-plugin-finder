@@ -20,7 +20,7 @@
   <property name="editable">false</property>
 
   <property name="hitsname">hits</property>
-  <property name="allowguestregistration">false</property>
+  <property name="allowguestregistration">true</property>
   <property name="makeversion">false</property>
   <property name="systemfromemailname">EnterMedia</property>
   <property name="shownav">true</property>
@@ -81,12 +81,12 @@
   <script src="/${applicationid}/components/javascript/emedia/toast.js" id="toast"/>
   <script src="/${applicationid}/components/javascript/emedia/image-editor.js" id="imageditor"/>
   <script src="/${applicationid}/components/chatterbox/chatterbox.js" id="chatterbox"/>
-  
+
   <script defer="true" src="/${applicationid}/components/javascript/twemoji/twemoji.js" id="twemoji"/>
   <script defer="true" src="/${applicationid}/components/javascript/videojs/8.20.0/video.min.js" id="videojs"/>
   <script defer="true" src="/${applicationid}/components/javascript/videojs/8.20.0/videojs-quality-selector.min.js" id="videojs-qs"/>
   <style id="videojs-css" href="/${applicationid}/components/javascript/videojs/8.20.0/video-js.min.css"/>
-  
+
   <script defer="true" src="/${applicationid}/components/javascript/draw2d.min.js" id="smart2d"/>
   <script defer="true" src="/${applicationid}/components/javascript/jszip/jszip.min.js" id="jszip"/>
   <script defer="true" src="/${applicationid}/components/javascript/emedia/smartorganizer.js" id="smartorganizer"/>
@@ -113,7 +113,7 @@
   <script defer="true" src="/${applicationid}/components/javascript/emedia/upload.js" id="upload"/>
   <script defer="true" src="/${applicationid}/components/javascript/emedia/quicksearch.js" id="quicksearch"/>
   <script src="/${applicationid}/components/javascript/emedia/results.js" id="results"/>
-  
+
   <script src="/${applicationid}/components/javascript/emedia/brick.js" id="jquerybrick"/>
   <script src="/${applicationid}/components/javascript/emedia/brickvertical.js" id="jquerybrickvertical"/>
   <script defer="true" src="/${applicationid}/components/javascript/chart/Chart.bundle.js" id="chartjs"/>
@@ -178,7 +178,7 @@
   <permission name="viewsidebarhelp">
     <userprofile name="viewsidebarhelp" value="true"/>
   </permission>
-  
+
   <permission name="viewsettings">
     <userprofile name="viewsettings" value="true"/>
   </permission>
