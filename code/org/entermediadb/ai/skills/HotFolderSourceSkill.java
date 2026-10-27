@@ -1,12 +1,11 @@
 package org.entermediadb.ai.skills;
 
 import java.util.Date;
-
+import java.util.Iterator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.entermediadb.ai.BaseSkill;
 import org.entermediadb.ai.AgentContext;
-import org.entermediadb.ai.agentjobs.AgentJobStep;
+import org.entermediadb.ai.BaseSkill;
 import org.entermediadb.asset.sources.AssetSource;
 import org.entermediadb.asset.util.TimeParser;
 import org.openedit.locks.Lock;
@@ -20,17 +19,72 @@ public class HotFolderSourceSkill extends BaseSkill
 	@Override
 	public void process(AgentContext inContext)
 	{
-		scanSource(inContext);
+		scanSources(inContext);
 		super.process(inContext);
 	}
 
-	public void scanSource(AgentContext inContext)
+	public void scanSources(AgentContext inContext)
+	{
+		for (Iterator iterator = getMediaArchive().getAssetManager().getAssetSources().iterator(); iterator.hasNext();)
+		{
+			AssetSource source = (AssetSource) iterator.next();
+			scanSource(inContext, source);
+		}
+	}
+
+	public void scanSource(AgentContext inContext, AssetSource assetSource)
+	{
+		Lock lock = getMediaArchive().getLockManager().lockIfPossible("scan-" + assetSource.getId(), "HotFolderManager");
+		if (lock != null)
+		{
+			inContext.info("Hot folder is already in lock table: " + assetSource.getName());
+			super.process(inContext);
+			return;
+		}
+		
+		inContext.info(getMediaArchive().getCatalogId() + " - Hot folder import started: " + assetSource.getName());
+		try
+			{
+				// pullGit(path,1);
+				long starttime = System.currentTimeMillis();
+				int found = assetSource.importAssets(null);
+				long timetook = System.currentTimeMillis() - starttime;
+				inContext.info("Hot folder: " + assetSource.getName() + ", imported " + found + " assets within:" + timetook / 1000D + " seconds");
+			}
+			catch (Exception ex)
+			{
+				inContext.error("Could not process Hot folder " + assetSource.getName(), ex);
+				log.error("Could not process Hot folder " + assetSource.getName(), ex);
+			}
+			finally
+			{
+				try
+				{
+					getMediaArchive().releaseLock(lock);
+				}
+				catch (Exception ex)
+				{
+					// We somehow got a version error. Someone save it from under us
+					// TOOD: Delete them all?
+				}
+			}
+			super.process(inContext);
+	}
+
+	public void scanSourceOLD(AgentContext inContext)
 	{
 		// Loop over the children SourceAgents and check the time config
 		String base = "/WEB-INF/data/" + getCatalogId() + "/originals";
 
 		String id = inContext.getCurrentAgentJobStep().getAgentData().getId();
 		AssetSource assetSource = getMediaArchive().getAssetManager().findAssetSourceById(id);
+
+		if (assetSource == null)	
+		{
+			inContext.error("Asset source not found for id: " + id);
+			//super.process(inContext);
+			return;
+		}
 
 		String name = assetSource.getName();
 		// String path = base + "/" + name ;
