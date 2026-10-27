@@ -3604,6 +3604,16 @@ td .emgridcell a i.module-icon {
 .trnslationsource input:checked + label {
 	opacity: 1;
 }
+.languagesfieldexpand {
+	font-size: 0.9em;
+	cursor: pointer;
+	font-weight: 500;;
+}
+.languagesfieldexpand i {
+	margin-right: 5px;
+}
+
+
 .jp-play-bar,
 .jp-volume-bar-value {
 	width: 0;
