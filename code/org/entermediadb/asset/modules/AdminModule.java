@@ -243,7 +243,15 @@ public class AdminModule extends BaseMediaModule
 			else
 			{
 				firstName = inReq.getRequestParameter("firstName");
+				if(firstName == null)
+				{
+					firstName = inReq.getRequestParameter("firstname");
+				}
 				lastName = inReq.getRequestParameter("lastName");
+				if(lastName == null)
+				{
+					lastName = inReq.getRequestParameter("lastname");
+				}
 				if (firstName == null || lastName == null)
 				{
 					Boolean allowguestregistration = Boolean.parseBoolean(inReq.findPathValue("allowguestregistration"));
