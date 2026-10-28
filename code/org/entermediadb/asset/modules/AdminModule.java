@@ -770,18 +770,17 @@ public class AdminModule extends BaseMediaModule
 				}
 			}
 
-
-			AuthenticationRequest aReq = userManager.createAuthenticationRequest(inReq, user);
-			aReq.putProperty("templogincode", code);
-
-			boolean success = loginAndRedirect(aReq, inReq);
-
 			if (user == null || !user.isEnabled())
 			{
 				putOauthError(inReq, "invalid_grant", "Invalid or expired code");
 				log.info("No such user " + email);
 				return;
 			}
+
+			AuthenticationRequest aReq = userManager.createAuthenticationRequest(inReq, user);
+			aReq.putProperty("templogincode", code);
+
+			boolean success = loginAndRedirect(aReq, inReq);
 
 			if (success)
 			{
