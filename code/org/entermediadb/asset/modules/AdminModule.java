@@ -18,14 +18,15 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.entermediadb.asset.Category;
 import org.entermediadb.authenticate.AutoLoginProvider;
 import org.entermediadb.authenticate.AutoLoginResult;
-import org.entermediadb.authenticate.BaseAutoLogin;
 import org.entermediadb.google.GoogleManager;
 import org.entermediadb.users.AllowViewing;
 import org.entermediadb.users.PasswordHelper;
@@ -49,6 +50,7 @@ import org.openedit.users.authenticate.AuthenticationRequest;
 import org.openedit.util.DateStorageUtil;
 import org.openedit.util.StringEncryption;
 import org.openedit.util.URLUtilities;
+
 import com.warrenstrange.googleauth.GoogleAuthenticator;
 import com.warrenstrange.googleauth.GoogleAuthenticatorKey;
 import com.warrenstrange.googleauth.GoogleAuthenticatorQRGenerator;
@@ -749,7 +751,8 @@ public class AdminModule extends BaseMediaModule
 			String email = inReq.getRequestParameter("email");
 			String code = inReq.getRequestParameter("code");
 
-			if (email == null || code == null || inReq.getRequestParameter("publickey") == null)
+			String pubKey = inReq.getRequestParameter("publickey");
+			if (email == null || code == null || pubKey == null)
 			{
 				putOauthError(inReq, "invalid_request", "email, code and publickey are required");
 				log.info("Missing parameters " + email + " and " + code);
@@ -757,6 +760,15 @@ public class AdminModule extends BaseMediaModule
 			}
 
 			User user = userManager.getUserByEmail(email);
+			if (user == null)
+			{
+				boolean allowguestregistration = Boolean.parseBoolean(inReq.findPathValue("allowguestregistration"));
+				if (allowguestregistration)
+				{
+					String groupid = inReq.getPage().get("autologingroup");
+					user = userManager.checkForNewUser(email, code, groupid);
+				}
+			}
 			if (user == null || !user.isEnabled())
 			{
 				putOauthError(inReq, "invalid_grant", "Invalid or expired code");
