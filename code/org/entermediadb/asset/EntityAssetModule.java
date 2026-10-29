@@ -10,6 +10,13 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.entermediadb.asset.modules.BaseMediaModule;
+import org.entermediadb.asset.scanner.AssetImporter;
+import org.entermediadb.asset.upload.FileUpload;
+import org.entermediadb.asset.upload.FileUploadItem;
+import org.entermediadb.asset.upload.UploadRequest;
+import org.openedit.page.Page;
+import org.openedit.util.DateStorageUtil;
+import org.openedit.data.Searcher;
 import org.openedit.Data;
 import org.openedit.MultiValued;
 import org.openedit.WebPageRequest;
@@ -92,6 +99,88 @@ public class EntityAssetModule extends BaseMediaModule
 		}
 		inReq.putPageValue("assets", assets);
 		inReq.putPageValue("totalhits", hits.size());
+	}
+
+	/**
+	 * Uploads the posted file as an asset and creates an entity asset for it, on a project
+	 * (collectionid) or on the profile of a user (userid, default the signed-in user). Optional
+	 * name and longdescription. Page values: entityasset (the new record's map).
+	 */
+	public void uploadEntityAsset(WebPageRequest inReq)
+	{
+		MediaArchive archive = getMediaArchive(inReq);
+		if (inReq.getUser() == null)
+		{
+			inReq.putPageValue("error", "Sign in to upload");
+			return;
+		}
+		String collectionid = blankToNull(inReq.getRequestParameter("collectionid"));
+		String profileid = null;
+		String owner = collectionid;
+		if (collectionid == null)
+		{
+			String userid = blankToNull(inReq.getRequestParameter("userid"));
+			if (userid == null)
+			{
+				userid = inReq.getUser().getId();
+			}
+			Data profile = archive.query("emeprofile").exact("owner", userid).searchOne();
+			if (profile == null)
+			{
+				inReq.putPageValue("error", "No EME profile found for user " + userid);
+				return;
+			}
+			profileid = profile.getId();
+			owner = profileid;
+		}
+
+		FileUpload command = (FileUpload) archive.getSearcherManager().getModuleManager().getBean("fileUpload");
+		UploadRequest upload = command.parseArguments(inReq);
+		FileUploadItem item = upload.getFirstItem();
+		if (item == null || item.getName() == null || item.getName().isEmpty())
+		{
+			inReq.putPageValue("error", "No file was uploaded");
+			return;
+		}
+
+		Asset asset;
+		try
+		{
+			String sourcepath = "entityassets/" + owner + "/" + item.getName();
+			String path = ("/WEB-INF/data/" + archive.getCatalogId() + "/originals/" + sourcepath).replace("//", "/");
+			upload.saveFileAs(item, path, inReq.getUser());
+			Page saved = archive.getPageManager().getPage(path);
+			AssetImporter importer = archive.getAssetImporter();
+			asset = importer.createAssetFromPage(archive, false, inReq.getUser(), saved, null);
+			importer.saveAsset(archive, inReq.getUser(), asset);
+			archive.fireSharedMediaEvent("importing/assetscreated");
+		}
+		catch (Exception e)
+		{
+			log.error("Could not save uploaded entity asset file", e);
+			inReq.putPageValue("error", "Could not save the file: " + e.getMessage());
+			return;
+		}
+
+		Searcher searcher = archive.getSearcher("entityasset");
+		Data entity = searcher.createNewData();
+		String name = blankToNull(inReq.getRequestParameter("name"));
+		entity.setName(name == null ? item.getName() : name);
+		entity.setValue("longdescription", blankToNull(inReq.getRequestParameter("longdescription")));
+		entity.setValue("primarymedia", asset.getId());
+		entity.setValue("primaryimage", asset.getId());
+		entity.setValue("entity_date", new Date());
+		if (collectionid != null)
+		{
+			entity.setValue("librarycollection", collectionid);
+		}
+		else
+		{
+			entity.setValue("emeprofile", profileid);
+		}
+		searcher.saveData(entity, inReq.getUser());
+
+		inReq.putPageValue("entityasset", toMap(archive, inReq, entity));
 	}
 
 	private Map<String, Object> toMap(MediaArchive archive, WebPageRequest inReq, Data inHit)
