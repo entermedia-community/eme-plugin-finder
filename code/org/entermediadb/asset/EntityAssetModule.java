@@ -110,17 +110,17 @@ public class EntityAssetModule extends BaseMediaModule
 		Map<String, Object> asset = new LinkedHashMap<String, Object>();
 		asset.put("id", inHit.getId());
 		asset.put("name", inHit.getName());
-		asset.put("description", inHit.get("description"));
+		asset.put("description", inHit.get("longdescription"));
 		asset.put("date", iso(inHit.getValue("entity_date")));
 		asset.put("sourcetype", inHit.get("entitysourcetype"));
-		asset.put("imageurl", image == null ? null : siteroot + archive.asLinkToPreview(image, "image200x200.jpg"));
+		asset.put("imageurl", image == null ? null : siteroot + archive.asLinkToPreview(image, "image200x200"));
 		asset.put("tags", tags(inHit));
 		asset.put("emeprofile", inHit.get("emeprofile"));
 		asset.put("collectionid", inHit.get("librarycollection"));
 		if (media != null)
 		{
 			asset.put("uploaddate", iso(media.getValue("assetaddeddate")));
-			asset.put("mediaurl", siteroot + archive.asLinkToOriginal(media));
+			asset.put("mediaurl", originalUrl(archive, siteroot, media));
 			asset.put("mediatype", mediaType(archive, media));
 			asset.put("filename", media.getName());
 		}
@@ -130,6 +130,13 @@ public class EntityAssetModule extends BaseMediaModule
 	private Asset loadAsset(MediaArchive archive, String inAssetId)
 	{
 		return inAssetId == null || inAssetId.isEmpty() ? null : archive.getAsset(inAssetId);
+	}
+
+	/** Link to the original file (preset 0), as the web download links are built. */
+	private String originalUrl(MediaArchive archive, String inSiteRoot, Asset inMedia)
+	{
+		Data original = archive.getCachedData("convertpreset", "0");
+		return original == null ? null : archive.asLinkToShare(inSiteRoot, inMedia, original);
 	}
 
 	/** image, video, pdf or other, for choosing a viewer. */
