@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.entermediadb.ai.agentjobs.AgentJobStep;
@@ -50,6 +52,8 @@ import org.openedit.util.JSONParser;
  */
 public class OpenCodeClient implements CatalogEnabled
 {
+    private static final Log log = LogFactory.getLog(OpenCodeClient.class);
+
     protected static final String DEFAULT_SERVER_URL = "http://127.0.0.1:49374";
     protected static final long DEFAULT_EVENT_TIMEOUT_MS = TimeUnit.SECONDS.toMillis(30);
 
@@ -442,6 +446,8 @@ public class OpenCodeClient implements CatalogEnabled
             .replace("${title}", inTitle)
             .replace("${directory}", inFolder);
 
+        log.info(jsonStr);
+        
         JSONObject json = (JSONObject) new JSONParser().parse(jsonStr);
         return (JSONObject) unwrapData(postJson("/api/session", json));
     }
