@@ -23,6 +23,7 @@ import java.awt.TrayIcon.MessageType;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
@@ -32,6 +33,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.entermediadb.asset.Asset;
 import org.entermediadb.asset.MediaArchive;
+import org.entermediadb.google.GoogleManager;
 import org.entermediadb.projects.ProjectManager;
 import org.entermediadb.websocket.push.WebPushManager;
 import org.json.simple.JSONObject;
@@ -399,6 +401,7 @@ public class ChatServer
 
 			// Push browser notifications to subscribed users who are not currently connected
 			final Set pushUserids = userids;
+			final String pushAuthorId = usermessageid;
 			pushUserids.remove(usermessageid); // remove the message author from push notifications
 			pushUserids.remove("agent"); // remove the agent
 			final Data pushEntity = entity;
@@ -479,12 +482,29 @@ public class ChatServer
 						}
 					}
 
-					// GoogleManager manager = (GoogleManager) getModuleManager().getBean("googleManager");
-					// String accesstoken = manager.getAccessToken();
-					// FireBase base = new FireBase();
-					// base.notifyTopic("eme-profile-app", accesstoken, inChannel, inUser, inSubject, inMessage,
-					// inExtraData);
-
+					// Mobile app push: every device of a user subscribes to the user's FCM topic
+					GoogleManager googleManager = (GoogleManager) getModuleManager().getBean(catalogid, "googleManager");
+					Object channelId = inMap.get("channel");
+					for (Iterator iterator = pushUserids.iterator(); iterator.hasNext();)
+					{
+						String pushUserId = (String) iterator.next();
+						if (pushUserId == null || "agent".equals(pushUserId) || "anonymous".equals(pushUserId))
+						{
+							continue;
+						}
+						Map extra = new HashMap();
+						extra.put("user", String.valueOf(pushAuthorId));
+						extra.put("channel", String.valueOf(channelId));
+						extra.put("type", "message");
+						try
+						{
+							googleManager.notifyTopic(GoogleManager.userTopic(pushUserId), null, pushPayload.get("name").toString(), messageText.toString(), extra);
+						}
+						catch (Exception e)
+						{
+							log.error("Firebase push failed for user " + pushUserId, e);
+						}
+					}
 				}
 			});
 		}

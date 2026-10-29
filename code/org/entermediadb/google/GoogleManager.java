@@ -917,6 +917,15 @@ public class GoogleManager implements CatalogEnabled
 		return queue;
 	}
 
+	/**
+	 * FCM topic every device of a user subscribes to after signing in to Firebase.
+	 * The app builds the same name, keep both in sync. Topics only allow [a-zA-Z0-9-_.~%].
+	 */
+	public static String userTopic(String inUserId)
+	{
+		return "user_" + inUserId.replaceAll("[^a-zA-Z0-9\\-_.~%]", "_");
+	}
+
 	// For Push Notifications
 	public void notifyTopic(final String inChannel, final User inUser, final String inSubject, final String inMessage, final Map inExtraData)
 	{
@@ -1184,7 +1193,7 @@ public class GoogleManager implements CatalogEnabled
 			String returned = getConnection().parseText(createresp);
 
 			log.error("Could not create user in firebase. Please manually delete existing user " + inUser.getEmail() + " " + returned);
-			return;
+			throw new OpenEditException("Could not create Firebase user for " + inUser.getEmail() + ": " + returned);
 		}
 		getConnection().parseMap(createresp);
 

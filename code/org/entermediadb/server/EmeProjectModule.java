@@ -35,8 +35,13 @@ public class EmeProjectModule extends BaseMediaModule
 	public void searchProjects(WebPageRequest inReq)
 	{
 		MediaArchive archive = getMediaArchive(inReq);
-		String searchquery = inReq.getRequestParameter("query");
+		inReq.putPageValue("hits", searchOpenProjects(archive, inReq, inReq.getRequestParameter("query")));
+		inReq.putPageValue("joinedids", getJoinedProjectIds(archive, inReq.getUserName()));
+	}
 
+	/** Open community projects whose name contains the query (all when empty), by name. */
+	public HitTracker searchOpenProjects(MediaArchive archive, WebPageRequest inReq, String searchquery)
+	{
 		QueryBuilder builder = archive.query("librarycollection").named("hits");
 		builder.orgroup("collectiontype", "1");
 		builder.orgroup("priviacylevel", "community");
@@ -50,9 +55,7 @@ public class EmeProjectModule extends BaseMediaModule
 		}
 		HitTracker hits = builder.sort("name").search(inReq);
 		hits.setHitsPerPage(100);
-
-		inReq.putPageValue("hits", hits);
-		inReq.putPageValue("joinedids", getJoinedProjectIds(archive, inReq.getUserName()));
+		return hits;
 	}
 
 	/** The projects the user is on the team of. Page values: hits, joinedids. */
@@ -157,7 +160,7 @@ public class EmeProjectModule extends BaseMediaModule
 		return project;
 	}
 
-	private Set<String> getJoinedProjectIds(MediaArchive archive, String inUserid)
+	public Set<String> getJoinedProjectIds(MediaArchive archive, String inUserid)
 	{
 		Collection<Data> rows = archive.query("librarycollectionusers").exact("followeruser", inUserid).exact("ontheteam", "true").search();
 		Set<String> ids = new HashSet<String>();

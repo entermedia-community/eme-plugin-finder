@@ -824,6 +824,30 @@ public class ProjectModule extends BaseMediaModule
 		return false;
 	}
 
+	/** Web sidebar: subscribes a user, and puts them on the team when addtoteam=true. */
+	public void addUserToTeam(WebPageRequest inReq)
+	{
+		getProjectManager(inReq).addUserToTeam(inReq, false);
+	}
+
+	/** JSON API: editors only; puts the error on the page instead of throwing. */
+	public void addTeamMember(WebPageRequest inReq)
+	{
+		if (!Boolean.TRUE.equals(canEditCollection(inReq)))
+		{
+			inReq.putPageValue("error", "Not allowed to edit this project");
+			return;
+		}
+		try
+		{
+			getProjectManager(inReq).addUserToTeam(inReq, true);
+		}
+		catch (OpenEditException e)
+		{
+			inReq.putPageValue("error", e.getMessage());
+		}
+	}
+
 	public Boolean canViewProfitAndLoss(WebPageRequest inReq)
 	{
 		ProjectManager manager = getProjectManager(inReq);

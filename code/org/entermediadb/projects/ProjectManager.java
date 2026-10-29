@@ -22,10 +22,12 @@ import org.entermediadb.asset.AssetUtilities;
 import org.entermediadb.asset.Category;
 import org.entermediadb.asset.MediaArchive;
 import org.entermediadb.asset.util.JsonUtil;
+import org.entermediadb.email.WebEmail;
 import org.entermediadb.users.UserProfileManager;
 import org.openedit.CatalogEnabled;
 import org.openedit.Data;
 import org.openedit.ModuleManager;
+import org.openedit.OpenEditException;
 import org.openedit.MultiValued;
 import org.openedit.WebPageRequest;
 import org.openedit.data.QueryBuilder;
@@ -1624,6 +1626,165 @@ public class ProjectManager implements CatalogEnabled
 		}
 
 		// TODO: send email to new user?
+	}
+
+	/**
+	 * Reads the request and adds the user to the project. Accepts the web form names
+	 * (dataid, email.value, firstName.value, lastName.value) as well as the plain API names
+	 * (userid, email, firstName, lastName). The collectionid is required; addtoteam overrides
+	 * inDefaultOnTeam when present.
+	 * 
+	 * @return the librarycollectionusers record, also put on the request as "subscription"
+	 */
+	public Data addUserToTeam(WebPageRequest inReq, boolean inDefaultOnTeam)
+	{
+		String userid = firstParam(inReq, "userid", "dataid");
+		String email = firstParam(inReq, "email", "email.value");
+		String firstName = firstParam(inReq, "firstName", "firstName.value");
+		String lastName = firstParam(inReq, "lastName", "lastName.value");
+		String addtoteam = inReq.getRequestParameter("addtoteam");
+		boolean onTheTeam = addtoteam == null ? inDefaultOnTeam : Boolean.parseBoolean(addtoteam);
+
+		Data subscription = addUserToTeam(inReq, inReq.getRequestParameter("collectionid"), userid, email, firstName, lastName, onTheTeam);
+		inReq.putPageValue("subscription", subscription);
+		return subscription;
+	}
+
+	private String firstParam(WebPageRequest inReq, String... inNames)
+	{
+		for (String name : inNames)
+		{
+			String value = inReq.getRequestParameter(name);
+			if (value != null && !value.trim().isEmpty())
+			{
+				return value.trim();
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Adds an existing user (inUserId) or a new one by inEmail to a project. New users are created
+	 * without a password; the notification email carries a one-time login link.
+	 * 
+	 * @param inOnTheTeam
+	 *            true to mark the user as a team member, false to only subscribe them
+	 * @return the librarycollectionusers record
+	 */
+	public Data addUserToTeam(WebPageRequest inReq, String inCollectionId, String inUserId, String inEmail, String inFirstName, String inLastName, boolean inOnTheTeam)
+	{
+		MediaArchive archive = getMediaArchive();
+		Data librarycol = inCollectionId == null ? null : archive.getCachedData("librarycollection", inCollectionId);
+		if (librarycol == null)
+		{
+			throw new OpenEditException("Project not found: " + inCollectionId);
+		}
+		String email = inEmail == null ? null : inEmail.trim().toLowerCase();
+		if (email != null && email.isEmpty())
+		{
+			email = null;
+		}
+
+		User teamuser = null;
+		if (inUserId != null && !inUserId.isEmpty())
+		{
+			teamuser = archive.getUserManager().getUser(inUserId);
+		}
+		else if (email != null)
+		{
+			teamuser = archive.getUserManager().getUserByEmail(email);
+			if (teamuser == null)
+			{
+				teamuser = archive.getUserManager().createUser(null);
+				teamuser.setFirstName(inFirstName);
+				teamuser.setLastName(inLastName);
+				teamuser.setEmail(email);
+				teamuser.setEnabled(true);
+				archive.getUserManager().saveUser(teamuser);
+			}
+		}
+		if (teamuser == null)
+		{
+			throw new OpenEditException("User not found");
+		}
+		String teamuserid = teamuser.getId();
+
+		Searcher subscriptions = archive.getSearcher("librarycollectionusers");
+		Data subscription = archive.query("librarycollectionusers").exact("followeruser", teamuserid).exact("collectionid", inCollectionId).searchOne();
+		if (subscription == null)
+		{
+			subscription = subscriptions.createNewData();
+			subscription.setValue("collectionid", inCollectionId);
+			subscription.setValue("followeruser", teamuserid);
+			subscription.setValue("addeddate", new Date());
+			if (inOnTheTeam)
+			{
+				subscription.setValue("ontheteam", true);
+			}
+			subscriptions.saveData(subscription);
+		}
+		else if (inOnTheTeam && !Boolean.parseBoolean(String.valueOf(subscription.getValue("ontheteam"))))
+		{
+			subscription.setValue("ontheteam", true);
+			subscriptions.saveData(subscription);
+		}
+
+		try
+		{
+			sendAddedToTeamEmail(inReq, librarycol, teamuser);
+		}
+		catch (Exception e)
+		{
+			// The member is saved; only the notification failed.
+			log.error("Could not send team email to " + teamuserid, e);
+		}
+		return subscription;
+	}
+
+	protected void sendAddedToTeamEmail(WebPageRequest inReq, Data inCollection, User inTeamUser) throws Exception
+	{
+		MediaArchive archive = getMediaArchive();
+		String apphome = (String) inReq.getPageValue("apphome");
+		String template = apphome + "/theme/emails/collection-add-teammember.html";
+		Data community = archive.getCachedData("communitytag", inCollection.get("communitytag"));
+
+		String siteroot = archive.getCatalogSettingValue("siteroot");
+		if (siteroot == null || siteroot.isEmpty())
+		{
+			siteroot = archive.getCatalogSettingValue("cdn_prefix");
+		}
+
+		WebEmail templatemail = archive.createSystemEmail(inTeamUser, template);
+		String logourl = null;
+		if (community != null)
+		{
+			templatemail.setSubject(community.getName() + ": Added to Team"); // TODO: Translate
+			logourl = community.get("externaldomain") + "/theme/logo.png";
+		}
+		else
+		{
+			templatemail.setSubject("Added to Team " + inCollection.getName()); // TODO: Translate
+			if (siteroot != null)
+			{
+				logourl = siteroot + "/theme/logo.png";
+			}
+		}
+
+		Map objects = new HashMap();
+		// One-time login link (single use, one hour) instead of embedding a key in the email
+		String loginlinktoken = archive.getUserManager().createNewTempLoginLink(inTeamUser.getId(), inTeamUser.getEmail(), inTeamUser.getFirstName(), inTeamUser.getLastName(), inTeamUser.getScreenName());
+		objects.put("loginlinktoken", loginlinktoken);
+		objects.put("loginemail", java.net.URLEncoder.encode(inTeamUser.getEmail(), "UTF-8"));
+		objects.put("user", inReq.getUser());
+		objects.put("teamuser", inTeamUser);
+		objects.put("librarycol", inCollection);
+		objects.put("project", inCollection);
+		objects.put("apphome", apphome);
+		objects.put("applink", inReq.getPageValue("applink"));
+		objects.put("siteroot", siteroot);
+		objects.put("logourl", logourl);
+		objects.put("community", community);
+		templatemail.send(objects);
 	}
 
 	public List getTeamUsers(String collectionid)

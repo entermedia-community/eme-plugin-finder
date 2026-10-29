@@ -794,12 +794,22 @@ public class AdminModule extends BaseMediaModule
 				if (firebaseenabled)
 				{
 					GoogleManager googleManager = (GoogleManager) getMediaArchive(inReq).getBean("googleManager");
-					googleManager.createFireBaseUser(user);
+					try
+					{
+						googleManager.createFireBaseUser(user);
+					}
+					catch (OpenEditException ex)
+					{
+						inReq.putPageValue("error", ex.getMessage());
+					}
 
 					String firebasepassword = user.get("firebasepassword");
 					if (firebasepassword == null)
 					{
-						inReq.putPageValue("error", "Failed to set up Firebase");
+						if (inReq.getPageValue("error") == null)
+						{
+							inReq.putPageValue("error", "Failed to set up Firebase");
+						}
 					}
 					else
 					{

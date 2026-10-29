@@ -24,14 +24,22 @@ public class EmeServerModule extends BaseMediaModule
 		MediaArchive archive = getMediaArchive(inReq);
 		String searchquery = inReq.getRequestParameter("query");
 		String category = inReq.getRequestParameter("category");
+		inReq.putPageValue("emeservers", searchServers(archive, inReq.getUser().getId(), searchquery, category));
+	}
 
-		Searcher serversearcher = archive.getSearcher("emeserver");
+	/**
+	 * EME servers whose name contains the query, optionally in one category
+	 * (null or "all" for every category). Each server is a property map with
+	 * a single "category" id and "joined" set to "true" for the servers the
+	 * user has joined.
+	 */
+	public Collection<Map> searchServers(MediaArchive archive, String inUserId, String searchquery, String category)
+	{
+		QueryBuilder builder = archive.query("emeserver");
 
-		QueryBuilder builder = serversearcher.query();
-
-		if (searchquery != null)
+		if (searchquery != null && !searchquery.trim().isEmpty())
 		{
-			builder.contains("name", searchquery);
+			builder.contains("name", searchquery.trim());
 		}
 
 		if (category != null && !category.equalsIgnoreCase("all"))
@@ -53,7 +61,7 @@ public class EmeServerModule extends BaseMediaModule
 			emeserversmap.add(map);
 		}
 
-		Collection<Data> joinedEMEservers = archive.query("emeserveruser").exact("user", inReq.getUser().getId()).search();
+		Collection<Data> joinedEMEservers = archive.query("emeserveruser").exact("user", inUserId).search();
 		Collection<String> joinedserverids = joinedEMEservers.stream().map(d -> d.get("emeserver")).collect(Collectors.toList());
 		for (Map emeserver : emeserversmap)
 		{
@@ -62,7 +70,7 @@ public class EmeServerModule extends BaseMediaModule
 				emeserver.put("joined", "true");
 			}
 		}
-		inReq.putPageValue("emeservers", emeserversmap);
+		return emeserversmap;
 	}
 
 	public void getEMEServer(WebPageRequest inReq)
