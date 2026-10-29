@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 import org.entermediadb.asset.MediaArchive;
 import org.entermediadb.asset.modules.BaseMediaModule;
+import org.entermediadb.projects.ProjectManager;
 import org.openedit.Data;
 import org.openedit.MultiValued;
 import org.openedit.WebPageRequest;
@@ -23,7 +24,7 @@ import org.openedit.users.User;
 /**
  * One search across everything the app's Search screen shows: people, projects, EME servers and
  * events. It runs the same queries as the per-type services (usersearch,
- * EmeProjectModule.searchProjects, EmeServerModule.getEMEServers, emeevent/events) and puts each
+ * ProjectManager.searchOpenProjects, EmeServerModule.getEMEServers, emeevent/events) and puts each
  * result list on the page for search.json.
  *
  * Request parameters: query (name filter, optional), types (comma separated subset of people,
@@ -35,7 +36,6 @@ public class EmeSearchModule extends BaseMediaModule
 	private static final Set<String> ALL_TYPES = new HashSet<String>(Arrays.asList("people", "projects", "servers", "events"));
 
 	private EmeServerModule fieldEmeServerModule;
-	private EmeProjectModule fieldEmeProjectModule;
 
 	public EmeServerModule getEmeServerModule()
 	{
@@ -45,16 +45,6 @@ public class EmeSearchModule extends BaseMediaModule
 	public void setEmeServerModule(EmeServerModule inEmeServerModule)
 	{
 		fieldEmeServerModule = inEmeServerModule;
-	}
-
-	public EmeProjectModule getEmeProjectModule()
-	{
-		return fieldEmeProjectModule;
-	}
-
-	public void setEmeProjectModule(EmeProjectModule inEmeProjectModule)
-	{
-		fieldEmeProjectModule = inEmeProjectModule;
 	}
 
 	/**
@@ -87,8 +77,9 @@ public class EmeSearchModule extends BaseMediaModule
 		}
 		if (types.contains("projects"))
 		{
-			inReq.putPageValue("projects", getEmeProjectModule().searchOpenProjects(archive, inReq, query));
-			inReq.putPageValue("joinedids", getEmeProjectModule().getJoinedProjectIds(archive, inReq.getUserName()));
+			ProjectManager projects = (ProjectManager) getModuleManager().getBean(archive.getCatalogId(), "projectManager");
+			inReq.putPageValue("projects", projects.searchOpenProjects(inReq, query));
+			inReq.putPageValue("joinedids", projects.getJoinedProjectIds(inReq.getUserName()));
 		}
 		if (types.contains("servers"))
 		{

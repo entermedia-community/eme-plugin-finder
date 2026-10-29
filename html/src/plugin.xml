@@ -3479,13 +3479,6 @@
 		</property>
 	</bean>
 
-	<bean id="EmeProjectModule" class="org.entermediadb.server.EmeProjectModule"
-		lazy-init="default">
-		<property name="moduleManager">
-			<ref bean="moduleManager" />
-		</property>
-	</bean>
-
 	<bean id="EmeSearchModule" class="org.entermediadb.server.EmeSearchModule"
 		lazy-init="default">
 		<property name="moduleManager">
@@ -3493,9 +3486,6 @@
 		</property>
 		<property name="emeServerModule">
 			<ref bean="EmeServerModule" />
-		</property>
-		<property name="emeProjectModule">
-			<ref bean="EmeProjectModule" />
 		</property>
 	</bean>
 

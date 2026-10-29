@@ -848,6 +848,41 @@ public class ProjectModule extends BaseMediaModule
 		}
 	}
 
+	/** Searches open community projects (query). Page values: hits, joinedids. */
+	public void searchProjects(WebPageRequest inReq)
+	{
+		getProjectManager(inReq).searchProjects(inReq);
+	}
+
+	/** The projects the signed-in user is on the team of. Page values: hits, joinedids. */
+	public void loadUserProjects(WebPageRequest inReq)
+	{
+		getProjectManager(inReq).loadUserProjects(inReq);
+	}
+
+	/** Puts the signed-in user on the team of the project (collectionid). */
+	public void joinProject(WebPageRequest inReq)
+	{
+		getProjectManager(inReq).joinProject(inReq);
+	}
+
+	/** Takes the signed-in user off the team of the project (collectionid). */
+	public void leaveProject(WebPageRequest inReq)
+	{
+		getProjectManager(inReq).leaveProject(inReq);
+	}
+
+	/** JSON API: editors only; the users that can still be added to the project's team. */
+	public void loadTeamCandidates(WebPageRequest inReq)
+	{
+		if (!Boolean.TRUE.equals(canEditCollection(inReq)))
+		{
+			inReq.putPageValue("error", "Not allowed to edit this project");
+			return;
+		}
+		getProjectManager(inReq).loadTeamCandidates(inReq);
+	}
+
 	public Boolean canViewProfitAndLoss(WebPageRequest inReq)
 	{
 		ProjectManager manager = getProjectManager(inReq);

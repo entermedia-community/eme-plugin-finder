@@ -1897,6 +1897,205 @@ public class ProjectManager implements CatalogEnabled
 		return hits;
 	}
 
+	/** Projects that cannot be found or joined. */
+	private static final String[] CLOSED_STATUSES = { "disabled", "closed", "pendingdelete" };
+
+	/**
+	 * Searches open community projects by name (query), and flags the ones the user is already on
+	 * the team of. Page values: hits, joinedids.
+	 */
+	public void searchProjects(WebPageRequest inReq)
+	{
+		inReq.putPageValue("hits", searchOpenProjects(inReq, inReq.getRequestParameter("query")));
+		inReq.putPageValue("joinedids", getJoinedProjectIds(inReq.getUserName()));
+	}
+
+	/** Open community projects whose name contains the query (all when empty), by name. */
+	public HitTracker searchOpenProjects(WebPageRequest inReq, String inQuery)
+	{
+		QueryBuilder builder = getMediaArchive().query("librarycollection").named("hits");
+		builder.orgroup("collectiontype", "1");
+		builder.orgroup("priviacylevel", "community");
+		for (String status : CLOSED_STATUSES)
+		{
+			builder.not("organizationstatus", status);
+		}
+		if (inQuery != null && !inQuery.trim().isEmpty())
+		{
+			builder.contains("name", inQuery.trim());
+		}
+		HitTracker hits = builder.sort("name").search(inReq);
+		hits.setHitsPerPage(100);
+		return hits;
+	}
+
+	/** Ids of the projects the user is on the team of. */
+	public Set<String> getJoinedProjectIds(String inUserid)
+	{
+		Collection<Data> rows = getMediaArchive().query("librarycollectionusers").exact("followeruser", inUserid).exact("ontheteam", "true").search();
+		Set<String> ids = new HashSet<String>();
+		for (Data row : rows)
+		{
+			ids.add(row.get("collectionid"));
+		}
+		return ids;
+	}
+
+	/** The projects the user is on the team of. Page values: hits, joinedids. */
+	public void loadUserProjects(WebPageRequest inReq)
+	{
+		Set<String> ids = getJoinedProjectIds(inReq.getUserName());
+
+		Collection<String> lookup = new ArrayList<String>(ids);
+		if (lookup.isEmpty())
+		{
+			lookup.add("NONE");
+		}
+		HitTracker hits = getMediaArchive().query("librarycollection").named("hits").ids(lookup).sort("name").search(inReq);
+		hits.setHitsPerPage(100);
+
+		inReq.putPageValue("hits", hits);
+		inReq.putPageValue("joinedids", ids);
+	}
+
+	/** Puts the signed-in user on the team of the project (collectionid). Idempotent. */
+	public void joinProject(WebPageRequest inReq)
+	{
+		Data project = loadOpenProject(inReq);
+		if (project == null)
+		{
+			return;
+		}
+		String privacy = project.get("priviacylevel");
+		boolean closed = privacy != null && !privacy.equals("community");
+		for (String status : CLOSED_STATUSES)
+		{
+			closed = closed || status.equals(project.get("organizationstatus"));
+		}
+		if (closed)
+		{
+			inReq.putPageValue("error", "This project is not open to join");
+			return;
+		}
+
+		Searcher usersearcher = getMediaArchive().getSearcher("librarycollectionusers");
+		String userid = inReq.getUserName();
+		Data membership = usersearcher.query().exact("collectionid", project.getId()).exact("followeruser", userid).searchOne();
+		if (membership == null)
+		{
+			membership = usersearcher.createNewData();
+			membership.setValue("collectionid", project.getId());
+			membership.setValue("followeruser", userid);
+			membership.setValue("addeddate", new Date());
+		}
+		if (!"true".equals(String.valueOf(membership.getValue("ontheteam"))))
+		{
+			membership.setValue("ontheteam", true);
+			usersearcher.saveData(membership, inReq.getUser());
+		}
+		inReq.putPageValue("project", project);
+	}
+
+	/**
+	 * Takes the signed-in user off the team of the project (collectionid). Idempotent, but the last
+	 * team member cannot leave.
+	 */
+	public void leaveProject(WebPageRequest inReq)
+	{
+		Data project = loadOpenProject(inReq);
+		if (project == null)
+		{
+			return;
+		}
+
+		Searcher usersearcher = getMediaArchive().getSearcher("librarycollectionusers");
+		Data membership = usersearcher.query().exact("collectionid", project.getId()).exact("followeruser", inReq.getUserName()).exact("ontheteam", "true").searchOne();
+		if (membership == null)
+		{
+			inReq.putPageValue("project", project);
+			return;
+		}
+		int teamsize = usersearcher.query().exact("collectionid", project.getId()).exact("ontheteam", "true").search().size();
+		if (teamsize <= 1)
+		{
+			inReq.putPageValue("error", "You are the only team member, so you cannot leave this project");
+			return;
+		}
+		usersearcher.delete(membership, inReq.getUser());
+		inReq.putPageValue("project", project);
+	}
+
+	private Data loadOpenProject(WebPageRequest inReq)
+	{
+		String collectionid = inReq.getRequestParameter("collectionid");
+		Data project = collectionid == null ? null : getMediaArchive().getCachedData("librarycollection", collectionid);
+		if (project == null)
+		{
+			log.warn("Project not found: " + collectionid);
+			inReq.putPageValue("error", "Project not found");
+		}
+		return project;
+	}
+
+	/**
+	 * The users that can still be added to the project (collectionid): enabled users who are not
+	 * already on its team, optionally limited to those whose name, screen name or email contains
+	 * the query. By name, at most 100. Page value: candidates.
+	 */
+	public List<User> loadTeamCandidates(WebPageRequest inReq)
+	{
+		String collectionid = inReq.getRequestParameter("collectionid");
+		Data project = collectionid == null ? null : getMediaArchive().getCachedData("librarycollection", collectionid);
+		if (project == null)
+		{
+			inReq.putPageValue("error", "Project not found");
+			return null;
+		}
+		Set<String> team = listTeam(project);
+		String query = inReq.getRequestParameter("query");
+		query = query == null ? "" : query.trim().toLowerCase();
+
+		List<User> candidates = new ArrayList<User>();
+		for (Object hit : getMediaArchive().query("user").all().search())
+		{
+			User user = getMediaArchive().getUser(((Data) hit).getId());
+			if (user == null || !user.isEnabled() || team.contains(user.getId()))
+			{
+				continue;
+			}
+			if (!query.isEmpty() && !matches(user, query))
+			{
+				continue;
+			}
+			candidates.add(user);
+		}
+		Collections.sort(candidates, new Comparator<User>()
+		{
+			public int compare(User o1, User o2)
+			{
+				return o1.toString().compareToIgnoreCase(o2.toString());
+			}
+		});
+		if (candidates.size() > 100)
+		{
+			candidates = new ArrayList<User>(candidates.subList(0, 100));
+		}
+		inReq.putPageValue("candidates", candidates);
+		return candidates;
+	}
+
+	private boolean matches(User inUser, String inQuery)
+	{
+		for (String value : new String[] { inUser.getFirstName(), inUser.getLastName(), inUser.getScreenName(), inUser.getEmail(), inUser.getId() })
+		{
+			if (value != null && value.toLowerCase().contains(inQuery))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public int calcDaysRemaining(LibraryCollection inCollection)
 	{
 		if (inCollection != null)
