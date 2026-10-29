@@ -6,40 +6,25 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.FileImageInputStream;
 import javax.imageio.stream.ImageInputStream;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.entermediadb.asset.scanner.MetaDataReader;
-import org.entermediadb.asset.upload.FileUploadItem;
-import org.entermediadb.asset.upload.UploadRequest;
-import org.entermediadb.find.EntityManager;
 import org.entermediadb.projects.LibraryCollection;
 import org.openedit.Data;
 import org.openedit.OpenEditException;
 import org.openedit.WebPageRequest;
-import org.openedit.data.BaseData;
-import org.openedit.data.PropertyDetail;
-import org.openedit.data.PropertyDetails;
 import org.openedit.data.QueryBuilder;
 import org.openedit.data.Searcher;
 import org.openedit.hittracker.HitTracker;
-import org.openedit.hittracker.ListHitTracker;
-import org.openedit.hittracker.SearchQuery;
-import org.openedit.modules.translations.LanguageMap;
-import org.openedit.page.Page;
 import org.openedit.repository.ContentItem;
 import org.openedit.users.User;
 import org.openedit.util.DateStorageUtil;
@@ -132,7 +117,7 @@ public class AssetUtilities // TODO: Rename to AssetManager
 				// restore
 				asset.setProperty("importstatus", "created");
 				asset.setValue("assetmodificationdate", inContent.lastModified()); // This needs to be set or it will
-																					// keep thinking it's changed
+				// keep thinking it's changed
 				asset.setProperty("editstatus", "1"); // pending
 				asset.setProperty("pushstatus", "resend");
 				// readMetadata(asset, inContent, inArchive); //should we re-load metadata?
@@ -225,7 +210,7 @@ public class AssetUtilities // TODO: Rename to AssetManager
 		}
 
 		asset.setValue("assetmodificationdate", inContent.lastModified()); // This needs to be set or it will keep
-																			// thinking it's changed
+		// thinking it's changed
 		String previewstatus = asset.get("previewstatus");
 		// if( previewstatus == null || status.equals("2"))
 		// {
@@ -432,11 +417,11 @@ public class AssetUtilities // TODO: Rename to AssetManager
 		else
 		{
 			sourcepathmask = inArchive.getCatalogSettingValue("categoryupload"); // Dumb name
-																					// ${division.uploadpath}/${user.userName}/${formateddate}
+			// ${division.uploadpath}/${user.userName}/${formateddate}
 			if (sourcepathmask == null)
 			{
 				sourcepathmask = inArchive.getCatalogSettingValue("projectassetupload"); // Dumb name
-																							// ${division.uploadpath}/${user.userName}/${formateddate}
+				// ${division.uploadpath}/${user.userName}/${formateddate}
 			}
 
 			String uploadcategoryid = inReq.getRequestParameter("categoryrootid");

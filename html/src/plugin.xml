@@ -3479,6 +3479,13 @@
 		</property>
 	</bean>
 
+	<bean id="EntityAssetModule" class="org.entermediadb.asset.EntityAssetModule"
+		lazy-init="default">
+		<property name="moduleManager">
+			<ref bean="moduleManager" />
+		</property>
+	</bean>
+
 	<bean id="EmeSearchModule" class="org.entermediadb.server.EmeSearchModule"
 		lazy-init="default">
 		<property name="moduleManager">
