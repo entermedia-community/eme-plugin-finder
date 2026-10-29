@@ -175,7 +175,7 @@ public class EmeServerModule extends BaseMediaModule
 		String serverid = inReq.getRequestParameter("serverid");
 
 		Searcher channelsearcher = archive.getSearcher("channel");
-		Data channel = channelsearcher.query().exact("searchtype", "emeserver").exact("dataid", serverid).searchOne();
+		Data channel = channelsearcher.query().exact("searchtype", "emeserver").exact("dataid", serverid).exact("user", inReq.getUser().getId()).searchOne();
 		if (channel == null)
 		{
 			MultiValued server = (MultiValued) archive.getData("emeserver", serverid);
@@ -207,12 +207,7 @@ public class EmeServerModule extends BaseMediaModule
 			return;
 		}
 
-		Collection<Data> messages = getMediaArchive(inReq).query("chatterbox")
-			.exact("channel", channelId)
-			.exact("useralias", inReq.getUser().getId())
-			.orgroup("user", Arrays.asList(inReq.getUser().getId(), "agent"))
-			.sort("dateDown")
-			.search(inReq);
+		Collection<Data> messages = getMediaArchive(inReq).query("chatterbox").exact("channel", channelId).sort("dateDown").search(inReq);
 
 		inReq.putPageValue("messages", messages);
 	}
