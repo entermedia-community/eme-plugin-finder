@@ -203,6 +203,8 @@ public class EntityAssetModule extends BaseMediaModule
 		asset.put("date", iso(inHit.getValue("entity_date")));
 		asset.put("sourcetype", inHit.get("entitysourcetype"));
 		asset.put("imageurl", image == null ? null : siteroot + archive.asLinkToPreview(image, "image200x200"));
+		asset.put("thumbstatus", previewState(image));
+		asset.put("imageassetid", image == null ? null : image.getId());
 		asset.put("tags", tags(inHit));
 		asset.put("emeprofile", inHit.get("emeprofile"));
 		asset.put("collectionid", inHit.get("librarycollection"));
@@ -214,6 +216,55 @@ public class EntityAssetModule extends BaseMediaModule
 			asset.put("filename", media.getName());
 		}
 		return asset;
+	}
+
+	/**
+	 * Conversion state of one asset, for cheap polling. Parameters: assetid, optional size (a
+	 * preview name such as image200x200). Page values: assetid, previewstate (ready, pending or
+	 * error), previewurl (once ready).
+	 */
+	public void loadPreviewStatus(WebPageRequest inReq)
+	{
+		MediaArchive archive = getMediaArchive(inReq);
+		String assetid = blankToNull(inReq.getRequestParameter("assetid"));
+		if (assetid == null)
+		{
+			inReq.putPageValue("error", "No assetid given");
+			return;
+		}
+		Asset asset = archive.getAsset(assetid);
+		if (asset == null)
+		{
+			inReq.putPageValue("error", "No asset " + assetid);
+			return;
+		}
+		String size = blankToNull(inReq.getRequestParameter("size"));
+		if (size == null || !size.matches("[a-z0-9]+"))
+		{
+			size = "image200x200";
+		}
+		String state = previewState(asset);
+		inReq.putPageValue("assetid", assetid);
+		inReq.putPageValue("previewstate", state);
+		if ("ready".equals(state))
+		{
+			String siteroot = (String) inReq.getPageValue("siteroot");
+			inReq.putPageValue("previewurl", (siteroot == null ? "" : siteroot) + archive.asLinkToPreview(asset, size));
+		}
+	}
+
+	/** ready, error or pending (still being converted); null without an asset. */
+	private String previewState(Asset inAsset)
+	{
+		if (inAsset == null)
+		{
+			return null;
+		}
+		if ("2".equals(inAsset.get("previewstatus")))
+		{
+			return "ready";
+		}
+		return "error".equals(inAsset.get("importstatus")) ? "error" : "pending";
 	}
 
 	private Asset loadAsset(MediaArchive archive, String inAssetId)
