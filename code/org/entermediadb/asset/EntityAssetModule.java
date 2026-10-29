@@ -104,7 +104,7 @@ public class EntityAssetModule extends BaseMediaModule
 	/**
 	 * Uploads the posted file as an asset and creates an entity asset for it, on a project
 	 * (collectionid) or on the profile of a user (userid, default the signed-in user). Optional
-	 * name and longdescription. Page values: entityasset (the new record's map).
+	 * name, longdescription and tags (repeated, saved as keywords). Page values: entityasset (the new record's map).
 	 */
 	public void uploadEntityAsset(WebPageRequest inReq)
 	{
@@ -169,6 +169,19 @@ public class EntityAssetModule extends BaseMediaModule
 		String name = blankToNull(inReq.getRequestParameter("name"));
 		entity.setName(name == null ? item.getName() : name);
 		entity.setValue("longdescription", blankToNull(inReq.getRequestParameter("longdescription")));
+		String[] tags = inReq.getRequestParameters("tags");
+		if (tags != null && tags.length > 0)
+		{
+			List<String> keywords = new ArrayList<String>();
+			for (String tag : tags)
+			{
+				if (tag != null && !tag.trim().isEmpty())
+				{
+					keywords.add(tag.trim());
+				}
+			}
+			entity.setValue("keywords", keywords);
+		}
 		entity.setValue("primarymedia", asset.getId());
 		entity.setValue("primaryimage", asset.getId());
 		entity.setValue("entity_date", new Date());
