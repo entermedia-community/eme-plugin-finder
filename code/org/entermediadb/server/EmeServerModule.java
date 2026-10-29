@@ -1,6 +1,7 @@
 package org.entermediadb.server;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
@@ -28,10 +29,9 @@ public class EmeServerModule extends BaseMediaModule
 	}
 
 	/**
-	 * EME servers whose name contains the query, optionally in one category
-	 * (null or "all" for every category). Each server is a property map with
-	 * a single "category" id and "joined" set to "true" for the servers the
-	 * user has joined.
+	 * EME servers whose name contains the query, optionally in one category (null or "all" for every
+	 * category). Each server is a property map with a single "category" id and "joined" set to "true"
+	 * for the servers the user has joined.
 	 */
 	public Collection<Map> searchServers(MediaArchive archive, String inUserId, String searchquery, String category)
 	{
@@ -207,7 +207,12 @@ public class EmeServerModule extends BaseMediaModule
 			return;
 		}
 
-		Collection<Data> messages = getMediaArchive(inReq).query("chatterbox").exact("channel", channelId).sort("dateDown").search(inReq);
+		Collection<Data> messages = getMediaArchive(inReq).query("chatterbox")
+			.exact("channel", channelId)
+			.exact("useralias", inReq.getUser().getId())
+			.orgroup("user", Arrays.asList(inReq.getUser().getId(), "agent"))
+			.sort("dateDown")
+			.search(inReq);
 
 		inReq.putPageValue("messages", messages);
 	}
