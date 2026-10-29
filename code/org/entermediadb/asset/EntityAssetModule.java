@@ -114,6 +114,10 @@ public class EntityAssetModule extends BaseMediaModule
 			inReq.putPageValue("error", "Sign in to upload");
 			return;
 		}
+		// The form fields (collectionid, name...) of a multipart post are only readable once it is parsed.
+		FileUpload command = (FileUpload) archive.getSearcherManager().getModuleManager().getBean("fileUpload");
+		UploadRequest upload = command.parseArguments(inReq);
+
 		String collectionid = blankToNull(inReq.getRequestParameter("collectionid"));
 		String profileid = null;
 		String owner = collectionid;
@@ -134,8 +138,6 @@ public class EntityAssetModule extends BaseMediaModule
 			owner = profileid;
 		}
 
-		FileUpload command = (FileUpload) archive.getSearcherManager().getModuleManager().getBean("fileUpload");
-		UploadRequest upload = command.parseArguments(inReq);
 		FileUploadItem item = upload.getFirstItem();
 		if (item == null || item.getName() == null || item.getName().isEmpty())
 		{
