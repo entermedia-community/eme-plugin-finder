@@ -632,9 +632,11 @@ public class ChatModule extends BaseMediaModule
 		}
 		if (entityid == null)
 		{
-			entity = (Data) inReq.getPageValue("emeprofile");
-			channeldatamodule = "emeprofile";
-			inReq.putPageValue("entity", entity);
+			//Pass entityid required
+
+			//entity = (Data) inReq.getPageValue("emeprofile");
+			//channeldatamodule = "emeprofile";
+			//inReq.putPageValue("entity", entity);
 
 		}
 

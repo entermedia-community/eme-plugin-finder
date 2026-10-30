@@ -2019,8 +2019,10 @@ public class ProjectModule extends BaseMediaModule
 			topicsearcher.saveData(topic);
 		}
 		inReq.setRequestParameter("dataid", topic.getId());
+		inReq.putPageValue("channeldatamodule", "collectiveproject"); 
 		// inReq.setRequestParameter("createnew", "true");
-		inReq.putPageValue("currenttopic", topic);
+		inReq.putPageValue("currenttopic", topic); 
+		
 	}
 
 	public void loadProjectLikes(WebPageRequest inReq)
