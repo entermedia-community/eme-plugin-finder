@@ -24,6 +24,7 @@ import org.entermediadb.asset.MediaArchive;
 import org.entermediadb.asset.util.JsonUtil;
 import org.entermediadb.email.WebEmail;
 import org.entermediadb.users.UserProfileManager;
+import org.entermediadb.websocket.chat.ChatServer;
 import org.openedit.CatalogEnabled;
 import org.openedit.Data;
 import org.openedit.ModuleManager;
@@ -1898,6 +1899,157 @@ public class ProjectManager implements CatalogEnabled
 		hits.setHitsPerPage(100);
 
 		return hits;
+	}
+
+	/** Fields the project owner may change through {@link #updateCollection(WebPageRequest)}. */
+	private static final List<String> OWNER_EDITABLE_FIELDS = Arrays.asList("name", "collectivedescription", "urlname", "collectivetags");
+
+	/**
+	 * Follows or unfollows the project (collectionid) for the signed-in user. Page values:
+	 * subscription, followercount.
+	 */
+	public void toggleFollow(WebPageRequest inReq)
+	{
+		String collectionid = inReq.getRequestParameter("collectionid");
+		if (collectionid == null || inReq.getUser() == null)
+		{
+			return;
+		}
+		MediaArchive archive = getMediaArchive();
+		String userid = inReq.getUser().getId();
+
+		MultiValued subscription = (MultiValued) archive.query("librarycollectionlikes").exact("collectionid", collectionid).exact("followeruser", userid).searchOne();
+		if (subscription != null)
+		{
+			subscription.setValue("enabled", !subscription.getBoolean("enabled"));
+		}
+		else
+		{
+			subscription = (MultiValued) archive.getSearcher("librarycollectionlikes").createNewData();
+			subscription.setValue("collectionid", collectionid);
+			subscription.setValue("followeruser", userid);
+			subscription.setValue("addeddate", new Date());
+			subscription.setValue("enabled", true);
+		}
+		archive.saveData("librarycollectionlikes", subscription);
+
+		inReq.putPageValue("subscription", subscription);
+		inReq.putPageValue("followercount", archive.query("librarycollectionlikes").exact("collectionid", collectionid).exact("enabled", true).search(inReq).size());
+	}
+
+	/**
+	 * JSON API: saves the project's name, description, url slug and tags (field / field.value
+	 * parameters). Only the owner or an administrator may. Puts "updated" on the page, or "error".
+	 */
+	public void updateCollection(WebPageRequest inReq)
+	{
+		MediaArchive archive = getMediaArchive();
+		Data collection = (Data) inReq.getPageValue("librarycol");
+		if (collection == null)
+		{
+			inReq.putPageValue("error", "Project not found");
+			return;
+		}
+		User user = inReq.getUser();
+		boolean isOwner = user != null && user.getId().equals(collection.get("owner"));
+		boolean isAdmin = inReq.getUserProfile().getSettingsRole().getId().equals("administrator");
+		if (!isOwner && !isAdmin)
+		{
+			inReq.putPageValue("error", "Only the project owner can edit its details");
+			return;
+		}
+
+		List<String> fields = new ArrayList<String>();
+		String[] requested = inReq.getRequestParameters("field");
+		if (requested != null)
+		{
+			for (String field : requested)
+			{
+				if (OWNER_EDITABLE_FIELDS.contains(field))
+				{
+					fields.add(field);
+				}
+			}
+		}
+
+		String urlname = inReq.getRequestParameter("urlname.value");
+		if (urlname != null && !urlname.trim().isEmpty())
+		{
+			Data other = archive.query("librarycollection").exact("urlname", urlname.trim()).searchOne();
+			if (other != null && !other.getId().equals(collection.getId()))
+			{
+				inReq.putPageValue("error", "That URL slug is already used by another project");
+				return;
+			}
+		}
+
+		Searcher searcher = archive.getSearcher("librarycollection");
+		searcher.updateData(inReq, fields.toArray(new String[0]), collection);
+		archive.saveData("librarycollection", collection);
+		inReq.putPageValue("updated", collection);
+	}
+
+	/**
+	 * JSON API: changes a team membership (collectionid, memberid = librarycollectionusers id,
+	 * ontheteam true/false, teamroles = comma separated collectiverole ids). Needs the
+	 * viewsettings permission. Puts "member" on the page, or "error".
+	 */
+	public void updateTeamMember(WebPageRequest inReq)
+	{
+		MediaArchive archive = getMediaArchive();
+		if (!Boolean.TRUE.equals(inReq.getPageValue("canviewsettings")))
+		{
+			inReq.putPageValue("error", "Not allowed to edit team members");
+			return;
+		}
+		String collectionid = inReq.getRequestParameter("collectionid");
+		String memberid = inReq.getRequestParameter("memberid");
+		Data member = memberid == null ? null : archive.query("librarycollectionusers").exact("id", memberid).exact("collectionid", collectionid).searchOne();
+		if (member == null)
+		{
+			inReq.putPageValue("error", "Team member not found");
+			return;
+		}
+		String ontheteam = inReq.getRequestParameter("ontheteam");
+		if (ontheteam != null)
+		{
+			member.setValue("ontheteam", Boolean.parseBoolean(ontheteam));
+		}
+		String roles = inReq.getRequestParameter("teamroles");
+		if (roles != null)
+		{
+			List<String> ids = new ArrayList<String>();
+			for (String role : roles.split(","))
+			{
+				if (!role.trim().isEmpty())
+				{
+					ids.add(role.trim());
+				}
+			}
+			member.setValue("teamroles", ids);
+		}
+		archive.saveData("librarycollectionusers", member);
+		inReq.putPageValue("member", member);
+	}
+
+	/**
+	 * Saves the chat message on the page ("data") as sent by the signed-in user, broadcasts it to
+	 * the open chats and fires the messagereceived event.
+	 */
+	public void saveChatMessage(WebPageRequest inReq)
+	{
+		MediaArchive archive = getMediaArchive();
+		Data data = (Data) inReq.getPageValue("data");
+
+		data.setValue("user", inReq.getUserName());
+		data.setValue("date", new Date());
+		archive.saveData("chatterbox", data);
+
+		ChatServer server = (ChatServer) archive.getModuleManager().getBean("system", "chatServer");
+		server.broadcastMessage(archive.getCatalogId(), data);
+
+		// Google notify
+		archive.fireDataEvent(inReq.getUser(), "chatterbox", "messagereceived", data);
 	}
 
 	/** Projects that cannot be found or joined. */

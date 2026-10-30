@@ -830,6 +830,42 @@ public class ProjectModule extends BaseMediaModule
 		getProjectManager(inReq).addUserToTeam(inReq, false);
 	}
 
+	/**
+	 * Stops the remaining actions when collectionid is not a project, so connectchat.json does not
+	 * create a topic or channel for nothing.
+	 */
+	public void requireCollection(WebPageRequest inReq)
+	{
+		if (inReq.getPageValue("librarycol") == null)
+		{
+			inReq.setCancelActions(true);
+		}
+	}
+
+	/** JSON API: follows or unfollows the project for the signed-in user. */
+	public void toggleFollow(WebPageRequest inReq)
+	{
+		getProjectManager(inReq).toggleFollow(inReq);
+	}
+
+	/** JSON API: owner (or administrator) edit of the project's details. */
+	public void updateCollection(WebPageRequest inReq)
+	{
+		getProjectManager(inReq).updateCollection(inReq);
+	}
+
+	/** JSON API: changes a team member's membership and roles. */
+	public void updateTeamMember(WebPageRequest inReq)
+	{
+		getProjectManager(inReq).updateTeamMember(inReq);
+	}
+
+	/** Saves and broadcasts the chat message on the page. */
+	public void saveChatMessage(WebPageRequest inReq)
+	{
+		getProjectManager(inReq).saveChatMessage(inReq);
+	}
+
 	/** JSON API: editors only; puts the error on the page instead of throwing. */
 	public void addTeamMember(WebPageRequest inReq)
 	{
