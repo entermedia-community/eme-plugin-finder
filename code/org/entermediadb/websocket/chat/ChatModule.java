@@ -632,11 +632,11 @@ public class ChatModule extends BaseMediaModule
 		}
 		if (entityid == null)
 		{
-			//Pass entityid required
+			// Pass entityid required
 
-			//entity = (Data) inReq.getPageValue("emeprofile");
-			//channeldatamodule = "emeprofile";
-			//inReq.putPageValue("entity", entity);
+			// entity = (Data) inReq.getPageValue("emeprofile");
+			// channeldatamodule = "emeprofile";
+			// inReq.putPageValue("entity", entity);
 
 		}
 
@@ -706,6 +706,7 @@ public class ChatModule extends BaseMediaModule
 
 	/**
 	 * Gets the chat history of a channel
+	 * 
 	 * @param inReq
 	 */
 	public void loadChannelHistory(WebPageRequest inReq)
@@ -775,9 +776,6 @@ public class ChatModule extends BaseMediaModule
 		}
 	}
 
-
-
-
 	protected MultiValued findExistingChannel(WebPageRequest inReq, Searcher channelsearcher, Data entity, String channeldatamodule, String channeltype)
 	{
 		MultiValued currentchannel = null;
@@ -785,6 +783,13 @@ public class ChatModule extends BaseMediaModule
 		{
 			currentchannel =
 				(MultiValued) channelsearcher.query().exact("dataid", entity).exact("searchtype", channeldatamodule).exact("user", inReq.getUserName()).sort("refreshdateDown").searchOne();
+			return currentchannel;
+		}
+
+		if ("collectiveproject".equals(channeldatamodule))
+		{
+			// Todo: add 1 week expiration to create a new channel for the same project
+			currentchannel = (MultiValued) channelsearcher.query().exact("dataid", entity).exact("searchtype", channeldatamodule).sort("refreshdateDown").searchOne();
 			return currentchannel;
 		}
 
