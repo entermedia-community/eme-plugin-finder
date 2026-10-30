@@ -91,6 +91,12 @@ public class LibraryCollectionChatMonitorSkill extends BaseSkill
 		inAgentContext.put("userquery", inUserMessage.get("message"));
 
 		MultiValued scenario = inAgentContext.getCurrentAgentJob().getScenarioData();
+		if (scenario == null)
+		{
+			log.info("No scenario data available");
+			noResponse(inAgentContext);
+			return;
+		}
 		Collection<Data> menuscenarios = getMenuScenarios(scenario, scenario.get("connectedtop"));
 		inAgentContext.putContextValue("menuscenarios", menuscenarios);
 
