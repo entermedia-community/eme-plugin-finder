@@ -17,9 +17,10 @@ import org.openedit.MultiValued;
 import org.openedit.hittracker.HitTracker;
 
 /**
- * Watches a team chat. Asks library_collection_chat_monitor which menu options fit the conversation, then sleeps
- * wait_minutes on this thread. If nobody has spoken since, it renders the recommended menu. A newer message in the
- * same channel cancels the wait and is analyzed instead, so nothing is broadcast for the older one.
+ * Watches a team chat. Asks library_collection_chat_monitor which menu options fit the
+ * conversation, then sleeps wait_minutes on this thread. If nobody has spoken since, it renders the
+ * recommended menu. A newer message in the same channel cancels the wait and is analyzed instead,
+ * so nothing is broadcast for the older one.
  */
 public class LibraryCollectionChatMonitorSkill extends BaseSkill
 {
@@ -28,7 +29,7 @@ public class LibraryCollectionChatMonitorSkill extends BaseSkill
 	@Override
 	public void processStarting(AgentContext inAgentContext)
 	{
-		//say nothing
+		// say nothing
 	}
 
 	protected Collection<Data> getMenuScenarios(Data inCurrentScenario, String inLabelId)
@@ -36,7 +37,13 @@ public class LibraryCollectionChatMonitorSkill extends BaseSkill
 		Collection<Data> menuscenarios = new ArrayList<Data>();
 		if (inLabelId != null)
 		{
-			HitTracker scenarios = getMediaArchive().query("automationscenario").exact("connectedtop", inLabelId).exact("enabled", "true").exact("chatenabled", "true").exact("isvisible", "true").sort("ordering").search();
+			HitTracker scenarios = getMediaArchive().query("automationscenario")
+				.exact("connectedtop", inLabelId)
+				.exact("enabled", "true")
+				.exact("chatenabled", "true")
+				.exact("isvisible", "true")
+				.sort("ordering")
+				.search();
 			for (Object object : scenarios)
 			{
 				Data hit = (Data) object;
@@ -53,10 +60,10 @@ public class LibraryCollectionChatMonitorSkill extends BaseSkill
 	public void process(AgentContext inAgentContext)
 	{
 		ChatMessageContext messageContext = (ChatMessageContext) inAgentContext;
-		//A newer message replaces whatever we were waiting on
+		// A newer message replaces whatever we were waiting on
 		cancelPendingWait(inAgentContext);
 
-		//Opening the chat or choosing Not now sends a system message. Only team messages bring up the menu
+		// Opening the chat or choosing Not now sends a system message. Only team messages bring up the menu
 		MultiValued agentmessage = messageContext.getAgentMessage();
 		if (agentmessage != null && "system".equals(agentmessage.get("messagetype")))
 		{
@@ -75,7 +82,8 @@ public class LibraryCollectionChatMonitorSkill extends BaseSkill
 	}
 
 	/**
-	 * Asks which menu options fit the conversation, waits wait_minutes, then renders the menu if nobody spoke since.
+	 * Asks which menu options fit the conversation, waits wait_minutes, then renders the menu if nobody
+	 * spoke since.
 	 */
 	protected void checkMessage(ChatMessageContext inAgentContext, MultiValued inUserMessage)
 	{
@@ -103,8 +111,8 @@ public class LibraryCollectionChatMonitorSkill extends BaseSkill
 
 		Long milli = minutes * 60L * 1000L;
 
-		//TODO: Divided by 10 for debuging
-		if ( inAgentContext.getChannel().get("user").equals("admin"))
+		// TODO: Divided by 10 for debuging
+		if (inAgentContext.getChannel().get("user") != null && inAgentContext.getChannel().get("user").equals("admin"))
 		{
 			milli = milli / 10; // Divided by 10 for debugging
 		}
@@ -151,19 +159,18 @@ public class LibraryCollectionChatMonitorSkill extends BaseSkill
 			noResponse(inAgentContext);
 			return;
 		}
-		
 
 		inAgentContext.put("recommendedscenarios", recommended);
 		inAgentContext.put("helperrole", findArgument(inStructuredResponse, "helperrole"));
 		inAgentContext.put("confirmation", findArgument(inStructuredResponse, "confirmation"));
-		//Saved so the <scenario>_confirm page the team picks can say what was asked for
+		// Saved so the <scenario>_confirm page the team picks can say what was asked for
 		inAgentContext.put("teaminstruction", findArgument(inStructuredResponse, "instruction"));
 		inAgentContext.put("teamcontext", findArgument(inStructuredResponse, "context"));
 
 		LlmConnection llmconnection = getMediaArchive().getLlmConnection("localrender");
 		LlmResponse response = llmconnection.renderLocalAction(inAgentContext, "chat_monitor_menu");
 
-		//Next team message comes back here
+		// Next team message comes back here
 		response.setNextAutomationStep(inAgentContext.getCurrentAgentJobStep().getEnabledId());
 		inAgentContext.setLastResponse(response);
 		inAgentContext.fireStatusComplete(inAgentContext.getCurrentAgentJobStep());
