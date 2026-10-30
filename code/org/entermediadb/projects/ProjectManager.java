@@ -193,7 +193,7 @@ public class ProjectManager implements CatalogEnabled
 
 			final List sortorder = array.subList(0, Math.min(array.size(), count));
 			HitTracker allcollections = searcher.query().orgroup("id", sortorder).named("sidebar").search(); // todo:
-																												// Cache?
+			// Cache?
 			List allusercollections = loadUserCollections(inReq, allcollections, inArchive, null);
 
 			// List<Data> sorted = new ArrayList(usercollections);
@@ -1629,10 +1629,10 @@ public class ProjectManager implements CatalogEnabled
 	}
 
 	/**
-	 * Reads the request and adds the user to the project. Accepts the web form names
-	 * (dataid, email.value, firstName.value, lastName.value) as well as the plain API names
-	 * (userid, email, firstName, lastName). The collectionid is required; addtoteam overrides
-	 * inDefaultOnTeam when present.
+	 * Reads the request and adds the user to the project. Accepts the web form names (dataid,
+	 * email.value, firstName.value, lastName.value) as well as the plain API names (userid, email,
+	 * firstName, lastName). The collectionid is required; addtoteam overrides inDefaultOnTeam when
+	 * present.
 	 * 
 	 * @return the librarycollectionusers record, also put on the request as "subscription"
 	 */
@@ -1667,8 +1667,7 @@ public class ProjectManager implements CatalogEnabled
 	 * Adds an existing user (inUserId) or a new one by inEmail to a project. New users are created
 	 * without a password; the notification email carries a one-time login link.
 	 * 
-	 * @param inOnTheTeam
-	 *            true to mark the user as a team member, false to only subscribe them
+	 * @param inOnTheTeam true to mark the user as a team member, false to only subscribe them
 	 * @return the librarycollectionusers record
 	 */
 	public Data addUserToTeam(WebPageRequest inReq, String inCollectionId, String inUserId, String inEmail, String inFirstName, String inLastName, boolean inOnTheTeam)
@@ -1879,6 +1878,10 @@ public class ProjectManager implements CatalogEnabled
 		HitTracker organizationsuser = getMediaArchive().query("librarycollectionusers").exact("followeruser", inReq.getUserName()).exact("ontheteam", "true").search(inReq);
 		Collection ids = organizationsuser.collectValues("collectionid");
 
+		// Owners count even when they have no team row
+		HitTracker owned = getMediaArchive().query("librarycollection").exact("owner", inReq.getUserName()).search(inReq);
+		ids.addAll(owned.collectValues("id"));
+
 		if (ids.isEmpty())
 		{
 			ids.add("NONE");
@@ -1891,18 +1894,18 @@ public class ProjectManager implements CatalogEnabled
 			.not("organizationstatus", "closed")
 			.not("organizationstatus", "pendingdelete")
 			.sort("name")
-			.search(inReq);
+			.search();
 		hits.setHitsPerPage(100);
 
 		return hits;
 	}
 
 	/** Projects that cannot be found or joined. */
-	private static final String[] CLOSED_STATUSES = { "disabled", "closed", "pendingdelete" };
+	private static final String[] CLOSED_STATUSES = {"disabled", "closed", "pendingdelete"};
 
 	/**
-	 * Searches open community projects by name (query), and flags the ones the user is already on
-	 * the team of. Page values: hits, joinedids.
+	 * Searches open community projects by name (query), and flags the ones the user is already on the
+	 * team of. Page values: hits, joinedids.
 	 */
 	public void searchProjects(WebPageRequest inReq)
 	{
@@ -2039,8 +2042,8 @@ public class ProjectManager implements CatalogEnabled
 
 	/**
 	 * The users that can still be added to the project (collectionid): enabled users who are not
-	 * already on its team, optionally limited to those whose name, screen name or email contains
-	 * the query. By name, at most 100. Page value: candidates.
+	 * already on its team, optionally limited to those whose name, screen name or email contains the
+	 * query. By name, at most 100. Page value: candidates.
 	 */
 	public List<User> loadTeamCandidates(WebPageRequest inReq)
 	{
@@ -2069,8 +2072,7 @@ public class ProjectManager implements CatalogEnabled
 			}
 			candidates.add(user);
 		}
-		Collections.sort(candidates, new Comparator<User>()
-		{
+		Collections.sort(candidates, new Comparator<User>() {
 			public int compare(User o1, User o2)
 			{
 				return o1.toString().compareToIgnoreCase(o2.toString());
@@ -2086,7 +2088,7 @@ public class ProjectManager implements CatalogEnabled
 
 	private boolean matches(User inUser, String inQuery)
 	{
-		for (String value : new String[] { inUser.getFirstName(), inUser.getLastName(), inUser.getScreenName(), inUser.getEmail(), inUser.getId() })
+		for (String value : new String[] {inUser.getFirstName(), inUser.getLastName(), inUser.getScreenName(), inUser.getEmail(), inUser.getId()})
 		{
 			if (value != null && value.toLowerCase().contains(inQuery))
 			{
