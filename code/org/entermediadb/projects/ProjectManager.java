@@ -1314,62 +1314,55 @@ public class ProjectManager implements CatalogEnabled
 		HitTracker topuploads = null;
 
 		// If we are on a special URL
-		Data communitytag = (Data) inReq.getPageValue("communitytag");
-		if (communitytag != null)
+		/*
+		 * Data communitytag = (Data) inReq.getPageValue("communitytag"); if (communitytag != null) {
+		 * builder.exact("exclusivecontent", false); HitTracker collections = (HitTracker)
+		 * inReq.getPageValue("communityprojects"); if (collections != null && !collections.isEmpty()) {
+		 * builder.orgroup("librarycollection", collections); } else {
+		 * 
+		 * builder.exact("librarycollection", "NONE"); } }
+		 */
+		// else
+		// {
+		if (collectionid != null)
 		{
-			builder.exact("exclusivecontent", false);
-			HitTracker collections = (HitTracker) inReq.getPageValue("communityprojects");
-			if (collections != null && !collections.isEmpty())
+			builder.exact("librarycollection", collectionid);
+			if (collection == null)
 			{
-				builder.orgroup("librarycollection", collections);
+				collection = (LibraryCollection) getMediaArchive().getCachedData("librarycollection", collectionid);
 			}
-			else
+			if (isOnTeam(collection, inReq.getUserName()))
 			{
+				builder.exact("exclusivecontent", false);
+			}
+		}
+		if (!collectionquery.isEmpty())
+		{
+			collectionquery.setHitsPerPage(200);
+			collectionquery.addSortBy("name");
+			log.info("Searching all user posts " + inReq.getPage().getPath() + " " + collectionquery);
+			HitTracker ids = getMediaArchive().getSearcher("librarycollection").search(collectionquery);
 
-				builder.exact("librarycollection", "NONE");
+			SearchQuery orchild = builder.getSearcher().createSearchQuery();
+			if (!ids.isEmpty())
+			{
+				orchild.addOrsGroup("librarycollection", ids.getPageOfHits());
 			}
+			Term fulltext = collectionquery.getTermByDetailId("description");
+			if (fulltext != null)
+			{
+				orchild.setAndTogether(false);
+				orchild.addFreeFormQuery("description", fulltext.getValue()); // (TExt1 or Text2 ) and Collection ID
+			}
+			builder.getQuery().addChildQuery(orchild);
+
+			builder.hitsPerPage(ids.getHitsPerPage());
 		}
 		else
 		{
-			if (collectionid != null)
-			{
-				builder.exact("librarycollection", collectionid);
-				if (collection == null)
-				{
-					collection = (LibraryCollection) getMediaArchive().getCachedData("librarycollection", collectionid);
-				}
-				if (isOnTeam(collection, inReq.getUserName()))
-				{
-					builder.exact("exclusivecontent", false);
-				}
-			}
-			if (!collectionquery.isEmpty())
-			{
-				collectionquery.setHitsPerPage(200);
-				collectionquery.addSortBy("name");
-				log.info("Searching all user posts " + inReq.getPage().getPath() + " " + collectionquery);
-				HitTracker ids = getMediaArchive().getSearcher("librarycollection").search(collectionquery);
-
-				SearchQuery orchild = builder.getSearcher().createSearchQuery();
-				if (!ids.isEmpty())
-				{
-					orchild.addOrsGroup("librarycollection", ids.getPageOfHits());
-				}
-				Term fulltext = collectionquery.getTermByDetailId("description");
-				if (fulltext != null)
-				{
-					orchild.setAndTogether(false);
-					orchild.addFreeFormQuery("description", fulltext.getValue()); // (TExt1 or Text2 ) and Collection ID
-				}
-				builder.getQuery().addChildQuery(orchild);
-
-				builder.hitsPerPage(ids.getHitsPerPage());
-			}
-			else
-			{
-				builder.all();
-			}
+			builder.all();
 		}
+		// }
 
 		String topic = inReq.getRequestParameter("topic");
 		if (topic != null)
