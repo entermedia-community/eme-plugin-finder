@@ -1391,6 +1391,8 @@ public class ProjectManager implements CatalogEnabled
 
 		topuploads = builder.named("topuploads").sort("entity_dateDown").search(inReq);
 
+		log.info("Top uploads query: " + builder.getQuery());
+
 		String page = inReq.getRequestParameter("page");
 		if (page != null)
 		{
