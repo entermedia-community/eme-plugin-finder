@@ -212,4 +212,63 @@ public class EmeServerModule extends BaseMediaModule
 		inReq.putPageValue("messages", messages);
 	}
 
+
+	/**
+	 * Lists the calling user's chat sessions (channels) of one chat, newest activity first. The chat is
+	 * picked by serverid (EME server), collectionid (project team chat) or touser (direct message); the
+	 * user always comes from the login, never from the request parameters. Each session is a property
+	 * map with the channel id, name, refreshdate and the text of its last non-system message.
+	 */
+	public void loadChatSessions(WebPageRequest inReq)
+	{
+		MediaArchive archive = getMediaArchive(inReq);
+		if (inReq.getUser() == null)
+		{
+			inReq.putPageValue("error", "not logged in");
+			return;
+		}
+
+		String searchtype = null;
+		String dataid = null;
+		String serverid = inReq.getRequestParameter("serverid");
+		String collectionid = inReq.getRequestParameter("collectionid");
+		String touser = inReq.getRequestParameter("touser");
+		if (serverid != null && !serverid.isEmpty())
+		{
+			searchtype = "emeserver";
+			dataid = serverid;
+		}
+		else if (collectionid != null && !collectionid.isEmpty())
+		{
+			searchtype = "collectiveproject";
+			dataid = collectionid;
+		}
+		else if (touser != null && !touser.isEmpty())
+		{
+			searchtype = "emeprofile";
+			dataid = touser;
+		}
+		else
+		{
+			inReq.putPageValue("error", "serverid, collectionid or touser is required");
+			return;
+		}
+
+		Collection<Data> channels = archive.query("channel").exact("searchtype", searchtype).exact("dataid", dataid).exact("user", inReq.getUser().getId()).sort("refreshdateDown").hitsPerPage(100).search(inReq);
+
+		Collection<Map> sessions = new ArrayList<Map>();
+		for (Data channel : channels)
+		{
+			Data last = archive.query("chatterbox").exact("channel", channel.getId()).not("messagetype", "system").sort("dateDown").hitsPerPage(1).searchOne();
+			Map session = new java.util.HashMap();
+			session.put("channel", channel.getId());
+			session.put("name", channel.getName());
+			Date refresh = ((MultiValued) channel).getDate("refreshdate");
+			session.put("refreshdate", refresh == null ? "" : String.valueOf(refresh.getTime()));
+			session.put("lastmessage", last == null ? "" : last.get("message"));
+			sessions.add(session);
+		}
+		inReq.putPageValue("sessions", sessions);
+	}
+
 }
