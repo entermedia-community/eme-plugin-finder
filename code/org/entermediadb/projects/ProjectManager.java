@@ -1290,7 +1290,7 @@ public class ProjectManager implements CatalogEnabled
 			{
 				collectionquery = getMediaArchive().getSearcher("librarycollection").createSearchQuery();
 
-				String communitytagcategories = inReq.findPathValue("communitytagcategories");
+				String communitytagcategories = inReq.findPathValue("communitytag");
 				if (communitytagcategories != null)
 				{
 					Collection comunities = Arrays.asList(communitytagcategories.split(","));
@@ -1772,7 +1772,8 @@ public class ProjectManager implements CatalogEnabled
 
 		Map objects = new HashMap();
 		// One-time login link (single use, one hour) instead of embedding a key in the email
-		String loginlinktoken = archive.getUserManager().createNewTempLoginLink(inTeamUser.getId(), inTeamUser.getEmail(), inTeamUser.getFirstName(), inTeamUser.getLastName(), inTeamUser.getScreenName());
+		String loginlinktoken =
+			archive.getUserManager().createNewTempLoginLink(inTeamUser.getId(), inTeamUser.getEmail(), inTeamUser.getFirstName(), inTeamUser.getLastName(), inTeamUser.getScreenName());
 		objects.put("loginlinktoken", loginlinktoken);
 		objects.put("loginemail", java.net.URLEncoder.encode(inTeamUser.getEmail(), "UTF-8"));
 		objects.put("user", inReq.getUser());
@@ -1991,8 +1992,8 @@ public class ProjectManager implements CatalogEnabled
 
 	/**
 	 * JSON API: changes a team membership (collectionid, memberid = librarycollectionusers id,
-	 * ontheteam true/false, teamroles = comma separated collectiverole ids). Needs the
-	 * viewsettings permission. Puts "member" on the page, or "error".
+	 * ontheteam true/false, teamroles = comma separated collectiverole ids). Needs the viewsettings
+	 * permission. Puts "member" on the page, or "error".
 	 */
 	public void updateTeamMember(WebPageRequest inReq)
 	{
@@ -2033,8 +2034,8 @@ public class ProjectManager implements CatalogEnabled
 	}
 
 	/**
-	 * Saves the chat message on the page ("data") as sent by the signed-in user, broadcasts it to
-	 * the open chats and fires the messagereceived event.
+	 * Saves the chat message on the page ("data") as sent by the signed-in user, broadcasts it to the
+	 * open chats and fires the messagereceived event.
 	 */
 	public void saveChatMessage(WebPageRequest inReq)
 	{
