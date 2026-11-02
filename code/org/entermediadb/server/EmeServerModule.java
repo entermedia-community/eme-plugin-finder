@@ -44,7 +44,7 @@ public class EmeServerModule extends BaseMediaModule
 
 		if (category != null && !category.equalsIgnoreCase("all"))
 		{
-			builder.exact("category", category);
+			builder.exact("servercategory", category);
 		}
 
 		Collection<Data> emeservers = builder.search();
@@ -53,10 +53,10 @@ public class EmeServerModule extends BaseMediaModule
 		for (Data emeserver : emeservers)
 		{
 			Map map = emeserver.getProperties();
-			ArrayList categories = (ArrayList) map.get("category");
+			ArrayList categories = (ArrayList) map.get("servercategory");
 			if (categories != null && !categories.isEmpty())
 			{
-				map.put("category", categories.get(0));
+				map.put("servercategory", categories.get(0));
 			}
 			emeserversmap.add(map);
 		}

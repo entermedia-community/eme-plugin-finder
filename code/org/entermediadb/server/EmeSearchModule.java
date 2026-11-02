@@ -48,8 +48,8 @@ public class EmeSearchModule extends BaseMediaModule
 	}
 
 	/**
-	 * Page values: types (the searched types), users, projects (hits) with joinedids, emeservers and
-	 * events. A type that was not searched is absent.
+	 * Page values: types (the searched types), servercategories, projectcategories and peoplecategories (always), users, projects (hits) with
+	 * joinedids, emeservers and events. A type that was not searched is absent.
 	 */
 	public void search(WebPageRequest inReq)
 	{
@@ -70,6 +70,10 @@ public class EmeSearchModule extends BaseMediaModule
 			types.remove("events");
 		}
 		inReq.putPageValue("types", types);
+		// Every category, whatever was searched, for the app's category pills.
+		inReq.putPageValue("servercategories", archive.query("servercategory").all().search());
+		inReq.putPageValue("projectcategories", archive.query("projecttype").all().search());
+		inReq.putPageValue("peoplecategories", archive.query("emeprofiletype").all().search());
 
 		if (types.contains("people"))
 		{
