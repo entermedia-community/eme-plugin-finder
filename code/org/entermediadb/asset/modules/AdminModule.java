@@ -919,7 +919,7 @@ public class AdminModule extends BaseMediaModule
 		Map userJson = null;
 		try
 		{
-			resp = client.sharedPost(remoteEmeAuthServer + "/services/authentication/token.json", fields);
+			resp = client.sharedPost(remoteEmeAuthServer + "/site/mediadb/services/authentication/token.json", fields);
 			int status = resp.getStatusLine().getStatusCode();
 			if (status != 200)
 			{
