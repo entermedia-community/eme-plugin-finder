@@ -240,7 +240,7 @@ public class EmeServerModule extends BaseMediaModule
 		}
 		else if (collectionid != null && !collectionid.isEmpty())
 		{
-			searchtype = "collectiveproject";
+			searchtype = "librarycollection";
 			dataid = collectionid;
 		}
 		else if (touser != null && !touser.isEmpty())
