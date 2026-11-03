@@ -16,20 +16,22 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-
+import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.entermediadb.asset.Category;
 import org.entermediadb.authenticate.AutoLoginProvider;
 import org.entermediadb.authenticate.AutoLoginResult;
 import org.entermediadb.google.GoogleManager;
 import org.entermediadb.users.AllowViewing;
 import org.entermediadb.users.PasswordHelper;
+import org.json.simple.JSONObject;
 import org.openedit.Data;
 import org.openedit.OpenEditException;
 import org.openedit.WebPageRequest;
@@ -48,9 +50,9 @@ import org.openedit.users.UserManager;
 import org.openedit.users.UserManagerException;
 import org.openedit.users.authenticate.AuthenticationRequest;
 import org.openedit.util.DateStorageUtil;
+import org.openedit.util.HttpSharedConnection;
 import org.openedit.util.StringEncryption;
 import org.openedit.util.URLUtilities;
-
 import com.warrenstrange.googleauth.GoogleAuthenticator;
 import com.warrenstrange.googleauth.GoogleAuthenticatorKey;
 import com.warrenstrange.googleauth.GoogleAuthenticatorQRGenerator;
@@ -153,7 +155,7 @@ public class AdminModule extends BaseMediaModule
 			emailaddress = inReq.getRequestParameter("email"); // Move to using this
 		}
 
-		if( emailaddress == null)
+		if (emailaddress == null)
 		{
 			String username = inReq.getRequestParameter("username");
 			if (username != null)
@@ -168,7 +170,8 @@ public class AdminModule extends BaseMediaModule
 
 		if (emailaddress == null && inReq.getRequestParameter(UNAME) != null)
 		{
-			// Callers that only know the username (e.g. bin/refreshtoken.sh); the code is still emailed to the address on file
+			// Callers that only know the username (e.g. bin/refreshtoken.sh); the code is still emailed to the
+			// address on file
 			User byname = getUserManager(inReq).getUser(inReq.getRequestParameter(UNAME));
 			if (byname != null)
 			{
@@ -245,13 +248,13 @@ public class AdminModule extends BaseMediaModule
 			else
 			{
 				firstName = inReq.getRequestParameter("firstName");
-				if(firstName == null)
+				if (firstName == null)
 				{
 					firstName = inReq.getRequestParameter("firstname");
 				}
 
 				lastName = inReq.getRequestParameter("lastName");
-				if(lastName == null)
+				if (lastName == null)
 				{
 					lastName = inReq.getRequestParameter("lastname");
 				}
@@ -429,7 +432,7 @@ public class AdminModule extends BaseMediaModule
 		}
 	}
 
-	public Permissions loadPermissionFinder(WebPageRequest inReq) 
+	public Permissions loadPermissionFinder(WebPageRequest inReq)
 	{
 		UserProfile profile = inReq.getUserProfile();
 		if (profile != null)
@@ -441,40 +444,40 @@ public class AdminModule extends BaseMediaModule
 		}
 		return null;
 	}
-	
+
 	public boolean canModule(WebPageRequest inReq)
 	{
 		String permission = inReq.findValue("permission");
-		
+
 		String moduleid = inReq.findValue("module");
 		if (moduleid != null)
 		{
 			Data module = getMediaArchive(inReq).getCachedData("module", moduleid);
-			
+
 			Permissions permissions = loadPermissionFinder(inReq);
 			boolean can = permissions.canModule(module, permission);
 			return can;
-		
+
 		}
 		return false;
 	}
-	
+
 	public boolean canEntity(WebPageRequest inReq)
 	{
 		String permission = inReq.findValue("permission");
-		
+
 		String moduleid = inReq.findValue("module");
 		if (moduleid != null)
 		{
 			Data module = getMediaArchive(inReq).getCachedData("module", moduleid);
-			Data data = (Data)inReq.getPageValue("asset");
+			Data data = (Data) inReq.getPageValue("asset");
 			if (data == null)
 			{
-				data = (Data)inReq.getPageValue("entity");
+				data = (Data) inReq.getPageValue("entity");
 			}
 			if (data == null)
 			{
-				data = (Data)inReq.getPageValue("data");
+				data = (Data) inReq.getPageValue("data");
 			}
 			if (data != null)
 			{
@@ -624,8 +627,7 @@ public class AdminModule extends BaseMediaModule
 				{
 					if (!"system".equals(userManager.getUserSearcher().getCatalogId()))
 					{
-						log.error("Catalog has customized searchtypes table for user and group database. " + "Make sure users exist in: WEB-INF/data/" + userManager.getUserSearcher().getCatalogId()
-							+ "/users");
+						log.error("Catalog has customized searchtypes table for user and group database. " + "Make sure users exist in: WEB-INF/data/" + userManager.getUserSearcher().getCatalogId() + "/users");
 					}
 				}
 				if (user == null && account.contains("@"))
@@ -636,7 +638,8 @@ public class AdminModule extends BaseMediaModule
 			String templogincode = inReq.getRequestParameter("templogincode");
 			if (templogincode != null && templogincode.length() > 6 && inReq.getRequest() != null && !"POST".equalsIgnoreCase(inReq.getRequest().getMethod()))
 			{
-				// Link tokens only work from the confirmation page's POST: mail scanners and link previews GET every URL in an email
+				// Link tokens only work from the confirmation page's POST: mail scanners and link previews GET
+				// every URL in an email
 				inReq.putPageValue("oe-exception", "Please use the Continue button on the login confirmation page");
 				inReq.putPageValue("commandSucceeded", "invalidlogin");
 				return;
@@ -738,7 +741,8 @@ public class AdminModule extends BaseMediaModule
 		}
 	}
 
-	// OAuth2-style token endpoint. grant_type=key signs in with a registered key; grant_type=otp redeems an emailed
+	// OAuth2-style token endpoint. grant_type=key signs in with a registered key; grant_type=otp
+	// redeems an emailed
 	// code and registers the caller's public key in the same call. Both return a one week Bearer token.
 	public void oauthToken(WebPageRequest inReq) throws Exception
 	{
@@ -824,8 +828,10 @@ public class AdminModule extends BaseMediaModule
 		}
 		else if ("key".equals(grantType))
 		{
-			// Public/private key grant (like SSH). The client registered a public key (Admin.registerKey) and keeps
-			// the private one. It signs "{username}\n{key_id}\n{timestamp}\n{nonce}" and gets a one week bearer token.
+			// Public/private key grant (like SSH). The client registered a public key (Admin.registerKey) and
+			// keeps
+			// the private one. It signs "{username}\n{key_id}\n{timestamp}\n{nonce}" and gets a one week bearer
+			// token.
 			// Browsers add createsession=true to also start a server session for page requests.
 			String username = inReq.getRequestParameter("username");
 			String keyid = inReq.getRequestParameter("key_id");
@@ -878,8 +884,97 @@ public class AdminModule extends BaseMediaModule
 		inReq.putPageValue("commandSucceeded", "ok");
 	}
 
+	public void oauthTokenRemote(WebPageRequest inReq) throws Exception
+	{
+		// The user's key is registered on the root server (remoteemerauthserver, e.g. eme.world), not here.
+		// The client signs a fresh grant_type=key login exactly as for the root's token.json and posts it
+		// here
+		// (form or JSON). We forward it to the root, trust the user it returns, and start a session on this
+		// server.
+		String[] names = {"username", "key_id", "timestamp", "nonce", "signature"};
+		Map<String, String> fields = new HashMap<String, String>();
+		fields.put("grant_type", "key"); // createsession is deliberately not forwarded: the session belongs here
+		for (String name : names)
+		{
+			String value = inReq.getRequestParameter(name);
+			if (value == null || value.isEmpty())
+			{
+				putOauthError(inReq, "invalid_request", "username, key_id, timestamp, nonce and signature are required");
+				return;
+			}
+			fields.put(name, value);
+		}
+
+		// Base URL of the root's mediadb app, e.g. https://eme.world/site/mediadb
+		String remoteEmeAuthServer = getMediaArchive(inReq).getCatalogSettingValue("remoteemerauthserver");
+		if (remoteEmeAuthServer == null || remoteEmeAuthServer.trim().isEmpty())
+		{
+			putOauthError(inReq, "invalid_request", "remoteemerauthserver is not configured");
+			return;
+		}
+		remoteEmeAuthServer = remoteEmeAuthServer.trim().replaceAll("/+$", "");
+
+		HttpSharedConnection client = new HttpSharedConnection();
+		CloseableHttpResponse resp = null;
+		Map userJson = null;
+		try
+		{
+			resp = client.sharedPost(remoteEmeAuthServer + "/services/authentication/token.json", fields);
+			int status = resp.getStatusLine().getStatusCode();
+			if (status != 200)
+			{
+				putOauthError(inReq, "invalid_grant", "Root server rejected the login (" + status + ")");
+				log.info("Remote key login for " + fields.get("username") + " rejected by " + remoteEmeAuthServer + " with " + status);
+				return;
+			}
+			JSONObject json = client.parseMap(resp);
+			if (json != null && json.get("user") instanceof Map)
+			{
+				userJson = (Map) json.get("user");
+			}
+		}
+		catch (Exception ex)
+		{
+			putOauthError(inReq, "server_error", "Could not reach the root server");
+			log.error("Remote key login failed against " + remoteEmeAuthServer, ex);
+			return;
+		}
+		finally
+		{
+			client.release(resp);
+		}
+
+		String userid = userJson == null ? null : (String) userJson.get("id");
+		if (userid == null || userid.isEmpty())
+		{
+			putOauthError(inReq, "invalid_grant", "Root server returned no user");
+			return;
+		}
+
+		UserManager userManager = getUserManager(inReq);
+		User user = userManager.getUser(userid);
+		if (user == null)
+		{
+			user = userManager.createUser(userid);
+			user.setFirstName((String) userJson.get("firstname"));
+			user.setLastName((String) userJson.get("lastname"));
+			user.setValue("screenname", (String) userJson.get("screenname"));
+			user.setEmail((String) userJson.get("email"));
+			user.setEnabled(true);
+			userManager.saveUser(user);
+		}
+		else if (!user.isEnabled())
+		{
+			putOauthError(inReq, "invalid_grant", "User is disabled on this server");
+			return;
+		}
+		startSession(inReq, user);
+		inReq.putPageValue("commandSucceeded", "ok");
+	}
+
 	/**
-	 * Puts the user in the server session (no persistent cookie). Used by browsers that signed in with their key.
+	 * Puts the user in the server session (no persistent cookie). Used by browsers that signed in with
+	 * their key.
 	 */
 	protected void startSession(WebPageRequest inReq, User inUser)
 	{
@@ -1080,9 +1175,9 @@ public class AdminModule extends BaseMediaModule
 
 	/**
 	 * Registers a key for the logged in user (or the user proving themselves with an emailed code):
-	 * keytype=publickey (default) uploads a public key, keytype=apppassword makes a secret for tools that cannot
-	 * sign. The app or browser generates its own key pair and uploads only the public half, so the private key
-	 * never leaves the device. Keys do not expire; revoke one with revokeKey.
+	 * keytype=publickey (default) uploads a public key, keytype=apppassword makes a secret for tools
+	 * that cannot sign. The app or browser generates its own key pair and uploads only the public half,
+	 * so the private key never leaves the device. Keys do not expire; revoke one with revokeKey.
 	 */
 	public void registerKey(WebPageRequest inReq) throws Exception
 	{
@@ -1130,7 +1225,8 @@ public class AdminModule extends BaseMediaModule
 	{
 		if ("apppassword".equals(inReq.getPageValue("loginvia")))
 		{
-			// An application password must not be able to mint further credentials that outlive its own revocation
+			// An application password must not be able to mint further credentials that outlive its own
+			// revocation
 			putOauthError(inReq, "access_denied", "Application passwords cannot register keys");
 			return null;
 		}
