@@ -48,8 +48,9 @@ public class EmeSearchModule extends BaseMediaModule
 	}
 
 	/**
-	 * Page values: types (the searched types), servercategories, projectcategories and peoplecategories (always), users, projects (hits) with
-	 * joinedids, emeservers and events. A type that was not searched is absent.
+	 * Page values: types (the searched types), servercategories, projectcategories and peoplecategories
+	 * (always), users, projects (hits) with joinedids, connectedids, emeservers and events. A type that
+	 * was not searched is absent.
 	 */
 	public void search(WebPageRequest inReq)
 	{
@@ -78,6 +79,7 @@ public class EmeSearchModule extends BaseMediaModule
 		if (types.contains("people"))
 		{
 			inReq.putPageValue("users", searchUsers(archive, inReq, query));
+			inReq.putPageValue("connectedids", getConnectedUserIds(archive, user.getId()));
 		}
 		if (types.contains("projects"))
 		{
@@ -114,6 +116,46 @@ public class EmeSearchModule extends BaseMediaModule
 			types.addAll(ALL_TYPES);
 		}
 		return types;
+	}
+
+	/**
+	 * Ids of the users the given user has a direct message with: the other side of every direct message
+	 * library collection (collectiontype 3) the user is on, as DirectMessageManager.
+	 */
+	private Set<String> getConnectedUserIds(MediaArchive archive, String inUserId)
+	{
+		Set<String> collectionids = new HashSet<String>();
+		Collection<Data> members = archive.query("librarycollectionusers").exact("fromuser", inUserId).or().exact("followeruser", inUserId).search();
+		for (Data member : members)
+		{
+			String collectionid = member.get("collectionid");
+			if (collectionid != null && !collectionid.isEmpty())
+			{
+				collectionids.add(collectionid);
+			}
+		}
+		Set<String> connected = new HashSet<String>();
+		if (collectionids.isEmpty())
+		{
+			return connected;
+		}
+		Collection<String> dmids = archive.query("librarycollection").exact("collectiontype", "3").ids(collectionids).search().collectValues("id");
+		if (dmids == null || dmids.isEmpty())
+		{
+			return connected;
+		}
+		members = archive.query("librarycollectionusers").orgroup("collectionid", dmids).search();
+		for (Data member : members)
+		{
+			for (String id : new String[] {member.get("fromuser"), member.get("followeruser")})
+			{
+				if (id != null && !id.isEmpty() && !id.equals(inUserId))
+				{
+					connected.add(id);
+				}
+			}
+		}
+		return connected;
 	}
 
 	/** Users whose description starts with the query, as usersearch does; every user when empty. */
