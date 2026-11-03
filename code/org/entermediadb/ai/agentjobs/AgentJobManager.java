@@ -380,9 +380,9 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 	}
 
 	/**
-	 * Queues any agentjob whose repeatperiod (hour, minute, daily, weekly, monthly) and repeattime (HH:mm)
-	 * say it is due. Hourly and minute repeats count from the last run; the others anchor to repeattime.
-	 * Due jobs are set back to "new" so checkQueue picks them up.
+	 * Queues any agentjob whose repeatperiod (hour, minute, daily, weekly, monthly) and repeattime
+	 * (HH:mm) say it is due. Hourly and minute repeats count from the last run; the others anchor to
+	 * repeattime. Due jobs are set back to "new" so checkQueue picks them up.
 	 * 
 	 * @return how many jobs were queued
 	 */
@@ -572,10 +572,11 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 		{
 			return false;
 		}
-		boolean subday = "hour".equals(period) || "hours".equals(period) || "minute".equals(period);
+		boolean subday = "hour".equals(period) || "minute".equals(period);
 		LocalTime time = parseRepeatTime(inJob.get("repeattime"));
 		if (!subday && time == null)
 		{
+			log.error("Invalid repeattime for non-subday period on agentjob " + inJob.getId());
 			return false;
 		}
 		ZoneId zone = ZoneId.systemDefault();
@@ -599,24 +600,31 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 		}
 		LocalDateTime last = LocalDateTime.ofInstant(laststart.toInstant(), zone);
 		LocalDateTime next;
+
+		String repeatcount = inJob.get("repeatcount");
+		if (repeatcount == null || repeatcount.trim().isEmpty() || !repeatcount.matches("\\d+"))
+		{
+			repeatcount = "1";
+		}
+		int repeatcountInt = Integer.parseInt(repeatcount);
 		switch (period)
 		{
 			case "hour":
 				// Sub-day periods count from the last run so they are not pinned to a wall-clock time
-				next = last.plusHours(1);
+				next = last.plusHours(repeatcountInt);
 				break;
 			case "minute":
-				next = last.plusMinutes(1);
+				next = last.plusMinutes(repeatcountInt);
 				break;
 			case "daily":
 				// Snap to repeattime on the day of the last run so late runs do not drift
-				next = LocalDateTime.of(last.toLocalDate().plusDays(1), time);
+				next = LocalDateTime.of(last.toLocalDate().plusDays(repeatcountInt), time);
 				break;
 			case "weekly":
-				next = LocalDateTime.of(last.toLocalDate().plusWeeks(1), time);
+				next = LocalDateTime.of(last.toLocalDate().plusWeeks(repeatcountInt), time);
 				break;
 			case "monthly":
-				next = LocalDateTime.of(last.toLocalDate().plusMonths(1), time);
+				next = LocalDateTime.of(last.toLocalDate().plusMonths(repeatcountInt), time);
 				break;
 			default:
 				log.error("Unknown repeatperiod " + period + " on agentjob " + inJob.getId());
@@ -705,7 +713,7 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 
 	public AgentJob importRecurringScenario(String inScenarioId, String userid)
 	{
-		//search a current agentjob with same inScenarioId, if not exist create new
+		// search a current agentjob with same inScenarioId, if not exist create new
 		AgentJob job = (AgentJob) getMediaArchive().query("agentjob").exact("id", inScenarioId).searchOne();
 		if (job == null)
 		{
@@ -716,11 +724,17 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 		job.setValue("name", scenariodata == null ? inScenarioId : scenariodata.getName());
 		importScenario(inScenarioId, userid, null, job);
 		String period = scenariodata.get("repeatperiod");
+		String repeatcount = scenariodata.get("repeatcount");
 		String startdate = scenariodata.get("startdate");
 		if (period != null && period.length() > 0)
 		{
 			job.setValue("startdate", startdate);
 			job.setValue("repeatperiod", period);
+			if (repeatcount == null)
+			{
+				repeatcount = "1";
+			}
+			job.setValue("repeatcount", repeatcount);
 			job.setValue("repeattime", scenariodata.get("repeattime"));
 		}
 		getMediaArchive().saveData("agentjob", job);
@@ -749,7 +763,7 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 			userrequest = (String) contextObject;
 		}
 		return importScenario(inScenarioId, userid, userrequest, job);
-	}	
+	}
 
 	/**
 	 * Saves a new agentjob with a copy of each enabled automationstep of the scenario as an
@@ -765,12 +779,12 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 		job.setValue("expirationdate", cal.getTime());
 
 		job.setValue("automationscenario", inScenarioId);
-		
+
 		if (inUserId != null)
 		{
 			job.setValue("owner", inUserId);
 		}
-		
+
 		if (inUserContext != null)
 		{
 			job.setValue("userrequest", inUserContext);

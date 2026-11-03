@@ -91,11 +91,15 @@ public class AssetSourceManager implements CatalogEnabled
 			Collection editingnodes = getMediaArchive().query("editingcluster").all().search();
 			if (editingnodes.size() > 0)
 			{
-				log.info("Editing clusters found, enabling EnterMediaAssetSource");
+
 				AssetSource source = (AssetSource) getModuleManager().getBean(getCatalogId(), "entermediaAssetSource");
 				source.setMediaArchive(getMediaArchive());
-				fieldAssetSources.add(source);
+
+				// Not implementedm skipping adding EnterMediaAssetSource to the list
+				// log.info("Editing clusters found, enabling EnterMediaAssetSource");
+				// fieldAssetSources.add(source);
 			}
+
 			// Search hot folders and load by type
 			Collection hits = getMediaArchive().query("hotfolder").all().sort("orderingDown").sort("lastscanstart").search();
 			for (Iterator iterator = hits.iterator(); iterator.hasNext();)
