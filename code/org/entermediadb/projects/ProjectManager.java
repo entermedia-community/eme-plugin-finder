@@ -1346,7 +1346,7 @@ public class ProjectManager implements CatalogEnabled
 			SearchQuery orchild = builder.getSearcher().createSearchQuery();
 			if (!ids.isEmpty())
 			{
-				orchild.addOrsGroup("librarycollection", ids.getPageOfHits());
+				orchild.addOrsGroup("librarycollection", ids.collectValues("id"));
 			}
 			Term fulltext = collectionquery.getTermByDetailId("description");
 			if (fulltext != null)
