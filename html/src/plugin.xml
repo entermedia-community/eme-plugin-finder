@@ -3664,4 +3664,26 @@
 		</property>
 	</bean>
 
+
+	<bean id="myEmeChatSkill"
+		class="org.entermediadb.ai.skills.MyEmeChatSkill" scope="prototype">
+		<property name="moduleManager">
+			<ref bean="moduleManager" />
+		</property>
+	</bean>
+
+	<bean id="myEmeUploadSkillsMemorySkill"
+		class="org.entermediadb.ai.skills.MyEmeUploadSkillsMemorySkill" scope="prototype">
+		<property name="moduleManager">
+			<ref bean="moduleManager" />
+		</property>
+	</bean>
+
+	<bean id="myEmeDailyStatusReportSkill"
+		class="org.entermediadb.ai.skills.MyEmeDailyStatusReportSkill" scope="prototype">
+		<property name="moduleManager">
+			<ref bean="moduleManager" />
+		</property>
+	</bean>
+
 </beans>

@@ -83,6 +83,13 @@ public class McpGenerator implements Generator
 
 				if ("initialize".equals(cmd))
 				{
+					if (inReq.getUser() == null)
+					{
+						// Admin.autoLogin already read the Bearer token; no user means a missing or invalid key
+						inReq.getResponse().setHeader("WWW-Authenticate", "Bearer");
+						writeJsonError(inReq, HttpServletResponse.SC_UNAUTHORIZED, payload.get("id"), "Login required. Send Authorization: Bearer <token>.");
+						return;
+					}
 					if (mcpSessionId == null || mcpSessionId.isEmpty())
 					{
 						mcpSessionId = manager.createSessionId();
