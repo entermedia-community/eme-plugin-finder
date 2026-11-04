@@ -726,17 +726,20 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 		String period = scenariodata.get("repeatperiod");
 		String repeatcount = scenariodata.get("repeatcount");
 		String startdate = scenariodata.get("startdate");
-		if (period != null && period.length() > 0)
+		if (period == null)
 		{
-			job.setValue("startdate", startdate);
-			job.setValue("repeatperiod", period);
-			if (repeatcount == null)
-			{
-				repeatcount = "1";
-			}
-			job.setValue("repeatcount", repeatcount);
-			job.setValue("repeattime", scenariodata.get("repeattime"));
+			period = "daily"; // default repeat period if not specified
 		}
+
+		job.setValue("startdate", startdate);
+		job.setValue("repeatperiod", period);
+		if (repeatcount == null)
+		{
+			repeatcount = "1";
+		}
+		job.setValue("repeatcount", repeatcount);
+		job.setValue("repeattime", scenariodata.get("repeattime"));
+
 		getMediaArchive().saveData("agentjob", job);
 		return job;
 	}
