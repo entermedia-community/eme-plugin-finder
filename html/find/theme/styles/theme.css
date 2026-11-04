@@ -3471,14 +3471,18 @@ li.filtersselected .selected-filters a strong {
 #emselectable th,
 .emdata th {
 	padding: 4px 10px;
-	border-top: 0 none;
 	font-size: 0.8rem;
 	line-height: 1.2;
 	height: var(--nav-btn-height);
 	text-align: center;
 	vertical-align: middle !important;
 	position: relative;
+	border-top: 0 none;
 	border-bottom: var(--1px-light);
+
+	background: var(--themed-th);
+	color: var(--themed-th-text);
+	border-bottom: 1px solid var(--themed-th-hover);
 }
 
 #main-results-table th::after,
@@ -3506,14 +3510,6 @@ li.filtersselected .selected-filters a strong {
 
 .emresultstable {
 	position: relative;
-}
-
-#main-results-table th,
-.emdata th,
-.emresultstable thead tr th {
-	background: var(--themed-th);
-	color: var(--themed-th-text);
-	border-bottom: 1px solid var(--themed-th-hover);
 }
 
 #sub-nav-tab {
