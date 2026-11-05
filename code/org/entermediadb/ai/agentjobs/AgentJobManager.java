@@ -1163,6 +1163,12 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 
 		ChatMessageContext chatMessageContext = (ChatMessageContext) inContext;
 
+		MultiValued agentmessage = chatMessageContext.getAgentMessage();
+		if (agentmessage == null)
+		{
+			return;
+		}
+
 		boolean skiploader = Boolean.parseBoolean((String) chatMessageContext.getContextValue("skiploader"));
 
 		if (skiploader)
@@ -1182,7 +1188,6 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 			processingmessage = "Analyzing";
 		}
 
-		MultiValued agentmessage = chatMessageContext.getAgentMessage();
 
 		String jsonMsg = """
 			{
