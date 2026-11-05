@@ -1,7 +1,6 @@
 package org.entermediadb.server;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
@@ -212,7 +211,6 @@ public class EmeServerModule extends BaseMediaModule
 		inReq.putPageValue("messages", messages);
 	}
 
-
 	/**
 	 * Lists the calling user's chat sessions (channels) of one chat, newest activity first. The chat is
 	 * picked by serverid (EME server), collectionid (project team chat) or touser (direct message); the
@@ -254,7 +252,8 @@ public class EmeServerModule extends BaseMediaModule
 			return;
 		}
 
-		Collection<Data> channels = archive.query("channel").exact("searchtype", searchtype).exact("dataid", dataid).exact("user", inReq.getUser().getId()).sort("refreshdateDown").hitsPerPage(100).search(inReq);
+		Collection<Data> channels =
+			archive.query("channel").exact("searchtype", searchtype).exact("dataid", dataid).exact("user", inReq.getUser().getId()).sort("refreshdateDown").hitsPerPage(100).search(inReq);
 
 		Collection<Map> sessions = new ArrayList<Map>();
 		for (Data channel : channels)
@@ -269,6 +268,95 @@ public class EmeServerModule extends BaseMediaModule
 			sessions.add(session);
 		}
 		inReq.putPageValue("sessions", sessions);
+	}
+
+	/**
+	 * events/emeserver/saved: keeps the emeserver's server user, its ownership and its login key (serverkey) in
+	 * step with the record.
+	 */
+	public void savedEmeServer(WebPageRequest inReq)
+	{
+		MediaArchive archive = getMediaArchive(inReq);
+		String serverid = inReq.getRequestParameter("dataid");
+		if (serverid == null)
+		{
+			serverid = inReq.getRequestParameter("id");
+		}
+		Data server = serverid == null ? null : archive.getData("emeserver", serverid);
+		if (server == null)
+		{
+			log.info("emeserver saved event without a known server: " + serverid);
+			return;
+		}
+		getAccountManager(archive).ensureServerAccount(server);
+	}
+
+	/**
+	 * services/serverkey.json: this server's public key and key id (from .env, bin/serverkey.sh), for the other
+	 * side to store (emeserver.serverkey on the root, rootserverkey on a child).
+	 */
+	public void loadServerPubKey(WebPageRequest inReq)
+	{
+		EmeServerAccountManager accounts = getAccountManager(getMediaArchive(inReq));
+		String publickey = accounts.getOwnEnv(EmeServerAccountManager.ENV_PUBLIC_KEY);
+		if (publickey == null)
+		{
+			inReq.putPageValue("error", EmeServerAccountManager.ENV_PUBLIC_KEY + " missing in .env; run bin/serverkey.sh --show");
+			if (inReq.getResponse() != null)
+			{
+				inReq.getResponse().setStatus(404);
+			}
+			return;
+		}
+		inReq.putPageValue("publickey", publickey);
+		inReq.putPageValue("keyid", EmeServerAccountManager.keyId(publickey));
+	}
+
+	protected EmeServerAccountManager getAccountManager(MediaArchive inArchive)
+	{
+		return (EmeServerAccountManager) getModuleManager().getBean(inArchive.getCatalogId(), "emeServerAccountManager");
+	}
+
+	/**
+	 * Notification hub endpoint (services/module/emeserver/notify.json): an EME Server asks this root
+	 * server to push to one of its users. Takes serverid, userid, title, message and optional channel,
+	 * as form fields or JSON; a JSON body may add a "data" object of extra string values for the app.
+	 */
+	public void notifyUser(WebPageRequest inReq)
+	{
+		String serverid = inReq.getRequestParameter("serverid");
+		String userid = inReq.getRequestParameter("userid");
+		String title = inReq.getRequestParameter("title");
+		String message = inReq.getRequestParameter("message");
+
+		Map<String, String> data = new java.util.HashMap<String, String>();
+		Map json = inReq.getJsonRequest();
+		if (json != null && json.get("data") instanceof Map)
+		{
+			for (Object entry : ((Map) json.get("data")).entrySet())
+			{
+				Map.Entry e = (Map.Entry) entry;
+				if (e.getKey() != null && e.getValue() != null)
+				{
+					data.put(String.valueOf(e.getKey()), String.valueOf(e.getValue()));
+				}
+			}
+		}
+		String channel = inReq.getRequestParameter("channel");
+		if (channel != null && !channel.isEmpty())
+		{
+			data.put("channel", channel);
+		}
+
+		MediaArchive archive = getMediaArchive(inReq);
+		NotificationHubManager hub = (NotificationHubManager) getModuleManager().getBean(archive.getCatalogId(), "notificationHubManager");
+		NotificationHubManager.NotifyResult result = hub.notifyUser(inReq.getUser(), serverid, userid, title, message, data);
+
+		inReq.putPageValue("notifyresult", result);
+		if (inReq.getResponse() != null)
+		{
+			inReq.getResponse().setStatus(result.getStatus());
+		}
 	}
 
 }

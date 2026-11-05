@@ -5,9 +5,13 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.entermediadb.google.GoogleManager;
+import org.json.simple.JSONObject;
+import org.openedit.Data;
 import org.openedit.WebPageRequest;
 import org.openedit.users.User;
 import org.openedit.users.UserManager;
+import org.openedit.util.JSONParser;
+import org.openedit.util.StringEncryption;
 
 public class AutoLoginByToken extends BaseAutoLogin implements AutoLoginProvider
 {
@@ -35,9 +39,45 @@ public class AutoLoginByToken extends BaseAutoLogin implements AutoLoginProvider
 		String type = request.getHeader("X-tokentype");
 		if (accesskey != null && type != null)
 		{
-
 			User user = null;
-			if (type.equals("google"))
+
+			if (type.equals("signature"))
+			{
+				JSONParser parser = new JSONParser();
+				JSONObject json = (JSONObject) parser.parse(accesskey);
+				String username = (String) json.get("username");
+				String keyId = (String) json.get("key_id");
+				String timestamp = (String) json.get("timestamp");
+				String nonce = (String) json.get("nonce");
+				String signature = (String) json.get("signature");
+				if (username == null || keyId == null || timestamp == null || nonce == null || signature == null)
+				{
+					log.info("Missing required fields in signature login");
+					return null;
+				}
+
+				if (System.currentTimeMillis() - Long.parseLong(timestamp) > StringEncryption.SIGNATURE_WINDOW_MILLIS)
+				{
+					log.info("Signature login expired for " + username);
+					return null;
+				}
+
+				UserManager userManager = getUserManager(inReq);
+
+				StringEncryption encryption = userManager.getStringEncryption();
+				Data key = getSearcherManager().getCachedData("system", "userkey", keyId);
+
+				boolean valid = encryption.verifyKeyLogin(username, keyId, key.get("publickey"), timestamp, nonce, signature);
+				if (valid)
+				{
+					user = userManager.getUser(username);
+				}
+				else
+				{
+					return null;
+				}
+			}
+			else if (type.equals("google"))
 			{
 				GoogleManager manager = getGoogleManager(inReq);
 				Map<String, String> details = manager.getTokenDetails(accesskey);
@@ -52,8 +92,10 @@ public class AutoLoginByToken extends BaseAutoLogin implements AutoLoginProvider
 			}
 			if (type.equals("adminkey"))
 			{
-				// A trusted embedding site signs users in by email. X-token must be a valid credential (key token or
-				// application password) of an administrator; it used to be ignored, which let anyone log in as anyone.
+				// A trusted embedding site signs users in by email. X-token must be a valid credential (key token
+				// or
+				// application password) of an administrator; it used to be ignored, which let anyone log in as
+				// anyone.
 				UserManager usermanager = getUserManager(inReq);
 				User admin = validateBearer(usermanager, accesskey);
 				String email = request.getHeader("X-email");

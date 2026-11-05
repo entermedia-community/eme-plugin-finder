@@ -29,6 +29,7 @@ import org.entermediadb.asset.Category;
 import org.entermediadb.authenticate.AutoLoginProvider;
 import org.entermediadb.authenticate.AutoLoginResult;
 import org.entermediadb.google.GoogleManager;
+import org.entermediadb.server.EmeServerAccountManager;
 import org.entermediadb.users.AllowViewing;
 import org.entermediadb.users.PasswordHelper;
 import org.json.simple.JSONObject;
@@ -845,6 +846,13 @@ public class AdminModule extends BaseMediaModule
 				return;
 			}
 
+			if (EmeServerAccountManager.ROOT_SERVER_USER.equals(username))
+			{
+				// Child server: the root signs in as "rootserver" with the key in the rootserverkey setting.
+				// Sync the user and key first so a changed setting takes effect without another step.
+				String catalogid = getMediaArchive(inReq).getCatalogId();
+				((EmeServerAccountManager) getModuleManager().getBean(catalogid, "emeServerAccountManager")).ensureRootServerAccount();
+			}
 			Searcher keys = getSearcherManager().getSearcher("system", "userkey");
 			Data key = (Data) keys.searchById(keyid);
 			User user = userManager.getUser(username);
@@ -853,7 +861,7 @@ public class AdminModule extends BaseMediaModule
 			if (key == null || user == null || !user.isEnabled() || !Boolean.parseBoolean(key.get("enabled")) || !username.equals(key.get("userid"))
 				|| !encryption.verifyKeyLogin(username, keyid, key.get("publickey"), timestamp, nonce, signature))
 			{
-				putOauthError(inReq, "invalid_grant", "Invalid key signature");
+				sendAuthError(inReq);
 				log.info("Invalid key login for " + username);
 				return;
 			}
@@ -1006,6 +1014,17 @@ public class AdminModule extends BaseMediaModule
 		if (inReq.getResponse() != null)
 		{
 			inReq.getResponse().setStatus(HttpServletResponse.SC_BAD_REQUEST);
+		}
+	}
+
+	protected void sendAuthError(WebPageRequest inReq)
+	{
+		inReq.putPageValue("commandSucceeded", "error");
+		inReq.putPageValue("oauth_error", "Unauthenticated request");
+		inReq.putPageValue("oauth_error_description", "You are not authenticated");
+		if (inReq.getResponse() != null)
+		{
+			inReq.getResponse().setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 		}
 	}
 
@@ -1186,14 +1205,22 @@ public class AdminModule extends BaseMediaModule
 		{
 			// Emailed code proves who is registering. Request one via services/authentication/sendusercode.json
 			String username = inReq.getRequestParameter("username");
+			String email = inReq.getRequestParameter("email");
 			String code = inReq.getRequestParameter("code");
-			if (username == null || code == null)
+			if ((username == null && email == null) || code == null)
 			{
-				putOauthError(inReq, "invalid_request", "username and code are required");
+				putOauthError(inReq, "invalid_request", "username/email and code are required");
 				return;
 			}
 			UserManager userManager = getUserManager(inReq);
-			user = userManager.getUser(username);
+			if (username != null)
+			{
+				user = userManager.getUser(username);
+			}
+			else if (email != null)
+			{
+				user = userManager.getUserByEmail(email);
+			}
 			if (user == null || !user.isEnabled())
 			{
 				putOauthError(inReq, "invalid_grant", "Invalid or expired code");
@@ -1314,6 +1341,18 @@ public class AdminModule extends BaseMediaModule
 		{
 			// this user is already logged out
 			return;
+		}
+		String userkeyid = inReq.getRequestParameter("userkeyid");
+		if (userkeyid != null)
+		{
+			Searcher keys = getSearcherManager().getSearcher("system", "userkey");
+			Data key = (Data) keys.searchById(userkeyid);
+			if (key != null && user.getId().equals(key.get("userid")))
+			{
+				key.setValue("enabled", false);
+				keys.saveData(key);
+				log.info("Revoked key " + userkeyid + " for user " + user.getId());
+			}
 		}
 
 		usermanager.logout(user);
