@@ -100,7 +100,7 @@ public class BaseMediaModule extends BaseModule
 			if (communitytagcategory != null)
 			{
 				Data community = archive.getCachedData("communitytag", communitytagcategory);
-				if (community != null)
+				if (community != null && community.get("externaldomain") != null)
 				{
 					siteroot = community.get("externaldomain");
 				}
