@@ -72,6 +72,7 @@
   <script defer="true" src="/${applicationid}/components/javascript/minicolors/jquery.minicolors.min.js" id="minicolors"/>
   <style id="minicolors-css" href="/${applicationid}/components/javascript/minicolors/jquery.minicolors.css"/>
   <script src="/${applicationid}/components/xml/detaileditor.js" id="detaileditor"/>
+  <script src="/${applicationid}/components/javascript/emedia/ajax/signedheaders.js" id="signedheaders"/>
   <script src="/${applicationid}/components/javascript/emedia/ajax/runajax.js" id="runajax"/>
   <script src="/${applicationid}/components/javascript/emedia/ajax/emdialog.js" id="emdialog"/>
   <script src="/${applicationid}/components/javascript/emedia/dataentryfields.js" id="dataentryfields"/>
