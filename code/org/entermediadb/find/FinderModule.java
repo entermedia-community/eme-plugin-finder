@@ -997,7 +997,7 @@ public class FinderModule extends BaseMediaModule
 			{
 				picker.setTargetFieldId(pickigtargetid);
 			}
-			if(pickingtype == null || pickingtype.equals(picker.getTargetType()))
+			if (pickingtype == null || pickingtype.equals(picker.getTargetType()))
 			{
 				return;
 			}
@@ -1037,7 +1037,7 @@ public class FinderModule extends BaseMediaModule
 				return;
 			}
 			myemeprofile = getMediaArchive(inReq).query("emeprofile").exact("owner", user.getId()).cachedSearchOne();
-			if( myemeprofile == null)
+			if (myemeprofile == null)
 			{
 				myemeprofile = getMediaArchive(inReq).getSearcher("emeprofile").createNewData();
 				String urlname = "profiles/" + user.getScreenName();
@@ -1048,6 +1048,8 @@ public class FinderModule extends BaseMediaModule
 			}
 			inReq.putPageValue("myemeprofile", myemeprofile);
 		}
+		inReq.putPageValue("dataid", myemeprofile.getId());
+
 		// Loads other users emeprofile if we are viewing their profile
 		Data emeprofile = (Data) inReq.getPageValue("emeprofile");
 		if (emeprofile != null)
