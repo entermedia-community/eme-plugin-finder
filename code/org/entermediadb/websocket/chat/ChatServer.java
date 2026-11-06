@@ -405,6 +405,8 @@ public class ChatServer
 			pushUserids.remove(usermessageid); // remove the message author from push notifications
 			pushUserids.remove("agent"); // remove the agent
 			final Data pushEntity = entity;
+			// A chat with an EME Server: the app opens that server's chat when the push is tapped
+			final String pushServerId = channel != null && "emeserver".equals(channel.get("searchtype")) ? channel.get("dataid") : null;
 			getExecutorManager(catalogid).execute(new Runnable() {
 				@Override
 				public void run()
@@ -496,6 +498,10 @@ public class ChatServer
 						extra.put("user", String.valueOf(pushAuthorId));
 						extra.put("channel", String.valueOf(channelId));
 						extra.put("type", "message");
+						if (pushServerId != null)
+						{
+							extra.put("serverid", pushServerId);
+						}
 						try
 						{
 							googleManager.notifyTopic(GoogleManager.userTopic(pushUserId), null, pushPayload.get("name").toString(), messageText.toString(), extra);
