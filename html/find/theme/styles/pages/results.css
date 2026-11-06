@@ -4309,6 +4309,10 @@ ul.inlinelist li {
 	color: var(--themed-nav-btn-text);
 }
 
+
+.viewtype-fieldsearch .select2-container .select2-selection__choice {
+  display: none !important;
+}
 .resultsarea {
 	display: flex;
 	flex-direction: row;
