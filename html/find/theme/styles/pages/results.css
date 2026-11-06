@@ -4310,7 +4310,7 @@ ul.inlinelist li {
 }
 
 
-.viewtype-fieldsearch .select2-container .select2-selection__choice {
+.viewtype-allfields .select2-container .select2-selection__choice {
   display: none !important;
 }
 .resultsarea {
