@@ -33,19 +33,23 @@ import org.openedit.util.HttpSharedConnection;
 import org.openedit.util.StringEncryption;
 
 /**
- * Server-to-server access through ordinary user accounts, so the usual permissions, groups and logs apply.
+ * Server-to-server access through ordinary user accounts, so the usual permissions, groups and logs
+ * apply.
  *
  * <ul>
- * <li>Root (eme.world): every emeserver has a user {@code emeserver_<id>} in group {@value #SERVERS_GROUP}, set as
- * the emeserver's owner. Its login key is emeserver.serverkey; when that is empty it is filled from the key the
- * server publishes at {@code <servermediadburl>/services/serverkey.json}.</li>
- * <li>Child (e.g. impactbank.world): a user {@value #ROOT_SERVER_USER} in group {@value #ROOT_SERVER_GROUP} whose
- * login key is the root's public key (catalog setting rootserverkey).</li>
+ * <li>Root (eme.world): every emeserver has a user {@code emeserver_<id>} in group
+ * {@value #SERVERS_GROUP}, set as the emeserver's owner. Its login key is emeserver.serverkey; when
+ * that is empty it is filled from the key the server publishes at
+ * {@code <servermediadburl>/services/serverkey.json}.</li>
+ * <li>Child (e.g. impactbank.world): a user {@value #ROOT_SERVER_USER} in group
+ * {@value #ROOT_SERVER_GROUP} whose login key is the root's public key (catalog setting
+ * rootserverkey).</li>
  * </ul>
  *
- * A server signs in to the other with the normal key login (token.json grant_type=key) using its own key pair
- * from .env (bin/serverkey.sh), and then calls the other server with the Bearer token like any user.
- * Server keys are stored in userkey with the key's fingerprint as id, which is EME_SERVER_KEY_ID in .env.
+ * A server signs in to the other with the normal key login (token.json grant_type=key) using its
+ * own key pair from .env (bin/serverkey.sh), and then calls the other server with the Bearer token
+ * like any user. Server keys are stored in userkey with the key's fingerprint as id, which is
+ * EME_SERVER_KEY_ID in .env.
  */
 public class EmeServerAccountManager implements CatalogEnabled
 {
@@ -60,7 +64,9 @@ public class EmeServerAccountManager implements CatalogEnabled
 	public static final String ENV_PUBLIC_KEY = "EME_SERVER_PUBLIC_KEY";
 	public static final String ENV_KEY_ID = "EME_SERVER_KEY_ID";
 
-	/** Bearer tokens this server holds for other servers: "baseurl|username" -> {token, expiresAtMillis} */
+	/**
+	 * Bearer tokens this server holds for other servers: "baseurl|username" -> {token, expiresAtMillis}
+	 */
 	protected static final Map<String, Object[]> TOKENS = new ConcurrentHashMap<String, Object[]>();
 
 	protected String fieldCatalogId;
@@ -106,7 +112,9 @@ public class EmeServerAccountManager implements CatalogEnabled
 		return SERVER_USER_PREFIX + inServerId;
 	}
 
-	/** Same fingerprint as bin/serverkey.sh: first 16 hex characters of SHA-256 over the public key DER. */
+	/**
+	 * Same fingerprint as bin/serverkey.sh: first 16 hex characters of SHA-256 over the public key DER.
+	 */
 	public static String keyId(String inPublicKey)
 	{
 		try
@@ -130,8 +138,8 @@ public class EmeServerAccountManager implements CatalogEnabled
 	// ---------------------------------------------------------------------------------------------
 
 	/**
-	 * Root side: makes sure the emeserver has its server user, that the user is its owner, and that the user's
-	 * login key is the key the server publishes. Safe to run on every save.
+	 * Root side: makes sure the emeserver has its server user, that the user is its owner, and that the
+	 * user's login key is the key the server publishes. Safe to run on every save.
 	 *
 	 * @return the server user
 	 */
@@ -150,7 +158,8 @@ public class EmeServerAccountManager implements CatalogEnabled
 		String publickey = inServer.get("serverkey");
 		if (publickey == null || publickey.trim().isEmpty())
 		{
-			// Not entered by an admin: take the key the server publishes and keep it on the record, where it can be
+			// Not entered by an admin: take the key the server publishes and keep it on the record, where it
+			// can be
 			// checked against the server's bin/serverkey.sh --show and changed
 			String url = inServer.get("servermediadburl");
 			publickey = url == null || url.trim().isEmpty() ? null : fetchPublishedKey(url);
@@ -209,8 +218,9 @@ public class EmeServerAccountManager implements CatalogEnabled
 	}
 
 	/**
-	 * Child side: makes sure the {@value #ROOT_SERVER_USER} user exists and its login key is the catalog setting
-	 * rootserverkey. Without a valid setting the user has no enabled key, so the root cannot sign in.
+	 * Child side: makes sure the {@value #ROOT_SERVER_USER} user exists and its login key is the
+	 * catalog setting rootserverkey. Without a valid setting the user has no enabled key, so the root
+	 * cannot sign in.
 	 */
 	public User ensureRootServerAccount()
 	{
@@ -255,8 +265,8 @@ public class EmeServerAccountManager implements CatalogEnabled
 	}
 
 	/**
-	 * Makes inPublicKey the only enabled public key of inUserId (id = its fingerprint). A blank or invalid key
-	 * disables all of them.
+	 * Makes inPublicKey the only enabled public key of inUserId (id = its fingerprint). A blank or
+	 * invalid key disables all of them.
 	 */
 	protected void syncLoginKey(String inUserId, String inPublicKey, String inLabel)
 	{
@@ -337,8 +347,8 @@ public class EmeServerAccountManager implements CatalogEnabled
 	// ---------------------------------------------------------------------------------------------
 
 	/**
-	 * Signs in to the server at inBaseUrl (its mediadb URL) as inUserName with this server's key and returns the
-	 * Bearer token, reusing a cached one until an hour before it expires.
+	 * Signs in to the server at inBaseUrl (its mediadb URL) as inUserName with this server's key and
+	 * returns the Bearer token, reusing a cached one until an hour before it expires.
 	 */
 	public String getAccessToken(String inBaseUrl, String inUserName, boolean inForce)
 	{
@@ -386,7 +396,7 @@ public class EmeServerAccountManager implements CatalogEnabled
 				throw new OpenEditException("Sign-in to " + base + " as " + inUserName + " returned no token: " + text);
 			}
 			long expiresIn = json.get("expires_in") instanceof Number ? ((Number) json.get("expires_in")).longValue() : 3600L;
-			TOKENS.put(cacheKey, new Object[] { token, System.currentTimeMillis() + Math.max(60L, expiresIn - 3600L) * 1000L });
+			TOKENS.put(cacheKey, new Object[] {token, System.currentTimeMillis() + Math.max(60L, expiresIn - 3600L) * 1000L});
 			return token;
 		}
 		catch (OpenEditException e)
@@ -404,7 +414,8 @@ public class EmeServerAccountManager implements CatalogEnabled
 	}
 
 	/**
-	 * POSTs inBody as JSON to inBaseUrl + inPath as inUserName. Signs in again once when the token was refused.
+	 * POSTs inBody as JSON to inBaseUrl + inPath as inUserName. Signs in again once when the token was
+	 * refused.
 	 *
 	 * @return {status, response body}
 	 */
@@ -429,7 +440,7 @@ public class EmeServerAccountManager implements CatalogEnabled
 				{
 					continue; // token expired or was revoked: sign in again
 				}
-				return new Object[] { status, text };
+				return new Object[] {status, text};
 			}
 			catch (Exception e)
 			{

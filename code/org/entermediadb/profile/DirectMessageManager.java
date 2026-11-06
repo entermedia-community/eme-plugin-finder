@@ -43,6 +43,24 @@ public class DirectMessageManager extends BaseMediaModule
 
 		MediaArchive archive = getMediaArchive(inReq);
 
+		Data collection = loadDirectMessageCollection(archive, fromuser, touser, true);
+
+		// The conversation continues in its latest session; older ones stay in the session history
+		Data currentchannel = findLatestChannel(archive, collection.getId());
+		if (currentchannel == null)
+		{
+			currentchannel = createChannel(archive, collection, fromuser, touser);
+		}
+
+		inReq.putPageValue("currentchannel", currentchannel);
+	}
+
+	/**
+	 * The collection that holds the direct messages between two users, whichever of them started it.
+	 * Created when missing and create is set; otherwise null.
+	 */
+	public Data loadDirectMessageCollection(MediaArchive archive, String fromuser, String touser, boolean create)
+	{
 		Searcher colUserSearcher = archive.getSearcher("librarycollectionusers");
 
 		Data colUser = colUserSearcher.query().exact("fromuser", fromuser).exact("followeruser", touser).searchOne();
@@ -52,49 +70,54 @@ public class DirectMessageManager extends BaseMediaModule
 		}
 
 		Searcher collectionSearcher = archive.getSearcher("librarycollection");
-		Data collection = null;
-
-		if (colUser == null)
+		if (colUser != null)
 		{
-			collection = collectionSearcher.createNewData();
-			collection.setName(fromuser + " - " + touser);
-			collection.setValue("collectiontype", "3");
-			collection.setValue("owner", fromuser);
-			collection.setValue("creationdate", new Date());
-			collectionSearcher.saveData(collection);
-
-			colUser = colUserSearcher.createNewData();
-			colUser.setValue("fromuser", fromuser);
-			colUser.setValue("followeruser", touser);
-			colUser.setValue("collectionid", collection.getId());
-			colUser.setValue("ontheteam", "true");
-			colUserSearcher.saveData(colUser);
+			return (Data) collectionSearcher.query().exact("id", colUser.get("collectionid")).searchOne();
 		}
-		else
+		if (!create)
 		{
-			collection = (Data) collectionSearcher.query().exact("id", colUser.get("collectionid")).searchOne();
+			return null;
 		}
 
+		Data collection = collectionSearcher.createNewData();
+		collection.setName(fromuser + " - " + touser);
+		collection.setValue("collectiontype", "3");
+		collection.setValue("owner", fromuser);
+		collection.setValue("creationdate", new Date());
+		collectionSearcher.saveData(collection);
+
+		colUser = colUserSearcher.createNewData();
+		colUser.setValue("fromuser", fromuser);
+		colUser.setValue("followeruser", touser);
+		colUser.setValue("collectionid", collection.getId());
+		colUser.setValue("ontheteam", "true");
+		colUserSearcher.saveData(colUser);
+		return collection;
+	}
+
+	/** The session (channel) of a direct message collection with the latest activity. */
+	public Data findLatestChannel(MediaArchive archive, String collectionid)
+	{
+		return archive.query("channel").exact("searchtype", "librarycollection").exact("dataid", collectionid).sort("refreshdateDown").searchOne();
+	}
+
+	/** Starts a new session (channel) in a direct message collection. */
+	public Data createChannel(MediaArchive archive, Data collection, String fromuser, String touser)
+	{
 		Searcher channelsearcher = archive.getSearcher("channel");
+		Data channel = channelsearcher.createNewData();
+		channel.setName(fromuser + " - " + touser);
+		channel.setValue("searchtype", "librarycollection");
+		channel.setValue("dataid", collection.getId());
+		channel.setValue("channeltype", "emeteamchat");
+		channel.setValue("user", fromuser);
 
-		Data currentchannel = channelsearcher.query().exact("searchtype", "librarycollection").exact("dataid", collection.getId()).searchOne();
-		if (currentchannel == null)
-		{
-			currentchannel = channelsearcher.createNewData();
-			currentchannel.setName(fromuser + " - " + touser);
-			currentchannel.setValue("searchtype", "librarycollection");
-			currentchannel.setValue("dataid", collection.getId());
-			currentchannel.setValue("channeltype", "emeteamchat");
-			currentchannel.setValue("user", fromuser);
+		Calendar now = Calendar.getInstance();
+		now.add(Calendar.SECOND, -1);
+		channel.setValue("refreshdate", now.getTime());
 
-			Calendar now = Calendar.getInstance();
-			now.add(Calendar.SECOND, -1);
-			currentchannel.setValue("refreshdate", now.getTime());
-
-			channelsearcher.saveData(currentchannel);
-		}
-
-		inReq.putPageValue("currentchannel", currentchannel);
+		channelsearcher.saveData(channel);
+		return channel;
 	}
 
 	public void loadChatList(WebPageRequest inReq)
