@@ -3732,14 +3732,6 @@ li.filtersselected .selected-filters a strong {
 	vertical-align: middle;
 }
 
-#emselectable th > div {
-	width: 100%;
-	height: 100%;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-}
-
 .tablecell .faceprofileboximage {
 	text-align: center;
 	height: 100%;
