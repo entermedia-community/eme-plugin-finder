@@ -271,8 +271,8 @@ public class EmeServerModule extends BaseMediaModule
 	}
 
 	/**
-	 * events/emeserver/saved: keeps the emeserver's server user, its ownership and its login key (serverkey) in
-	 * step with the record.
+	 * events/emeserver/saved: keeps the emeserver's server user, its ownership and its login key
+	 * (serverkey) in step with the record.
 	 */
 	public void savedEmeServer(WebPageRequest inReq)
 	{
@@ -292,8 +292,8 @@ public class EmeServerModule extends BaseMediaModule
 	}
 
 	/**
-	 * services/serverkey.json: this server's public key and key id (from .env, bin/serverkey.sh), for the other
-	 * side to store (emeserver.serverkey on the root, rootserverkey on a child).
+	 * services/serverkey.json: this server's public key and key id (from .env, bin/serverkey.sh), for
+	 * the other side to store (emeserver.serverkey on the root, rootserverkey on a child).
 	 */
 	public void loadServerPubKey(WebPageRequest inReq)
 	{
@@ -324,7 +324,7 @@ public class EmeServerModule extends BaseMediaModule
 	 */
 	public void notifyUser(WebPageRequest inReq)
 	{
-		String serverid = inReq.getRequestParameter("serverid");
+		String serverid = inReq.getRequestParameter("serverid"); // since request is auth guarded the userid should be the server id
 		String userid = inReq.getRequestParameter("userid");
 		String title = inReq.getRequestParameter("title");
 		String message = inReq.getRequestParameter("message");

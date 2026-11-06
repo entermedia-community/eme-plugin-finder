@@ -28,6 +28,11 @@ public class NotificationHubManager implements CatalogEnabled
 {
 	private static final Log log = LogFactory.getLog(NotificationHubManager.class);
 
+	/** Notification arrived from a child server (recorded on the root) */
+	public static final String DIRECTION_RECEIVED = "received";
+	/** Notification this child server posted to the root (recorded on the child) */
+	public static final String DIRECTION_SENT = "sent";
+
 	public static final int MAX_TITLE = 200;
 	public static final int MAX_MESSAGE = 2000;
 	public static final int MAX_DATA_ENTRIES = 20;
@@ -122,6 +127,17 @@ public class NotificationHubManager implements CatalogEnabled
 	 */
 	public NotifyResult notifyUser(User inSender, String inServerId, String inUserId, String inTitle, String inMessage, Map<String, String> inData)
 	{
+		NotifyResult result = deliver(inSender, inServerId, inUserId, inTitle, inMessage, inData);
+		// Only requests naming a known server are tracked; anything else has no emeserver to file it under
+		if (!isBlank(inServerId) && getMediaArchive().getData("emeserver", inServerId) != null)
+		{
+			track(DIRECTION_RECEIVED, inServerId, inUserId, inTitle, inMessage, inData, result);
+		}
+		return result;
+	}
+
+	protected NotifyResult deliver(User inSender, String inServerId, String inUserId, String inTitle, String inMessage, Map<String, String> inData)
+	{
 		if (inSender == null)
 		{
 			return NotifyResult.error(401, "unauthorized", "Sign in as the server's user first");
@@ -200,6 +216,14 @@ public class NotificationHubManager implements CatalogEnabled
 	 */
 	public NotifyResult postToRoot(String inUserId, String inTitle, String inMessage, Map<String, String> inData)
 	{
+		NotifyResult result = sendToRoot(inUserId, inTitle, inMessage, inData);
+		String serverid = getMediaArchive().getCatalogSettingValue("emeserverid");
+		track(DIRECTION_SENT, serverid, inUserId, inTitle, inMessage, inData, result);
+		return result;
+	}
+
+	protected NotifyResult sendToRoot(String inUserId, String inTitle, String inMessage, Map<String, String> inData)
+	{
 		MediaArchive archive = getMediaArchive();
 		String root = archive.getCatalogSettingValue("remoteemerauthserver");
 		String serverid = archive.getCatalogSettingValue("emeserverid");
@@ -233,6 +257,57 @@ public class NotificationHubManager implements CatalogEnabled
 			log.error("Could not post notification to " + root, e);
 			return NotifyResult.error(502, "hub_unreachable", e.getMessage());
 		}
+	}
+
+	/**
+	 * Records one notification attempt, delivered or refused, in the emeservernotification table. A failure to
+	 * record is logged and never changes the outcome of the push.
+	 */
+	protected void track(String inDirection, String inServerId, String inUserId, String inTitle, String inMessage, Map<String, String> inData, NotifyResult inResult)
+	{
+		try
+		{
+			Searcher searcher = getMediaArchive().getSearcher("emeservernotification");
+			Data row = searcher.createNewData();
+			putIfSet(row, "emeserver", inServerId);
+			putIfSet(row, "user", inUserId);
+			row.setValue("direction", inDirection);
+			row.setValue("title", truncate(inTitle, MAX_TITLE));
+			row.setValue("message", truncate(inMessage, MAX_MESSAGE));
+			if (inData != null)
+			{
+				putIfSet(row, "channel", inData.get("channel"));
+			}
+			row.setValue("notificationstatus", inResult.isSuccess() ? "queued" : "failed");
+			row.setValue("httpstatus", inResult.getStatus());
+			if (!inResult.isSuccess())
+			{
+				row.setValue("error", inResult.getError() + ": " + inResult.getErrorDescription());
+			}
+			row.setValue("notificationtime", new Date());
+			searcher.saveData(row);
+		}
+		catch (Exception e)
+		{
+			log.error("Could not record notification for " + inUserId + " / server " + inServerId, e);
+		}
+	}
+
+	protected void putIfSet(Data inRow, String inKey, String inValue)
+	{
+		if (!isBlank(inValue))
+		{
+			inRow.setValue(inKey, inValue);
+		}
+	}
+
+	protected String truncate(String inValue, int inMax)
+	{
+		if (inValue == null || inValue.length() <= inMax)
+		{
+			return inValue;
+		}
+		return inValue.substring(0, inMax);
 	}
 
 	protected boolean isReserved(String inKey)
