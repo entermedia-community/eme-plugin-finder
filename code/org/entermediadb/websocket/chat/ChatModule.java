@@ -609,8 +609,6 @@ public class ChatModule extends BaseMediaModule
 			throw new IllegalArgumentException("channeltype is required");
 		}
 
-		Data entity = (Data) inReq.getPageValue("entity");
-
 		String entityid = inReq.getRequestParameter("dataid");
 		if (entityid == null)
 		{
@@ -620,6 +618,8 @@ public class ChatModule extends BaseMediaModule
 		{
 			entityid = inReq.findValue("entityid");
 		}
+
+		Data entity = (Data) inReq.getPageValue("entity");
 		if (entityid == null && entity != null)
 		{
 			entityid = entity.getId();
@@ -629,15 +629,6 @@ public class ChatModule extends BaseMediaModule
 		if (channeldatamodule == null)
 		{
 			channeldatamodule = inReq.findValue("module");
-		}
-		if (entityid == null)
-		{
-			// Pass entityid required
-
-			// entity = (Data) inReq.getPageValue("emeprofile");
-			// channeldatamodule = "emeprofile";
-			// inReq.putPageValue("entity", entity);
-
 		}
 
 		if (entity == null && entityid != null && channeldatamodule != null)
@@ -781,8 +772,7 @@ public class ChatModule extends BaseMediaModule
 		MultiValued currentchannel = null;
 		if ("agenttutorchat".equals(channeltype))
 		{
-			currentchannel =
-				(MultiValued) channelsearcher.query().exact("dataid", entity).exact("searchtype", channeldatamodule).exact("user", inReq.getUserName()).sort("refreshdateDown").searchOne();
+			currentchannel = (MultiValued) channelsearcher.query().exact("dataid", entity).exact("searchtype", channeldatamodule).exact("user", inReq.getUserName()).sort("refreshdateDown").searchOne();
 			return currentchannel;
 		}
 
@@ -806,12 +796,8 @@ public class ChatModule extends BaseMediaModule
 				if (isowner)
 				{
 					// Owner of the entity can see all chats
-					currentchannel = (MultiValued) channelsearcher.query()
-						.exact("dataid", entity.getId())
-						.exact("searchtype", channeldatamodule)
-						.after("refreshdate", now.getTime())
-						.sort("refreshdateDown")
-						.searchOne();
+					currentchannel =
+						(MultiValued) channelsearcher.query().exact("dataid", entity.getId()).exact("searchtype", channeldatamodule).after("refreshdate", now.getTime()).sort("refreshdateDown").searchOne();
 				}
 				else
 				{
@@ -826,12 +812,8 @@ public class ChatModule extends BaseMediaModule
 			}
 			else
 			{
-				currentchannel = (MultiValued) channelsearcher.query()
-					.exact("dataid", entity.getId())
-					.exact("searchtype", channeldatamodule)
-					.after("refreshdate", now.getTime())
-					.sort("refreshdateDown")
-					.searchOne();
+				currentchannel =
+					(MultiValued) channelsearcher.query().exact("dataid", entity.getId()).exact("searchtype", channeldatamodule).after("refreshdate", now.getTime()).sort("refreshdateDown").searchOne();
 			}
 		}
 		else
