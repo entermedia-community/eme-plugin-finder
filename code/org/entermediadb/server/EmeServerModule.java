@@ -288,6 +288,12 @@ public class EmeServerModule extends BaseMediaModule
 		String serverid = inReq.getRequestParameter("serverid");
 		String collectionid = inReq.getRequestParameter("collectionid");
 		String touser = inReq.getRequestParameter("touser");
+		if (Boolean.parseBoolean(inReq.getRequestParameter("myeme")))
+		{
+			// My EME: the chat with your own emeprofile, found by its owner (the login)
+			Data myemeprofile = archive.query("emeprofile").exact("owner", inReq.getUser().getId()).cachedSearchOne();
+			return new String[] { "emeprofile", myemeprofile == null ? null : myemeprofile.getId(), null };
+		}
 		if (serverid != null && !serverid.isEmpty())
 		{
 			return new String[] { "emeserver", serverid, null };
@@ -328,7 +334,7 @@ public class EmeServerModule extends BaseMediaModule
 
 	/**
 	 * Lists the calling user's chat sessions (channels) of one chat, newest activity first. The chat is
-	 * picked by serverid (EME server), collectionid (project team chat) or touser (direct message); the
+	 * picked by serverid (EME server), collectionid (project team chat), touser (direct message) or myeme=true (the user's own emeprofile); the
 	 * user always comes from the login, never from the request parameters. Each session is a property
 	 * map with the channel id, name, refreshdate and the text of its last non-system message.
 	 */
@@ -344,7 +350,7 @@ public class EmeServerModule extends BaseMediaModule
 		String[] chat = findChatTarget(archive, inReq);
 		if (chat == null)
 		{
-			inReq.putPageValue("error", "serverid, collectionid or touser is required");
+			inReq.putPageValue("error", "serverid, collectionid, touser or myeme is required");
 			return;
 		}
 		Collection<Data> channels = new ArrayList<Data>();
