@@ -117,7 +117,7 @@ public class SendMailModule extends BaseModule
 			webmail.loadSettings(inContext);
 			inContext.putPageValue(EMAIL_SETTINGS, webmail);
 		}
-		log.info("Sending email");
+		//log.info("Sending email");
 		sendEmail(inContext, webmail);
 		log.info("Mail Sent to " + Arrays.asList(webmail.getTo()));
 	}

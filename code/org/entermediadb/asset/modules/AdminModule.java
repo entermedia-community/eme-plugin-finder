@@ -214,7 +214,11 @@ public class AdminModule extends BaseMediaModule
 			if (foundUser.isEnabled())
 			{
 				String userCode = getUserManager(inReq).createNewTempLoginKey(username, emailaddress, firstName, lastName, screenName, false);
-				inReq.putPageValue("loginlinktoken", getUserManager(inReq).createNewTempLoginLink(username, emailaddress, firstName, lastName, screenName));
+				log.info("Login code: " + userCode);
+				
+				String loginlinktoken = getUserManager(inReq).createNewTempLoginLink(username, emailaddress, firstName, lastName, screenName);
+				inReq.putPageValue("loginlinktoken", loginlinktoken);
+				
 
 				if (userCategory != null)
 				{
