@@ -42,7 +42,7 @@ public class SmartCreatorModule extends BaseMediaModule
 
 	public void loadTutorials(WebPageRequest inReq) throws Exception
 	{
-		Searcher tutorialsearcher = getMediaArchive(inReq).getSearcher("aitutorial");
+		Searcher tutorialsearcher = getMediaArchive(inReq).getSearcher("entitytutorial");
 		HitTracker hits = tutorialsearcher.query().exact("featured", true).search();
 
 		inReq.putPageValue("tutorials", hits);

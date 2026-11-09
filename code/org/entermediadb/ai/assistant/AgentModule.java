@@ -169,7 +169,7 @@ public class AgentModule extends BaseMediaModule
 
 	public void loadTutorials(WebPageRequest inReq) throws Exception
 	{
-		Searcher tutorialsearcher = getMediaArchive(inReq).getSearcher("aitutorial");
+		Searcher tutorialsearcher = getMediaArchive(inReq).getSearcher("entitytutorial");
 		HitTracker hits = tutorialsearcher.query().exact("featured", true).search();
 
 		inReq.putPageValue("tutorials", hits);
@@ -234,7 +234,7 @@ public class AgentModule extends BaseMediaModule
 			chatAgentContext.setCurrentAgentJob(job);
 			mediaArchive.saveData("agentcontext", chatAgentContext);
 
-			String functionpath =  chatAgentContext.getCurrentAgentJob().getScenarioId() + "." + chatAgentContext.getCurrentAgentJobStep().getEnabledId();
+			String functionpath = chatAgentContext.getCurrentAgentJob().getScenarioId() + "." + chatAgentContext.getCurrentAgentJobStep().getEnabledId();
 			chatAgentContext.getChannel().setValue("startup_scenario", functionpath);
 			mediaArchive.saveData("channel", chatAgentContext.getChannel());
 
@@ -280,7 +280,7 @@ public class AgentModule extends BaseMediaModule
 		}
 
 		mediaArchive.saveData("agentcontext", chatAgentContext);
-		inReq.putPageValue("currentfunction",functionname);
+		inReq.putPageValue("currentfunction", functionname);
 		// assistantManager.sendSystemMessage(chatAgentContext, inReq.getUserName(), functionname);
 		assistantManager.sendSystemMessage(chatAgentContext, inReq.getUserName(), null, functionname);
 	}
@@ -315,7 +315,7 @@ public class AgentModule extends BaseMediaModule
 
 		String applicationid = inReq.findValue("applicationid");
 
-		if( inReq.getPageValue("agentcontext") != null)
+		if (inReq.getPageValue("agentcontext") != null)
 		{
 			return (AgentContext) inReq.getPageValue("agentcontext");
 		}

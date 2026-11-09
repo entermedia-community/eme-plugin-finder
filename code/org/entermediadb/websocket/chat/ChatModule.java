@@ -612,6 +612,10 @@ public class ChatModule extends BaseMediaModule
 		String entityid = inReq.getRequestParameter("dataid");
 		if (entityid == null)
 		{
+			entityid = (String) inReq.getPageValue("dataid");
+		}
+		if (entityid == null)
+		{
 			entityid = inReq.getRequestParameter("entityid");
 		}
 		if (entityid == null)
