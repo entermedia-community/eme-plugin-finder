@@ -1046,10 +1046,8 @@ public class FinderModule extends BaseMediaModule
 				myemeprofile.setValue("owner", user.getId());
 				getMediaArchive(inReq).saveData("emeprofile", myemeprofile);
 			}
-			inReq.putPageValue("myemeprofile", myemeprofile);
 		}
-
-		inReq.putPageValue("dataid", myemeprofile.getId());
+		inReq.putPageValue("myemeprofile", myemeprofile);
 
 		// Loads other users emeprofile if we are viewing their profile
 		Data emeprofile = (Data) inReq.getPageValue("emeprofile");
