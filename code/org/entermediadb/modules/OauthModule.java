@@ -13,7 +13,6 @@ import org.apache.oltu.oauth2.common.OAuthProviderType;
 import org.apache.oltu.oauth2.common.message.types.GrantType;
 import org.entermediadb.asset.MediaArchive;
 import org.entermediadb.asset.modules.BaseMediaModule;
-import org.entermediadb.authenticate.BaseAutoLogin;
 import org.entermediadb.util.EmTokenResponse;
 import org.json.simple.JSONObject;
 import org.openedit.Data;
@@ -192,6 +191,8 @@ public class OauthModule extends BaseMediaModule
 				{
 					prompt = "";
 				}
+
+				
 
 				OAuthClientRequest request = OAuthClientRequest.authorizationProvider(OAuthProviderType.GOOGLE)
 					.setParameter("state", state)
@@ -448,7 +449,7 @@ public class OauthModule extends BaseMediaModule
 
 			if (state.startsWith("hotfolder"))
 			{
-				String id = state.substring(9);
+				//String id = state.substring(9);
 				/*
 				 * //https://www.googleapis.com/auth/admin.directory.user
 				 * //https://www.googleapis.com/auth/admin.directory.domain
@@ -699,7 +700,7 @@ public class OauthModule extends BaseMediaModule
 
 				JSONObject data = (JSONObject) parser.parse(userinfoJSON);
 				String facebookid = (String) data.get("id");
-				String screenname = (String) data.get("name");
+				//String screenname = (String) data.get("name");
 				String email = (String) data.get("email");
 				String firstname = (String) data.get("given_name");
 				String lastname = (String) data.get("family_name");
@@ -840,6 +841,10 @@ public class OauthModule extends BaseMediaModule
 		if (target != null)
 		{
 			inReq.putSessionValue(searcher.getCatalogId() + "user", target);
+			
+			StringEncryption encryption = getStringEncryption();
+			Data key = encryption.createUserKey(inReq, target);
+
 			inReq.putPageValue("user", target);
 			if (refreshtoken != null)
 			{

@@ -702,7 +702,7 @@ public class AdminModule extends BaseMediaModule
 				{
 					// A code login can register a key in the same call, so the client never needs the code again.
 					// Failures are reported as key_error; the login itself still succeeded.
-					Data key = createUserKey(inReq, user);
+					Data key = getStringEncryption().createUserKey(inReq, user);
 					if (key != null)
 					{
 						if ("publickey".equals(key.get("keytype")))
@@ -793,7 +793,7 @@ public class AdminModule extends BaseMediaModule
 
 			if (success)
 			{
-				Data key = createUserKey(inReq, user);
+				Data key = getStringEncryption().createUserKey(inReq, user);
 				if (key == null)
 				{
 					return; // error already reported
@@ -1243,64 +1243,10 @@ public class AdminModule extends BaseMediaModule
 			putOauthError(inReq, "invalid_request", "Login required");
 			return;
 		}
-		if (createUserKey(inReq, user) != null)
+		if (getStringEncryption().createUserKey(inReq, user) != null)
 		{
 			inReq.putPageValue("commandSucceeded", "ok");
 		}
-	}
-
-	/**
-	 * @return the saved userkey row, or null after reporting the problem
-	 */
-	protected Data createUserKey(WebPageRequest inReq, User user)
-	{
-		if ("apppassword".equals(inReq.getPageValue("loginvia")))
-		{
-			// An application password must not be able to mint further credentials that outlive its own
-			// revocation
-			putOauthError(inReq, "access_denied", "Application passwords cannot register keys");
-			return null;
-		}
-		if (inReq.getSessionValue("realuser") != null)
-		{
-			// Admin "switch to user": the browser belongs to the administrator, not the impersonated user
-			putOauthError(inReq, "access_denied", "Cannot register keys while switched to another user");
-			return null;
-		}
-		StringEncryption encryption = getUserManager(inReq).getStringEncryption();
-		Searcher keys = getSearcherManager().getSearcher("system", "userkey");
-		Data key = keys.createNewData();
-		key.setId(encryption.randomCharacterString());
-		key.setValue("userid", user.getId());
-		key.setValue("label", inReq.getRequestParameter("label"));
-		key.setValue("created", new Date());
-		key.setValue("enabled", true);
-
-		if ("apppassword".equals(inReq.getRequestParameter("keytype")))
-		{
-			// Server generated secret for tools that cannot sign. Returned once, only its hash is kept.
-			String secret = encryption.generateAppSecret();
-			key.setValue("keytype", "apppassword");
-			key.setValue("algorithm", "SHA-256"); // how the stored secret is hashed
-			key.setValue("secrethash", encryption.getSha256(secret));
-			keys.saveData(key);
-			inReq.putPageValue("apppassword", encryption.createAppPassword(key.getId(), secret));
-		}
-		else
-		{
-			String publickey = inReq.getRequestParameter("publickey");
-			if (publickey == null || !encryption.isValidPublicKey(publickey))
-			{
-				putOauthError(inReq, "invalid_request", "publickey must be a base64url X.509 encoded Ed25519 or P-256 public key");
-				return null;
-			}
-			key.setValue("keytype", "publickey");
-			key.setValue("algorithm", encryption.getPublicKeyAlgorithm(publickey)); // detected from the key, not taken from the client
-			key.setValue("publickey", publickey);
-			keys.saveData(key);
-		}
-		inReq.putPageValue("userkey", key);
-		return key;
 	}
 
 	public void listKeys(WebPageRequest inReq)
@@ -1672,12 +1618,6 @@ public class AdminModule extends BaseMediaModule
 
 	public StringEncryption getStringEncryption()
 	{
-		// if (fieldStringEncryption == null)
-		// {
-		// fieldStringEncryption = new StringEncryption();
-		//// String KEY = "SomeWeirdReallyLongStringYUITYGFNERDF343dfdGDFGSDGGD";
-		//// fieldStringEncryption.setEncryptionKey(KEY);
-		// }
 		return fieldStringEncryption;
 	}
 
