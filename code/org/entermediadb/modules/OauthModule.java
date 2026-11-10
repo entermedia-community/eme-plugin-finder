@@ -1,6 +1,8 @@
 package org.entermediadb.modules;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.oltu.oauth2.client.OAuthClient;
@@ -192,11 +194,13 @@ public class OauthModule extends BaseMediaModule
 					prompt = "";
 				}
 
-				
+				String emepublickey = inReq.findValue("publickey");
+				String emepublickeylabel = inReq.findValue("label");
+
+				state = state + "&publickey=" + emepublickey + "&label=" + emepublickeylabel;
 
 				OAuthClientRequest request = OAuthClientRequest.authorizationProvider(OAuthProviderType.GOOGLE)
 					.setParameter("state", state)
-					.setParameter("prompt", prompt)
 					.setClientId(clientid)
 					.setRedirectURI(redirect)
 					.setParameter("access_type", "offline")
@@ -505,9 +509,14 @@ public class OauthModule extends BaseMediaModule
 				inReq.putPageValue("refresh", refresh);
 				inReq.putPageValue("oauthresponse", oAuthResponse);
 
-				if (state == null || state.equals("login"))
+				if (state == null || state.startsWith("login"))
 				{
+					Map<String, String> stateparams = parseState(state);
+					inReq.setRequestParameter("publickey", stateparams.get("publickey"));
+					inReq.setRequestParameter("label", stateparams.get("label"));
+
 					boolean systemwide = Boolean.parseBoolean(inReq.findValue("systemwide"));
+					
 
 					if (refresh != null && systemwide)
 					{
@@ -772,6 +781,25 @@ public class OauthModule extends BaseMediaModule
 		// inReq.redirect("/" + appid + "/index.html");
 	}
 
+	protected Map<String, String> parseState(String inState)
+	{
+		Map<String, String> stateparams = new HashMap<>();
+		if (inState == null || inState.isEmpty())
+		{
+			return stateparams;
+		}
+
+		for (String parameter : inState.split("&"))
+		{
+			int separator = parameter.indexOf('=');
+			if (separator > 0)
+			{
+				stateparams.put(parameter.substring(0, separator), parameter.substring(separator + 1));
+			}
+		}
+		return stateparams;
+	}
+
 	protected void handleLogin(WebPageRequest inReq, String email, String firstname, String lastname, boolean matchOnEmail, boolean autocreate, Data authinfo, String refreshtoken, String userid)
 	{
 
@@ -841,11 +869,16 @@ public class OauthModule extends BaseMediaModule
 		if (target != null)
 		{
 			inReq.putSessionValue(searcher.getCatalogId() + "user", target);
-			
+
 			StringEncryption encryption = getStringEncryption();
 			Data key = encryption.createUserKey(inReq, target);
+			if (key != null)
+			{
+				encryption.mintKeyToken(inReq, target, key);
+			}
 
 			inReq.putPageValue("user", target);
+
 			if (refreshtoken != null)
 			{
 				target.setProperty("refreshtoken", refreshtoken);
@@ -870,6 +903,9 @@ public class OauthModule extends BaseMediaModule
 			}
 
 			String redirectpage = inReq.findActionValue("redirectpath");
+
+			inReq.putSessionValue("keyid", key != null ? key.getId() : "");
+			inReq.putSessionValue("userid", target != null ? target.getId() : "");
 
 			if (redirectpage != null)
 			{

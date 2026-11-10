@@ -707,7 +707,7 @@ public class AdminModule extends BaseMediaModule
 					{
 						if ("publickey".equals(key.get("keytype")))
 						{
-							mintKeyToken(inReq, user, key);
+							getStringEncryption().mintKeyToken(inReq, user, key);
 						}
 						else
 						{
@@ -798,7 +798,7 @@ public class AdminModule extends BaseMediaModule
 				{
 					return; // error already reported
 				}
-				mintKeyToken(inReq, user, key);
+				getStringEncryption().mintKeyToken(inReq, user, key);
 				boolean firebaseenabled = Boolean.parseBoolean(inReq.getRequestParameter("firebaseenabled"));
 				if (firebaseenabled)
 				{
@@ -872,7 +872,7 @@ public class AdminModule extends BaseMediaModule
 
 			key.setValue("lastused", new Date());
 			keys.saveData(key);
-			mintKeyToken(inReq, user, key);
+			getStringEncryption().mintKeyToken(inReq, user, key);
 			if (Boolean.parseBoolean(inReq.getRequestParameter("createsession")))
 			{
 				startSession(inReq, user);
@@ -885,16 +885,7 @@ public class AdminModule extends BaseMediaModule
 		}
 	}
 
-	protected void mintKeyToken(WebPageRequest inReq, User inUser, Data inKey)
-	{
-		StringEncryption encryption = getUserManager(inReq).getStringEncryption();
-		inReq.putPageValue("access_token", encryption.createAccessToken(inUser.getId(), inKey.getId(), inKey.get("publickey"), StringEncryption.ACCESS_TOKEN_LIFETIME_MILLIS));
-		inReq.putPageValue("token_type", "Bearer");
-		inReq.putPageValue("expires_in", StringEncryption.ACCESS_TOKEN_LIFETIME_MILLIS / 1000);
-		inReq.putPageValue("key_id", inKey.getId());
-		inReq.putPageValue("user", inUser);
-		inReq.putPageValue("commandSucceeded", "ok");
-	}
+
 
 	public void oauthTokenRemote(WebPageRequest inReq) throws Exception
 	{
