@@ -127,8 +127,7 @@ ul.resultsnavright > li {
 .themelight ul.resultsnav > li {
 	border-right: var(--1px-light);
 }
-.themelight ul.resultsnavright > li
-{
+.themelight ul.resultsnavright > li {
 	border-left: var(--1px-light);
 	border-right: 0 none;
 }
@@ -2979,7 +2978,7 @@ td .emgridcell a i.module-icon {
 	padding: 25px 20px 0px;
 	height: 100%;
 }
-.entitydialog .entity-metadata{
+.entitydialog .entity-metadata {
 	margin-bottom: 30px;
 }
 .tab-content .entity-metadata {
@@ -3065,12 +3064,17 @@ td .emgridcell a i.module-icon {
 .entity-wraper-embedded .editentitymetadata-submodule {
 	padding: 20px 0;
 }
-.entity-navigation {
-	background: var(--themed-tab-bar);
+.entity-navigation-wrapper {
+	display: flex;
 	width: 100%;
+	background: var(--themed-tab-bar);
+}
+.entity-navigation {
 	height: 42px;
 	color: #bbb;
 	font-size: 1rem;
+	display: flex;
+	flex-wrap: nowrap;
 }
 .themelight .entity-navigation {
 	background: var(--light-bg);
@@ -3114,6 +3118,7 @@ td .emgridcell a i.module-icon {
 	border-right: 1px solid var(--themed-tab-btn-hover);
 	transition: all 0.2s ease-in-out;
 	height: 42px;
+	width: max-content;
 }
 .themelight .entity-tab {
 	height: 40px;
@@ -3607,12 +3612,11 @@ td .emgridcell a i.module-icon {
 .languagesfieldexpand {
 	font-size: 0.9em;
 	cursor: pointer;
-	font-weight: 500;;
+	font-weight: 500;
 }
 .languagesfieldexpand i {
 	margin-right: 5px;
 }
-
 
 .jp-play-bar,
 .jp-volume-bar-value {
@@ -4031,9 +4035,8 @@ ul.inlinelist li {
 	border-bottom: 1px solid var(--gray-border);
 	background: var(--themed-tab-btn);
 }
-.tabtypeentitymedia 
-{
-	border-top:var(--1px-light);
+.tabtypeentitymedia {
+	border-top: var(--1px-light);
 }
 
 #categorywithtree .breadCrumbContainer {
@@ -4144,10 +4147,10 @@ ul.inlinelist li {
 .embedmediacol-tree .embedmediacolheader {
 	font-weight: 600;
 	font-size: 0.9rem;
-	
+
 	position: relative;
 	height: 32px;
-	line-height:32px;
+	line-height: 32px;
 	transition: all 0.2s ease-in-out;
 }
 .dialogmediacol-faceprofiles {
@@ -4309,9 +4312,8 @@ ul.inlinelist li {
 	color: var(--themed-nav-btn-text);
 }
 
-
 .viewtype-allfields .select2-container .select2-selection__choice {
-  display: none !important;
+	display: none !important;
 }
 .resultsarea {
 	display: flex;
@@ -4866,7 +4868,7 @@ ul.summary-secondary-nav li a:hover {
 .sidebar-component-header {
 	font-size: 0.95rem;
 	font-weight: bold;
-	line-height: 1; 
+	line-height: 1;
 	padding: 6px 0;
 	display: flex;
 }
