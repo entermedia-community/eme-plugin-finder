@@ -1800,16 +1800,26 @@ public class EntityModule extends BaseMediaModule
 
 		String mask = entitymodule.get("assetuploadmask");
 		Category category = null;
-		if (mask != null)
-		{
-			Map variables = inReq.getParameterMap();
-			variables.put("userid", inReq.getUser().getId());
-			variables.put("data", entity);
 
-			String categorypath = getMediaArchive(inReq).replaceFromMask(mask, variables, inReq.getLocale());
-			category = getMediaArchive(inReq).createCategoryPath(categorypath);
+		String uploadtocategory = inReq.getRequestParameter("uploadtocategory");
+		if (uploadtocategory != null && uploadtocategory.length() > 0)
+		{
+			category = getMediaArchive(inReq).getCategory(uploadtocategory);
 		}
-		else
+		if (category == null)
+		{
+			if ( mask != null)
+			{
+				Map variables = inReq.getParameterMap();
+				variables.put("userid", inReq.getUser().getId());
+				variables.put("data", entity);
+
+				String categorypath = getMediaArchive(inReq).replaceFromMask(mask, variables, inReq.getLocale());
+				category = getMediaArchive(inReq).createCategoryPath(categorypath);
+		
+			}
+		}
+		if (category == null)
 		{
 			category = getMediaArchive(inReq).getEntityManager().loadDefaultFolder(entitymodule, entity, inReq.getUser());
 		}
