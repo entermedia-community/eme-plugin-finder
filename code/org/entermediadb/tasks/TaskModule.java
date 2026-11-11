@@ -83,11 +83,6 @@ public class TaskModule extends BaseMediaModule
 			builder.after("creationdate", old);
 
 			userq = builder.getQuery();
-			// Collection filter = inReq.getUserProfile().getValues("goaltrackercolumns");
-			// if( filter != null && !filter.isEmpty())
-			// {
-			// userq.addOrsGroup("goaltrackercolumn", filter);
-			// }
 		}
 		else if (!userq.contains("collectionid"))
 		{
@@ -117,11 +112,7 @@ public class TaskModule extends BaseMediaModule
 		{
 			Data hit = (Data) iterator.next();
 			ProjectGoal goal = (ProjectGoal) searcher.loadData(hit);
-			String p = goal.get("goaltrackercolumn");
-			if (p == null)
-			{
-				p = "0";
-			}
+			String p = "0"; // One column per project (topics were removed)
 			List list = (List) priorities.get(p);
 			if (list == null)
 			{
@@ -278,10 +269,6 @@ public class TaskModule extends BaseMediaModule
 	 * Collection alltasks =
 	 * archive.getSearcher("goaltask").query().exact("projectdepartment",department) .search();
 	 * 
-	 * Collection projects =
-	 * archive.getSearcher("collectiveproject").query().exact("parentcollectionid", collection.getId(
-	 * )).search();
-	 * 
 	 * topgoals = makeColumns(list.getSorted(),percolumn,startfrom);
 	 * 
 	 * Collection goalids = selected.getValues("countdata"); if ( goalids == null) { goalids =
@@ -331,22 +318,6 @@ public class TaskModule extends BaseMediaModule
 	// }
 	// return topgoals;
 	// }
-	protected Collection getGoals(Map topgoals, Data inRow)
-	{
-		String col = inRow.get("goaltrackercolumn");
-		if (col == null)
-		{
-			col = "0";
-		}
-		Collection goals = (Collection) topgoals.get(col);
-		if (goals == null)
-		{
-			goals = new ArrayList();
-			topgoals.put(col, goals);
-		}
-		return goals;
-	}
-
 	public void loadGoal(WebPageRequest inReq)
 	{
 		MediaArchive archive = getMediaArchive(inReq);
@@ -1245,17 +1216,6 @@ public class TaskModule extends BaseMediaModule
 		goal.setValue("userlikes", found);
 		searcher.saveData(goal);
 		inReq.putPageValue("goal", goal);
-
-	}
-
-	public void moveToColumn(WebPageRequest inReq)
-	{
-		String goalid = inReq.getRequestParameter("goalid");
-		String col = inReq.getRequestParameter("col");
-		MediaArchive archive = getMediaArchive(inReq);
-		MultiValued selectedgoal = (MultiValued) archive.getData("projectgoal", goalid);
-		selectedgoal.setValue("goaltrackercolumn", col);
-		archive.saveData("projectgoal", selectedgoal);
 
 	}
 

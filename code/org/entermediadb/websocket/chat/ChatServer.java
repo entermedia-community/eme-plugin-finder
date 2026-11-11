@@ -234,7 +234,7 @@ public class ChatServer
 			String messageid = (String) inMap.get("messageid");
 			if (channelid != null)
 			{
-				if (channelmoduleid != null && "collectiveproject".equals(channelmoduleid))
+				if (channelmoduleid != null && "librarycollection".equals(channelmoduleid))
 				{
 					manager.updateChatTopicLastModified(channel.get("dataid"), usermessageid, messageid);
 				}
@@ -307,16 +307,6 @@ public class ChatServer
 					entity = archive.getCachedData(channelmoduleid, entityid);
 				}
 
-				if (channelmoduleid.equals("collectiveproject"))
-				{
-					Data collectiveproject = archive.getCachedData("collectiveproject", entityid);
-					if (collectiveproject != null)
-					{
-						Data librarycollection = archive.getCachedData("librarycollection", collectiveproject.get("parentcollectionid"));
-						userids = projectmanager.listTeam(librarycollection);
-					}
-
-				}
 				if (channelmoduleid.equals("librarycollection"))
 				{
 					userids = projectmanager.listTeam(entity);

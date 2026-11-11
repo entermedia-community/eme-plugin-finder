@@ -69,20 +69,15 @@ public class ChatManager implements CatalogEnabled
 	// updateChatTopicLastModified(channelid, inUserId, "");
 	// }
 
-	public synchronized void updateChatTopicLastModified(String channelid, String inUserId, String inMessageId)
+	/** Tracks the latest message of a project (librarycollection) chat, keyed by the collection id. */
+	public synchronized void updateChatTopicLastModified(String inCollectionId, String inUserId, String inMessageId)
 	{
-		MultiValued status = (MultiValued) getMediaArchive().query("chattopiclastmodified").exact("chattopicid", channelid).searchOne();
+		MultiValued status = (MultiValued) getMediaArchive().query("chattopiclastmodified").exact("chattopicid", inCollectionId).searchOne();
 		if (status == null)
 		{
 			status = (MultiValued) getMediaArchive().getSearcher("chattopiclastmodified").createNewData();
-			status.setValue("chattopicid", channelid);
-			// String collectionid,
-			MultiValued topic = (MultiValued) getMediaArchive().getCachedData("collectiveproject", channelid);
-			if (topic != null)
-			{
-				Collection collections = topic.getValues("parentcollectionid");
-				status.setValue("collectionid", collections);
-			}
+			status.setValue("chattopicid", inCollectionId);
+			status.setValue("collectionid", inCollectionId);
 		}
 		if (inUserId != null)
 		{
@@ -99,22 +94,30 @@ public class ChatManager implements CatalogEnabled
 	}
 
 	// TODO: Do this while messages are coming in
+	/**
+	 * Tracks when a user last read a chat. Project (librarycollection) chats are keyed by the collection id, the same key
+	 * {@link #updateChatTopicLastModified} uses, so the notification scripts can match the two.
+	 */
 	public synchronized void updateChatTopicLastChecked(String channelid, String inUserId)
 	{
-		MultiValued status = (MultiValued) getMediaArchive().query("chattopiclastchecked").exact("chattopicid", channelid).match("userid", inUserId).searchOne();
+		String topicid = channelid;
+		String collectionid = null;
+		Data channel = getMediaArchive().getCachedData("channel", channelid);
+		if (channel != null && "librarycollection".equals(channel.get("searchtype")) && channel.get("dataid") != null)
+		{
+			collectionid = channel.get("dataid");
+			topicid = collectionid;
+		}
+		MultiValued status = (MultiValued) getMediaArchive().query("chattopiclastchecked").exact("chattopicid", topicid).match("userid", inUserId).searchOne();
 		if (status == null)
 		{
 			status = (MultiValued) getMediaArchive().getSearcher("chattopiclastchecked").createNewData();
-			status.setValue("chattopicid", channelid);
+			status.setValue("chattopicid", topicid);
 			status.setValue("userid", inUserId);
-			MultiValued topic = (MultiValued) getMediaArchive().getData("collectiveproject", channelid);
-			if (topic != null)
+			if (collectionid != null)
 			{
-				Collection collections = topic.getValues("parentcollectionid");
-				status.setValue("collectionid", collections);
-
+				status.setValue("collectionid", collectionid);
 			}
-
 		}
 		status.setValue("datechecked", new Date());
 		getMediaArchive().saveData("chattopiclastchecked", status);

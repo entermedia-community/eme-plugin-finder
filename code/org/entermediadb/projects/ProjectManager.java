@@ -1364,12 +1364,6 @@ public class ProjectManager implements CatalogEnabled
 		}
 		// }
 
-		String topic = inReq.getRequestParameter("topic");
-		if (topic != null)
-		{
-			builder.exact("collectiveproject", topic);
-		}
-
 		UserProfile prof = inReq.getUserProfile();
 		if (prof != null)
 		{

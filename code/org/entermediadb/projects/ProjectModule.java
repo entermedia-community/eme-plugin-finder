@@ -1390,11 +1390,16 @@ public class ProjectModule extends BaseMediaModule
 			collections.add("NONE");
 		}
 
-		Collection topics = archive.query("collectiveproject").orgroup("parentcollectionid", collections).hitsPerPage(100).search();
+		Collection channels = archive.query("channel").exact("searchtype", "librarycollection").orgroup("dataid", collections).hitsPerPage(1000).search();
+		if (channels.isEmpty())
+		{
+			inReq.putPageValue("messages", new ListHitTracker());
+			return;
+		}
 
 		Searcher chats = archive.getSearcher("chatterbox");
 
-		HitTracker recent = chats.query().orgroup("channel", topics).sort("dateDown").search();
+		HitTracker recent = chats.query().orgroup("channel", channels).sort("dateDown").search();
 		inReq.putPageValue("messages", recent);
 	}
 
@@ -1573,23 +1578,17 @@ public class ProjectModule extends BaseMediaModule
 			return empty;
 		}
 		// Check permissions
-		QueryBuilder q = archive.query("collectiveproject").exact("parentcollectionid", collection).named("topics").hitsPerPage(10);
-
-		boolean only = Boolean.parseBoolean(inReq.findValue("onlyshowpublictopics"));
-		if (only)
+		Collection channels = archive.query("channel").exact("searchtype", "librarycollection").exact("dataid", collection.getId()).hitsPerPage(1000).search();
+		if (channels.isEmpty())
 		{
-			q.exact("teamproject", false);
+			ListHitTracker empty = new ListHitTracker();
+			inReq.putPageValue("messages", empty);
+			return empty;
 		}
-		Collection topics = q.search(inReq);
-		if (topics.isEmpty())
-		{
-			return new ListHitTracker();
-		}
-		inReq.putPageValue("topics", topics);
 
 		Searcher chats = archive.getSearcher("chatterbox");
 
-		HitTracker recent = chats.query().orgroup("channel", topics).named("hits").sort("dateDown").hitsPerPage(200).search(inReq);
+		HitTracker recent = chats.query().orgroup("channel", channels).named("hits").sort("dateDown").hitsPerPage(200).search(inReq);
 		inReq.putPageValue("messages", recent);
 
 		List messageids = new ArrayList(recent.size());
@@ -2025,43 +2024,6 @@ public class ProjectModule extends BaseMediaModule
 
 	}
 
-	public void loadChatTopic(WebPageRequest inReq)
-	{
-		MediaArchive archive = getMediaArchive(inReq);
-		String topicid = inReq.findValue("channel");
-		if (topicid == null)
-		{
-			topicid = inReq.getRequestParameter("channel");
-		}
-
-		Data topic = archive.getCachedData("collectiveproject", topicid);
-
-		Searcher topicsearcher = archive.getSearcher("collectiveproject");
-
-		Data librarycol = (Data) inReq.getPageValue("librarycol");
-		if (librarycol != null && topic == null)
-		{
-			topic = topicsearcher.query().match("parentcollectionid", librarycol.getId()).sort("name").searchOne();
-		}
-		if (topic == null)
-		{
-			topic = topicsearcher.createNewData();
-			topic.setValue("moduleid", "librarycollection");
-			if (librarycol != null)
-			{
-				topic.setValue("parentcollectionid", librarycol.getId());
-			}
-
-			topic.setName("General");
-			topicsearcher.saveData(topic);
-		}
-		inReq.setRequestParameter("dataid", topic.getId());
-		inReq.putPageValue("channeldatamodule", "collectiveproject");
-		// inReq.setRequestParameter("createnew", "true");
-		inReq.putPageValue("currenttopic", topic);
-
-	}
-
 	public void loadProjectLikes(WebPageRequest inReq)
 	{
 		MediaArchive archive = getMediaArchive(inReq);
@@ -2185,9 +2147,16 @@ public class ProjectModule extends BaseMediaModule
 
 		for (MultiValued message : messages)
 		{
-			MultiValued collectiveproject = (MultiValued) getMediaArchive(inReq).getCachedData("collectiveproject", message.get("channel"));
-
-			LibraryCollection project = (LibraryCollection) getMediaArchive(inReq).getCachedData("librarycollection", collectiveproject.get("parentcollectionid"));
+			Data channel = getMediaArchive(inReq).getCachedData("channel", message.get("channel"));
+			if (channel == null || !"librarycollection".equals(channel.get("searchtype")))
+			{
+				continue;
+			}
+			LibraryCollection project = (LibraryCollection) getMediaArchive(inReq).getCachedData("librarycollection", channel.get("dataid"));
+			if (project == null)
+			{
+				continue;
+			}
 
 			MultiValued community = (MultiValued) getMediaArchive(inReq).getCachedData("communitytag", project.get("communitytag"));
 

@@ -60,92 +60,9 @@ public class ChatModule extends BaseMediaModule
 		inReq.putPageValue("chat", chat);
 	}
 
-	/*
-	 * For OI Collective Projects, uses collectiveproject table
-	 * 
-	 */
-
-	public void loadRecentChatsLibraryCollection(WebPageRequest inReq)
-	{
-		MediaArchive archive = getMediaArchive(inReq);
-		String channel = inReq.findValue("channel");
-
-		String collectionid = inReq.getRequestParameter("collectionid");
-		if (collectionid == null)
-		{
-			collectionid = inReq.findValue("collectionid");
-		}
-
-		if (collectionid == null)
-		{
-			Data librarycol = (Data) inReq.getPageValue("librarycol");
-			if (librarycol != null)
-			{
-				collectionid = librarycol.getId();
-			}
-		}
-
-		Searcher topicsearcher = archive.getSearcher("collectiveproject");
-		Data currenttopic = null;
-		if (channel != null)
-		{
-			currenttopic = topicsearcher.query().exact("id", channel).searchOne();
-		}
-		if (currenttopic == null)
-		{
-			currenttopic = topicsearcher.query().match("parentcollectionid", collectionid).sort("name").searchOne();
-		}
-
-		if (currenttopic == null)
-		{
-			currenttopic = topicsearcher.createNewData();
-			currenttopic.setValue("parentcollectionid", collectionid);
-			currenttopic.setName("General");
-			topicsearcher.saveData(currenttopic);
-		}
-
-		inReq.putPageValue("currenttopic", currenttopic);
-		inReq.putPageValue("channel", currenttopic.getId());
-		channel = currenttopic.getId();
-
-		String sortby = inReq.findActionValue("sortorder");
-		if (sortby == null)
-		{
-			sortby = "dateDown";
-		}
-
-		QueryBuilder builder = archive.query("chatterbox");
-
-		if (channel != null)
-		{
-			builder.named("messagesthitracker").exact("channel", channel).sort(sortby);
-		}
-
-		UserProfile prof = inReq.getUserProfile();
-		if (prof != null)
-		{
-			Collection blocked = prof.getValues("blockedusers");
-			if (blocked != null && !blocked.isEmpty())
-			{
-				builder.notgroup("user", blocked);
-			}
-		}
-
-		HitTracker results = builder.search(inReq);
-		if (results != null)
-		{
-			results.setHitsPerPage(20);
-			inReq.putPageValue(results.getHitsName(), results);
-		}
-
-		// loadPageOfChat(inReq);
-
-	}
-
 	public void loadRecentChats(WebPageRequest inReq)
 	{
 
-		// OI Chats using -> loadRecentChatsLibraryCollection()
 		MediaArchive archive = getMediaArchive(inReq);
 
 		Data channel = loadCurrentChannel(inReq);
@@ -628,6 +545,10 @@ public class ChatModule extends BaseMediaModule
 		if ("librarycollection".equals(channeldatamodule))
 		{
 			Data librarycol = (Data) inReq.getPageValue("librarycol");
+			if (librarycol == null)
+			{
+				return; // No project, no project chat
+			}
 			entityid = librarycol.getId();
 		}
 
@@ -788,8 +709,9 @@ public class ChatModule extends BaseMediaModule
 			return currentchannel;
 		}
 
-		if ("collectiveproject".equals(channeldatamodule))
+		if ("emeteamchat".equals(channeltype) && "librarycollection".equals(channeldatamodule) && entity != null)
 		{
+			// A project's team chat is one persistent channel (web and app share it), not hourly sessions
 			// Todo: add 1 week expiration to create a new channel for the same project
 			currentchannel = (MultiValued) channelsearcher.query().exact("dataid", entity).exact("searchtype", channeldatamodule).sort("refreshdateDown").searchOne();
 			return currentchannel;

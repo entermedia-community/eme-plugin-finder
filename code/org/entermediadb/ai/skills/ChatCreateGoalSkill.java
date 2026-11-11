@@ -71,7 +71,7 @@ public class ChatCreateGoalSkill extends BaseSkill
 		super.process(messageContext);
 	}
 
-	/** Team chats live on a librarycollection, a collectiveproject or a goaltask. Goals belong to the collection */
+	/** Team chats live on a librarycollection or a goaltask. Goals belong to the collection */
 	protected String findCollectionId(ChatMessageContext inContext)
 	{
 		Data channel = inContext.getChannel();
@@ -90,10 +90,6 @@ public class ChatCreateGoalSkill extends BaseSkill
 		{
 			log.error("No entity " + searchtype + " " + entityid);
 			return null;
-		}
-		if ("collectiveproject".equals(searchtype))
-		{
-			return entity.get("parentcollectionid");
 		}
 		if ("goaltask".equals(searchtype))
 		{

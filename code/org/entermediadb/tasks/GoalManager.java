@@ -301,7 +301,6 @@ public class GoalManager implements CatalogEnabled
 	{
 		MediaArchive archive = getMediaArchive();
 
-		String topic = message.get("channel");
 		String content = message.get("message");
 
 		Searcher searcher = archive.getSearcher("projectgoal");
@@ -309,7 +308,6 @@ public class GoalManager implements CatalogEnabled
 		if (goal == null)
 		{
 			goal = (MultiValued) searcher.createNewData();
-			goal.setValue("goaltrackercolumn", topic);
 			goal.setValue("tickettype", "chat");
 			goal.setValue("ticketlevel", "2");
 			goal.setValue("projectstatus", "open");
