@@ -501,7 +501,7 @@ public class ProjectModule extends BaseMediaModule
 		{
 
 			inReq.setRequestParameter("collectionid", collectionid); // This was breaking redirects. Not sure it's
-																		// needed?
+			// needed?
 
 		}
 		return collectionid;
@@ -1174,7 +1174,7 @@ public class ProjectModule extends BaseMediaModule
 		}
 		asset.setProperty("importstatus", "needsmetadata");
 		asset.setValue("assetmodificationdate", contentitem.lastModified()); // This needs to be set or it will keep
-																				// thinking it's changed
+		// thinking it's changed
 		asset.setProperty("editstatus", "1"); // pending
 
 		// Category use ID?
@@ -1750,7 +1750,7 @@ public class ProjectModule extends BaseMediaModule
 				exists.setId(referralcode);
 				exists.setName("Auto Created");
 				exists.setValue("collectionid", referralcode); // Assume this is a project could be OI from community
-																// area tho
+				// area tho
 				mediaArchive.saveData("collectivelinkreferralcode", exists);
 
 				// Data collection = (Data) mediaArchive.getCachedData("librarycollection",
@@ -1899,12 +1899,13 @@ public class ProjectModule extends BaseMediaModule
 			String assetid = inReq.getRequestParameter("assetid");
 			if (assetid != null)
 			{
-				//Picked Assets
-				for (String aid : assetid.split(",")) {
+				// Picked Assets
+				for (String aid : assetid.split(","))
+				{
 					Asset asset = archive.getCachedAsset(aid);
 					if (asset != null)
 					{
-						savedassets.add(asset); 
+						savedassets.add(asset);
 					}
 				}
 			}
@@ -1916,25 +1917,25 @@ public class ProjectModule extends BaseMediaModule
 		Boolean broadcast = false;
 		if (message == null)
 		{
-				// Create message as the user
-				String channel = inReq.getRequestParameter("channel");
+			// Create message as the user
+			String channel = inReq.getRequestParameter("channel");
 
-				Date now = new Date();
-				Searcher chatterboxsearcher = archive.getSearcher("chatterbox");
-				message = chatterboxsearcher.createNewData();
-				String messagetext = inReq.getRequestParameter("chatmessage");
-				message.setValue("user", inReq.getUserName());
-				message.setValue("date", now);
-				message.setValue("channel", channel);
+			Date now = new Date();
+			Searcher chatterboxsearcher = archive.getSearcher("chatterbox");
+			message = chatterboxsearcher.createNewData();
+			String messagetext = inReq.getRequestParameter("chatmessage");
+			message.setValue("user", inReq.getUserName());
+			message.setValue("date", now);
+			message.setValue("channel", channel);
 
-				message.setValue("message", messagetext);
-				String entityid = inReq.getRequestParameter("entityid");
-				message.setValue("dataid", entityid);
+			message.setValue("message", messagetext);
+			String entityid = inReq.getRequestParameter("entityid");
+			message.setValue("dataid", entityid);
 
-				chatterboxsearcher.saveData(message);
-				broadcast = true;
-				// inReq.putPageValue("messageid", message.getId());
-				inReq.putPageValue("chat", message);
+			chatterboxsearcher.saveData(message);
+			broadcast = true;
+			// inReq.putPageValue("messageid", message.getId());
+			inReq.putPageValue("chat", message);
 		}
 		if (message == null)
 		{
@@ -1947,8 +1948,8 @@ public class ProjectModule extends BaseMediaModule
 		{
 			for (Iterator iterator = savedassets.iterator(); iterator.hasNext();)
 			{
-				//Data hit = (Data) iterator.next();
-				//Asset asset = archive.getCachedAsset(hit.getId());
+				// Data hit = (Data) iterator.next();
+				// Asset asset = archive.getCachedAsset(hit.getId());
 				Asset asset = (Asset) iterator.next();
 
 				asset.addValue("attachedtomessageid", message.getId());
@@ -2055,10 +2056,10 @@ public class ProjectModule extends BaseMediaModule
 			topicsearcher.saveData(topic);
 		}
 		inReq.setRequestParameter("dataid", topic.getId());
-		inReq.putPageValue("channeldatamodule", "collectiveproject"); 
+		inReq.putPageValue("channeldatamodule", "collectiveproject");
 		// inReq.setRequestParameter("createnew", "true");
-		inReq.putPageValue("currenttopic", topic); 
-		
+		inReq.putPageValue("currenttopic", topic);
+
 	}
 
 	public void loadProjectLikes(WebPageRequest inReq)

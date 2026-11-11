@@ -625,6 +625,12 @@ public class ChatModule extends BaseMediaModule
 			entityid = inReq.findValue("entityid");
 		}
 
+		if ("librarycollection".equals(channeldatamodule))
+		{
+			Data librarycol = (Data) inReq.getPageValue("librarycol");
+			entityid = librarycol.getId();
+		}
+
 		if ("emeprofile".equals(channeldatamodule))
 		{
 			Data emeprofile = (Data) inReq.getPageValue("myemeprofile");
