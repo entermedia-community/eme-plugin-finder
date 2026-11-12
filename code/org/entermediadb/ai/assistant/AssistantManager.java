@@ -348,6 +348,11 @@ public class AssistantManager extends BaseAiManager
 				}
 			}
 			String functionName = recentmessage.get("functionname");
+			if (functionName == null || functionName.isEmpty())
+			{
+				// A client that only sends text (the app) continues where the last agent message pointed
+				functionName = findNextFunctionName(inChannel);
+			}
 			if (functionName == null)
 			{
 				log.error("Should we have a function");
@@ -363,6 +368,25 @@ public class AssistantManager extends BaseAiManager
 			archive.saveData("chatterbox", agentmessage);
 			server.broadcastMessage(archive.getCatalogId(), agentmessage);
 		}
+	}
+
+	/**
+	 * The step the newest agent message in the channel said should handle the next user message
+	 * (its nextfunctionname), or null when no agent message names one. The web chat sends this itself
+	 * with every message (chatterbox.js lookupFunctionName); this covers clients that do not.
+	 */
+	protected String findNextFunctionName(Data inChannel)
+	{
+		Collection<MultiValued> recent = getMediaArchive().query("chatterbox").exact("channel", inChannel.getId()).exact("user", "agent").sort("dateDown").hitsPerPage(10).search();
+		for (MultiValued message : recent)
+		{
+			String next = message.get("nextfunctionname");
+			if (next != null && !next.isEmpty())
+			{
+				return next;
+			}
+		}
+		return null;
 	}
 
 	public MultiValued newAgentMessage(MultiValued recentmessage, ChatMessageContext chatMessageContext)

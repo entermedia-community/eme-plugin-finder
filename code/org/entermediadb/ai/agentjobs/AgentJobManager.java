@@ -1154,6 +1154,36 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 		}
 	}
 
+	/**
+	 * Sends a change to an agent chat message that clients already show. inCommand is messageappend (add
+	 * inOps to the end of the message) or messagereplace (swap the whole message for inOps). inSeq numbers
+	 * the patches of one message so a client can tell it missed one, and inStatus (working, streaming,
+	 * done or error) goes out in agentcontextvalues as messagestatus. Nothing is saved here: the caller
+	 * saves the finished message through the normal status update, which also resends it whole.
+	 */
+	public void broadcastMessagePatch(MultiValued inAgentMessage, String inCommand, org.json.simple.JSONArray inOps, int inSeq, String inStatus)
+	{
+		JSONObject message = new JSONObject();
+		message.put("ops", inOps);
+		JSONObject values = new JSONObject();
+		values.put("messagestatus", inStatus);
+
+		JSONObject patch = new JSONObject();
+		patch.put("catalogid", getMediaArchive().getCatalogId());
+		patch.put("messagetype", "message");
+		patch.put("user", "agent");
+		patch.put("channel", inAgentMessage.get("channel"));
+		patch.put("messageid", inAgentMessage.getId());
+		patch.put("command", inCommand);
+		patch.put("seq", Integer.valueOf(inSeq));
+		patch.put("message", message.toJSONString());
+		patch.put("agentcontextvalues", values.toJSONString());
+		patch.put("date", DateStorageUtil.getStorageUtil().getJsonFormat().format(new Date()));
+
+		ChatServer server = (ChatServer) getMediaArchive().getBean("chatServer");
+		server.broadcastMessage(patch);
+	}
+
 	public void handleStatusStarting(AgentContext inContext, AgentJobStep inAutomationStep)
 	{
 		if (!(inContext instanceof ChatMessageContext))

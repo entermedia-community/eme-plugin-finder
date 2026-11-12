@@ -8,6 +8,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -65,6 +68,7 @@ public class OpenCodeClient implements CatalogEnabled
     protected static final long SEND_MESSAGE_TIMEOUT_MS = TimeUnit.MINUTES.toMillis(10);
 
     protected final List<JSONObject> fieldRecentEvents = new ArrayList<>();
+    protected final Map<String, BlockingQueue<JSONObject>> fieldSessionQueues = new ConcurrentHashMap<>();
     protected long fieldEventSeq = 0;
     protected String fieldServerUrl = DEFAULT_SERVER_URL;
     protected HttpSharedConnection fieldConnection;
@@ -310,6 +314,16 @@ public class OpenCodeClient implements CatalogEnabled
             }
             fieldRecentEvents.notifyAll();
         }
+        // Hand the event to whoever is waiting on this session; this thread must never block
+        String sessionId = sessionIdOf(inEvent);
+        if (sessionId != null)
+        {
+            BlockingQueue<JSONObject> queue = fieldSessionQueues.get(sessionId);
+            if (queue != null)
+            {
+                queue.offer(inEvent);
+            }
+        }
     }
 
     public List<JSONObject> getRecentEvents()
@@ -452,7 +466,109 @@ public class OpenCodeClient implements CatalogEnabled
         return (JSONObject) unwrapData(postJson("/api/session", json));
     }
 
-    public Collection<JSONObject> listSessions() 
+    /**
+     * Creates a session in inFolder with an explicit permission ruleset, a JSON array of
+     * {@code {action, resource, effect}} rules (effects: allow, ask, deny). Later rules override
+     * earlier ones, so start with a broad allow and follow it with the denials.
+     */
+    public JSONObject createSession(String inTitle, String inFolder, JSONArray inPermissions)
+    {
+        JSONObject location = new JSONObject();
+        location.put("directory", inFolder);
+        JSONObject json = new JSONObject();
+        json.put("title", inTitle);
+        json.put("agent", "build");
+        json.put("location", location);
+        json.put("permissions", inPermissions);
+        Object created = unwrapData(postJson("/api/session", json));
+        JSONObject session = asObject(created);
+        if (session == null || session.get("id") == null)
+        {
+            // A rejected request comes back as an error body, not an exception
+            throw new IllegalStateException("OpenCode did not create a session in " + inFolder + ": " + created);
+        }
+        return session;
+    }
+
+    /** True when OpenCode still knows the session; a missing one answers with an error body that has no id */
+    public boolean sessionExists(String inSessionId)
+    {
+        if (inSessionId == null || inSessionId.isEmpty())
+        {
+            return false;
+        }
+        JSONObject session = getSession(inSessionId);
+        return session != null && inSessionId.equals(stringOf(session.get("id")));
+    }
+
+    /**
+     * Posts a prompt to the session. The v2 prompt endpoint never blocks, so this returns as soon as OpenCode
+     * has accepted it; the turn's progress arrives on the queue from {@link #openEventQueue(String)}.
+     * Returns null when accepted, otherwise why not.
+     */
+    public String sendPrompt(String inSessionId, String inText)
+    {
+        Object posted = postJson("/api/session/" + inSessionId + "/prompt", promptBody(inText));
+        JSONObject message = asObject(unwrapData(posted));
+        if (message == null || message.get("id") == null)
+        {
+            return "OpenCode did not accept the prompt: " + posted;
+        }
+        return null;
+    }
+
+    // ---------------------------------------------------------------------
+    // Per-session event queues
+    // ---------------------------------------------------------------------
+
+    /** Event type put on a queue that another caller took over, so its reader stops waiting */
+    public static final String SUPERSEDED = "client.superseded";
+
+    /**
+     * Opens a queue that receives every event for the session from now on. The SSE thread only hands events
+     * over, so a reader can block on the queue and wakes the moment OpenCode sends something. Only one reader
+     * per session: a second call takes over, and the first reader's queue gets a {@link #SUPERSEDED} event.
+     * Always call {@link #closeEventQueue(String, BlockingQueue)} when done.
+     */
+    @SuppressWarnings("unchecked")
+    public BlockingQueue<JSONObject> openEventQueue(String inSessionId)
+    {
+        BlockingQueue<JSONObject> queue = new LinkedBlockingQueue<JSONObject>();
+        BlockingQueue<JSONObject> old = fieldSessionQueues.put(inSessionId, queue);
+        if (old != null)
+        {
+            JSONObject superseded = new JSONObject();
+            superseded.put("type", SUPERSEDED);
+            superseded.put("data", new JSONObject());
+            old.offer(superseded);
+        }
+        return queue;
+    }
+
+    /** Stops feeding inQueue, unless another reader has already taken the session over */
+    public void closeEventQueue(String inSessionId, BlockingQueue<JSONObject> inQueue)
+    {
+        fieldSessionQueues.remove(inSessionId, inQueue);
+    }
+
+    /** The session an event belongs to; form.created nests it under data.form */
+    protected static String sessionIdOf(JSONObject inEvent)
+    {
+        JSONObject data = asObject(inEvent.get("data"));
+        if (data == null)
+        {
+            return null;
+        }
+        String sessionId = stringOf(data.get("sessionID"));
+        if (sessionId == null)
+        {
+            JSONObject form = asObject(data.get("form"));
+            sessionId = form == null ? null : stringOf(form.get("sessionID"));
+        }
+        return sessionId;
+    }
+
+    public Collection<JSONObject> listSessions()
     {
         CloseableHttpResponse response = null;
         try

@@ -407,6 +407,11 @@ public class ChatServer
 						return;
 					}
 
+					Object command = inMap.get("command");
+					if ("messageappend".equals(command) || "messagereplace".equals(command))
+					{
+						return; // A message being built up on screen is not a new message to push
+					}
 					Object messageText = inMap.get("message");
 					if (!inMap.get("messagetype").equals("message"))
 					{
