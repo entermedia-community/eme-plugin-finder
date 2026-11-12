@@ -545,11 +545,10 @@ public class ChatModule extends BaseMediaModule
 		if ("librarycollection".equals(channeldatamodule))
 		{
 			Data librarycol = (Data) inReq.getPageValue("librarycol");
-			if (librarycol == null)
+			if (librarycol != null)
 			{
-				return; // No project, no project chat
+				entityid = librarycol.getId();
 			}
-			entityid = librarycol.getId();
 		}
 
 		if ("emeprofile".equals(channeldatamodule))
