@@ -501,6 +501,17 @@ public class OpenCodeClient implements CatalogEnabled
         return session != null && inSessionId.equals(stringOf(session.get("id")));
     }
 
+    /** The folder the session works in ({@code location.directory}), or null when OpenCode does not know the session */
+    public String sessionDirectory(String inSessionId)
+    {
+        if (!sessionExists(inSessionId))
+        {
+            return null;
+        }
+        JSONObject location = asObject(getSession(inSessionId).get("location"));
+        return location == null ? null : stringOf(location.get("directory"));
+    }
+
     /**
      * Posts a prompt to the session. The v2 prompt endpoint never blocks, so this returns as soon as OpenCode
      * has accepted it; the turn's progress arrives on the queue from {@link #openEventQueue(String)}.

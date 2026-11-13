@@ -192,15 +192,24 @@ public class MyEmeChatSkill extends BaseSkill
 	protected String findOrCreateSession(OpenCodeClient inClient, ChatMessageContext inContext, String inPrompt)
 	{
 		Data channel = inContext.getChannel();
+		String userid = channel.get("user");
+		File folder = MyEmeWorkspace.folderFor(getMediaArchive(), userid);
+
+		// A session is only reused when it works in the user's session folder. One saved from before the folders
+		// moved (or started anywhere else) could still reach what it should not, so it is replaced.
 		String sessionid = channel.get("opencodesessionid");
-		if (inClient.sessionExists(sessionid))
+		String directory = inClient.sessionDirectory(sessionid);
+		if (directory != null && new File(directory).equals(folder))
 		{
 			return sessionid;
 		}
+		if (directory != null)
+		{
+			log.info("OpenCode session " + sessionid + " of channel " + channel.getId() + " works in " + directory + ", not in " + folder + "; starting a new one");
+		}
 
-		File folder = MyEmeWorkspace.folderFor(getMediaArchive(), channel.get("user"));
 		String title = inPrompt.length() > 200 ? inPrompt.substring(0, 200) : inPrompt;
-		JSONObject session = inClient.createSession(title, folder.getAbsolutePath(), MyEmeWorkspace.permissions());
+		JSONObject session = inClient.createSession(title, folder.getAbsolutePath(), MyEmeWorkspace.permissions(getMediaArchive(), userid));
 		sessionid = (String) session.get("id");
 		log.info("Started OpenCode session " + sessionid + " for channel " + channel.getId() + " in " + folder);
 
