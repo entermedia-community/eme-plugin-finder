@@ -171,10 +171,11 @@ public class EmeServerModule extends BaseMediaModule
 	}
 
 	/**
-	 * chat/connect.json: opens the user's chat with an EME server in its latest session (the channel with
-	 * the latest activity, refreshdate), however old. Whether to continue an old session or start a new one
-	 * is the user's choice (the app asks, then calls newsession.json). createnew=true starts a new session
-	 * right away. The other sessions stay available in the session history (sessions.json).
+	 * chat/connect.json: opens the user's chat with an EME server in its latest session (the channel
+	 * with the latest activity, refreshdate), however old. Whether to continue an old session or start
+	 * a new one is the user's choice (the app asks, then calls newsession.json). createnew=true starts
+	 * a new session right away. The other sessions stay available in the session history
+	 * (sessions.json).
 	 */
 	public void handleChatConnection(WebPageRequest inReq)
 	{
@@ -205,6 +206,10 @@ public class EmeServerModule extends BaseMediaModule
 		MultiValued server = (MultiValued) archive.getData("emeserver", serverid);
 		if (server == null)
 		{
+			server = (MultiValued) archive.query("emeserver").exact("idonremote", serverid).searchOne();
+		}
+		if (server == null)
+		{
 			throw new IllegalArgumentException("Unknown EME server: " + serverid);
 		}
 		Searcher channelsearcher = archive.getSearcher("channel");
@@ -220,9 +225,10 @@ public class EmeServerModule extends BaseMediaModule
 	}
 
 	/**
-	 * chat/newsession.json: starts a new session (channel) in the chat that sessions.json lists, picked by
-	 * serverid, collectionid or touser, and returns its id. An EME server chat is created from the server;
-	 * the others copy the type of the user's latest session there, so they need one to exist already.
+	 * chat/newsession.json: starts a new session (channel) in the chat that sessions.json lists, picked
+	 * by serverid, collectionid or touser, and returns its id. An EME server chat is created from the
+	 * server; the others copy the type of the user's latest session there, so they need one to exist
+	 * already.
 	 */
 	public void createChatSession(WebPageRequest inReq)
 	{
@@ -279,9 +285,9 @@ public class EmeServerModule extends BaseMediaModule
 	}
 
 	/**
-	 * The chat a request is about: {searchtype, dataid, touser}. touser is set for a direct message, whose
-	 * sessions belong to both users (dataid is then their collection, null before their first message);
-	 * null when the request names no chat.
+	 * The chat a request is about: {searchtype, dataid, touser}. touser is set for a direct message,
+	 * whose sessions belong to both users (dataid is then their collection, null before their first
+	 * message); null when the request names no chat.
 	 */
 	protected String[] findChatTarget(MediaArchive archive, WebPageRequest inReq)
 	{
@@ -292,21 +298,21 @@ public class EmeServerModule extends BaseMediaModule
 		{
 			// My EME: the chat with your own emeprofile, found by its owner (the login)
 			Data myemeprofile = archive.query("emeprofile").exact("owner", inReq.getUser().getId()).cachedSearchOne();
-			return new String[] { "emeprofile", myemeprofile == null ? null : myemeprofile.getId(), null };
+			return new String[] {"emeprofile", myemeprofile == null ? null : myemeprofile.getId(), null};
 		}
 		if (serverid != null && !serverid.isEmpty())
 		{
-			return new String[] { "emeserver", serverid, null };
+			return new String[] {"emeserver", serverid, null};
 		}
 		if (collectionid != null && !collectionid.isEmpty())
 		{
-			return new String[] { "librarycollection", collectionid, null };
+			return new String[] {"librarycollection", collectionid, null};
 		}
 		if (touser != null && !touser.isEmpty())
 		{
 			DirectMessageManager dms = (DirectMessageManager) archive.getBean("directMessageManager");
 			Data collection = dms.loadDirectMessageCollection(archive, inReq.getUser().getId(), touser, false);
-			return new String[] { "librarycollection", collection == null ? null : collection.getId(), touser };
+			return new String[] {"librarycollection", collection == null ? null : collection.getId(), touser};
 		}
 		return null;
 	}
@@ -334,9 +340,10 @@ public class EmeServerModule extends BaseMediaModule
 
 	/**
 	 * Lists the calling user's chat sessions (channels) of one chat, newest activity first. The chat is
-	 * picked by serverid (EME server), collectionid (project team chat), touser (direct message) or myeme=true (the user's own emeprofile); the
-	 * user always comes from the login, never from the request parameters. Each session is a property
-	 * map with the channel id, name, refreshdate and the text of its last non-system message.
+	 * picked by serverid (EME server), collectionid (project team chat), touser (direct message) or
+	 * myeme=true (the user's own emeprofile); the user always comes from the login, never from the
+	 * request parameters. Each session is a property map with the channel id, name, refreshdate and the
+	 * text of its last non-system message.
 	 */
 	public void loadChatSessions(WebPageRequest inReq)
 	{
