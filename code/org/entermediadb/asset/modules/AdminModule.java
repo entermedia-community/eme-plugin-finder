@@ -26,6 +26,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.entermediadb.asset.Category;
+import org.entermediadb.asset.MediaArchive;
 import org.entermediadb.authenticate.AutoLoginProvider;
 import org.entermediadb.authenticate.AutoLoginResult;
 import org.entermediadb.google.GoogleManager;
@@ -215,10 +216,9 @@ public class AdminModule extends BaseMediaModule
 			{
 				String userCode = getUserManager(inReq).createNewTempLoginKey(username, emailaddress, firstName, lastName, screenName, false);
 				log.info("Login code: " + userCode);
-				
+
 				String loginlinktoken = getUserManager(inReq).createNewTempLoginLink(username, emailaddress, firstName, lastName, screenName);
 				inReq.putPageValue("loginlinktoken", loginlinktoken);
-				
 
 				if (userCategory != null)
 				{
@@ -885,8 +885,6 @@ public class AdminModule extends BaseMediaModule
 		}
 	}
 
-
-
 	public void oauthTokenRemote(WebPageRequest inReq) throws Exception
 	{
 		// The user's key is registered on the root server (remoteemerauthserver, e.g. eme.world), not here.
@@ -908,8 +906,10 @@ public class AdminModule extends BaseMediaModule
 			fields.put(name, value);
 		}
 
+		MediaArchive archive = getMediaArchive(inReq);
+
 		// Base URL of the root's mediadb app, e.g. https://eme.world/site/mediadb
-		String remoteEmeAuthServer = getMediaArchive(inReq).getCatalogSettingValue("remoteemerauthserver");
+		String remoteEmeAuthServer = archive.getCatalogSettingValue("remoteemerauthserver");
 		if (remoteEmeAuthServer == null || remoteEmeAuthServer.trim().isEmpty())
 		{
 			putOauthError(inReq, "invalid_request", "remoteemerauthserver is not configured");
@@ -920,6 +920,7 @@ public class AdminModule extends BaseMediaModule
 		HttpSharedConnection client = new HttpSharedConnection();
 		CloseableHttpResponse resp = null;
 		Map userJson = null;
+		JSONObject json = null;
 		try
 		{
 			resp = client.sharedPost(remoteEmeAuthServer + "/site/mediadb/services/authentication/token.json", fields);
@@ -930,7 +931,7 @@ public class AdminModule extends BaseMediaModule
 				log.info("Remote key login for " + fields.get("username") + " rejected by " + remoteEmeAuthServer + " with " + status);
 				return;
 			}
-			JSONObject json = client.parseMap(resp);
+			json = client.parseMap(resp);
 			if (json != null && json.get("user") instanceof Map)
 			{
 				userJson = (Map) json.get("user");
@@ -971,6 +972,29 @@ public class AdminModule extends BaseMediaModule
 			putOauthError(inReq, "invalid_grant", "User is disabled on this server");
 			return;
 		}
+
+		if (json != null && json.get("publickey") != null)
+		{
+			String publickey = (String) json.get("publickey");
+			String keyId = (String) json.get("key_id");
+			Searcher keys = archive.getSearcherManager().getSearcher("system", "userkey");
+			Data key = (Data) keys.searchById(keyId);
+			if (key == null)
+			{
+				key = keys.createNewData();
+				key.setId(keyId);
+				key.setValue("userid", user.getId());
+				key.setValue("created", new Date());
+			}
+			key.setValue("label", "EME App logging in to " + archive.getCatalogSettingValue("siteroot"));
+			key.setValue("keytype", "publickey");
+			key.setValue("algorithm", getStringEncryption().getPublicKeyAlgorithm(publickey));
+			key.setValue("publickey", publickey);
+			key.setValue("enabled", true);
+			key.setValue("lastused", new Date());
+			keys.saveData(key);
+		}
+
 		startSession(inReq, user);
 		inReq.putPageValue("commandSucceeded", "ok");
 	}
