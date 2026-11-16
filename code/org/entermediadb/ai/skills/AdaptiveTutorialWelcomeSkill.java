@@ -16,12 +16,14 @@ public class AdaptiveTutorialWelcomeSkill extends AdaptiveTutorialBaseSkill
 	{
 		TutorMessageContext tutorMessageContext = (TutorMessageContext) inAgentContext;
 
-		String channelid = tutorMessageContext.getChannel().getId();
-		HitTracker messages = getMediaArchive().query("chatterbox").exact("channel", channelid).not("messagetype", "system").search();
-		if (messages.size() > 0)
-		{
-			return;
-		}
+		// String channelid = tutorMessageContext.getChannel().getId();
+		// HitTracker messages = getMediaArchive().query("chatterbox").exact("channel",
+		// channelid).not("messagetype", "system").search();
+
+		// if (messages.size() > 0)
+		// {
+		// return;
+		// }
 
 		String tutorialid = null;
 
