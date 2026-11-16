@@ -249,7 +249,7 @@ public class OpenCodeClient implements CatalogEnabled
                 int status = response.getStatusLine().getStatusCode();
                 if (status < 200 || status >= 300)
                 {
-                    throw new Exception("Unexpected status from /api/event: " + status);
+                    throw new Exception("Unexpected status from /api/event: " + status + " " + response.getStatusLine().getReasonPhrase());
                 }
 
                 InputStream input = response.getEntity().getContent();
