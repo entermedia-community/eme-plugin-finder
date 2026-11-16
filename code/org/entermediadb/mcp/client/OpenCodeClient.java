@@ -241,7 +241,9 @@ public class OpenCodeClient implements CatalogEnabled
             JsonRpcScanner scanner = null;
             try
             {
-                HttpGet method = new HttpGet(getServerUrl() + "/api/event");
+                String endpoint = getServerUrl() + "/api/event";
+                log.info("Start listening to: " + endpoint);
+                HttpGet method = new HttpGet(endpoint);
                 method.addHeader("Accept", "text/event-stream");
                 response = getConnection().sharedExecute(method);
                 fieldEventResponse = response;
@@ -250,6 +252,7 @@ public class OpenCodeClient implements CatalogEnabled
                 if (status < 200 || status >= 300)
                 {
                     throw new Exception("Unexpected status from /api/event: " + status + " " + response.getStatusLine().getReasonPhrase());
+                    
                 }
 
                 InputStream input = response.getEntity().getContent();
