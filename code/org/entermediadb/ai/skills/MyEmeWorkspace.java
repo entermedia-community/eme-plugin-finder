@@ -86,10 +86,25 @@ public class MyEmeWorkspace
 		if (!user.isDirectory() && !user.mkdirs() && !user.isDirectory())
 		{
 			throw new OpenEditException("Could not create the My EME workspace " + user.getAbsolutePath());
-		}
+		} 
 		File config = new File(user, "opencode.json");
 		if (!config.exists())
 		{
+			// create a system link to the template if it exists, otherwise write the starter config
+			ContentItem template = inArchive.getPageManager().getRepository().get("/system/workspaces/opencodeuser.json");
+			if (template != null && template.exists())
+			{
+				try
+				{
+					Files.createSymbolicLink(config.toPath(), new File(template.getAbsolutePath()).toPath());
+				}
+				catch (IOException e)
+				{
+					throw new OpenEditException("Could not create symbolic link for " + config.getAbsolutePath(), e);
+				}
+			}
+			/* 
+			// Copy the template content into the user's config
 			try
 			{
 				// the id passed requireSafeUserId, so it is safe inside JSON
@@ -100,6 +115,7 @@ public class MyEmeWorkspace
 			{
 				throw new OpenEditException("Could not write " + config.getAbsolutePath(), e);
 			}
+				*/
 		}
 		return user;
 	}
