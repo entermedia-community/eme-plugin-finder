@@ -68,6 +68,21 @@ public class AgentJobModule extends BaseMediaModule
         AgentJobManager manager = getAgentJobManager(inReq);
         String jobid = inReq.getRequestParameter("jobid");
         Collection<Map<String, String>> jobLogs = manager.getJobLogs(jobid);
+        String since = inReq.getRequestParameter("since"); // epoch millis; only newer entries (live polling)
+        if (since != null && since.matches("\\d+"))
+        {
+            long cutoff = Long.parseLong(since);
+            Collection<Map<String, String>> newer = new java.util.ArrayList<>();
+            for (Map<String, String> entry : jobLogs)
+            {
+                String ts = entry.get("timestamp");
+                if (ts != null && ts.matches("\\d+") && Long.parseLong(ts) > cutoff)
+                {
+                    newer.add(entry);
+                }
+            }
+            jobLogs = newer;
+        }
         inReq.putPageValue("joblogs", jobLogs);
     }
 

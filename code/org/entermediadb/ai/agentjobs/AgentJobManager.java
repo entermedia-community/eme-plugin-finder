@@ -454,7 +454,7 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 
 	public Collection<Map<String, String>> getJobLogs(String inJobId)
 	{
-		Data agentJobRun = getMediaArchive().query("agentjobrun").exact("agentjob", inJobId).searchOne();
+		Data agentJobRun = getMediaArchive().query("agentjobrun").exact("agentjob", inJobId).sort("startdateDown").searchOne();
 		if (agentJobRun == null)
 		{
 			return new ArrayList<>();

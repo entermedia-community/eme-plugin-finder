@@ -3655,6 +3655,19 @@
 	</bean>
 
 
+
+	<bean id="FulserviceBukModule" class="org.entermediadb.fulservice.buk.FulserviceBukModule" scope="prototype">
+		<property name="moduleManager">
+			<ref bean="moduleManager" />
+		</property>
+	</bean>
+
+	<bean id="bukSyncSkill" class="org.entermediadb.fulservice.buk.BukSyncSkill" scope="prototype">
+		<property name="moduleManager">
+			<ref bean="moduleManager" />
+		</property>
+	</bean>
+
 	<bean id="handleErrorSkill" class="org.entermediadb.ai.skills.HandleErrorSkill"
 		lazy-init="default" scope="prototype">
 		<property name="moduleManager">
