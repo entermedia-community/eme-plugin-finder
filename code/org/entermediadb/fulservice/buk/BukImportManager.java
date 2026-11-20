@@ -239,12 +239,12 @@ public class BukImportManager
 
 	protected static class DocStats
 	{
-		long listed, downloaded, existing, notThisMonth, failed;
+		long listed, downloaded, replaced, existing, notThisMonth, failed;
 		boolean disabled; // token has no documents access: stop asking
 
 		String summary()
 		{
-			return downloaded + " new, " + existing + " already stored, " + notThisMonth + " older, " + failed + " failed" + (disabled ? " (documents access denied, skipped)" : "");
+			return downloaded + " new, " + replaced + " replaced, " + existing + " already stored, " + notThisMonth + " older, " + failed + " failed" + (disabled ? " (documents access denied, skipped)" : "");
 		}
 	}
 
@@ -263,7 +263,7 @@ public class BukImportManager
 
 	/**
 	 * Downloads the files BUK uploaded this month (the month of the run) for one employee, to
-	 * <root>/<yyyy-MM>/<employeeId>/<fileId>.<ext>. A file already on disk is never fetched again.
+	 * <root>/<employeeId>/<fileId>.<ext>. A file already stored with the same created date is skipped; a changed created date replaces it.
 	 * The original filename is not kept: it holds the worker's name. No entities are created.
 	 */
 	protected void importDocuments(Object inEmployeeId, MultiValued inRun, Date inNow, DocStats inStats, Progress inProgress)
@@ -293,13 +293,15 @@ public class BukImportManager
 				}
 				String filename = str(f.get("filename"));
 				String ext = filename.contains(".") ? filename.substring(filename.lastIndexOf('.') + 1).replaceAll("[^A-Za-z0-9]", "").toLowerCase() : "bin";
-				File dir = new File(new File(docsRoot(), month), String.valueOf(inEmployeeId));
+				File dir = new File(docsRoot(), String.valueOf(inEmployeeId));
 				File file = new File(dir, fileId + "." + ext);
-				if (file.exists())
+				// The file's modified time is set to BUK's created_at, so an equal time means "same document, already stored"
+				if (file.exists() && file.lastModified() == created.getTime())
 				{
 					inStats.existing++;
 					continue;
 				}
+				boolean replacing = file.exists();
 				try
 				{
 					byte[] body = fieldClient.downloadDoc(inEmployeeId, fileId);
@@ -307,7 +309,25 @@ public class BukImportManager
 					java.nio.file.Path tmp = java.nio.file.Path.of(file.getPath() + ".part");
 					Files.write(tmp, body);
 					Files.move(tmp, file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-					inStats.downloaded++;
+					file.setLastModified(created.getTime());
+					// Same document id saved earlier under another extension: the latest one replaces it
+					File[] older = dir.listFiles((d, n) -> n.startsWith(fileId + ".") && !n.equals(file.getName()) && !n.endsWith(".part"));
+					if (older != null)
+					{
+						for (File x : older)
+						{
+							x.delete();
+							replacing = true;
+						}
+					}
+					if (replacing)
+					{
+						inStats.replaced++;
+					}
+					else
+					{
+						inStats.downloaded++;
+					}
 				}
 				catch (BukException ex)
 				{
