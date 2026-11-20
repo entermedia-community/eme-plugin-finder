@@ -38,32 +38,83 @@ public class BukClient
 	/** @throws BukException with a stable error code (no_token, http_401, http_429, network, ...) */
 	public JSONObject employees(int inPage) throws BukException
 	{
-		if (!isConfigured())
+		return getJson(URI.create(fieldBaseUrl + "/employees?page=" + inPage + "&page_size=" + PAGE_SIZE));
+	}
+
+	/** Files BUK holds for one employee: {"employee_files":[{file_id, filename, path, created_at}]} (no download URL) */
+	public JSONObject docs(Object inEmployeeId) throws BukException
+	{
+		return getJson(URI.create(apiRoot() + "/employees/" + inEmployeeId + "/docs"));
+	}
+
+	/** Bytes of one employee file. A redirect (e.g. to S3) is followed WITHOUT the auth_token header. */
+	public byte[] downloadDoc(Object inEmployeeId, Object inFileId) throws BukException
+	{
+		URI uri = URI.create(apiRoot() + "/employees/" + inEmployeeId + "/docs/" + inFileId);
+		HttpResponse<byte[]> res = send(uri, true, HttpResponse.BodyHandlers.ofByteArray());
+		if (res.statusCode() >= 300 && res.statusCode() < 400)
+		{
+			String loc = res.headers().firstValue("Location").orElse(null);
+			if (loc == null)
+			{
+				throw new BukException("http_" + res.statusCode(), "Redirect without Location");
+			}
+			res = send(uri.resolve(loc), false, HttpResponse.BodyHandlers.ofByteArray());
+		}
+		if (res.statusCode() != 200)
+		{
+			throw new BukException("http_" + res.statusCode(), "BUK returned HTTP " + res.statusCode());
+		}
+		return res.body();
+	}
+
+	/** The documents endpoints live under /api/v1 (no country segment) */
+	protected String apiRoot()
+	{
+		return fieldBaseUrl.replaceAll("/chile$", "");
+	}
+
+	protected JSONObject getJson(URI inUri) throws BukException
+	{
+		HttpResponse<String> res = send(inUri, true, HttpResponse.BodyHandlers.ofString());
+		if (res.statusCode() != 200)
+		{
+			throw new BukException("http_" + res.statusCode(), "BUK returned HTTP " + res.statusCode());
+		}
+		try
+		{
+			return (JSONObject) new JSONParser().parse(res.body());
+		}
+		catch (Exception ex)
+		{
+			throw new BukException("bad_json", "BUK returned an unreadable body");
+		}
+	}
+
+	/** Retries 429, 5xx and network errors (3 attempts); any other status is returned for the caller to judge */
+	protected <T> HttpResponse<T> send(URI inUri, boolean inAuth, HttpResponse.BodyHandler<T> inHandler) throws BukException
+	{
+		if (inAuth && !isConfigured())
 		{
 			throw new BukException("no_token", "Environment variable " + TOKEN_ENV + " is not set");
 		}
-		URI uri = URI.create(fieldBaseUrl + "/employees?page=" + inPage + "&page_size=" + PAGE_SIZE);
 		BukException last = null;
 		for (int attempt = 1; attempt <= 3; attempt++)
 		{
 			try
 			{
-				HttpRequest req = HttpRequest.newBuilder(uri).timeout(Duration.ofSeconds(30)).header("auth_token", fieldToken).header("Accept", "application/json").GET().build();
-				HttpResponse<String> res = fieldHttp.send(req, HttpResponse.BodyHandlers.ofString());
-				int code = res.statusCode();
-				if (code == 200)
+				HttpRequest.Builder b = HttpRequest.newBuilder(inUri).timeout(Duration.ofSeconds(60)).GET();
+				if (inAuth)
 				{
-					return (JSONObject) new JSONParser().parse(res.body());
+					b.header("auth_token", fieldToken).header("Accept", "application/json");
 				}
-				last = new BukException("http_" + code, "BUK returned HTTP " + code);
+				HttpResponse<T> res = fieldHttp.send(b.build(), inHandler);
+				int code = res.statusCode();
 				if (code != 429 && code < 500)
 				{
-					throw last; // auth / client errors do not heal by retrying
+					return res;
 				}
-			}
-			catch (BukException ex)
-			{
-				throw ex;
+				last = new BukException("http_" + code, "BUK returned HTTP " + code);
 			}
 			catch (InterruptedException ex)
 			{

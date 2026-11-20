@@ -3668,6 +3668,18 @@
 		</property>
 	</bean>
 
+	<bean id="FulserviceSclModule" class="org.entermediadb.fulservice.scl.FulserviceSclModule" scope="prototype">
+		<property name="moduleManager">
+			<ref bean="moduleManager" />
+		</property>
+	</bean>
+
+	<bean id="sclSyncSkill" class="org.entermediadb.fulservice.scl.SclSyncSkill" scope="prototype">
+		<property name="moduleManager">
+			<ref bean="moduleManager" />
+		</property>
+	</bean>
+
 	<bean id="handleErrorSkill" class="org.entermediadb.ai.skills.HandleErrorSkill"
 		lazy-init="default" scope="prototype">
 		<property name="moduleManager">

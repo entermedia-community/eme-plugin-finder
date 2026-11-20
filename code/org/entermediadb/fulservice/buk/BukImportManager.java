@@ -1,5 +1,9 @@
 package org.entermediadb.fulservice.buk;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.security.MessageDigest;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
 import java.util.concurrent.locks.ReentrantLock;
@@ -71,6 +75,7 @@ public class BukImportManager
 		Searcher runs = fieldArchive.getSearcher("fsejecucionfuente");
 		Searcher workers = fieldArchive.getSearcher("fstrabajador");
 		Searcher raws = fieldArchive.getSearcher("fsregistrocrudo");
+		DocStats docs = new DocStats();
 
 		Date started = new Date();
 		MultiValued run = (MultiValued) runs.createNewData();
@@ -88,7 +93,7 @@ public class BukImportManager
 		runs.saveData(run);
 		inProgress.log("info", "Started BUK " + inRunType + " import " + run.getId());
 
-		long read = 0, written = 0, rejected = 0;
+		long read = 0, written = 0, rejected = 0, skipped = 0;
 		String status = "success";
 		String errorCode = null, errorDetail = null;
 		try
@@ -107,8 +112,16 @@ public class BukImportManager
 					read++;
 					try
 					{
-						upsert(workers, raws, run, (JSONObject) o, started);
-						written++;
+						JSONObject emp = (JSONObject) o;
+						if (upsert(workers, raws, run, emp, started))
+						{
+							written++;
+						}
+						else
+						{
+							skipped++;
+						}
+						importDocuments(emp.get("id"), run, started, docs, inProgress);
 					}
 					catch (Exception ex)
 					{
@@ -116,7 +129,7 @@ public class BukImportManager
 						log.error("Rejected BUK record: " + ex.getMessage());
 					}
 				}
-				inProgress.log("info", "Page " + page + " imported: " + read + " read, " + written + " saved, " + rejected + " rejected");
+				inProgress.log("info", "Page " + page + " imported: " + read + " read, " + written + " saved, " + skipped + " unchanged, " + rejected + " rejected; documents: " + docs.summary());
 				if (data.size() < BukClient.PAGE_SIZE)
 				{
 					break;
@@ -154,11 +167,12 @@ public class BukImportManager
 		run.setValue("fserrorcode", errorCode);
 		run.setValue("fserrordetail", errorDetail);
 		runs.saveData(run);
-		inProgress.log("failed".equals(status) ? "error" : "success", "Finished: " + status + " (" + read + " read, " + written + " saved, " + rejected + " rejected)");
+		inProgress.log("failed".equals(status) ? "error" : "success", "Finished: " + status + " (" + read + " read, " + written + " saved, " + skipped + " unchanged, " + rejected + " rejected; documents: " + docs.summary() + ")");
 		return run;
 	}
 
-	protected void upsert(Searcher inWorkers, Searcher inRaws, MultiValued inRun, JSONObject inEmp, Date inNow)
+	/** @return false when the employee is already stored with an identical redacted record (nothing written) */
+	protected boolean upsert(Searcher inWorkers, Searcher inRaws, MultiValued inRun, JSONObject inEmp, Date inNow)
 	{
 		Object extid = inEmp.get("id");
 		if (extid == null)
@@ -166,19 +180,36 @@ public class BukImportManager
 			throw new IllegalArgumentException("record without id");
 		}
 		String id = "buk-" + extid;
+		String first = str(inEmp.get("first_name"));
+		String last = str(inEmp.get("surname"));
+		String name = (first + " " + last).trim();
+		JSONObject job = inEmp.get("current_job") instanceof JSONObject ? (JSONObject) inEmp.get("current_job") : new JSONObject();
+
+		// Redacted copy only: whitelist, never the raw payload
+		JSONObject safe = new JSONObject();
+		safe.put("id", extid);
+		safe.put("name", name);
+		safe.put("status", inEmp.get("status"));
+		safe.put("role", job.get("role") instanceof JSONObject ? ((JSONObject) job.get("role")).get("name") : job.get("role_name"));
+		safe.put("cost_center", job.get("cost_center"));
+		safe.put("ficha", inEmp.get("code_sheet"));
+		safe.put("start_date", job.get("start_date"));
+		safe.put("end_date", job.get("end_date"));
+		String payload = safe.toJSONString();
+		String hash = sha256(payload.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+
 		MultiValued worker = (MultiValued) inWorkers.searchById(id);
 		boolean isnew = worker == null;
+		if (!isnew && inRaws.query().exact("fssistemafuente", "buk").exact("fsrecordtype", "employee").exact("fsexternalid", String.valueOf(extid)).exact("filehash", hash).searchOne() != null)
+		{
+			return false; // same data as a previous run: do not re-import
+		}
 		if (isnew)
 		{
 			worker = (MultiValued) inWorkers.createNewData();
 			worker.setId(id);
 			worker.setValue("datecreated", inNow);
 		}
-		String first = str(inEmp.get("first_name"));
-		String last = str(inEmp.get("surname"));
-		String name = (first + " " + last).trim();
-		JSONObject job = inEmp.get("current_job") instanceof JSONObject ? (JSONObject) inEmp.get("current_job") : new JSONObject();
-
 		worker.setValue("fstenant", "fulservice");
 		worker.setValue("name", name.isEmpty() ? id : name);
 		worker.setValue("fsbukemployeeid", String.valueOf(extid));
@@ -189,27 +220,156 @@ public class BukImportManager
 		worker.setValue("datemodified", inNow);
 		inWorkers.saveData(worker);
 
-		// Redacted copy only: whitelist, never the raw payload
-		JSONObject safe = new JSONObject();
-		safe.put("id", extid);
-		safe.put("name", name);
-		safe.put("status", inEmp.get("status"));
-		safe.put("role", job.get("role") instanceof JSONObject ? ((JSONObject) job.get("role")).get("name") : job.get("role_name"));
-		safe.put("cost_center", job.get("cost_center"));
-		safe.put("ficha", inEmp.get("code_sheet"));
 		MultiValued raw = (MultiValued) inRaws.createNewData();
 		raw.setValue("fstenant", "fulservice");
 		raw.setValue("fssistemafuente", "buk");
 		raw.setValue("fsejecucionfuente", inRun.getId());
 		raw.setValue("fsrecordtype", "employee");
 		raw.setValue("fsexternalid", String.valueOf(extid));
-		raw.setValue("fspayloadjson", safe.toJSONString());
+		raw.setValue("fspayloadjson", payload);
+		raw.setValue("filehash", hash);
 		raw.setValue("fsredacted", true);
 		raw.setValue("fsingestedat", inNow);
 		raw.setValue("datecreated", inNow);
 		inRaws.saveData(raw);
 		worker.setValue("fsregistrocrudo", raw.getId());
 		inWorkers.saveData(worker);
+		return true;
+	}
+
+	protected static class DocStats
+	{
+		long listed, downloaded, existing, notThisMonth, failed;
+		boolean disabled; // token has no documents access: stop asking
+
+		String summary()
+		{
+			return downloaded + " new, " + existing + " already stored, " + notThisMonth + " older, " + failed + " failed" + (disabled ? " (documents access denied, skipped)" : "");
+		}
+	}
+
+	/** Root folder for downloaded documents. Override with the FULSERVICE_BUK_DOCS_DIR environment variable. */
+	public static final String DOCS_DIR_ENV = "FULSERVICE_BUK_DOCS_DIR";
+
+	protected File docsRoot()
+	{
+		String env = System.getenv(DOCS_DIR_ENV);
+		if (env != null && !env.isBlank())
+		{
+			return new File(env);
+		}
+		return new File(fieldArchive.getPageManager().getRepository().getStub("/WEB-INF/data/" + fieldArchive.getCatalogId() + "/buk-docs").getAbsolutePath());
+	}
+
+	/**
+	 * Downloads the files BUK uploaded this month (the month of the run) for one employee, to
+	 * <root>/<yyyy-MM>/<employeeId>/<fileId>.<ext>. A file already on disk is never fetched again.
+	 * The original filename is not kept: it holds the worker's name. No entities are created.
+	 */
+	protected void importDocuments(Object inEmployeeId, MultiValued inRun, Date inNow, DocStats inStats, Progress inProgress)
+	{
+		if (inStats.disabled || inEmployeeId == null)
+		{
+			return;
+		}
+		String month = new SimpleDateFormat("yyyy-MM").format(inNow);
+		try
+		{
+			Object list = fieldClient.docs(inEmployeeId).get("employee_files");
+			if (!(list instanceof JSONArray))
+			{
+				return;
+			}
+			for (Object o : (JSONArray) list)
+			{
+				JSONObject f = (JSONObject) o;
+				Object fileId = f.get("file_id");
+				Date created = parseBukDateTime(f.get("created_at"));
+				inStats.listed++;
+				if (fileId == null || created == null || !month.equals(new SimpleDateFormat("yyyy-MM").format(created)))
+				{
+					inStats.notThisMonth++;
+					continue;
+				}
+				String filename = str(f.get("filename"));
+				String ext = filename.contains(".") ? filename.substring(filename.lastIndexOf('.') + 1).replaceAll("[^A-Za-z0-9]", "").toLowerCase() : "bin";
+				File dir = new File(new File(docsRoot(), month), String.valueOf(inEmployeeId));
+				File file = new File(dir, fileId + "." + ext);
+				if (file.exists())
+				{
+					inStats.existing++;
+					continue;
+				}
+				try
+				{
+					byte[] body = fieldClient.downloadDoc(inEmployeeId, fileId);
+					dir.mkdirs();
+					java.nio.file.Path tmp = java.nio.file.Path.of(file.getPath() + ".part");
+					Files.write(tmp, body);
+					Files.move(tmp, file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+					inStats.downloaded++;
+				}
+				catch (BukException ex)
+				{
+					inStats.failed++;
+					log.error("BUK document download failed (" + ex.getCode() + ")");
+				}
+			}
+		}
+		catch (BukException ex)
+		{
+			if ("http_403".equals(ex.getCode()) || "http_401".equals(ex.getCode()))
+			{
+				inStats.disabled = true;
+				inProgress.log("warning", "BUK token cannot read documents (" + ex.getCode() + "); skipping documents for this run");
+			}
+			else if (!"http_404".equals(ex.getCode()))
+			{
+				inStats.failed++;
+				log.error("BUK document list failed (" + ex.getCode() + ")");
+			}
+		}
+		catch (Exception ex)
+		{
+			inStats.failed++;
+			log.error("BUK document import error: " + ex.getClass().getSimpleName());
+		}
+	}
+
+	/** BUK file timestamps look like "27/03/23 11:28" */
+	protected static Date parseBukDateTime(Object o)
+	{
+		if (o == null)
+		{
+			return null;
+		}
+		try
+		{
+			SimpleDateFormat f = new SimpleDateFormat("dd/MM/yy HH:mm");
+			f.setLenient(false);
+			return f.parse(String.valueOf(o));
+		}
+		catch (Exception ex)
+		{
+			return null;
+		}
+	}
+
+	protected static String sha256(byte[] inBytes)
+	{
+		try
+		{
+			StringBuilder sb = new StringBuilder();
+			for (byte b : MessageDigest.getInstance("SHA-256").digest(inBytes))
+			{
+				sb.append(String.format("%02x", b));
+			}
+			return sb.toString();
+		}
+		catch (Exception ex)
+		{
+			throw new IllegalStateException(ex);
+		}
 	}
 
 	protected static String str(Object o)
