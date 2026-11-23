@@ -483,6 +483,7 @@ public class OpenCodeClient implements CatalogEnabled
         json.put("agent", "build");
         json.put("location", location);
         json.put("permissions", inPermissions);
+        getConnection().putSharedHeader("x-opencode-directory", inFolder);
         Object created = unwrapData(postJson("/api/session", json));
         JSONObject session = asObject(created);
         if (session == null || session.get("id") == null)

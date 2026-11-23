@@ -66,7 +66,11 @@ public class AutoLoginByToken extends BaseAutoLogin implements AutoLoginProvider
 
 				StringEncryption encryption = userManager.getStringEncryption();
 				Data key = getSearcherManager().getCachedData("system", "userkey", keyId);
-
+				if (key == null)
+				{
+					log.info("Signature  login failed: Key not found for key_id: " + keyId);
+					return null;
+				}
 				boolean valid = encryption.verifyKeyLogin(username, keyId, key.get("publickey"), timestamp, nonce, signature);
 				if (valid)
 				{

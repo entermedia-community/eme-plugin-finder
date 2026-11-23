@@ -4,14 +4,16 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
-
 import org.entermediadb.asset.MediaArchive;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.openedit.Data;
 import org.openedit.OpenEditException;
+import org.openedit.data.Searcher;
 import org.openedit.repository.ContentItem;
 
 /**
@@ -94,30 +96,87 @@ public class MyEmeWorkspace
 			ContentItem template = inArchive.getPageManager().getRepository().get("/system/workspaces/opencodeuser.json");
 			if (template != null && template.exists())
 			{
+				// Copy the template content into the user's config
 				try
 				{
-					Files.createSymbolicLink(config.toPath(), new File(template.getAbsolutePath()).toPath());
+					// the id passed requireSafeUserId, so it is safe inside JSON
+					String text = userConfigTemplate(inArchive).replace(USER_ID_PLACEHOLDER, inUserId);
+					Files.write(config.toPath(), text.getBytes(StandardCharsets.UTF_8));
 				}
 				catch (IOException e)
 				{
-					throw new OpenEditException("Could not create symbolic link for " + config.getAbsolutePath(), e);
+					throw new OpenEditException("Could not write " + config.getAbsolutePath(), e);
 				}
 			}
-			/* 
-			// Copy the template content into the user's config
+		}
+		//Create the .env file for the user if it doesn't exist
+		File env = new File(user, ".env");
+		if (!env.exists())
+		{
+			//Generate EME_KEY_ID and EME_PRIVATE_KEY for the user
+			String[] keyPair = generateEdKeyPair();
+
+			Searcher keys = inArchive.getSearcherManager().getSearcher("system", "userkey");
+			Data key = keys.createNewData();
+			key.setValue("userid", inUserId);
+			key.setValue("created", new Date());
+		
+			key.setValue("label", "EME App logging in to " + inArchive.getCatalogSettingValue("siteroot"));
+			key.setValue("keytype", "publickey");
+			key.setValue("algorithm", "Ed25519");
+			key.setValue("publickey", keyPair[0]);
+			key.setValue("enabled", true);
+			key.setValue("lastused", new Date());
+			keys.saveData(key);
+			
 			try
 			{
-				// the id passed requireSafeUserId, so it is safe inside JSON
-				String text = userConfigTemplate(inArchive).replace(USER_ID_PLACEHOLDER, inUserId);
-				Files.write(config.toPath(), text.getBytes(StandardCharsets.UTF_8));
+				//save EME_USER and Ed25519 key pair to the .env file
+				StringBuilder envContent = new StringBuilder();
+				envContent.append("EME_USER=").append(inUserId).append("\n");
+				envContent.append("EME_KEY_ID=").append(keyPair[0]).append("\n");
+				envContent.append("EME_PRIVATE_KEY=").append(keyPair[1]).append("\n");
+				Files.write(env.toPath(), envContent.toString().getBytes(StandardCharsets.UTF_8));
 			}
 			catch (IOException e)
 			{
-				throw new OpenEditException("Could not write " + config.getAbsolutePath(), e);
+				throw new OpenEditException("Could not create " + env.getAbsolutePath(), e);
 			}
-				*/
 		}
 		return user;
+	}
+
+	/**
+	 * Generate an Ed25519 key pair for the user. The key pair is returned as base64url encoded
+	 * [keyId, privateKey] where keyId is a unique identifier (timestamp+random) and privateKey is
+	 * the PKCS#8 encoded private key.
+	 * 
+	 * @return [keyId, privateKey] as base64url strings
+	 */
+	protected static String[] generateEdKeyPair()
+	{
+		try
+		{
+			// Generate Ed25519 key pair
+			java.security.KeyPairGenerator kpg = java.security.KeyPairGenerator.getInstance("Ed25519");
+			java.security.KeyPair pair = kpg.generateKeyPair();
+			
+			// Encode both keys as base64url
+			java.util.Base64.Encoder encoder = java.util.Base64.getUrlEncoder().withoutPadding();
+			String publicKeyBase64url = encoder.encodeToString(pair.getPublic().getEncoded());
+			String privateKeyBase64url = encoder.encodeToString(pair.getPrivate().getEncoded());
+			
+			// Generate a unique key ID: use a hash of the public key + timestamp
+			String keyId = System.currentTimeMillis() + "_" + publicKeyBase64url.substring(0, Math.min(16, publicKeyBase64url.length()));
+
+			//Save the key 
+			
+			return new String[] {keyId, privateKeyBase64url};
+		}
+		catch (Exception e)
+		{
+			throw new OpenEditException("Failed to generate Ed25519 key pair: " + e.getMessage(), e);
+		}
 	}
 
 	/** The text of the user config template, or a bare starter when there is no template (or no archive to find it with) */
