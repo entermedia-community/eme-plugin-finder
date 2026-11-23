@@ -60,10 +60,15 @@ public abstract class BaseAgentJobOrchestrator implements AgentJobOrchestrator, 
 		{
 			for (AgentJobStep step : inAgentJob.getAgentJob().getAllSteps())
 			{
+				if (inAgentJob.isCancelled())
+				{
+					break;
+				}
 				runStep(inAgentJob, step);
 				finishedStep(inAgentJob, step);
 			}
-			inAgentJob.setCompleted(true);
+			// A stopped job is not complete even when it was on its last step
+			inAgentJob.setCompleted(!inAgentJob.isCancelled());
 		}
 		catch (Exception e)
 		{

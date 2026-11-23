@@ -57,6 +57,15 @@ public class AgentJobModule extends BaseMediaModule
         manager.rerunJob(jobid);
     }
 
+    public void stopJob(WebPageRequest inReq)
+    {
+        AgentJobManager manager = getAgentJobManager(inReq);
+        String jobid = inReq.getRequestParameter("jobid");
+        boolean stopped = jobid != null && manager.stopJob(jobid);
+        inReq.putPageValue("stopped", stopped);
+        inReq.putPageValue("jobid", jobid);
+    }
+
     public void getFilteredJobs(WebPageRequest inReq)
     {
         AgentJobManager manager = getAgentJobManager(inReq);

@@ -23,6 +23,7 @@ import org.entermediadb.ai.automation.AutomationManager;
 import org.entermediadb.ai.llm.LlmResponse;
 import org.entermediadb.asset.MediaArchive;
 import org.entermediadb.mcp.client.OpenCodeClient;
+import org.entermediadb.mcp.client.SessionStatus;
 import org.entermediadb.scripts.ScriptLogger;
 import org.entermediadb.websocket.chat.ChatServer;
 import org.json.simple.JSONObject;
@@ -450,6 +451,66 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 			log.error("Could not run agentjob " + job.getId(), ex);
 		}
 		checkQueue();
+	}
+
+	public static final String STOPPED_BY_USER = "Stopped by user";
+
+	/**
+	 * Stops a running agentjob. The step that is running now finishes (an opencode session is
+	 * interrupted so it returns quickly) and the remaining steps are skipped. A job saved as running
+	 * that has no thread here (e.g. left over from a restart) is just marked stopped.
+	 *
+	 * @return false if there is no such job or it is not running
+	 */
+	public boolean stopJob(String inJobId)
+	{
+		AgentJob job = (AgentJob) getMediaArchive().getCachedData("agentjob", inJobId);
+		AgentJobRunnable running = (AgentJobRunnable) currentJobsRunning.get(inJobId);
+		if (running != null)
+		{
+			running.setCancelled(true);
+			job = running.getAgentJob();
+		}
+		else if (job == null || !"running".equals(job.get("status")))
+		{
+			return false;
+		}
+
+		for (AgentJobStep step : job.getAllSteps())
+		{
+			String status = step.get("status");
+			if (!"running".equals(status) && !"new".equals(status))
+			{
+				continue;
+			}
+			if ("running".equals(status))
+			{
+				SessionStatus session = getOpenCodeClient().loadStatus(step.getId());
+				if (session != null && session.getSessionId() != null)
+				{
+					try
+					{
+						getOpenCodeClient().abortSession(session.getSessionId());
+					}
+					catch (Exception ex)
+					{
+						log.error("Could not interrupt opencode session for step " + step.getId(), ex);
+					}
+				}
+			}
+			// Steps that are still running keep "error", so completeIfRunning will not mark them complete
+			step.setValue("status", "error");
+			step.setValue("errordetails", STOPPED_BY_USER);
+			getMediaArchive().saveData("agentjobstep", step.getAgentJobStepData());
+		}
+
+		job.setValue("status", "error");
+		job.setValue("errordetails", STOPPED_BY_USER);
+		job.setValue("enddate", new Date());
+		getMediaArchive().saveData("agentjob", job);
+		createAgentLog(job.getId(), null, "error", STOPPED_BY_USER);
+		log.info("Stopped agentjob " + job.getId());
+		return true;
 	}
 
 	public Collection<Map<String, String>> getJobLogs(String inJobId)

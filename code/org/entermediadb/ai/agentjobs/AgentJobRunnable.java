@@ -43,7 +43,19 @@ public class AgentJobRunnable implements Runnable
 		return getAgentJob().getId();
 	}
 	protected boolean fieldCompleted;
+	/** Set from another thread by AgentJobManager.stopJob; the orchestrator checks it between steps */
+	protected volatile boolean fieldCancelled;
 	protected AgentJobOrchestrator fieldAgentJobOrchestrator;
+
+	public boolean isCancelled()
+	{
+		return fieldCancelled;
+	}
+
+	public void setCancelled(boolean inCancelled)
+	{
+		fieldCancelled = inCancelled;
+	}
 
 	public AgentJobOrchestrator getAgentJobOrchestrator()
 	{
