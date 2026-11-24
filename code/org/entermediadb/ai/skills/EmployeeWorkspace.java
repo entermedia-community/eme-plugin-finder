@@ -17,7 +17,7 @@ import org.openedit.data.Searcher;
 import org.openedit.repository.ContentItem;
 
 /**
- * The folder a My EME user's OpenCode sessions work in, and the permissions those sessions run with.
+ * The folder a employee's OpenCode sessions work in, and the permissions those sessions run with.
  *
  * Every user has a folder in the home of the user the server runs as (in Docker /home/entermedia/workspaces/[userid]).
  * It is the session folder, so the user's files are in it, next to the config OpenCode reads from it:
@@ -31,7 +31,7 @@ import org.openedit.repository.ContentItem;
  * folder, and a session in a git repository can read all of it. A user's id can never leave the workspaces
  * folder (see requireSafeUserId).
  */
-public class MyEmeWorkspace
+public class EmployeeWorkspace
 {
 	/** Letters, digits and . _ @ - only, starting with a letter or digit, so an id can never walk out of the workspaces folder */
 	protected static final Pattern SAFE_USER_ID = Pattern.compile("^[A-Za-z0-9][A-Za-z0-9._@-]*$");
@@ -46,7 +46,7 @@ public class MyEmeWorkspace
 	{
 		if (inUserId == null || !SAFE_USER_ID.matcher(inUserId).matches() || inUserId.contains(".."))
 		{
-			throw new OpenEditException("Not a usable user id for a My EME workspace: " + inUserId);
+			throw new OpenEditException("Not a usable user id for an employee workspace: " + inUserId);
 		}
 		return inUserId;
 	}
@@ -87,7 +87,7 @@ public class MyEmeWorkspace
 		File user = userFolder(inUserId);
 		if (!user.isDirectory() && !user.mkdirs() && !user.isDirectory())
 		{
-			throw new OpenEditException("Could not create the My EME workspace " + user.getAbsolutePath());
+			throw new OpenEditException("Could not create the employee workspace " + user.getAbsolutePath());
 		} 
 		File config = new File(user, "opencode.json");
 		if (!config.exists())

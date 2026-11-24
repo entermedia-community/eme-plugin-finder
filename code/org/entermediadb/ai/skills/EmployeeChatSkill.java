@@ -18,24 +18,24 @@ import org.openedit.Data;
 import org.openedit.MultiValued;
 
 /**
- * Sends every message in a user's My EME chat to that chat's OpenCode session and shows OpenCode's work
+ * Sends every message in a user's Employee Chat to that chat's OpenCode session and shows OpenCode's work
  * as one chat message that builds up while it happens.
  *
  * Each chat channel has its own OpenCode session, found by the channel's opencodesessionid and created
- * on the first message in the user's workspace folder (see MyEmeWorkspace). Starting a new chat session
+ * on the first message in the user's workspace folder (see EmployeeWorkspace). Starting a new chat session
  * in the app makes a new channel, so it gets a new OpenCode session.
  *
  * The reply is a single chatterbox message. Its text, the tools OpenCode uses and any error are collected
- * in a MyEmeTurnMessage, and every change goes to the clients as a messageappend or messagereplace patch
+ * in a EmployeeTurnMessage, and every change goes to the clients as a messageappend or messagereplace patch
  * of that same message. The skill sleeps on the session's event queue, so it wakes only when OpenCode
  * says something (there is no polling), gathers events that arrive together, and sends one patch. When the
  * turn ends the finished message is saved and sent whole through the normal status update. Errors are
  * shown in the message, not hidden. The response names this step as the next one, so the following
  * message in the chat comes back here.
  */
-public class MyEmeChatSkill extends BaseSkill
+public class EmployeeChatSkill extends BaseSkill
 {
-	private static final Log log = LogFactory.getLog(MyEmeChatSkill.class);
+	private static final Log log = LogFactory.getLog(EmployeeChatSkill.class);
 
 	protected static final long TURN_TIMEOUT_MS = TimeUnit.MINUTES.toMillis(20);
 	/** After an event, how long to gather others that arrive with it before sending a patch */
@@ -59,7 +59,7 @@ public class MyEmeChatSkill extends BaseSkill
 		}
 
 		MultiValued agentmessage = messageContext.getAgentMessage();
-		MyEmeTurnMessage turn = new MyEmeTurnMessage();
+		EmployeeTurnMessage turn = new EmployeeTurnMessage();
 		try
 		{
 			streamTurn(messageContext, agentmessage, prompt.trim(), turn);
@@ -67,12 +67,12 @@ public class MyEmeChatSkill extends BaseSkill
 		catch (InterruptedException e)
 		{
 			Thread.currentThread().interrupt();
-			log.error("My EME chat was interrupted while waiting for OpenCode", e);
+			log.error("Employee Chat was interrupted while waiting for OpenCode", e);
 			turn.fail("Stopped waiting for OpenCode.");
 		}
 		catch (Exception e)
 		{
-			log.error("My EME chat could not run the prompt in OpenCode", e);
+			log.error("Employee Chat could not run the prompt in OpenCode", e);
 			turn.fail("OpenCode could not run this: " + e.getMessage());
 		}
 
@@ -85,7 +85,7 @@ public class MyEmeChatSkill extends BaseSkill
 	}
 
 	/** Runs the prompt in the channel's session, sending the message's changes as they happen, until the turn ends */
-	protected void streamTurn(ChatMessageContext inContext, MultiValued inAgentMessage, String inPrompt, MyEmeTurnMessage inTurn) throws InterruptedException
+	protected void streamTurn(ChatMessageContext inContext, MultiValued inAgentMessage, String inPrompt, EmployeeTurnMessage inTurn) throws InterruptedException
 	{
 		AgentJobManager manager = (AgentJobManager) getMediaArchive().getBean("agentJobManager");
 		OpenCodeClient client = manager.getOpenCodeClient();
@@ -156,7 +156,7 @@ public class MyEmeChatSkill extends BaseSkill
 	}
 
 	/** Feeds one event to the message; a permission request is refused, since nobody is there to approve it */
-	protected void handle(OpenCodeClient inClient, String inSessionId, MyEmeTurnMessage inTurn, JSONObject inEvent)
+	protected void handle(OpenCodeClient inClient, String inSessionId, EmployeeTurnMessage inTurn, JSONObject inEvent)
 	{
 		String type = (String) inEvent.get("type");
 		if (OpenCodeClient.SUPERSEDED.equals(type))
@@ -179,7 +179,7 @@ public class MyEmeChatSkill extends BaseSkill
 	}
 
 	/** Saves what the message looks like so far, so a client that loads the chat mid-turn sees it */
-	protected void saveProgress(MultiValued inAgentMessage, MyEmeTurnMessage inTurn)
+	protected void saveProgress(MultiValued inAgentMessage, EmployeeTurnMessage inTurn)
 	{
 		JSONObject message = new JSONObject();
 		message.put("ops", inTurn.ops());
@@ -193,7 +193,7 @@ public class MyEmeChatSkill extends BaseSkill
 	{
 		Data channel = inContext.getChannel();
 		String userid = channel.get("user");
-		File folder = MyEmeWorkspace.folderFor(getMediaArchive(), userid);
+		File folder = EmployeeWorkspace.folderFor(getMediaArchive(), userid);
 
 		// A session is only reused when it works in the user's session folder. One saved from before the folders
 		// moved (or started anywhere else) could still reach what it should not, so it is replaced.
@@ -209,7 +209,7 @@ public class MyEmeChatSkill extends BaseSkill
 		}
 
 		String title = inPrompt.length() > 200 ? inPrompt.substring(0, 200) : inPrompt;
-		JSONObject session = inClient.createSession(title, folder.getAbsolutePath(), MyEmeWorkspace.permissions(getMediaArchive(), userid));
+		JSONObject session = inClient.createSession(title, folder.getAbsolutePath(), EmployeeWorkspace.permissions(getMediaArchive(), userid));
 		sessionid = (String) session.get("id");
 		log.info("Started OpenCode session " + sessionid + " for channel " + channel.getId() + " in " + folder);
 

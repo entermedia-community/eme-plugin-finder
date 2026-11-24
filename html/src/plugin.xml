@@ -3702,22 +3702,64 @@
 	</bean>
 
 
-	<bean id="myEmeChatSkill"
-		class="org.entermediadb.ai.skills.MyEmeChatSkill" scope="prototype">
+	<bean id="employeeChatSkill"
+		class="org.entermediadb.ai.skills.EmployeeChatSkill" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>
 	</bean>
 
-	<bean id="myEmeUploadSkillsMemorySkill"
-		class="org.entermediadb.ai.skills.MyEmeUploadSkillsMemorySkill" scope="prototype">
+	<bean id="emeChatbotHelpDeskSkill"
+		class="org.entermediadb.ai.skills.EmeChatbotPlaceholderSkill" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>
 	</bean>
 
-	<bean id="myEmeDailyStatusReportSkill"
-		class="org.entermediadb.ai.skills.MyEmeDailyStatusReportSkill" scope="prototype">
+	<bean id="emeChatbotCustomerOnboardingSkill"
+		class="org.entermediadb.ai.skills.EmeChatbotPlaceholderSkill" scope="prototype">
+		<property name="moduleManager">
+			<ref bean="moduleManager" />
+		</property>
+	</bean>
+
+	<bean id="emeChatbotTaskTrackerSkill"
+		class="org.entermediadb.ai.skills.EmeChatbotPlaceholderSkill" scope="prototype">
+		<property name="moduleManager">
+			<ref bean="moduleManager" />
+		</property>
+	</bean>
+
+	<bean id="emeChatbotFinanceTrackerSkill"
+		class="org.entermediadb.ai.skills.EmeChatbotPlaceholderSkill" scope="prototype">
+		<property name="moduleManager">
+			<ref bean="moduleManager" />
+		</property>
+	</bean>
+
+	<bean id="emeChatbotRequestMeetingSkill"
+		class="org.entermediadb.ai.skills.EmeChatbotPlaceholderSkill" scope="prototype">
+		<property name="moduleManager">
+			<ref bean="moduleManager" />
+		</property>
+	</bean>
+
+	<bean id="emeChatbotPlaceOrderSkill"
+		class="org.entermediadb.ai.skills.EmeChatbotPlaceholderSkill" scope="prototype">
+		<property name="moduleManager">
+			<ref bean="moduleManager" />
+		</property>
+	</bean>
+
+	<bean id="emeChatbotLeadTrackerSkill"
+		class="org.entermediadb.ai.skills.EmeChatbotPlaceholderSkill" scope="prototype">
+		<property name="moduleManager">
+			<ref bean="moduleManager" />
+		</property>
+	</bean>
+
+	<bean id="emeChatbotOrderTrackerSkill"
+		class="org.entermediadb.ai.skills.EmeChatbotPlaceholderSkill" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>

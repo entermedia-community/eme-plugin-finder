@@ -20,7 +20,7 @@ import org.json.simple.JSONObject;
  *
  * Not thread safe; one thread feeds events and asks for patches.
  */
-public class MyEmeTurnMessage
+public class EmployeeTurnMessage
 {
 	public static final String APPEND = "messageappend";
 	public static final String REPLACE = "messagereplace";
