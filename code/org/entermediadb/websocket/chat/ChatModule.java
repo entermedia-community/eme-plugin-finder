@@ -708,6 +708,13 @@ public class ChatModule extends BaseMediaModule
 			return currentchannel;
 		}
 
+		if ("emechatbotvendorchat".equals(channeltype))
+		{
+			// A chatbot visitor keeps one channel per vendor, only their own
+			currentchannel = (MultiValued) channelsearcher.query().exact("dataid", entity).exact("searchtype", channeldatamodule).exact("user", inReq.getUserName()).sort("refreshdateDown").searchOne();
+			return currentchannel;
+		}
+
 		if ("emeteamchat".equals(channeltype) && "librarycollection".equals(channeldatamodule) && entity != null)
 		{
 			// A project's team chat is one persistent channel (web and app share it), not hourly sessions

@@ -3738,7 +3738,14 @@
 	</bean>
 
 	<bean id="emeChatbotRequestMeetingSkill"
-		class="org.entermediadb.ai.skills.EmeChatbotPlaceholderSkill" scope="prototype">
+		class="org.entermediadb.ai.skills.EmeChatbotRequestMeetingSkill" scope="prototype">
+		<property name="moduleManager">
+			<ref bean="moduleManager" />
+		</property>
+	</bean>
+
+	<bean id="emeChatbotSendMeetingRequestSkill"
+		class="org.entermediadb.ai.skills.EmeChatbotSendMeetingRequestSkill" scope="prototype">
 		<property name="moduleManager">
 			<ref bean="moduleManager" />
 		</property>

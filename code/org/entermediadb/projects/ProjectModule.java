@@ -842,6 +842,17 @@ public class ProjectModule extends BaseMediaModule
 		}
 	}
 
+	/** Cancels the page unless the loaded collection is a chatbot vendor (collectiontype 8). */
+	public void requireVendor(WebPageRequest inReq)
+	{
+		Data collection = (Data) inReq.getPageValue("librarycol");
+		if (collection == null || !"8".equals(collection.get("collectiontype")))
+		{
+			inReq.removePageValue("librarycol");
+			inReq.setCancelActions(true);
+		}
+	}
+
 	/** JSON API: follows or unfollows the project for the signed-in user. */
 	public void toggleFollow(WebPageRequest inReq)
 	{
