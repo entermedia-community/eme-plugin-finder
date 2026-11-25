@@ -30,7 +30,8 @@ public class EmeChatbotSendMeetingRequestSkill extends BaseSkill
 {
 	private static final Log log = LogFactory.getLog(EmeChatbotSendMeetingRequestSkill.class);
 
-	protected static final String TEMPLATE = "site/profile/theme/emails/eme-chatbot-meeting-request.html";
+	/** plugins/community/html/default/theme/emails/ (there is no /site/profile app to fall back from) */
+	protected static final String TEMPLATE = "/community/default/theme/emails/eme-chatbot-meeting-request.html";
 	protected static final int MAX_MESSAGE = 1000;
 	protected static final String[] KEYS = { "meetingtime", "meetingtimezone", "meetingmessage" };
 
