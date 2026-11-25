@@ -19,12 +19,16 @@ import org.entermediadb.ai.skills.SearchingViewRelatedSkill;
 import org.entermediadb.asset.MediaArchive;
 import org.entermediadb.asset.modules.BaseMediaModule;
 import org.entermediadb.scripts.ScriptLogger;
+import org.entermediadb.websocket.chat.ChatServer;
 import org.entermediadb.workspace.WorkspaceManager;
 import org.openedit.Data;
 import org.openedit.MultiValued;
 import org.openedit.WebPageRequest;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.openedit.data.Searcher;
 import org.openedit.hittracker.HitTracker;
+import org.openedit.util.JSONParser;
 
 public class AgentModule extends BaseMediaModule
 {
@@ -279,10 +283,113 @@ public class AgentModule extends BaseMediaModule
 			}
 		}
 
+		saveSubmittedForm(inReq, mediaArchive, channelid, functionname);
+
 		mediaArchive.saveData("agentcontext", chatAgentContext);
 		inReq.putPageValue("currentfunction", functionname);
 		// assistantManager.sendSystemMessage(chatAgentContext, inReq.getUserName(), functionname);
 		assistantManager.sendSystemMessage(chatAgentContext, inReq.getUserName(), null, functionname);
+	}
+
+	/**
+	 * A form the agent sent in the chat (a message whose JSON has a "form" list) is posted back here by its submit
+	 * button. Standard parameters: {@code formmessageid} is the id of the form message (the apps send it); without it
+	 * the newest unsubmitted form of the channel that runs the posted {@code functionname} is used. The posted values
+	 * are written into the message's form fields (each field's "value", matched by field name) and the message gets
+	 * {@code "submitted": true}, then it is saved and sent to the clients again, so every client shows what was
+	 * submitted instead of an empty form. Nothing happens when the post is not a form submission.
+	 */
+	protected void saveSubmittedForm(WebPageRequest inReq, MediaArchive inArchive, String inChannelId, String inFunctionName)
+	{
+		String messageid = inReq.getRequestParameter("formmessageid");
+		if (messageid == null && inFunctionName == null)
+		{
+			return;
+		}
+		try
+		{
+			MultiValued formmessage = null;
+			if (messageid != null)
+			{
+				formmessage = (MultiValued) inArchive.getData("chatterbox", messageid);
+				if (formmessage != null && !inChannelId.equals(formmessage.get("channel")))
+				{
+					log.error("Form message " + messageid + " is not in channel " + inChannelId);
+					return;
+				}
+			}
+			else
+			{
+				Collection<MultiValued> recent = inArchive.query("chatterbox").exact("channel", inChannelId).sort("dateDown").hitsPerPage(20).search();
+				for (MultiValued candidate : recent)
+				{
+					JSONObject json = parseFormMessage(candidate);
+					if (json != null && !Boolean.TRUE.equals(json.get("submitted")) && inFunctionName.equals(hiddenValue(json, "functionname")))
+					{
+						formmessage = candidate;
+						break;
+					}
+				}
+			}
+			if (formmessage == null)
+			{
+				return;
+			}
+			JSONObject json = parseFormMessage(formmessage);
+			if (json == null || Boolean.TRUE.equals(json.get("submitted")))
+			{
+				return; // Not a form, or already submitted
+			}
+			for (Object field : (JSONArray) json.get("form"))
+			{
+				JSONObject fieldjson = (JSONObject) field;
+				String name = (String) fieldjson.get("name");
+				String value = name == null ? null : inReq.getRequestParameter(name);
+				if (value != null)
+				{
+					fieldjson.put("value", value);
+				}
+			}
+			json.put("submitted", Boolean.TRUE);
+			formmessage.setValue("message", json.toJSONString());
+			inArchive.saveData("chatterbox", formmessage);
+			ChatServer server = (ChatServer) inArchive.getBean("chatServer");
+			server.broadcastMessage(inArchive.getCatalogId(), formmessage);
+		}
+		catch (Exception ex)
+		{
+			log.error("Could not save the submitted form in channel " + inChannelId, ex);
+		}
+	}
+
+	/** The message's JSON when it has a form, otherwise null */
+	protected JSONObject parseFormMessage(Data inMessage) throws Exception
+	{
+		String text = inMessage.get("message");
+		if (text == null || !text.trim().startsWith("{") || !text.contains("\"form\""))
+		{
+			return null;
+		}
+		Object parsed = new JSONParser().parse(text);
+		if (parsed instanceof JSONObject && ((JSONObject) parsed).get("form") instanceof JSONArray)
+		{
+			return (JSONObject) parsed;
+		}
+		return null;
+	}
+
+	protected String hiddenValue(JSONObject inForm, String inName)
+	{
+		for (Object field : (JSONArray) inForm.get("form"))
+		{
+			JSONObject fieldjson = (JSONObject) field;
+			if (inName.equals(fieldjson.get("name")))
+			{
+				Object value = fieldjson.get("value");
+				return value == null ? null : value.toString();
+			}
+		}
+		return null;
 	}
 
 	/**
