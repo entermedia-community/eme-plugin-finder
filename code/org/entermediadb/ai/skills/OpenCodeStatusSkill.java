@@ -264,7 +264,7 @@ public class OpenCodeStatusSkill extends BaseSkill
 	 * Finds the most recent assistant message (per the opencode SDK's {info: {role}, parts:
 	 * [{type, text}]} message shape) and concatenates its text parts.
 	 */
-	protected String extractLastAssistantText(List<JSONObject> inMessages)
+	public static String extractLastAssistantText(List<JSONObject> inMessages)
 	{
 		if (inMessages == null)
 		{

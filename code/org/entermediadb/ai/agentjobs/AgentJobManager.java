@@ -387,7 +387,7 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 	 * 
 	 * @return how many jobs were queued
 	 */
-	public int checkRepeatingJobs()
+	public synchronized int checkRepeatingJobs()
 	{
 		HitTracker jobs = getMediaArchive().query("agentjob").exists("repeatperiod").search();
 		jobs.enableBulkOperations();
@@ -400,11 +400,10 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 			{
 				AgentJob job = (AgentJob) getMediaArchive().getCachedData("agentjob", hit.getId());
 				String status = job.get("status");
-				// Only repeat jobs that are finished. Skip running, queued or ones waiting on a person
-				// if (status != null && !"complete".equals(status) && !"error".equals(status))
-				// {
-				// continue;
-				// }
+				if (!isRepeatableStatus(status))
+				{
+					continue;
+				}
 				if (currentJobsRunning.containsKey(job.getId()) || !isRepeatDue(job, new Date()))
 				{
 					continue;
@@ -424,12 +423,22 @@ public class AgentJobManager implements SkillStatusListener, CatalogEnabled
 		return count;
 	}
 
-	public void rerunJob(String inJobId)
+	protected static boolean isRepeatableStatus(String inStatus)
+	{
+		return inStatus == null || "complete".equals(inStatus) || "error".equals(inStatus);
+	}
+
+	public synchronized void rerunJob(String inJobId)
 	{
 		AgentJob job = (AgentJob) getMediaArchive().getCachedData("agentjob", inJobId);
 		if (job == null)
 		{
 			log.error("Could not find agentjob " + inJobId);
+			return;
+		}
+		if (currentJobsRunning.containsKey(inJobId) || "running".equals(job.get("status")))
+		{
+			log.warn("Cannot rerun agentjob " + inJobId + " while it is running");
 			return;
 		}
 		try

@@ -37,6 +37,13 @@ public class OpenCodeRunnerSkill extends BaseSkill
 	@Override
 	public void process(AgentContext inContext)
 	{
+		startSession(inContext);
+		super.process(inContext);
+	}
+
+	/** Starts or resumes a session without running chat scenario children. */
+	public void startSession(AgentContext inContext)
+	{
 		AgentJobManager manager = (AgentJobManager) getMediaArchive().getBean("agentJobManager");
 
 		String workingpath = (String) inContext.getContextValue("workingpath");
@@ -71,10 +78,7 @@ public class OpenCodeRunnerSkill extends BaseSkill
 			log.error("OpenCodeRunnerSkill error running opencode in " + workingpath, e);
 			throw new OpenEditException("OpenCodeRunnerSkill error running opencode in " + workingpath, e);
 		}
-		// OpenCodeStatusSkill runs next as our child and waits on the session
 		inContext.put("sessionstatus", sessionstatus);
-
-		super.process(inContext);
 	}
 
 }

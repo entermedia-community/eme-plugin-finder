@@ -109,9 +109,13 @@ public abstract class BaseAgentJobOrchestrator implements AgentJobOrchestrator, 
 		catch (Exception ex)
 		{
 			log.error("Error running step " + inStep.getId(), ex);
-			inStep.setValue("status", "error");
 			inStep.setValue("errordetails", ex.getMessage());
-			inAgentJob.getAgentJob().setValue("status", "error");
+			if (!(ex instanceof OpenCodeOrchestrator.SessionUnconfirmedException))
+			{
+				inStep.setValue("status", "error");
+				inAgentJob.getAgentJob().setValue("status", "error");
+			}
+			inAgentJob.getAgentJob().setValue("errordetails", ex.getMessage());
 			getMediaArchive().saveData("agentjob", inAgentJob.getAgentJob());
 
 			if(ex instanceof RuntimeException)

@@ -25,6 +25,7 @@ import org.json.simple.JSONObject;
 import org.openedit.CatalogEnabled;
 import org.openedit.Data;
 import org.openedit.ModuleManager;
+import org.openedit.OpenEditException;
 import org.openedit.util.HttpSharedConnection;
 import org.openedit.util.JSONParser;
 
@@ -75,6 +76,7 @@ public class OpenCodeClient implements CatalogEnabled
     protected Thread listener;
     protected volatile boolean fieldListening = false;
     protected volatile CloseableHttpResponse fieldEventResponse;
+    protected boolean fieldEventStreamReady;
 
     // Basic auth credentials for the OpenCode server (see "opencode pair"). The username is
     // fixed by the server; the password is generated at pairing time and typically kept in the
@@ -204,6 +206,25 @@ public class OpenCodeClient implements CatalogEnabled
         return fieldListening;
     }
 
+    /** Wait until the SSE subscription is established before sending a prompt. */
+    public boolean awaitEventStream(long inTimeoutMs) throws InterruptedException
+    {
+        long deadline = System.currentTimeMillis() + inTimeoutMs;
+        synchronized (fieldRecentEvents)
+        {
+            while (!fieldEventStreamReady && fieldListening)
+            {
+                long remaining = deadline - System.currentTimeMillis();
+                if (remaining <= 0)
+                {
+                    break;
+                }
+                fieldRecentEvents.wait(remaining);
+            }
+            return fieldEventStreamReady;
+        }
+    }
+
     // ---------------------------------------------------------------------
     // Event stream
     // ---------------------------------------------------------------------
@@ -257,6 +278,11 @@ public class OpenCodeClient implements CatalogEnabled
 
                 InputStream input = response.getEntity().getContent();
                 scanner = new JsonRpcScanner(input, "UTF-8");
+                synchronized (fieldRecentEvents)
+                {
+                    fieldEventStreamReady = true;
+                    fieldRecentEvents.notifyAll();
+                }
                 while (fieldListening)
                 {
                     JSONObject event = scanner.nextEvent();
@@ -277,6 +303,11 @@ public class OpenCodeClient implements CatalogEnabled
             finally
             {
                 fieldEventResponse = null;
+                synchronized (fieldRecentEvents)
+                {
+                    fieldEventStreamReady = false;
+                    fieldRecentEvents.notifyAll();
+                }
                 if (scanner != null)
                 {
                     try
@@ -671,7 +702,20 @@ public class OpenCodeClient implements CatalogEnabled
      */
     public void sendPromptAsync(String inSessionId, String inText) 
     {
-        postJson("/api/session/" + inSessionId + "/prompt", promptBody(inText));
+        CloseableHttpResponse response = null;
+        try
+        {
+            response = getConnection().sharedPostWithJson(getServerUrl() + "/api/session/" + inSessionId + "/prompt", promptBody(inText));
+            int status = response.getStatusLine().getStatusCode();
+            if (status < 200 || status >= 300)
+            {
+                throw new OpenEditException("OpenCode prompt rejected for session " + inSessionId + ": HTTP " + status);
+            }
+        }
+        finally
+        {
+            getConnection().release(response);
+        }
     }
 
     /**
@@ -932,7 +976,7 @@ public class OpenCodeClient implements CatalogEnabled
         return inValue == null ? null : inValue.toString();
     }
 
-    Map<String, SessionStatus> sessionMap = new HashMap<>(); //Expire old ones?
+    Map<String, SessionStatus> sessionMap = new ConcurrentHashMap<>(); //Expire old ones?
 
     public SessionStatus startSessionId(AgentJobStep agentJobStep, String workingpath, String query) {
         // Implementation for starting a session with the given parameters
@@ -1116,7 +1160,10 @@ public class OpenCodeClient implements CatalogEnabled
         else
         {
             // Log unhandled event types for debugging purposes
-            inLog.debug("OpenCodeClient received unhandled event type: " + type);
+            if (inLog != null)
+            {
+                inLog.debug("OpenCodeClient received unhandled event type: " + type);
+            }
         }
 
     }
