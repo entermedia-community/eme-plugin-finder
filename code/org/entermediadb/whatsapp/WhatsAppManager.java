@@ -22,6 +22,9 @@ public class WhatsAppManager extends BaseAiManager implements ChatBroadcastListe
 	private static final Log log = LogFactory.getLog(WhatsAppManager.class);
 
 	// to be moved to config later
+
+	// Shakil's https://66d2-103-58-74-150.ngrok-free.app/mediadb/services/whatsapp/webhook.html
+	// Cristobal https://66d2-103-58-74-150.ngrok-free.app/mediadb/services/whatsapp/webhook.html
 	private String VERIFY_TOKEN = "TEST_LOCAL_TOKEN";
 	private String ACCESS_TOKEN =
 		"EAAMddinMeh4BRqNLiGMMRUZAts9RY07wJC53gdsqVmIEfhWQSiFo9Eh4eJmljC7yBhZBmmA0sbqDpmOzZANmZCpwl95v53yfdZA7zxsIpURov2PeRUMF17FfZCpY5TswCbZBYoAxSRAvj0JC0dYB4ZB7wTbMfIiarLK2ZAxZC6AIiKqxJ3YDb0YACihJcgOLg1zJr1J80S0FpFWEdXcQiE4jMvXVX1B4HLFTTiTL8gCPqZAfd8wvxqd5xbpAP0PcGT4o3VBPuJmvjIwvhx6ou5OGV1zD3SbNAZDZD";
@@ -68,7 +71,11 @@ public class WhatsAppManager extends BaseAiManager implements ChatBroadcastListe
 
 		if (message != null)
 		{
-			String senderPhone = message.getSenderPhone();
+			String messagetext = message.getMessageText();
+			String senderPhone = message.getSenderPhone(); 
+			String businessPhone = message.getDisplayPhoneNumber();
+
+			log.info("Received message from " + senderPhone + " to " + businessPhone + ": " + messagetext);
 
 			Data senderProfile = getMediaArchive().query("emeprofile").exact("phonenumber", senderPhone).searchOne();
 
@@ -84,7 +91,7 @@ public class WhatsAppManager extends BaseAiManager implements ChatBroadcastListe
 				getMediaArchive().getSearcher("emeprofile").saveData(senderProfile);
 			}
 
-			Data businessProfile = getMediaArchive().query("emeprofile").exact("phonenumber", message.getDisplayPhoneNumber()).searchOne();
+			Data businessProfile = getMediaArchive().query("emeprofile").exact("phonenumber", businessPhone).searchOne();
 
 			if (businessProfile == null)
 			{
@@ -111,7 +118,7 @@ public class WhatsAppManager extends BaseAiManager implements ChatBroadcastListe
 			whatsappMessage.setValue("user", senderProfile.get("owner"));
 			whatsappMessage.setValue("channel", channel.getId());
 			whatsappMessage.setValue("date", new Date());
-			whatsappMessage.setValue("message", message.getMessageText());
+			whatsappMessage.setValue("message", messagetext);
 			getMediaArchive().getSearcher("chatterbox").saveData(whatsappMessage);
 
 			ChatServer server = (ChatServer) getMediaArchive().getBean("chatServer");
