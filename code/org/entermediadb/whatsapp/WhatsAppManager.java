@@ -3,6 +3,7 @@ package org.entermediadb.whatsapp;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -15,6 +16,9 @@ import org.openedit.Data;
 import org.openedit.MultiValued;
 import org.openedit.OpenEditException;
 import org.openedit.WebPageRequest;
+import org.openedit.data.Searcher;
+import org.openedit.hittracker.HitTracker;
+import org.openedit.users.User;
 import org.openedit.util.HttpSharedConnection;
 
 public class WhatsAppManager extends BaseAiManager implements ChatBroadcastListener
@@ -22,6 +26,9 @@ public class WhatsAppManager extends BaseAiManager implements ChatBroadcastListe
 	private static final Log log = LogFactory.getLog(WhatsAppManager.class);
 
 	// to be moved to config later
+
+	// Use a ngrok URL for local development. 
+	// ngrok http 8080 --url [[ngrok-free.app]]
 
 	// Shakil's https://66d2-103-58-74-150.ngrok-free.app/mediadb/services/whatsapp/webhook.html
 	// Cristobal https://66d2-103-58-74-150.ngrok-free.app/mediadb/services/whatsapp/webhook.html
@@ -72,11 +79,68 @@ public class WhatsAppManager extends BaseAiManager implements ChatBroadcastListe
 		if (message != null)
 		{
 			String messagetext = message.getMessageText();
-			String senderPhone = message.getSenderPhone(); 
-			String businessPhone = message.getDisplayPhoneNumber();
+			String senderPhone = normalizePhone(message.getSenderPhone());
+			String projectPhone = normalizePhone(message.getDisplayPhoneNumber());
 
-			log.info("Received message from " + senderPhone + " to " + businessPhone + ": " + messagetext);
+			log.info("Received message from " + senderPhone + " to " + projectPhone + ": " + messagetext);
 
+			if (senderPhone == null || senderPhone.isEmpty())
+			{
+				log.warn("Received message without a sender phone number");
+				inReq.getResponse().setStatus(404);
+				return;
+			}
+
+			Data user = findByPhone("user", "phonenumber", senderPhone);
+			String userid;
+			if (user == null)
+			{
+				User newuser = getMediaArchive().getUserManager().createUser(null);
+				newuser.setValue("phonenumber", senderPhone);
+				newuser.setEnabled(true);
+				getMediaArchive().getUserManager().saveUser(newuser);
+				userid = newuser.getId();
+			}
+			else
+			{
+				userid = user.getId();
+			}
+
+			Data librarycollection = findByPhone("librarycollection", "whatsappphonenumber", projectPhone);
+			if (librarycollection == null)
+			{
+				log.warn("Received message for unknown project phone number: " + projectPhone);
+				inReq.getResponse().setStatus(404);
+				return;
+			}
+
+			Collection<String> dataids = Arrays.asList(userid, librarycollection.getId());
+			Data channel = getMediaArchive().query("channel").andgroup("dataid", dataids).searchOne();
+			if (channel == null)
+			{
+				channel = getMediaArchive().getSearcher("channel").createNewData();
+				channel.setValue("dataid", dataids);
+				channel.setValue("searchtype", "librarycollection");
+				channel.setValue("refreshdate", new Date());
+
+				getMediaArchive().getSearcher("channel").saveData(channel);
+			}
+
+			MultiValued whatsappMessage = (MultiValued) getMediaArchive().getSearcher("chatterbox").createNewData();
+			whatsappMessage.setValue("user", userid);
+			whatsappMessage.setValue("channel", channel.getId());
+			whatsappMessage.setValue("date", new Date());
+			whatsappMessage.setValue("dataid", librarycollection.getId());
+			whatsappMessage.setValue("message", messagetext);
+			getMediaArchive().getSearcher("chatterbox").saveData(whatsappMessage);
+
+			ChatServer server = (ChatServer) getMediaArchive().getBean("chatServer");
+			server.broadcastMessage(getMediaArchive().getCatalogId(), whatsappMessage);
+			
+			
+			
+			/*
+			
 			Data senderProfile = getMediaArchive().query("emeprofile").exact("phonenumber", senderPhone).searchOne();
 
 			if (senderProfile == null)
@@ -196,10 +260,46 @@ public class WhatsAppManager extends BaseAiManager implements ChatBroadcastListe
 			// {
 			// connection.release(resp);
 			// }
+			 */
 		}
 
 		// Meta requires a 200 OK response within seconds, or they will retry sending the payload.
 		inReq.getResponse().setStatus(200);
+	}
+
+	protected Data findByPhone(String inSearchType, String inField, String inDigits)
+	{
+		if (inDigits == null || inDigits.isEmpty())
+		{
+			return null;
+		}
+		Searcher searcher = getMediaArchive().getSearcher(inSearchType);
+		Data exacthit = searcher.query().exact(inField, inDigits).searchOne();
+		if (exacthit != null)
+		{
+			return exacthit;
+		}
+		// Stored numbers may be formatted (+, spaces, dashes); term queries do not
+		// analyze values, so fall back to comparing digits only on both sides.
+		HitTracker hits = searcher.query().exists(inField).search();
+		for (Iterator iter = hits.iterator(); iter.hasNext();)
+		{
+			Data hit = (Data) iter.next();
+			if (inDigits.equals(normalizePhone(hit.get(inField))))
+			{
+				return searcher.loadData(hit);
+			}
+		} 
+		return null;
+	}
+
+	protected String normalizePhone(String inPhone)
+	{
+		if (inPhone == null)
+		{
+			return null;
+		}
+		return inPhone.replaceAll("[^0-9]", ""); 
 	}
 
 	@Override

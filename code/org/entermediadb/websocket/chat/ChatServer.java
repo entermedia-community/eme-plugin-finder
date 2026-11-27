@@ -307,7 +307,7 @@ public class ChatServer
 					entity = archive.getCachedData(channelmoduleid, entityid);
 				}
 
-				if (channelmoduleid.equals("librarycollection"))
+				if (channelmoduleid.equals("librarycollection") && entity != null)
 				{
 					userids = projectmanager.listTeam(entity);
 				}
